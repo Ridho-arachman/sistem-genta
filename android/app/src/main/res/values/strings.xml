@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GENTAPANGAN</string>
+    <string name="title_activity_main">GENTAPANGAN</string>
+    <string name="package_name">com.gentapangan.app</string>
+    <string name="custom_url_scheme">com.gentapangan.app</string>
+</resources>

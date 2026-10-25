@@ -1,0 +1,157 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Jobs\CctvAlertJob;
+use App\Models\Cctv;
+use App\Models\Dapur;
+use Illuminate\Http\Request;
+
+class CctvController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        $user = auth()->user();
+
+        // Admin & Manajerial: lihat semua
+        // Kepala Dapur: lihat semua (read-only)
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+            abort(403);
+        }
+
+        $cctvs = Cctv::with('dapur')->latest()->paginate(10);
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.cctvs.index', compact('cctvs'));
+        } elseif ($user->isManajerial()) {
+            return view('manajerial.cctvs.index', compact('cctvs'));
+        }
+
+        return view('cctvs.index', compact('cctvs'));
+    }
+
+    public function create()
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403, 'Hanya admin yang bisa menambah CCTV.');
+        }
+
+        $dapurs = Dapur::all();
+
+        return view('cctvs.create', compact('dapurs'));
+    }
+
+    public function store(Request $request)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'dapur_id' => ['required', 'exists:dapurs,id'],
+            'nama' => ['required', 'string', 'max:255'],
+            'ip_address' => ['nullable', 'string', 'max:45'],
+            'rtsp_url' => ['nullable', 'string', 'max:500'],
+            'hls_url' => ['nullable', 'string', 'max:500'],
+            'status' => ['required', 'in:online,offline,maintenance'],
+            'section' => ['nullable', 'string', 'max:255'],
+            'camera_number' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        Cctv::create($validated);
+
+        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil ditambahkan.');
+    }
+
+    public function show(Cctv $cctv)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+            abort(403);
+        }
+
+        $cctv->load('dapur');
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.cctvs.show', compact('cctv'));
+        } elseif ($user->isManajerial()) {
+            return view('manajerial.cctvs.show', compact('cctv'));
+        }
+
+        return view('cctvs.show', compact('cctv'));
+    }
+
+    public function edit(Cctv $cctv)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $dapurs = Dapur::all();
+
+        return view('cctvs.edit', compact('cctv', 'dapurs'));
+    }
+
+    public function update(Request $request, Cctv $cctv)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'dapur_id' => ['required', 'exists:dapurs,id'],
+            'nama' => ['required', 'string', 'max:255'],
+            'ip_address' => ['nullable', 'string', 'max:45'],
+            'rtsp_url' => ['nullable', 'string', 'max:500'],
+            'hls_url' => ['nullable', 'string', 'max:500'],
+            'status' => ['required', 'in:online,offline,maintenance'],
+            'section' => ['nullable', 'string', 'max:255'],
+            'camera_number' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        $oldStatus = $cctv->status;
+        $cctv->update($validated);
+
+        if ($oldStatus !== $cctv->status && in_array($cctv->status, ['offline', 'maintenance'])) {
+            CctvAlertJob::dispatch($cctv->id, $cctv->status, true);
+        }
+
+        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil diperbarui.');
+    }
+
+    public function destroy(Cctv $cctv)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $cctv->delete();
+
+        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil dihapus.');
+    }
+
+    public function monitoring(Dapur $dapur)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+            abort(403);
+        }
+
+        $dapur->load('cctvs');
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.cctvs.monitoring', compact('dapur'));
+        } elseif ($user->isManajerial()) {
+            return view('manajerial.cctvs.monitoring', compact('dapur'));
+        }
+
+        return view('cctvs.monitoring', compact('dapur'));
+    }
+}

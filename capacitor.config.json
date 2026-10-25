@@ -1,0 +1,65 @@
+{
+  "appId": "com.gentapangan.app",
+  "appName": "GENTA Pangan Banten",
+  "webDir": "public",
+  "server": {
+    "url": "http://192.168.1.38:8000",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true
+  },
+  "ios": {
+    "contentInset": "always",
+    "scrollEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#FFFFFF",
+      "showSpinner": true,
+      "spinnerColor": "#E50000",
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "light",
+      "backgroundColor": "#FFFFFF"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "light",
+      "resizeOnFullScreen": true
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#E50000",
+      "sound": "beep.wav"
+    },
+    "Geolocation": {
+      "android": {
+        "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      }
+    },
+    "BackgroundGeolocation": {
+      "desiredAccuracy": 10,
+      "distanceFilter": 50,
+      "interval": 60000,
+      "stopOnTerminate": false,
+      "startOnBoot": true,
+      "notification": {
+        "title": "GENTA Pangan Banten",
+        "text": "Melacak lokasi untuk absensi otomatis GENTA Pangan Banten",
+        "icon": "ic_stat_icon_config_sample",
+        "smallIcon": "ic_stat_icon_config_sample"
+      },
+      "android": {
+        "notificationChannelName": "Lokasi Absensi",
+        "notificationChannelDescription": "Layanan lokasi untuk absensi otomatis"
+      }
+    }
+  }
+}
