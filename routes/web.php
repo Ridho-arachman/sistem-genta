@@ -24,6 +24,12 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Password Reset
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
+
 // Protected routes
 Route::middleware(['auth'])->group(function () {
     // Dashboard - role based
@@ -72,7 +78,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Absensi (monitor & export)
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
+        Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::get('absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
+        Route::post('absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
     });
 
     // ==================== PENGAWAS ROUTES ====================
@@ -126,6 +135,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Absensi (read + export)
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
+        Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::get('/absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
     });
 

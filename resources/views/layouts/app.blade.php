@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -114,7 +115,20 @@
         }
 
         .input-field {
-            @apply w-full bg-white border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all;
+            @apply w-full bg-white border border-[var(--color-border)] rounded-lg px-4 py-3 text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 focus:border-transparent transition-all duration-200 min-h-[44px];
+        }
+        
+        .input-field:disabled,
+        .input-field[readonly] {
+            @apply bg-[var(--color-surface)] cursor-not-allowed opacity-60;
+        }
+        
+        .input-field-error {
+            @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+        }
+        
+        .checkbox-custom {
+            @apply w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 cursor-pointer transition-colors;
         }
 
         .table-th {
@@ -190,11 +204,6 @@
                         </form>
                     @else
                         <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}">Beranda</a>
-                        <a href="{{ route('tentang') }}" class="nav-link {{ request()->routeIs('tentang') ? 'nav-link-active' : '' }}">Tentang</a>
-                        <a href="{{ route('sektor') }}" class="nav-link {{ request()->routeIs('sektor') ? 'nav-link-active' : '' }}">Sektor</a>
-                        <a href="{{ route('program') }}" class="nav-link {{ request()->routeIs('program') ? 'nav-link-active' : '' }}">Program</a>
-                        <a href="{{ route('galeri') }}" class="nav-link {{ request()->routeIs('galeri') ? 'nav-link-active' : '' }}">Galeri</a>
-                        <a href="{{ route('kontak') }}" class="nav-link {{ request()->routeIs('kontak') ? 'nav-link-active' : '' }}">Kontak</a>
                         <a href="{{ route('login') }}" class="btn-primary">Masuk</a>
                     @endauth
                 </div>

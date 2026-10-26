@@ -5,14 +5,14 @@
                 <h1 class="text-2xl font-bold text-white">Monitoring CCTV</h1>
                 <p class="text-zinc-400 text-sm">{{ $dapur->nama }} &mdash; {{ $dapur->cctvs->count() }} kamera</p>
             </div>
-            <a href="{{ route('dapurs.show', $dapur) }}" class="text-zinc-400 hover:text-white text-sm">← Kembali ke Dapur</a>
+            <a href="{{ route('admin.dapurs.show', $dapur) }}" class="text-zinc-400 hover:text-white text-sm">← Kembali ke Dapur</a>
         </div>
 
         @if ($dapur->cctvs->isEmpty())
             <div class="bg-surface border border-zinc-800 rounded-xl p-12 text-center">
                 <p class="text-zinc-500">Belum ada CCTV terdaftar untuk dapur ini.</p>
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('cctvs.create') }}?dapur_id={{ $dapur->id }}" class="mt-4 inline-block text-green-400 hover:text-green-300 font-medium">+ Tambah CCTV</a>
+                    <a href="{{ route('admin.cctvs.create', ['dapur_id' => $dapur->id]) }}" class="mt-4 inline-block text-green-400 hover:text-green-300 font-medium">+ Tambah CCTV</a>
                 @endif
             </div>
         @else

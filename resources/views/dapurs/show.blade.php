@@ -6,10 +6,10 @@
                 <p class="text-zinc-400 text-sm">{{ $dapur->alamat ?? '-' }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('dapurs.index') }}" class="text-zinc-400 hover:text-white px-3 py-1 rounded text-sm border border-zinc-700">Kembali</a>
+                <a href="{{ route('admin.dapurs.index') }}" class="text-zinc-400 hover:text-white px-3 py-1 rounded text-sm border border-zinc-700">Kembali</a>
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('dapurs.edit', $dapur) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Edit</a>
-                    <a href="{{ route('cctvs.create') }}?dapur_id={{ $dapur->id }}" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Tambah CCTV</a>
+                    <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Edit</a>
+                    <a href="{{ route('admin.cctvs.create', ['dapur_id' => $dapur->id]) }}" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Tambah CCTV</a>
                 @endif
             </div>
         </div>
@@ -54,7 +54,7 @@
                 @if ($dapur->cctvs->isEmpty())
                     <p class="text-zinc-500 text-sm">Belum ada kamera untuk dipantau.</p>
                 @else
-                    <a href="{{ route('cctvs.monitoring', $dapur) }}" class="w-full bg-surface border border-zinc-700 rounded-lg py-4 text-center text-green-400 hover:bg-zinc-900 hover:border-green-500 transition-colors text-sm font-medium">
+                    <a href="{{ route('admin.cctvs.monitoring', $dapur) }}" class="w-full bg-surface border border-zinc-700 rounded-lg py-4 text-center text-green-400 hover:bg-zinc-900 hover:border-green-500 transition-colors text-sm font-medium">
                         ▶ Lihat Monitoring CCTV
                     </a>
                 @endif

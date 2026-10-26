@@ -224,30 +224,30 @@ test('mobile sync locations validation', function () {
 
 test('dapur geofence radius validation', function () {
     $this->actingAs($this->admin)
-        ->post('/dapurs', [
+        ->post(route('admin.dapurs.store'), [
             'nama' => 'Test Dapur',
             'latitude' => -6.2088,
             'longitude' => 106.8456,
-            'geofence_radius' => 5, // too small
+            'geofence_radius' => 5, // too small (min 10)
         ])
         ->assertSessionHasErrors('geofence_radius');
 
     $this->actingAs($this->admin)
-        ->post('/dapurs', [
+        ->post(route('admin.dapurs.store'), [
             'nama' => 'Test Dapur',
             'latitude' => -6.2088,
             'longitude' => 106.8456,
-            'geofence_radius' => 10000, // too large
+            'geofence_radius' => 10000, // too large (max 5000)
         ])
         ->assertSessionHasErrors('geofence_radius');
 
     // Valid radius
     $this->actingAs($this->admin)
-        ->post('/dapurs', [
+        ->post(route('admin.dapurs.store'), [
             'nama' => 'Test Dapur Valid',
             'latitude' => -6.2088,
             'longitude' => 106.8456,
             'geofence_radius' => 500,
         ])
-        ->assertRedirect();
+        ->assertRedirect(route('admin.dapurs.index'));
 });

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dapur;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class DapurController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -55,7 +58,7 @@ class DapurController extends Controller
 
         Dapur::create($validated);
 
-        return redirect()->route('dapurs.index')->with('status', 'Dapur berhasil ditambahkan.');
+        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil ditambahkan.');
     }
 
     public function show(Dapur $dapur)
@@ -101,7 +104,7 @@ class DapurController extends Controller
 
         $dapur->update($validated);
 
-        return redirect()->route('dapurs.index')->with('status', 'Dapur berhasil diperbarui.');
+        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil diperbarui.');
     }
 
     public function destroy(Dapur $dapur)
@@ -112,6 +115,6 @@ class DapurController extends Controller
 
         $dapur->delete();
 
-        return redirect()->route('dapurs.index')->with('status', 'Dapur berhasil dihapus.');
+        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil dihapus.');
     }
 }

@@ -5,10 +5,15 @@ namespace App\Services;
 use App\Models\FcmToken;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class FcmService
 {
     private ?string $serverKey;
+    private const MAX_RETRIES = 3;
+    private const RETRY_DELAY_MS = 100;
+    private const CIRCUIT_BREAKER_THRESHOLD = 5; // failures before circuit opens
+    private const CIRCUIT_BREAKER_TIMEOUT = 60; // seconds
 
     public function __construct()
     {
@@ -33,37 +38,101 @@ class FcmService
     }
 
     /**
-     * Send push notification to multiple tokens.
+     * Send push notification to multiple tokens with retry and circuit breaker.
      */
     public function sendToTokens(array $tokens, array $notification, array $data = []): array
     {
         if (empty($this->serverKey)) {
             Log::warning('FCM Server Key not configured');
-
             return ['success' => false, 'message' => 'FCM not configured'];
+        }
+
+        // Check circuit breaker
+        if ($this->isCircuitOpen()) {
+            Log::warning('FCM circuit breaker open, skipping notification');
+            return ['success' => false, 'message' => 'FCM circuit breaker open'];
         }
 
         $chunks = array_chunk($tokens, 500); // FCM limit per request
         $results = [];
+        $failureCount = 0;
 
         foreach ($chunks as $chunk) {
-            $response = Http::withHeaders([
-                'Authorization' => 'key='.$this->serverKey,
-                'Content-Type' => 'application/json',
-            ])->post('https://fcm.googleapis.com/fcm/send', [
-                'registration_ids' => $chunk,
-                'notification' => $notification,
-                'data' => $data,
-                'priority' => 'high',
-            ]);
+            $success = false;
+            
+            for ($attempt = 1; $attempt <= self::MAX_RETRIES; $attempt++) {
+                $response = Http::retry(3, 100)
+                    ->withHeaders([
+                        'Authorization' => 'key=' . $this->serverKey,
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->timeout(10)
+                    ->post('https://fcm.googleapis.com/fcm/send', [
+                        'registration_ids' => $chunk,
+                        'notification' => $notification,
+                        'data' => $data,
+                        'priority' => 'high',
+                    ]);
 
-            $results[] = $response->json();
+                if ($response->successful()) {
+                    $results[] = $response->json();
+                    $success = true;
+                    break;
+                }
+
+                // Don't retry on client errors (4xx)
+                if ($response->status() >= 400 && $response->status() < 500) {
+                    break;
+                }
+
+                // Exponential backoff
+                usleep(self::RETRY_DELAY_MS * 1000 * $attempt);
+            }
+
+            if (! $success) {
+                $failureCount++;
+                $results[] = [
+                    'success' => false,
+                    'error' => 'Max retries exceeded',
+                    'chunk_size' => count($chunk),
+                ];
+            }
         }
 
+        // Update circuit breaker state
+        $this->updateCircuitBreaker($failureCount > 0);
+
         return [
-            'success' => true,
+            'success' => $failureCount === 0,
             'results' => $results,
+            'failures' => $failureCount,
         ];
+    }
+
+    /**
+     * Check if circuit breaker is open.
+     */
+    private function isCircuitOpen(): bool
+    {
+        return Cache::get('fcm:circuit:open', false);
+    }
+
+    /**
+     * Update circuit breaker state.
+     */
+    private function updateCircuitBreaker(bool $hadFailure): void
+    {
+        $key = 'fcm:circuit:failures';
+        $failures = Cache::increment($key);
+        
+        if ($failures >= self::CIRCUIT_BREAKER_THRESHOLD) {
+            Cache::put('fcm:circuit:open', true, self::CIRCUIT_BREAKER_TIMEOUT);
+            Log::warning('FCM circuit breaker opened');
+        } elseif (! $hadFailure) {
+            // Reset on success
+            Cache::forget($key);
+            Cache::forget('fcm:circuit:open');
+        }
     }
 
     /**

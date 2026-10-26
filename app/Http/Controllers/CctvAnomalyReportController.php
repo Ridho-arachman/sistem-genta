@@ -6,10 +6,13 @@ use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\User;
 use App\Services\FcmService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class CctvAnomalyReportController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct()
     {
         $this->middleware(['auth']);
@@ -18,7 +21,7 @@ class CctvAnomalyReportController extends Controller
     // Admin: Create anomaly report
     public function create()
     {
-        $this->authorize('admin');
+        $this->authorize('create', CctvAnomalyReport::class);
         $cctvs = Cctv::with('dapur')->get();
 
         return view('admin.cctv-anomalies.create', compact('cctvs'));
@@ -26,7 +29,7 @@ class CctvAnomalyReportController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('admin');
+        $this->authorize('create', CctvAnomalyReport::class);
 
         $validated = $request->validate([
             'cctv_id' => ['required', 'exists:cctvs,id'],
@@ -51,14 +54,9 @@ class CctvAnomalyReportController extends Controller
     // All roles (read-only for manajerial/kepala_dapur)
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $query = CctvAnomalyReport::with(['cctv.dapur', 'admin'])->latest();
+        $this->authorize('viewAny', CctvAnomalyReport::class);
 
-        // Filter by dapur for kepala dapur
-        if ($user->isKepalaDapur()) {
-            // Assuming kepala dapur is assigned to specific dapur(s)
-            // For now, show all but can be filtered
-        }
+        $query = CctvAnomalyReport::with(['cctv.dapur', 'admin'])->latest();
 
         if ($request->filled('cctv_id')) {
             $query->where('cctv_id', $request->cctv_id);
@@ -83,37 +81,22 @@ class CctvAnomalyReportController extends Controller
         $anomalies = $query->paginate(15)->withQueryString();
         $cctvs = Cctv::with('dapur')->get();
 
-        if ($user->isAdmin()) {
-            return view('admin.cctv-anomalies.index', compact('anomalies', 'cctvs'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctv-anomalies.index', compact('anomalies', 'cctvs'));
-        } elseif ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctv-anomalies.index', compact('anomalies', 'cctvs'));
-        }
-
-        abort(403);
+        return view('admin.cctv-anomalies.index', compact('anomalies', 'cctvs'));
     }
 
     public function show(CctvAnomalyReport $anomaly)
     {
+        $this->authorize('view', $anomaly);
+
         $anomaly->load(['cctv.dapur', 'admin']);
-        $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            return view('admin.cctv-anomalies.show', compact('anomaly'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctv-anomalies.show', compact('anomaly'));
-        } elseif ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctv-anomalies.show', compact('anomaly'));
-        }
-
-        abort(403);
+        return view('admin.cctv-anomalies.show', compact('anomaly'));
     }
 
     // Admin only: Update status
     public function update(Request $request, CctvAnomalyReport $anomaly)
     {
-        $this->authorize('admin');
+        $this->authorize('update', $anomaly);
 
         $validated = $request->validate([
             'status' => ['required', 'in:baru,diproses,selesai'],
@@ -127,11 +110,7 @@ class CctvAnomalyReportController extends Controller
     // Export for admin/manajerial
     public function export(Request $request)
     {
-        $user = auth()->user();
-
-        if (! $user->hasRole(['admin', 'manajerial'])) {
-            abort(403);
-        }
+        $this->authorize('export', CctvAnomalyReport::class);
 
         $query = CctvAnomalyReport::with(['cctv.dapur', 'admin'])->latest();
 
@@ -187,13 +166,6 @@ class CctvAnomalyReportController extends Controller
         return response($csv)
             ->header('Content-Type', 'text/csv')
             ->header('Content-Disposition', "attachment; filename=\"{$filename}.csv\"");
-    }
-
-    private function authorize(string $role): void
-    {
-        if (! auth()->user()->hasRole($role)) {
-            abort(403);
-        }
     }
 
     private function notifyManajerial(CctvAnomalyReport $anomaly)

@@ -17,14 +17,14 @@ test('authenticated user can view cctv index', function () {
     Cctv::factory()->count(3)->create(['dapur_id' => $this->dapur->id]);
 
     $this->actingAs($this->admin)
-        ->get(route('cctvs.index'))
+        ->get(route('admin.cctvs.index'))
         ->assertOk()
         ->assertSee('Daftar CCTV');
 });
 
 test('admin can create cctv', function () {
     $this->actingAs($this->admin)
-        ->post(route('cctvs.store'), [
+        ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Depan',
             'ip_address' => '192.168.1.100',
@@ -32,7 +32,7 @@ test('admin can create cctv', function () {
             'hls_url' => 'https://example.com/stream.m3u8',
             'status' => 'online',
         ])
-        ->assertRedirect(route('cctvs.index'))
+        ->assertRedirect(route('admin.cctvs.index'))
         ->assertSessionHas('status', 'CCTV berhasil ditambahkan.');
 
     $this->assertDatabaseHas('cctvs', [
@@ -42,21 +42,21 @@ test('admin can create cctv', function () {
     ]);
 });
 
-test('pengawas can create cctv', function () {
+test('pengawas cannot create cctv', function () {
     $this->actingAs($this->pengawas)
-        ->post(route('cctvs.store'), [
+        ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Belakang',
             'status' => 'offline',
         ])
-        ->assertRedirect(route('cctvs.index'));
+        ->assertForbidden();
 });
 
 test('user can update cctv', function () {
     $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'offline']);
 
     $this->actingAs($this->admin)
-        ->put(route('cctvs.update', $cctv), [
+        ->put(route('admin.cctvs.update', $cctv), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Utama Updated',
             'ip_address' => '192.168.1.101',
@@ -64,7 +64,7 @@ test('user can update cctv', function () {
             'hls_url' => 'https://example.com/new-stream.m3u8',
             'status' => 'online',
         ])
-        ->assertRedirect(route('cctvs.index'))
+        ->assertRedirect(route('admin.cctvs.index'))
         ->assertSessionHas('status', 'CCTV berhasil diperbarui.');
 
     $this->assertDatabaseHas('cctvs', [
@@ -78,8 +78,8 @@ test('user can delete cctv', function () {
     $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
 
     $this->actingAs($this->admin)
-        ->delete(route('cctvs.destroy', $cctv))
-        ->assertRedirect(route('cctvs.index'))
+        ->delete(route('admin.cctvs.destroy', $cctv))
+        ->assertRedirect(route('admin.cctvs.index'))
         ->assertSessionHas('status', 'CCTV berhasil dihapus.');
 
     $this->assertDatabaseMissing('cctvs', ['id' => $cctv->id]);
@@ -93,7 +93,7 @@ test('cctv show page loads', function () {
     ]);
 
     $this->actingAs($this->admin)
-        ->get(route('cctvs.show', $cctv))
+        ->get(route('admin.cctvs.show', $cctv))
         ->assertOk()
         ->assertSee($cctv->nama)
         ->assertSee($cctv->rtsp_url)
@@ -105,7 +105,7 @@ test('monitoring page loads for dapur', function () {
     $cctv2 = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'offline']);
 
     $this->actingAs($this->admin)
-        ->get(route('cctvs.monitoring', $this->dapur))
+        ->get(route('admin.cctvs.monitoring', $this->dapur))
         ->assertOk()
         ->assertSee($this->dapur->nama)
         ->assertSee($cctv1->nama)
@@ -114,7 +114,7 @@ test('monitoring page loads for dapur', function () {
 
 test('cctv status enum validation', function () {
     $this->actingAs($this->admin)
-        ->post(route('cctvs.store'), [
+        ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Test Camera',
             'status' => 'invalid_status',
@@ -124,7 +124,7 @@ test('cctv status enum validation', function () {
 
 test('cctv requires dapur_id', function () {
     $this->actingAs($this->admin)
-        ->post(route('cctvs.store'), [
+        ->post(route('admin.cctvs.store'), [
             'nama' => 'Test Camera',
         ])
         ->assertSessionHasErrors('dapur_id');

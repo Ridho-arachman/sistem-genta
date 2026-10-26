@@ -6,17 +6,24 @@ use App\Exports\AbsensiXlsxExport;
 use App\Jobs\AbsensiReminderJob;
 use App\Models\Absensi;
 use App\Models\Dapur;
+use App\Services\GeolocationService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class AbsensiController extends Controller
 {
-    public function __construct()
-    {
+    use AuthorizesRequests;
+
+    public function __construct(
+        protected GeolocationService $geolocation
+    ) {
         $this->middleware('auth');
     }
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Absensi::class);
+
         $user = auth()->user();
 
         // Pengawas hanya lihat absensi sendiri
@@ -46,12 +53,17 @@ class AbsensiController extends Controller
             return view('pengawas.absensi.index', compact('absensis', 'dapurs'));
         }
 
-        return view('absensis.index', compact('absensis', 'dapurs'));
+        $prefix = $user->isAdmin() ? 'admin' : 'manajerial';
+
+        return view('absensis.index', compact('absensis', 'dapurs'))
+            ->with('indexRoute', "{$prefix}.absensi.index")
+            ->with('createRoute', "{$prefix}.absensi.create")
+            ->with('exportRoute', "{$prefix}.absensi.export");
     }
 
     public function create()
     {
-        $this->authorizePengawas();
+        $this->authorize('create', Absensi::class);
         $dapurs = Dapur::all();
 
         return view('pengawas.absensi.create', compact('dapurs'));
@@ -59,13 +71,13 @@ class AbsensiController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorizePengawas();
+        $this->authorize('create', Absensi::class);
 
         $validated = $request->validate([
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'lat' => ['required', 'numeric', 'between:-90,90'],
             'lng' => ['required', 'numeric', 'between:-180,180'],
-            'selfie_path' => ['required', 'image', 'max:2048'], // Foto wajib untuk pengawas
+            'selfie_path' => ['required', 'image', 'max:2048'],
             'status' => ['required', 'in:hadir,izin,cuti,tidak_hadir'],
         ]);
 
@@ -76,10 +88,9 @@ class AbsensiController extends Controller
         $validated['user_id'] = auth()->id();
         $validated['check_in_at'] = now();
 
-        // Validasi anti-fake GPS: cek jarak ke dapur
         $dapur = Dapur::find($validated['dapur_id']);
         if ($dapur && $dapur->latitude && $dapur->longitude) {
-            $distance = $this->calculateDistance(
+            $distance = $this->geolocation->distance(
                 $validated['lat'], $validated['lng'],
                 (float) $dapur->latitude, (float) $dapur->longitude
             );
@@ -93,7 +104,6 @@ class AbsensiController extends Controller
 
         $absensi = Absensi::create($validated);
 
-        // Schedule checkout reminder
         AbsensiReminderJob::dispatch(
             auth()->id(),
             'checkout_reminder',
@@ -101,17 +111,15 @@ class AbsensiController extends Controller
             '17:00'
         )->delay(now()->addHours(8));
 
-        return redirect()->route('absensi.index')->with('status', 'Absensi check-in berhasil.');
+        $user = auth()->user();
+        $redirectRoute = $user->isPengawas() ? 'pengawas.absensi.index' : ($user->isAdmin() ? 'admin.absensi.index' : 'manajerial.absensi.index');
+
+        return redirect()->route($redirectRoute)->with('status', 'Absensi check-in berhasil.');
     }
 
     public function checkOut(Request $request, Absensi $absensi)
     {
-        $user = auth()->user();
-
-        // Hanya pemilik absensi atau admin yang bisa check-out
-        if ($user->id !== $absensi->user_id && ! $user->isAdmin()) {
-            abort(403);
-        }
+        $this->authorize('checkOut', $absensi);
 
         $absensi->update(['check_out_at' => now()]);
 
@@ -120,18 +128,12 @@ class AbsensiController extends Controller
 
     public function export(Request $request)
     {
-        $user = auth()->user();
-
-        // Hanya admin dan manajerial yang bisa export
-        if (! $user->hasRole(['admin', 'manajerial'])) {
-            abort(403);
-        }
+        $this->authorize('export', Absensi::class);
 
         $format = $request->get('format', 'csv');
 
         $query = Absensi::with('user', 'dapur');
 
-        // Admin lihat semua, manajerial lihat semua
         if ($request->filled('dapur_id')) {
             $query->where('dapur_id', $request->dapur_id);
         }
@@ -189,25 +191,5 @@ class AbsensiController extends Controller
         return response($csv)
             ->header('Content-Type', 'text/csv')
             ->header('Content-Disposition', "attachment; filename=\"{$filename}.csv\"");
-    }
-
-    private function authorizePengawas(): void
-    {
-        if (! auth()->user()->hasRole(['admin', 'pengawas'])) {
-            abort(403, 'Hanya pengawas dan admin yang bisa melakukan absensi.');
-        }
-    }
-
-    private function calculateDistance(float $lat1, float $lng1, float $lat2, float $lng2): float
-    {
-        $earthRadius = 6371000;
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLng = deg2rad($lng2 - $lng1);
-        $a = sin($dLat / 2) * sin($dLat / 2) +
-             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLng / 2) * sin($dLng / 2);
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-        return $earthRadius * $c;
     }
 }

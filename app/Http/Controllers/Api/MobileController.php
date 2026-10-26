@@ -7,11 +7,16 @@ use App\Models\Absensi;
 use App\Models\Dapur;
 use App\Models\FcmToken;
 use App\Models\User;
+use App\Services\GeolocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MobileController extends Controller
 {
+    public function __construct(
+        protected GeolocationService $geolocation
+    ) {}
+
     /**
      * Store FCM token for push notifications.
      */
@@ -70,7 +75,7 @@ class MobileController extends Controller
                     $existing = Absensi::where('user_id', Auth::id())
                         ->where('dapur_id', $dapur->id)
                         ->whereDate('created_at', today())
-                        ->first();
+                        ->lockForUpdate()->first();
 
                     if (! $existing) {
                         // Auto check-in if within geofence
@@ -143,7 +148,7 @@ class MobileController extends Controller
             $existing = Absensi::where('user_id', Auth::id())
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
-                ->first();
+                ->lockForUpdate()->first();
 
             if (! $existing) {
                 $absensi = Absensi::create([
@@ -170,7 +175,7 @@ class MobileController extends Controller
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
                 ->whereNull('check_out_at')
-                ->first();
+                ->lockForUpdate()->first();
 
             if ($absensi) {
                 $absensi->update(['check_out_at' => now()]);
@@ -192,41 +197,11 @@ class MobileController extends Controller
      */
     private function findDapurNearLocation(float $lat, float $lng): ?Dapur
     {
-        $dapurs = Dapur::whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereNotNull('geofence_radius')
+        $dapurs = Dapur::whereNotNull("latitude")
+            ->whereNotNull("longitude")
+            ->whereNotNull("geofence_radius")
             ->get();
 
-        foreach ($dapurs as $dapur) {
-            $distance = $this->calculateDistance(
-                $lat, $lng,
-                (float) $dapur->latitude, (float) $dapur->longitude
-            );
-
-            if ($distance <= (float) ($dapur->geofence_radius ?? 100)) {
-                return $dapur;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Calculate distance between two coordinates (Haversine formula).
-     */
-    private function calculateDistance(float $lat1, float $lng1, float $lat2, float $lng2): float
-    {
-        $earthRadius = 6371000; // meters
-
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLng = deg2rad($lng2 - $lng1);
-
-        $a = sin($dLat / 2) * sin($dLat / 2) +
-             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLng / 2) * sin($dLng / 2);
-
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-        return $earthRadius * $c;
+        return $this->geolocation->findNearest($dapurs, $lat, $lng);
     }
 }

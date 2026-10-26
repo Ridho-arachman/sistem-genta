@@ -16,27 +16,27 @@ test('admin can view dapur index', function () {
     Dapur::factory()->count(3)->create();
 
     $this->actingAs($this->admin)
-        ->get(route('dapurs.index'))
+        ->get(route('admin.dapurs.index'))
         ->assertOk()
         ->assertSee('Daftar Dapur');
 });
 
-test('pengawas can view dapur index', function () {
+test('pengawas cannot view dapur index', function () {
     Dapur::factory()->count(3)->create();
 
     $this->actingAs($this->pengawas)
-        ->get(route('dapurs.index'))
-        ->assertOk();
+        ->get(route('admin.dapurs.index'))
+        ->assertForbidden();
 });
 
 test('admin can create dapur', function () {
     $this->actingAs($this->admin)
-        ->post(route('dapurs.store'), [
+        ->post(route('admin.dapurs.store'), [
             'nama' => 'Dapur Utama',
             'lokasi' => 'Jakarta Pusat',
             'alamat' => 'Jl. Merdeka No. 1',
         ])
-        ->assertRedirect(route('dapurs.index'))
+        ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil ditambahkan.');
 
     $this->assertDatabaseHas('dapurs', [
@@ -47,7 +47,7 @@ test('admin can create dapur', function () {
 
 test('pengawas cannot create dapur', function () {
     $this->actingAs($this->pengawas)
-        ->post(route('dapurs.store'), [
+        ->post(route('admin.dapurs.store'), [
             'nama' => 'Dapur Utama',
         ])
         ->assertForbidden();
@@ -57,12 +57,12 @@ test('admin can update dapur', function () {
     $dapur = Dapur::factory()->create(['nama' => 'Dapur Lama']);
 
     $this->actingAs($this->admin)
-        ->put(route('dapurs.update', $dapur), [
+        ->put(route('admin.dapurs.update', $dapur), [
             'nama' => 'Dapur Baru',
             'lokasi' => 'Bandung',
             'alamat' => 'Jl. Asia Afrika',
         ])
-        ->assertRedirect(route('dapurs.index'))
+        ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil diperbarui.');
 
     $this->assertDatabaseHas('dapurs', [
@@ -75,7 +75,7 @@ test('pengawas cannot update dapur', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->pengawas)
-        ->put(route('dapurs.update', $dapur), [
+        ->put(route('admin.dapurs.update', $dapur), [
             'nama' => 'Dapur Baru',
         ])
         ->assertForbidden();
@@ -85,8 +85,8 @@ test('admin can delete dapur', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->admin)
-        ->delete(route('dapurs.destroy', $dapur))
-        ->assertRedirect(route('dapurs.index'))
+        ->delete(route('admin.dapurs.destroy', $dapur))
+        ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil dihapus.');
 
     $this->assertDatabaseMissing('dapurs', ['id' => $dapur->id]);
@@ -96,7 +96,7 @@ test('pengawas cannot delete dapur', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->pengawas)
-        ->delete(route('dapurs.destroy', $dapur))
+        ->delete(route('admin.dapurs.destroy', $dapur))
         ->assertForbidden();
 });
 
@@ -105,7 +105,7 @@ test('dapur show loads cctvs relationship', function () {
     $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id]);
 
     $this->actingAs($this->admin)
-        ->get(route('dapurs.show', $dapur))
+        ->get(route('admin.dapurs.show', $dapur))
         ->assertOk()
         ->assertSee($cctv->nama);
 });

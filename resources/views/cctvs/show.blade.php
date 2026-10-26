@@ -6,9 +6,9 @@
                 <p class="text-zinc-400 text-sm">Dapur: {{ $cctv->dapur->nama }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('cctvs.index') }}" class="text-zinc-400 hover:text-white px-3 py-1 rounded text-sm border border-zinc-700">Kembali</a>
+                <a href="{{ route('admin.cctvs.index') }}" class="text-zinc-400 hover:text-white px-3 py-1 rounded text-sm border border-zinc-700">Kembali</a>
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('cctvs.edit', $cctv) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Edit</a>
+                    <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Edit</a>
                 @endif
             </div>
         </div>

@@ -7,7 +7,7 @@
             </div>
             @auth
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('cctvs.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <a href="{{ route('admin.cctvs.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                         + Tambah CCTV
                     </a>
                 @endif
@@ -40,9 +40,9 @@
                                 </span>
                             </td>
                             <td class="py-4 text-right">
-                                <a href="{{ route('cctvs.show', $cctv) }}" class="text-green-400 text-sm hover:text-green-300">Detail →</a>
+                                <a href="{{ route('admin.cctvs.show', $cctv) }}" class="text-green-400 text-sm hover:text-green-300">Detail →</a>
                                 @if (auth()->user()->isAdmin())
-                                    <a href="{{ route('cctvs.edit', $cctv) }}" class="ml-4 text-zinc-400 hover:text-white text-sm">Edit</a>
+                                    <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="ml-4 text-zinc-400 hover:text-white text-sm">Edit</a>
                                 @endif
                             </td>
                         </tr>

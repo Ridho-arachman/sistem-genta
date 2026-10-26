@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\FcmService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class AbsensiReminderJob implements ShouldQueue
@@ -33,6 +34,12 @@ class AbsensiReminderJob implements ShouldQueue
             ]);
 
             return;
+        }
+
+        // Idempotency: prevent duplicate notifications on job retry
+        $cacheKey = "reminder:{$this->userId}:{$this->type}:{$this->dapurId}:".today()->toDateString();
+        if (! Cache::add($cacheKey, true, 86400)) {
+            return; // Already sent today
         }
 
         // Check if already checked in/out today

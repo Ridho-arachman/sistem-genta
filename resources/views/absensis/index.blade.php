@@ -5,14 +5,14 @@
                 <h1 class="text-2xl font-bold text-white">Laporan Absensi</h1>
                 <p class="text-zinc-400 text-sm">Filter absensi pengawas dapur dan export laporan.</p>
             </div>
-            <a href="{{ route('absensi.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            <a href="{{ route($createRoute) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 + Check-in Absensi
             </a>
         </div>
 
         <!-- Filter form -->
         <div class="bg-surface border border-zinc-800 rounded-xl p-6 shadow-sm">
-            <form method="GET" action="{{ route('absensi.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form method="GET" action="{{ route($indexRoute) }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div>
                     <label class="block text-xs font-medium text-zinc-400 mb-1">Dapur</label>
                     <select name="dapur_id" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -36,22 +36,22 @@
                 </div>
                 <div class="flex gap-2">
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Filter</button>
-                    <a href="{{ route('absensi.index') }}" class="text-zinc-400 hover:text-white px-4 py-2 rounded-lg text-sm font-medium border border-zinc-700">Reset</a>
+                    <a href="{{ route($indexRoute) }}" class="text-zinc-400 hover:text-white px-4 py-2 rounded-lg text-sm font-medium border border-zinc-700">Reset</a>
                 </div>
             </form>
         </div>
 
         <!-- Export button -->
         <div class="flex justify-end gap-2">
-            <a href="{{ route('absensi.export', array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'csv'])) }}"
+            <a href="{{ route($exportRoute, array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'csv'])) }}"
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                 📥 CSV
             </a>
-            <a href="{{ route('absensi.export', array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'xlsx'])) }}"
+            <a href="{{ route($exportRoute, array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'xlsx'])) }}"
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                 📊 Excel (XLSX)
             </a>
-            <a href="{{ route('absensi.export', array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'pdf'])) }}"
+            <a href="{{ route($exportRoute, array_merge(request()->only(['dapur_id', 'start_date', 'end_date']), ['format' => 'pdf'])) }}"
                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                 📄 PDF (Cetak)
             </a>

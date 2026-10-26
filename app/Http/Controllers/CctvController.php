@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Jobs\CctvAlertJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class CctvController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -65,7 +68,7 @@ class CctvController extends Controller
 
         Cctv::create($validated);
 
-        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil ditambahkan.');
+        return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil ditambahkan.');
     }
 
     public function show(Cctv $cctv)
@@ -122,7 +125,7 @@ class CctvController extends Controller
             CctvAlertJob::dispatch($cctv->id, $cctv->status, true);
         }
 
-        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil diperbarui.');
+        return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil diperbarui.');
     }
 
     public function destroy(Cctv $cctv)
@@ -133,7 +136,7 @@ class CctvController extends Controller
 
         $cctv->delete();
 
-        return redirect()->route('cctvs.index')->with('status', 'CCTV berhasil dihapus.');
+        return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil dihapus.');
     }
 
     public function monitoring(Dapur $dapur)
