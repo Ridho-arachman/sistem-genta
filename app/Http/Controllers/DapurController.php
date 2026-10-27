@@ -23,7 +23,11 @@ class DapurController extends Controller
             abort(403);
         }
 
-        $dapurs = Dapur::forUser($user)->withCount('cctvs')->latest()->paginate(10);
+        $dapurs = Dapur::forUser($user)
+            ->with(['pengawas', 'kepalaDapur'])
+            ->withCount('cctvs')
+            ->latest()
+            ->paginate(10);
 
         if ($user->isManajerial()) {
             return view('manajerial.dapurs.index', compact('dapurs'));
@@ -82,7 +86,7 @@ class DapurController extends Controller
             abort(403);
         }
 
-        $dapur->load('cctvs');
+        $dapur->load(['cctvs', 'pengawas', 'kepalaDapur']);
 
         if ($user->isManajerial()) {
             return view('manajerial.dapurs.show', compact('dapur'));

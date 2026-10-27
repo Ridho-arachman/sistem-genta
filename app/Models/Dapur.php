@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Dapur extends Model
 {
@@ -44,6 +45,11 @@ class Dapur extends Model
         return $this->belongsToMany(User::class, 'dapur_user')
             ->where('role', 'pengawas')
             ->withTimestamps();
+    }
+
+    public function kepalaDapur(): HasOne
+    {
+        return $this->hasOne(User::class)->where('role', 'kepala_dapur');
     }
 
     // Scope for user-based dapur filtering
