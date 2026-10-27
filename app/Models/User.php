@@ -164,8 +164,8 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'Semua data',
-            'pengawas' => 'Dapur yang diamati',
-            'kepala_dapur' => 'Dapur sendiri',
+            'pengawas' => $this->dapurs->count() > 0 ? 'Dapur yang diamati' : '-',
+            'kepala_dapur' => $this->dapur_id ? 'Dapur sendiri' : '-',
             'manajerial' => 'Dashboard & laporan',
             default => '-',
         };
