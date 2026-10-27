@@ -61,10 +61,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 
-        // Archived Users (Soft Deleted)
+        // Archived Users (Soft Deleted) - pakai ID manual, bukan route model binding
         Route::get('/users/archive', [AdminController::class, 'archivedUsers'])->name('users.archive');
-        Route::post('/users/{user}/restore', [AdminController::class, 'restoreUser'])->name('users.restore');
-        Route::delete('/users/{user}/force', [AdminController::class, 'forceDeleteUser'])->name('users.force');
+        Route::post('/users/{id}/restore', [AdminController::class, 'restoreUser'])->name('users.restore');
+        Route::delete('/users/{id}/force', [AdminController::class, 'forceDeleteUser'])->name('users.force');
 
         // SP Warnings
         Route::resource('sp-warnings', SpWarningController::class)->names('sp-warnings');

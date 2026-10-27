@@ -250,8 +250,10 @@ class AdminController extends Controller
         return view('admin.users.archive', compact('users'));
     }
 
-    public function restoreUser(User $user)
+    public function restoreUser($id)
     {
+        $user = User::withTrashed()->findOrFail($id);
+
         if ($user->isAdmin()) {
             abort(403, 'Tidak bisa restore admin.');
         }
@@ -261,8 +263,10 @@ class AdminController extends Controller
         return redirect()->route('admin.users.archive')->with('status', 'User berhasil dipulihkan.');
     }
 
-    public function forceDeleteUser(User $user)
+    public function forceDeleteUser($id)
     {
+        $user = User::withTrashed()->findOrFail($id);
+
         if ($user->id === auth()->id()) {
             abort(403, 'Tidak bisa menghapus akun sendiri.');
         }

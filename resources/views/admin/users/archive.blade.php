@@ -107,14 +107,14 @@
                             <div class="inline-flex gap-2 justify-center">
                                 {{-- Restore Button --}}
                                 <button type="button" 
-                                        x-on:click="$dispatch('open-restore-modal', { url: '{{ route('admin.users.restore', $user) }}', name: @js($user->name) })"
+                                        x-on:click="$dispatch('open-restore-modal', { url: '{{ route('admin.users.restore', ['id' => $user->id]) }}', name: @js($user->name) })"
                                         class="w-9 h-9 grid place-items-center rounded-lg bg-[#22C55E15] text-[#166534] hover:bg-[#22C55E] hover:text-white transition-colors" 
                                         title="Pulihkan" aria-label="Pulihkan user {{ $user->name }}">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                                 </button>
                                 {{-- Force Delete Button --}}
                                 <button type="button" 
-                                        x-on:click="$dispatch('open-force-delete-modal', { url: '{{ route('admin.users.force', $user) }}', name: @js($user->name) })"
+                                        x-on:click="$dispatch('open-force-delete-modal', { url: '{{ route('admin.users.force', ['id' => $user->id]) }}', name: @js($user->name) })"
                                         class="w-9 h-9 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors" 
                                         title="Hapus Permanen" aria-label="Hapus permanen user {{ $user->name }}">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
