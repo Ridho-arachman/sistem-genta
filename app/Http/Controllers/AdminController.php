@@ -56,7 +56,40 @@ class AdminController extends Controller
             'dapur_id' => ['nullable', 'exists:dapurs,id'],
             'dapur_ids' => ['nullable', 'array'],
             'dapur_ids.*' => ['exists:dapurs,id'],
+        ], [
+            'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
+            'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+            'dapur_ids.min' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
         ]);
+
+        // Role-specific validation
+        if ($validated['role'] === 'kepala_dapur') {
+            $request->validate([
+                'dapur_id' => ['required', 'exists:dapurs,id'],
+            ], [
+                'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
+            ]);
+
+            // Check if dapur already has a kepala_dapur
+            $existingKepala = User::where('role', 'kepala_dapur')
+                ->where('dapur_id', $validated['dapur_id'])
+                ->first();
+            if ($existingKepala) {
+                return back()->withErrors([
+                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpah akan mengubah assignment.',
+                ])->withInput();
+            }
+        }
+
+        if ($validated['role'] === 'pengawas') {
+            $request->validate([
+                'dapur_ids' => ['required', 'array', 'min:1'],
+                'dapur_ids.*' => ['exists:dapurs,id'],
+            ], [
+                'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+                'dapur_ids.min' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+            ]);
+        }
 
         $user = User::create([
             'name' => $validated['name'],
@@ -106,7 +139,41 @@ class AdminController extends Controller
             'dapur_ids' => ['nullable', 'array'],
             'dapur_ids.*' => ['exists:dapurs,id'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
+        ], [
+            'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
+            'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+            'dapur_ids.min' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
         ]);
+
+        // Role-specific validation
+        if ($validated['role'] === 'kepala_dapur') {
+            $request->validate([
+                'dapur_id' => ['required', 'exists:dapurs,id'],
+            ], [
+                'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
+            ]);
+
+            // Check if dapur already has a kepala_dapur (other than this user)
+            $existingKepala = User::where('role', 'kepala_dapur')
+                ->where('dapur_id', $validated['dapur_id'])
+                ->where('id', '!=', $user->id)
+                ->first();
+            if ($existingKepala) {
+                return back()->withErrors([
+                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpah akan mengubah assignment.',
+                ])->withInput();
+            }
+        }
+
+        if ($validated['role'] === 'pengawas') {
+            $request->validate([
+                'dapur_ids' => ['required', 'array', 'min:1'],
+                'dapur_ids.*' => ['exists:dapurs,id'],
+            ], [
+                'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+                'dapur_ids.min' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
+            ]);
+        }
 
         $user->update(array_filter([
             'name' => $validated['name'],

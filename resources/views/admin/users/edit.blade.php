@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" x-data="userForm(@entangle($user->role))">
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" x-data="userForm(@entangle($user->role), @json($user->dapurs->pluck('id')->toArray()), @json($user->dapur_id))" x-cloak>
         @csrf
         @method('PUT')
 
@@ -59,18 +59,26 @@
 
             <!-- Dapur Assignment Fields -->
             <template x-if="selectedRole === 'kepala_dapur'">
-                <div class="form-field" x-show="true" x-transition>
+                <div class="form-field" x-transition>
                     <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced">
+                        <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced" x-model="kepalaDapurId">
                             <option value="">Pilih dapur</option>
                             @foreach($dapurs as $dapur)
-                                <option value="{{ $dapur->id }}" {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}>
+                                <option value="{{ $dapur->id }}" 
+                                    {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}
+                                    :data-has-kepala="{{ $dapur->kepalaDapur ? 'true' : 'false' }}"
+                                    :data-kepala-name="{{ $dapur->kepalaDapur?->name }}">
                                     {{ $dapur->nama }} ({{ $dapur->lokasi }})
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+                    <div x-show="selectedKepalaDapur && kepalaDapurId != {{ $user->dapur_id ?? 'null' }}" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm" x-transition>
+                        <span class="font-medium">Perhatian: </span>
+                        <span x-text="'Dapur ini sudah memiliki Kepala Dapur: ' + selectedKepalaDapur"></span>
+                        <br><span class="font-medium">Menimpah akan mengubah assignment kepala dapur.</span>
                     </div>
                     @error('dapur_id')
                         <p class="form-error">{{ $message }}</p>
@@ -79,19 +87,44 @@
             </template>
 
             <template x-if="selectedRole === 'pengawas'">
-                <div class="form-field" x-show="true" x-transition>
+                <div class="form-field" x-transition>
                     <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
                     <div class="input-with-icon">
                         <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        <select id="dapur_ids" name="dapur_ids[]" multiple required class="input-field select-enhanced" size="5">
-                            @foreach($dapurs as $dapur)
-                                <option value="{{ $dapur->id }}" {{ $user->dapurs->contains('id', $dapur->id) ? 'selected' : '' }}>
-                                    {{ $dapur->nama }} ({{ $dapur->lokasi }})
-                                </option>
-                            @endforeach
-                        </select>
                     </div>
-                    <p class="form-hint">Tahan Ctrl/Cmd untuk memilih multiple dapur</p>
+                    
+                    <!-- Selected chips -->
+                    <div x-show="selectedDapurIds.length > 0" class="mt-2 flex flex-wrap gap-2" x-transition>
+                        <template x-for="id in selectedDapurIds" :key="id">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                <span x-text="getDapurName(id)"></span>
+                                <button type="button" @click="removeDapur(id)" class="hover:text-[var(--color-primary)]/70 focus:outline-none" aria-label="Hapus">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </span>
+                        </template>
+                    </div>
+
+                    <!-- Checkbox list -->
+                    <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)]/50">
+                        <template x-for="dapur in dapurs" :key="dapur.id">
+                            <label class="flex items-center gap-3 p-2 hover:bg-[var(--color-surface)] rounded cursor-pointer">
+                                <input type="checkbox" 
+                                       :value="dapur.id" 
+                                       :checked="selectedDapurIds.includes(dapur.id)"
+                                       @change="toggleDapur(dapur.id)"
+                                       class="w-4 h-4 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
+                                <span class="text-sm" x-text="dapur.nama + ' (' + dapur.lokasi + ')'"></span>
+                            </label>
+                        </template>
+                    </div>
+
+                    <!-- Hidden inputs for form submission -->
+                    <template x-for="id in selectedDapurIds" :key="id">
+                        <input type="hidden" name="dapur_ids[]" :value="id">
+                    </template>
+
+                    <p class="form-hint mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
                     @error('dapur_ids')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
@@ -140,11 +173,39 @@
 @push('scripts')
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('userForm', (initialRole = '') => ({
+    Alpine.data('userForm', (initialRole = '', initialDapurIds = [], initialKepalaDapurId = null) => ({
         selectedRole: initialRole,
-        
+        selectedDapurIds: initialDapurIds || [],
+        kepalaDapurId: initialKepalaDapurId || '',
+        dapurs: @json($dapurs->map(fn($d) => ['id' => $d->id, 'nama' => $d->nama, 'lokasi' => $d->lokasi, 'kepala_dapur_name' => $d->kepalaDapur?->name]))->toArray(),
+
+        get selectedKepalaDapur() {
+            const selected = this.dapurs.find(d => d.id == this.kepalaDapurId);
+            return selected?.kepala_dapur_name || '';
+        },
+
         handleRoleChange() {
-            // Validation handled by backend
+            // Reset dapur fields when role changes
+            this.selectedDapurIds = [];
+            this.kepalaDapurId = '';
+        },
+
+        toggleDapur(id) {
+            const idx = this.selectedDapurIds.indexOf(id);
+            if (idx === -1) {
+                this.selectedDapurIds.push(id);
+            } else {
+                this.selectedDapurIds.splice(idx, 1);
+            }
+        },
+
+        removeDapur(id) {
+            this.selectedDapurIds = this.selectedDapurIds.filter(d => d !== id);
+        },
+
+        getDapurName(id) {
+            const d = this.dapurs.find(d => d.id == id);
+            return d ? d.nama : id;
         }
     }));
 });
