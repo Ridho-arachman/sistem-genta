@@ -24,6 +24,7 @@
                         <th class="table-th">Alamat</th>
                         <th class="table-th">Koordinat</th>
                         <th class="table-th">Radius Geofence</th>
+                        <th class="table-th">Kepala Dapur</th>
                         <th class="table-th">Jumlah CCTV</th>
                     </tr>
                 </thead>
@@ -41,6 +42,15 @@
                             @endif
                         </td>
                         <td class="table-td">{{ $dapur->geofence_radius ?? 100 }} meter</td>
+                        <td class="table-td">
+                            @if ($dapur->kepalaDapur)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#22C55E15] text-[#166534] truncate max-w-[200px] line-clamp-1">
+                                    {{ $dapur->kepalaDapur->name }}
+                                </span>
+                            @else
+                                <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                            @endif
+                        </td>
                         <td class="table-td">
                             <span class="badge badge-primary">{{ $dapur->cctvs_count ?? 0 }} kamera</span>
                         </td>

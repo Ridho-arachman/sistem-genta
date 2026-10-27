@@ -64,7 +64,6 @@
                     <tr class="bg-[var(--color-surface)]">
                         <th class="table-th min-w-[180px] max-w-[300px]">NAMA</th>
                         <th class="table-th min-w-[100px] max-w-[140px]">PERAN</th>
-                        <th class="table-th min-w-[160px] hidden lg:table-cell">DAPUR</th>
                         <th class="table-th min-w-[160px] hidden lg:table-cell">AKSES</th>
                         <th class="table-th min-w-[90px] text-center">STATUS</th>
                         <th class="table-th min-w-[70px] text-center">AKSI</th>
@@ -90,37 +89,6 @@
                                 @endif">
                                 {{ $user->role_label }}
                             </span>
-                        </td>
-                        <td class="table-td min-w-0 hidden lg:table-cell">
-                            @if ($user->role === 'pengawas')
-                                @if ($user->dapurs->count() > 0)
-                                    <div class="flex flex-wrap gap-1.5 max-h-[40px] overflow-hidden">
-                                        @php $dapurCount = $user->dapurs->count(); @endphp
-                                        @foreach ($user->dapurs->take(3) as $dapur)
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)] truncate max-w-[120px] line-clamp-1">
-                                                {{ $dapur->nama }}
-                                            </span>
-                                        @endforeach
-                                        @if ($dapurCount > 3)
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)]">
-                                                +{{ $dapurCount - 3 }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-[var(--color-text-muted)] text-sm line-clamp-1">Belum diassign</span>
-                                @endif
-                            @elseif ($user->role === 'kepala_dapur')
-                                @if ($user->dapur)
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#22C55E15] text-[#166534] truncate max-w-[200px] line-clamp-1">
-                                        {{ $user->dapur->nama }} ({{ $user->dapur->lokasi }})
-                                    </span>
-                                @else
-                                    <span class="text-[var(--color-text-muted)] text-sm line-clamp-1">Belum diassign</span>
-                                @endif
-                            @else
-                                <span class="text-[var(--color-text-muted)] text-sm">-</span>
-                            @endif
                         </td>
                         <td class="table-td min-w-0 hidden lg:table-cell line-clamp-2 text-[13px] text-[var(--color-text)]">
                             {{ $user->access_description }}

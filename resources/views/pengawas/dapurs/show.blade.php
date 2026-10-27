@@ -33,6 +33,16 @@
                 <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->geofence_radius ?? 100 }} meter</p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
+                <p class="text-sm text-[var(--color-text-muted)]">Kepala Dapur</p>
+                @if ($dapur->kepalaDapur)
+                    <p class="font-semibold text-[var(--color-secondary)]">
+                        {{ $dapur->kepalaDapur->name }} ({{ $dapur->kepalaDapur->email }})
+                    </p>
+                @else
+                    <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                @endif
+            </div>
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">Jumlah CCTV</p>
                 <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->cctvs->count() }}</p>
             </div>
