@@ -249,7 +249,6 @@
             <button type="button" x-on:click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
             <form :action="url" method="POST" class="inline">
                 @csrf
-                @method('PUT')
                 <input type="hidden" name="is_active" x-bind:value="isActive ? '0' : '1'">
                 <button type="submit" class="btn-action px-4 py-2.5 rounded-lg text-sm font-semibold transition" 
                         x-class="isActive ? 'bg-amber-500 hover:bg-amber-600' : 'bg-green-500 hover:bg-green-600'"
