@@ -42,6 +42,17 @@
                     </select>
                 </div>
             </div>
+            <div class="min-w-[180px]">
+                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="status">Status</label>
+                <div class="input-with-icon relative">
+                    <select id="status" name="status" class="input-field select-enhanced w-full pr-10" aria-label="Filter status">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-aktif</option>
+                        <option value="deleted" {{ request('status') === 'deleted' ? 'selected' : '' }}>Dihapus</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="flex gap-3 pt-4 border-t border-[var(--color-border)]">
             <button type="submit" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
@@ -94,10 +105,8 @@
                             {{ $user->access_description }}
                         </td>
                         <td class="table-td min-w-0 text-center">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold
-                                @if($user->status === 'Aktif') bg-[#22C55E15] text-[#166534]
-                                @else bg-[#FEF2F2] text-[#EF4444] @endif">
-                                {{ $user->status }}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold {{ $user->status_badge_class }}">
+                                {{ $user->status_label }}
                             </span>
                         </td>
                         <td class="table-td min-w-0 text-center">
@@ -108,10 +117,30 @@
                                        title="Edit" aria-label="Edit user {{ $user->name }}">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
+                                    @if (! $user->trashed())
+                                        <form action="{{ route('admin.users.update', $user) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="is_active" value="{{ $user->is_active ? '0' : '1' }}">
+                                            <button type="submit" 
+                                                    class="w-9 h-9 grid place-items-center rounded-lg {{ $user->is_active ? 'bg-[#F59E0B15] text-[#854D0E] hover:bg-[#F59E0B] hover:text-white' : 'bg-[#22C55E15] text-[#166534] hover:bg-[#22C55E] hover:text-white' }} transition-colors" 
+                                                    title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}" 
+                                                    aria-label="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} user {{ $user->name }}"
+                                                    onclick="return confirm('{{ $user->is_active ? 'Yakin ingin menonaktifkan user ini?' : 'Yakin ingin mengaktifkan user ini?' }}')">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if ($user->is_active)
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    @endif
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
                                     <button type="button" 
                                             @click="$dispatch('open-delete-modal', { url: '{{ route('admin.users.destroy', $user) }}', name: '{{ $user->name }}' })"
                                             class="w-9 h-9 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors" 
-                                            title="Hapus" aria-label="Hapus user {{ $user->name }}">
+                                            title="Hapus (Soft Delete)" aria-label="Hapus user {{ $user->name }}">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 @else
@@ -161,12 +190,12 @@
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95">
         <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-full bg-red-100 grid place-items-center">
-                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div class="w-10 h-10 rounded-full bg-amber-100 grid place-items-center">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900">Hapus User</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Hapus User (Soft Delete)</h3>
         </div>
-        <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus user <span x-text="name" class="font-semibold"></span>? Tindakan ini tidak dapat dibatalkan.</p>
+        <p class="text-gray-600 mb-6">User <span x-text="name" class="font-semibold"></span> akan dipindahkan ke trash. Data riwayat (absensi, laporan, dll) tetap terjaga. Tindakan ini bisa dibatalkan via restore.</p>
         <div class="flex gap-3 justify-end">
             <button type="button" @click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
             <form :action="url" method="POST" class="inline">

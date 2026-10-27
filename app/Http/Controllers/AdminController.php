@@ -21,7 +21,12 @@ class AdminController extends Controller
     // User Management
     public function users(Request $request)
     {
-        $query = User::with(['registeredBy', 'dapur', 'dapurs'])->latest();
+        $query = User::with(['registeredBy', 'dapur', 'dapurs', 'creator', 'updater', 'deactivator'])->latest();
+
+        // Default: only active users, unless include_deactivated filter is set
+        if (! $request->boolean('include_deactivated')) {
+            $query->active();
+        }
 
         if ($request->filled('role')) {
             $query->where('role', $request->role);
@@ -104,6 +109,7 @@ class AdminController extends Controller
             'role' => $validated['role'],
             'registered_by' => auth()->id(),
             'dapur_id' => $validated['dapur_id'] ?? null,
+            'is_active' => true,
         ]);
 
         // Sync multi-dapur for pengawas
@@ -122,6 +128,8 @@ class AdminController extends Controller
         if ($user->isAdmin()) {
             abort(403, 'Tidak bisa mengedit admin lain.');
         }
+
+        $user->load(['creator', 'updater', 'deactivator']);
 
         $dapurs = Dapur::orderBy('nama')->with('kepalaDapur')->get();
         $dapurData = $dapurs->map(fn ($d) => [
@@ -151,6 +159,7 @@ class AdminController extends Controller
             'dapur_ids' => ['nullable', 'array'],
             'dapur_ids.*' => ['exists:dapurs,id'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
+            'is_active' => ['sometimes', 'boolean'],
         ], [
             'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
             'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
@@ -192,6 +201,7 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'role' => $validated['role'],
             'dapur_id' => $validated['dapur_id'] ?? null,
+            'is_active' => $validated['is_active'] ?? null,
         ]));
 
         // Sync multi-dapur for pengawas
@@ -216,7 +226,7 @@ class AdminController extends Controller
 
         $user->delete();
 
-        return redirect()->route('admin.users')->with('status', 'User berhasil dihapus.');
+        return redirect()->route('admin.users')->with('status', 'User berhasil dihapus (soft delete).');
     }
 
     // Dashboard Stats

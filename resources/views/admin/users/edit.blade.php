@@ -242,6 +242,64 @@
                         <p class="form-error">{{ $message }}</p>
                     @enderror
                 </div>
+
+                {{-- Status Aktif --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="is_active">Status Aktif</label>
+                    <div class="relative">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" 
+                               id="is_active" 
+                               name="is_active" 
+                               value="1" 
+                               {{ $user->is_active ? 'checked' : '' }}
+                               class="w-5 h-5 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
+                        <label for="is_active" class="ml-3 cursor-pointer font-medium text-[var(--color-secondary)]">
+                            User aktif (bisa login)
+                        </label>
+                    </div>
+                    <p class="form-hint mt-1">
+                        {{ $user->is_active 
+                            ? 'Nonaktifkan untuk mencegah user login. Data tetap terjaga.' 
+                            : 'Aktifkan untuk mengizinkan user login kembali.' }}
+                    </p>
+                </div>
+
+                {{-- Audit Info --}}
+                <div class="form-field lg:col-span-2">
+                    <div class="p-4 bg-[var(--color-surface)]/50 border border-[var(--color-border)] rounded-lg">
+                        <h4 class="font-medium text-[var(--color-secondary)] mb-3">Informasi Audit</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-[var(--color-text-muted)]">Dibuat oleh</p>
+                                <p class="font-medium text-[var(--color-secondary)]">
+                                    {{ $user->creator ? $user->creator->name : 'Sistem' }}
+                                    @if ($user->created_at)
+                                        <span class="text-[var(--color-text-muted)]"> pada {{ $user->created_at->format('d M Y H:i') }}</span>
+                                    @endif
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-[var(--color-text-muted)]">Terakhir diedit oleh</p>
+                                <p class="font-medium text-[var(--color-secondary)]">
+                                    {{ $user->updater ? $user->updater->name : '-' }}
+                                    @if ($user->updated_at)
+                                        <span class="text-[var(--color-text-muted)]"> pada {{ $user->updated_at->format('d M Y H:i') }}</span>
+                                    @endif
+                                </p>
+                            </div>
+                            @if ($user->deactivated_at)
+                            <div class="md:col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                <p class="text-[var(--color-text-muted)]">Dinonaktifkan oleh</p>
+                                <p class="font-medium text-[var(--color-secondary)]">
+                                    {{ $user->deactivator ? $user->deactivator->name : '-' }}
+                                    <span class="text-[var(--color-text-muted)]"> pada {{ $user->deactivated_at->format('d M Y H:i') }}</span>
+                                </p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

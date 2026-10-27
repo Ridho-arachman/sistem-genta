@@ -16,29 +16,6 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = [
-            [
-                'name' => 'Admin User',
-                'email' => 'admin@test.com',
-                'role' => 'admin',
-            ],
-            [
-                'name' => 'Pengawas User',
-                'email' => 'pengawas@test.com',
-                'role' => 'pengawas',
-            ],
-            [
-                'name' => 'Manajerial User',
-                'email' => 'manajerial@test.com',
-                'role' => 'manajerial',
-            ],
-            [
-                'name' => 'Kepala Dapur User',
-                'email' => 'kepaladapur@test.com',
-                'role' => 'kepala_dapur',
-            ],
-        ];
-
         $admin = User::updateOrCreate(
             ['email' => 'admin@test.com'],
             [
@@ -46,7 +23,8 @@ class RoleSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
-                'registered_by' => null, // First admin has no registrant
+                'registered_by' => null,
+                'is_active' => true,
             ]
         );
 
@@ -77,6 +55,7 @@ class RoleSeeder extends Seeder
                     'role' => $role['role'],
                     'email_verified_at' => now(),
                     'registered_by' => $admin->id,
+                    'is_active' => true,
                 ]
             );
         }
