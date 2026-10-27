@@ -229,6 +229,52 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('status', 'User berhasil dihapus (soft delete).');
     }
 
+    // Archived Users (Soft Deleted)
+    public function archivedUsers(Request $request)
+    {
+        $query = User::onlyTrashed()->with(['registeredBy', 'dapur', 'dapurs', 'creator', 'updater', 'deactivator'])->latest();
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                    ->orWhere('email', 'like', "%{$request->search}%");
+            });
+        }
+
+        $users = $query->paginate(15)->withQueryString();
+
+        return view('admin.users.archive', compact('users'));
+    }
+
+    public function restoreUser(User $user)
+    {
+        if ($user->isAdmin()) {
+            abort(403, 'Tidak bisa restore admin.');
+        }
+
+        $user->restore();
+
+        return redirect()->route('admin.users.archive')->with('status', 'User berhasil dipulihkan.');
+    }
+
+    public function forceDeleteUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            abort(403, 'Tidak bisa menghapus akun sendiri.');
+        }
+        if ($user->isAdmin()) {
+            abort(403, 'Tidak bisa menghapus admin.');
+        }
+
+        $user->forceDelete();
+
+        return redirect()->route('admin.users.archive')->with('status', 'User berhasil dihapus permanen.');
+    }
+
     // Dashboard Stats
     public function dashboard()
     {
