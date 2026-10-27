@@ -153,6 +153,7 @@
     .btn-action-primary:active { transform: translateY(0); }
     .btn-action-secondary { background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
     .btn-action-secondary:hover { background: var(--color-surface-hover); border-color: var(--color-primary)/50; }
+    .btn-action-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
     .spinner { width: 18px; height: 18px; animation: spin 1s linear infinite; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -205,6 +206,7 @@
     .btn-action-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
     .btn-action-secondary { background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
     .btn-action-secondary:hover { background: var(--color-surface-hover); border-color: var(--color-primary)/50; }
+    .btn-action-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-action-ghost { background: transparent; color: var(--color-text-muted); border: 1px solid var(--color-border); }
     .btn-action-ghost:hover { background: var(--color-surface); color: var(--color-text); border-color: var(--color-primary)/50; }
     .btn-action-icon { width: 18px; height: 18px; flex-shrink: 0; }

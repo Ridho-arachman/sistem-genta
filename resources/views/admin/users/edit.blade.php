@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6">
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" x-data="userForm(@entangle($user->role))">
         @csrf
         @method('PUT')
 
@@ -46,17 +46,57 @@
 
             <div class="form-field">
                 <label class="form-label" for="role">Role <span class="required">*</span></label>
-                <select id="role" name="role" required class="input-field select-enhanced">
+                <select id="role" name="role" required class="input-field select-enhanced" x-model="selectedRole" @change="handleRoleChange()">
                     <option value="">Pilih role</option>
-                    <option value="pengawas" {{ old('role', $user->role) === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
-                    <option value="manajerial" {{ old('role', $user->role) === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
-                    <option value="kepala_dapur" {{ old('role', $user->role) === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
-                    <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
+                    <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
+                    <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
                 </select>
                 @error('role')
                     <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
+
+            <!-- Dapur Assignment Fields -->
+            <template x-if="selectedRole === 'kepala_dapur'">
+                <div class="form-field" x-show="true" x-transition>
+                    <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced">
+                            <option value="">Pilih dapur</option>
+                            @foreach($dapurs as $dapur)
+                                <option value="{{ $dapur->id }}" {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}>
+                                    {{ $dapur->nama }} ({{ $dapur->lokasi }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('dapur_id')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </template>
+
+            <template x-if="selectedRole === 'pengawas'">
+                <div class="form-field" x-show="true" x-transition>
+                    <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <select id="dapur_ids" name="dapur_ids[]" multiple required class="input-field select-enhanced" size="5">
+                            @foreach($dapurs as $dapur)
+                                <option value="{{ $dapur->id }}" {{ $user->dapurs->contains('id', $dapur->id) ? 'selected' : '' }}>
+                                    {{ $dapur->nama }} ({{ $dapur->lokasi }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <p class="form-hint">Tahan Ctrl/Cmd untuk memilih multiple dapur</p>
+                    @error('dapur_ids')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </template>
 
             <div class="form-field">
                 <label class="form-label" for="password">Password Baru <span class="text-muted">(kosongkan jika tidak diubah)</span></label>
@@ -96,3 +136,17 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('userForm', (initialRole = '') => ({
+        selectedRole: initialRole,
+        
+        handleRoleChange() {
+            // Validation handled by backend
+        }
+    }));
+});
+</script>
+@endpush

@@ -62,11 +62,12 @@
             <table class="w-full border-collapse table-fixed">
                 <thead>
                     <tr class="bg-[var(--color-surface)]">
-                        <th class="table-th w-[25%]">NAMA</th>
-                        <th class="table-th w-[20%]">PERAN</th>
-                        <th class="table-th w-[30%]">AKSES</th>
-                        <th class="table-th w-[15%] text-center">STATUS</th>
-                        <th class="table-th w-[10%] text-center">AKSI</th>
+                        <th class="table-th w-[20%]">NAMA</th>
+                        <th class="table-th w-[15%]">PERAN</th>
+                        <th class="table-th w-[30%]">DAPUR</th>
+                        <th class="table-th w-[20%]">AKSES</th>
+                        <th class="table-th w-[10%] text-center">STATUS</th>
+                        <th class="table-th w-[5%] text-center">AKSI</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[var(--color-border)]">
@@ -91,6 +92,31 @@
                             </span>
                         </td>
                         <td class="table-td text-[13px] text-[var(--color-text)]">{{ $user->access_description }}</td>
+                        <td class="table-td">
+                            @if ($user->role === 'pengawas')
+                                @if ($user->dapurs->count() > 0)
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach ($user->dapurs as $dapur)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                                {{ $dapur->nama }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                                @endif
+                            @elseif ($user->role === 'kepala_dapur')
+                                @if ($user->dapur)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-[#22C55E15] text-[#166534]">
+                                        {{ $user->dapur->nama }} ({{ $user->dapur->lokasi }})
+                                    </span>
+                                @else
+                                    <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                                @endif
+                            @else
+                                <span class="text-[var(--color-text-muted)] text-sm">-</span>
+                            @endif
+                        </td>
                         <td class="table-td text-center">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold
                                 @if($user->status === 'Aktif') bg-[#22C55E15] text-[#166534]

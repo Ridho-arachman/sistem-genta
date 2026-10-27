@@ -65,6 +65,30 @@
         <div class="stat-value" style="color:#991B1B">{{ $stats['anomaly_reports_open'] }}</div>
         <div class="stat-foot">Perlu ditinjau oleh admin</div>
     </div>
+
+    {{-- Pengawas Aktif --}}
+    <div class="stat">
+        <div class="stat-top">
+            <span>Pengawas Aktif</span>
+            <span class="stat-icon" style="background:#A855F715;color:#6B21A8">♙</span>
+        </div>
+        <div class="stat-value" style="color:#6B21A8">{{ $stats['total_pengawas'] }}</div>
+        <div class="stat-foot">
+            {{ $stats['pengawas_without_dapur'] }} belum diassign dapur
+        </div>
+    </div>
+
+    {{-- Kepala Dapur --}}
+    <div class="stat">
+        <div class="stat-top">
+            <span>Kepala Dapur</span>
+            <span class="stat-icon" style="background:#3B82F615;color:#1E40AF">♚</span>
+        </div>
+        <div class="stat-value" style="color:#1E40AF">{{ $stats['total_kepala_dapur'] }}</div>
+        <div class="stat-foot">
+            {{ $stats['kepala_dapur_without_dapur'] }} belum diassign dapur
+        </div>
+    </div>
 </div>
 
 <div class="panel export-panel" style="margin-bottom: 16px;">
@@ -98,11 +122,11 @@
 
             <div class="export-field date-field">
                 <label for="end_date" class="export-label">
-                    <svg class="export-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <svg class="export-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
                     Tanggal Akhir
                 </label>
                 <div class="input-wrapper">
-                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
                     <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="input-field export-input" placeholder="Pilih tanggal" aria-describedby="endDateHelp" max="{{ \Carbon\Carbon::today()->format('Y-m-d') }}">
                 </div>
                 <span id="endDateHelp" class="field-hint">{{ request('end_date') ? 'Terseleksi: ' . \Carbon\Carbon::parse(request('end_date'))->isoFormat('D MMM YYYY') : 'Belum dipilih' }}</span>
@@ -167,7 +191,7 @@
 </div>
 
 <div class="content-grid">
-    {{-- Left Column: Dapur Status --}}
+    {{-- Left Column: Dapur Status + Pengawas Assignment --}}
     <div>
         <div class="panel">
             <div class="panel-head">
@@ -200,6 +224,34 @@
             </div>
             <div style="margin-top:13px;text-align:right">
                 <a href="{{ route('admin.dapurs.index') }}" class="btn-light">Lihat semua dapur →</a>
+            </div>
+        </div>
+
+        {{-- Pengawas Assignment Overview --}}
+        <div class="panel" style="margin-top:16px">
+            <div class="panel-head">
+                <h2>Penugasan Pengawas</h2>
+                <small>{{ $pengawas->count() }} pengawas terdaftar</small>
+            </div>
+            <div class="kitchen-list" style="gap:8px">
+                @forelse ($pengawas as $p)
+                    <div class="kitchen-card" style="align-items:center">
+                        <div class="kitchen-card-content" style="min-width:0">
+                            <div class="kitchen-name">{{ $p['name'] }}</div>
+                            <div class="kitchen-meta">{{ $p['email'] }}</div>
+                            <div class="small-label" style="margin-top:4px">
+                                <span class="badge badge-primary">{{ $p['dapur_count'] }} dapur</span>
+                            </div>
+                        </div>
+                        <div class="kitchen-meta" style="text-align:right;max-width:280px;white-space:normal">
+                            {{ $p['dapur_names'] ?: '<span class="text-[var(--color-text-muted)]">Belum diassign</span>' }}
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-8 text-[var(--color-text-muted)]">
+                        Belum ada pengawas terdaftar
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

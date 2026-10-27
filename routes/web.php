@@ -98,7 +98,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:pengawas'])->prefix('pengawas')->name('pengawas.')->group(function () {
         Route::get('/dashboard', function () {
             $user = auth()->user();
-            $dapurs = $user->dapur ? Dapur::where('id', $user->dapur_id)->with('cctvs')->get() : collect();
+            $dapurs = Dapur::forUser($user)->with('cctvs')->get();
 
             $stats = [
                 'total_dapur' => $dapurs->count(),
@@ -111,14 +111,20 @@ Route::middleware(['auth'])->group(function () {
             return view('pengawas.dashboard', compact('dapurs', 'stats'));
         })->name('dashboard');
 
+        // Dapur (read only)
+        Route::get('/dapurs', [DapurController::class, 'index'])->name('dapurs.index');
+        Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
+
+        // CCTV (read only)
+        Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
+        Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
+        Route::get('/cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
+
         // Data Dapur (alias absensi)
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::post('/absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
-
-        // Monitoring CCTV
-        Route::get('/cctv', [CctvController::class, 'monitoring'])->name('cctv.index');
 
         // Laporan Pengawasan
         Route::get('/laporan', function () {
@@ -195,10 +201,15 @@ Route::middleware(['auth'])->group(function () {
     // ==================== KEPALA DAPUR ROUTES ====================
     Route::middleware(['role:kepala_dapur'])->prefix('kepala-dapur')->name('kepala-dapur.')->group(function () {
         Route::get('/dashboard', function () {
-            $dapurs = Dapur::with('cctvs')->get();
+            $user = auth()->user();
+            $dapurs = Dapur::forUser($user)->with('cctvs')->get();
 
             return view('kepala-dapur.dashboard', compact('dapurs'));
         })->name('dashboard');
+
+        // Dapur (read only)
+        Route::get('/dapurs', [DapurController::class, 'index'])->name('dapurs.index');
+        Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
         // CCTV Dashboard
         Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');

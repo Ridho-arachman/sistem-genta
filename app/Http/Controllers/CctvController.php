@@ -21,18 +21,23 @@ class CctvController extends Controller
     {
         $user = auth()->user();
 
-        // Admin & Manajerial: lihat semua
-        // Kepala Dapur: lihat semua (read-only)
-        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur', 'pengawas'])) {
             abort(403);
         }
 
-        $cctvs = Cctv::with('dapur')->latest()->paginate(10);
+        $dapurIds = $user->getAccessibleDapurIds();
+
+        $cctvs = Cctv::with('dapur')
+            ->whereIn('dapur_id', $dapurIds)
+            ->latest()
+            ->paginate(10);
 
         if ($user->isKepalaDapur()) {
             return view('kepala-dapur.cctvs.index', compact('cctvs'));
         } elseif ($user->isManajerial()) {
             return view('manajerial.cctvs.index', compact('cctvs'));
+        } elseif ($user->isPengawas()) {
+            return view('pengawas.cctvs.index', compact('cctvs'));
         }
 
         return view('admin.cctvs.index', compact('cctvs'));
@@ -75,7 +80,11 @@ class CctvController extends Controller
     {
         $user = auth()->user();
 
-        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur', 'pengawas'])) {
+            abort(403);
+        }
+
+        if (! $user->canAccessDapur($cctv->dapur_id)) {
             abort(403);
         }
 
@@ -85,6 +94,8 @@ class CctvController extends Controller
             return view('kepala-dapur.cctvs.show', compact('cctv'));
         } elseif ($user->isManajerial()) {
             return view('manajerial.cctvs.show', compact('cctv'));
+        } elseif ($user->isPengawas()) {
+            return view('pengawas.cctvs.show', compact('cctv'));
         }
 
         return view('admin.cctvs.show', compact('cctv'));
@@ -143,7 +154,11 @@ class CctvController extends Controller
     {
         $user = auth()->user();
 
-        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur'])) {
+        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur', 'pengawas'])) {
+            abort(403);
+        }
+
+        if (! $user->canAccessDapur($dapur->id)) {
             abort(403);
         }
 
@@ -153,6 +168,8 @@ class CctvController extends Controller
             return view('kepala-dapur.cctvs.monitoring', compact('dapur'));
         } elseif ($user->isManajerial()) {
             return view('manajerial.cctvs.monitoring', compact('dapur'));
+        } elseif ($user->isPengawas()) {
+            return view('pengawas.cctvs.monitoring', compact('dapur'));
         }
 
         return view('admin.cctvs.monitoring', compact('dapur'));

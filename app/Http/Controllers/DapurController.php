@@ -19,14 +19,22 @@ class DapurController extends Controller
     {
         $user = auth()->user();
 
-        if (! $user->hasRole(['admin', 'manajerial'])) {
+        if (! $user->hasRole(['admin', 'manajerial', 'pengawas', 'kepala_dapur'])) {
             abort(403);
         }
 
-        $dapurs = Dapur::withCount('cctvs')->latest()->paginate(10);
+        $dapurs = Dapur::forUser($user)->withCount('cctvs')->latest()->paginate(10);
 
         if ($user->isManajerial()) {
             return view('manajerial.dapurs.index', compact('dapurs'));
+        }
+
+        if ($user->isPengawas()) {
+            return view('pengawas.dapurs.index', compact('dapurs'));
+        }
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.dapurs.index', compact('dapurs'));
         }
 
         return view('admin.dapurs.index', compact('dapurs'));
@@ -65,7 +73,12 @@ class DapurController extends Controller
     {
         $user = auth()->user();
 
-        if (! $user->hasRole(['admin', 'manajerial'])) {
+        if (! $user->hasRole(['admin', 'manajerial', 'pengawas', 'kepala_dapur'])) {
+            abort(403);
+        }
+
+        // Check if user can access this specific dapur
+        if (! $user->canAccessDapur($dapur->id)) {
             abort(403);
         }
 
@@ -73,6 +86,14 @@ class DapurController extends Controller
 
         if ($user->isManajerial()) {
             return view('manajerial.dapurs.show', compact('dapur'));
+        }
+
+        if ($user->isPengawas()) {
+            return view('pengawas.dapurs.show', compact('dapur'));
+        }
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.dapurs.show', compact('dapur'));
         }
 
         return view('admin.dapurs.show', compact('dapur'));

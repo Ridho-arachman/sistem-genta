@@ -60,9 +60,9 @@
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">⌂</span> Data Dapur
             </a>
 
-            <a href="{{ route('pengawas.cctv.index') }}" 
+            <a href="{{ route('pengawas.cctvs.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('pengawas.cctv*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/5 hover:text-[var(--color-primary)]' }}"
+                      {{ request()->routeIs('pengawas.cctvs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/5 hover:text-[var(--color-primary)]' }}"
                data-page="cctv">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
             </a>

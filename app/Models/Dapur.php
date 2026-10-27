@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Database\Factories\DapurFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dapur extends Model
 {
@@ -21,13 +24,37 @@ class Dapur extends Model
         'geofence_radius' => 'integer',
     ];
 
-    public function cctvs()
+    public function cctvs(): HasMany
     {
         return $this->hasMany(Cctv::class);
     }
 
-    public function absensis()
+    public function absensis(): HasMany
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function pengawas(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'dapur_user')
+            ->where('role', 'pengawas')
+            ->withTimestamps();
+    }
+
+    // Scope for user-based dapur filtering
+    public function scopeForUser(Builder $query, User $user): Builder
+    {
+        if ($user->isAdmin() || $user->isManajerial()) {
+            return $query;
+        }
+
+        $dapurIds = $user->getAccessibleDapurIds();
+
+        return $query->whereIn('id', $dapurIds);
     }
 }

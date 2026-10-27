@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,9 +17,9 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    #[Fillable(['name', 'email', 'password', 'role', 'registered_by'])]
+    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'])]
     #[Hidden(['password', 'remember_token'])]
-    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'];
 
     protected function casts(): array
     {
@@ -56,6 +57,45 @@ class User extends Authenticatable
     public function cctvAnomalyReports(): HasMany
     {
         return $this->hasMany(CctvAnomalyReport::class, 'admin_id');
+    }
+
+    // Dapur relationships
+    public function dapur(): BelongsTo
+    {
+        return $this->belongsTo(Dapur::class);
+    }
+
+    public function dapurs(): BelongsToMany
+    {
+        return $this->belongsToMany(Dapur::class, 'dapur_user');
+    }
+
+    // Helper to get all dapur IDs user can access
+    public function getAccessibleDapurIds(): array
+    {
+        if ($this->isAdmin() || $this->isManajerial()) {
+            return Dapur::pluck('id')->toArray();
+        }
+
+        if ($this->isKepalaDapur()) {
+            return $this->dapur_id ? [$this->dapur_id] : [];
+        }
+
+        if ($this->isPengawas()) {
+            return $this->dapurs->pluck('id')->toArray();
+        }
+
+        return [];
+    }
+
+    // Check if user can access specific dapur
+    public function canAccessDapur(int $dapurId): bool
+    {
+        if ($this->isAdmin() || $this->isManajerial()) {
+            return true;
+        }
+
+        return in_array($dapurId, $this->getAccessibleDapurIds());
     }
 
     public function isAdmin(): bool

@@ -21,7 +21,7 @@ class AdminController extends Controller
     // User Management
     public function users(Request $request)
     {
-        $query = User::with('registeredBy')->latest();
+        $query = User::with(['registeredBy', 'dapur', 'dapurs'])->latest();
 
         if ($request->filled('role')) {
             $query->where('role', $request->role);
@@ -41,7 +41,9 @@ class AdminController extends Controller
 
     public function createUser()
     {
-        return view('admin.users.create');
+        $dapurs = Dapur::orderBy('nama')->get();
+
+        return view('admin.users.create', compact('dapurs'));
     }
 
     public function storeUser(Request $request)
@@ -51,6 +53,9 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'role' => ['required', 'in:pengawas,manajerial,kepala_dapur'],
+            'dapur_id' => ['nullable', 'exists:dapurs,id'],
+            'dapur_ids' => ['nullable', 'array'],
+            'dapur_ids.*' => ['exists:dapurs,id'],
         ]);
 
         $user = User::create([
@@ -59,23 +64,29 @@ class AdminController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'registered_by' => auth()->id(),
+            'dapur_id' => $validated['dapur_id'] ?? null,
         ]);
+
+        // Sync multi-dapur for pengawas
+        if ($user->isPengawas() && ! empty($validated['dapur_ids'])) {
+            $user->dapurs()->sync($validated['dapur_ids']);
+        }
 
         return redirect()->route('admin.users')->with('status', 'User berhasil dibuat.');
     }
 
     public function editUser(User $user)
     {
-        // Admin tidak bisa edit diri sendiri melalui sini
         if ($user->id === auth()->id()) {
             abort(403, 'Tidak bisa mengedit akun sendiri.');
         }
-        // Admin tidak bisa edit admin lain
         if ($user->isAdmin()) {
             abort(403, 'Tidak bisa mengedit admin lain.');
         }
 
-        return view('admin.users.edit', compact('user'));
+        $dapurs = Dapur::orderBy('nama')->get();
+
+        return view('admin.users.edit', compact('user', 'dapurs'));
     }
 
     public function updateUser(Request $request, User $user)
@@ -91,10 +102,26 @@ class AdminController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'role' => ['required', 'in:pengawas,manajerial,kepala_dapur'],
+            'dapur_id' => ['nullable', 'exists:dapurs,id'],
+            'dapur_ids' => ['nullable', 'array'],
+            'dapur_ids.*' => ['exists:dapurs,id'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
-        $user->update(array_filter($validated, fn ($v) => $v !== null));
+        $user->update(array_filter([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'dapur_id' => $validated['dapur_id'] ?? null,
+        ]));
+
+        // Sync multi-dapur for pengawas
+        if ($user->isPengawas()) {
+            $user->dapurs()->sync($validated['dapur_ids'] ?? []);
+        } elseif ($user->isKepalaDapur()) {
+            // Kepala dapur hanya punya 1 dapur (dapur_id)
+            $user->dapurs()->detach();
+        }
 
         return redirect()->route('admin.users')->with('status', 'User berhasil diperbarui.');
     }
@@ -128,9 +155,35 @@ class AdminController extends Controller
             'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
             'laporan_hari_ini' => $laporanHariIni,
             'laporan_hari_ini_selesai' => $laporanHariIniSelesai,
+            'total_pengawas' => User::where('role', 'pengawas')->count(),
+            'total_manajerial' => User::where('role', 'manajerial')->count(),
+            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
+            'pengawas_without_dapur' => User::where('role', 'pengawas')
+                ->whereDoesntHave('dapurs')
+                ->count(),
+            'kepala_dapur_without_dapur' => User::where('role', 'kepala_dapur')
+                ->whereNull('dapur_id')
+                ->count(),
         ];
 
-        $dapurs = Dapur::with('cctvs')->get();
+        $dapurs = Dapur::with(['cctvs', 'users' => function ($q) {
+            $q->where('role', 'kepala_dapur');
+        }])->get();
+
+        // Pengawas assignment overview
+        $pengawas = User::where('role', 'pengawas')
+            ->with('dapurs')
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'email' => $p->email,
+                    'dapur_count' => $p->dapurs->count(),
+                    'dapur_names' => $p->dapurs->pluck('nama')->implode(', '),
+                ];
+            });
+
         $recentAbsensi = Absensi::with('user', 'dapur')
             ->latest()
             ->limit(10)
@@ -141,6 +194,6 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'dapurs', 'recentAbsensi', 'recentAnomalies'));
+        return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentAbsensi', 'recentAnomalies'));
     }
 }
