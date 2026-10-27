@@ -118,27 +118,22 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
                                     @if (! $user->trashed())
-                                        <form action="{{ route('admin.users.update', $user) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PUT')
-                                            <input type="hidden" name="is_active" value="{{ $user->is_active ? '0' : '1' }}">
-                                            <button type="submit" 
-                                                    class="w-9 h-9 grid place-items-center rounded-lg {{ $user->is_active ? 'bg-[#F59E0B15] text-[#854D0E] hover:bg-[#F59E0B] hover:text-white' : 'bg-[#22C55E15] text-[#166534] hover:bg-[#22C55E] hover:text-white' }} transition-colors" 
-                                                    title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}" 
-                                                    aria-label="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} user {{ $user->name }}"
-                                                    onclick="return confirm('{{ $user->is_active ? 'Yakin ingin menonaktifkan user ini?' : 'Yakin ingin mengaktifkan user ini?' }}')">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    @if ($user->is_active)
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                    @else
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                    @endif
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                                x-on:click="$dispatch('open-toggle-modal', { url: '{{ route('admin.users.update', $user) }}', name: @js($user->name), isActive: {{ $user->is_active ? 'true' : 'false' }} })"
+                                                class="w-9 h-9 grid place-items-center rounded-lg {{ $user->is_active ? 'bg-[#F59E0B15] text-[#854D0E] hover:bg-[#F59E0B] hover:text-white' : 'bg-[#22C55E15] text-[#166534] hover:bg-[#22C55E] hover:text-white' }} transition-colors" 
+                                                title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}" 
+                                                aria-label="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} user {{ $user->name }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                @if ($user->is_active)
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                @else
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                @endif
+                                            </svg>
+                                        </button>
                                     @endif
                                     <button type="button" 
-                                            @click="$dispatch('open-delete-modal', { url: '{{ route('admin.users.destroy', $user) }}', name: '{{ $user->name }}' })"
+                                            x-on:click="$dispatch('open-delete-modal', { url: '{{ route('admin.users.destroy', $user) }}', name: @js($user->name) })"
                                             class="w-9 h-9 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors" 
                                             title="Hapus (Soft Delete)" aria-label="Hapus user {{ $user->name }}">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -171,7 +166,7 @@
 
 <!-- Alpine Delete Modal -->
 <div x-data="{ show: false, url: '', name: '' }" 
-     @open-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
+     x-on:open-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
      x-show="show" 
      x-cloak 
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
@@ -197,11 +192,61 @@
         </div>
         <p class="text-gray-600 mb-6">User <span x-text="name" class="font-semibold"></span> akan dipindahkan ke trash. Data riwayat (absensi, laporan, dll) tetap terjaga. Tindakan ini bisa dibatalkan via restore.</p>
         <div class="flex gap-3 justify-end">
-            <button type="button" @click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
+            <button type="button" x-on:click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
             <form :action="url" method="POST" class="inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-action px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Alpine Toggle Active Modal -->
+<div x-data="{ show: false, url: '', name: '', isActive: true }" 
+     x-on:open-toggle-modal.window="show = true; url = $event.detail.url; name = $event.detail.name; isActive = $event.detail.isActive"
+     x-show="show" 
+     x-cloak 
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+     x-transition:enter="transition ease-out duration-150"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in" 
+         x-show="show" 
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full grid place-items-center" 
+                 x-class="isActive ? 'bg-amber-100' : 'bg-green-100'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
+                     x-class="isActive ? 'text-amber-600' : 'text-green-600'">
+                    <template x-if="isActive">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </template>
+                    <template x-if="!isActive">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </template>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900" x-text="isActive ? 'Nonaktifkan User' : 'Aktifkan User'"></h3>
+        </div>
+        <p class="text-gray-600 mb-6" x-html="isActive ? 'User <strong>' + name + '</strong> akan dinonaktifkan dan tidak bisa login. Data tetap terjaga. Tindakan ini bisa dibatalkan kapan saja.' : 'User <strong>' + name + '</strong> akan diaktifkan dan bisa login kembali.'"></p>
+        <div class="flex gap-3 justify-end">
+            <button type="button" x-on:click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
+            <form :action="url" method="POST" class="inline">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="is_active" x-bind:value="isActive ? '0' : '1'">
+                <button type="submit" class="btn-action px-4 py-2.5 rounded-lg text-sm font-semibold transition" 
+                        x-class="isActive ? 'bg-amber-500 hover:bg-amber-600' : 'bg-green-500 hover:bg-green-600'"
+                        x-text="isActive ? 'Nonaktifkan' : 'Aktifkan'"></button>
             </form>
         </div>
     </div>
