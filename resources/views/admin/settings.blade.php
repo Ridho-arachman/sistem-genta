@@ -311,7 +311,16 @@ document.addEventListener('alpine:init', () => {
                     },
                 });
 
-                const data = await response.json();
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    // Handle non-JSON response (e.g., HTML error page)
+                    const text = await response.text();
+                    throw new Error('Server returned non-JSON response: ' + text.substring(0, 200));
+                }
+
                 if (response.ok) {
                     this.showToast(data.message || 'Pengaturan berhasil disimpan');
                 } else {

@@ -361,6 +361,12 @@ class AdminController extends Controller
         Settings::set('office_address', $validated['office_address'] ?? '');
         Settings::set('timezone', $validated['timezone']);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Pengaturan berhasil disimpan.'
+            ]);
+        }
+
         return redirect()->route('admin.settings')->with('status', 'Pengaturan berhasil disimpan.');
     }
 }
