@@ -6,7 +6,6 @@ use App\Models\Absensi;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
-use App\Models\SpWarning;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -117,20 +116,21 @@ class AdminController extends Controller
     // Dashboard Stats
     public function dashboard()
     {
+        $totalCctv = Cctv::count();
+        $cctvOnline = Cctv::where('status', 'online')->count();
+        $laporanHariIni = CctvAnomalyReport::whereDate('created_at', today())->count();
+        $laporanHariIniSelesai = CctvAnomalyReport::whereDate('created_at', today())->where('status', 'selesai')->count();
+
         $stats = [
-            'total_pengawas' => User::where('role', 'pengawas')->count(),
-            'total_manajerial' => User::where('role', 'manajerial')->count(),
-            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
             'total_dapur' => Dapur::count(),
-            'total_cctv' => Cctv::count(),
-            'cctv_online' => Cctv::where('status', 'online')->count(),
-            'cctv_offline' => Cctv::where('status', 'offline')->count(),
-            'cctv_maintenance' => Cctv::where('status', 'maintenance')->count(),
-            'absensi_hari_ini' => Absensi::whereDate('created_at', today())->count(),
-            'sp_warnings_aktif' => SpWarning::where('status', 'aktif')->count(),
+            'total_cctv' => $totalCctv,
+            'cctv_online' => $cctvOnline,
             'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
+            'laporan_hari_ini' => $laporanHariIni,
+            'laporan_hari_ini_selesai' => $laporanHariIniSelesai,
         ];
 
+        $dapurs = Dapur::with('cctvs')->get();
         $recentAbsensi = Absensi::with('user', 'dapur')
             ->latest()
             ->limit(10)
@@ -141,6 +141,6 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentAbsensi', 'recentAnomalies'));
+        return view('admin.dashboard', compact('stats', 'dapurs', 'recentAbsensi', 'recentAnomalies'));
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle ?? 'Manajerial Dashboard' }} - {{ config('app.name') }}</title>
+    <title>{{ $pageTitle ?? 'Manajerial Panel' }} - {{ config('app.name') }}</title>
     
     {{-- Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -13,146 +13,120 @@
     {{-- PWA Meta Tags --}}
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#E50000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="GENTA Banten">
+    <meta name="apple-mobile-web-app-title" content="GENTA Banten Manajerial">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-        :root {
-            --color-primary: #E50000;
-            --color-primary-dark: #B20000;
-            --color-primary-light: #FF3333;
-            --color-secondary: #000000;
-            --color-background: #FFFFFF;
-            --color-surface: #F5F5F5;
-            --color-surface-hover: #EEEEEE;
-            --color-border: #E0E0E0;
-            --color-text: #000000;
-            --color-text-muted: #666666;
-        }
-
-        body {
-            background-color: var(--color-background);
-            color: var(--color-text);
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            color: var(--color-secondary);
-        }
-
-        .btn-primary {
-            @apply bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-4 py-2 rounded-lg font-medium transition-colors;
-        }
-
-        .btn-secondary {
-            @apply bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border border-[var(--color-border)] px-4 py-2 rounded-lg font-medium transition-colors;
-        }
-
-        .input-field {
-            @apply w-full bg-white border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all;
-        }
-
-        .table-th {
-            @apply px-4 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider bg-[var(--color-surface)];
-        }
-
-        .table-td {
-            @apply px-4 py-3 text-sm text-[var(--color-text)];
-        }
-
-        .badge {
-            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-        }
-
-        .badge-success { @apply bg-green-500/10 text-green-700; }
-        .badge-warning { @apply bg-yellow-500/10 text-yellow-700; }
-        .badge-danger { @apply bg-red-500/10 text-red-700; }
-        .badge-gray { @apply bg-gray-500/10 text-gray-700; }
-        .badge-primary { @apply bg-[var(--color-primary)]/10 text-[var(--color-primary)]; }
-
-        .card {
-            @apply bg-white border border-[var(--color-border)] rounded-xl shadow-sm;
-        }
-    </style>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen font-sans antialiased flex flex-col">
-    {{-- Navigation --}}
-    <nav class="border-b border-[var(--color-border)] bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <img src="{{ asset('logo.png') }}" alt="GENTA Banten" class="w-8 h-8 object-contain">
-                    <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Banten</span></span>
-                </div>
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('manajerial.dashboard') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Dashboard</a>
-                    <a href="{{ route('manajerial.dapurs.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Dapur</a>
-                    <a href="{{ route('manajerial.cctvs.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">CCTV</a>
-                    <a href="{{ route('manajerial.cctv-anomalies.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Anomali</a>
-                    <a href="{{ route('manajerial.sp-warnings.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">SP Warning</a>
-                    <a href="{{ route('manajerial.absensi.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Absensi</a>
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</button>
-                    </form>
-                </div>
-            </div>
-        </nav>
-
-        {{-- Mobile menu --}}
-        <div class="md:hidden border-b border-[var(--color-border)] bg-white px-4 py-3 overflow-x-auto">
-            <div class="flex gap-4 whitespace-nowrap">
-                <a href="{{ route('manajerial.dashboard') }}" class="nav-link {{ request()->routeIs('manajerial.dashboard') ? 'nav-link-active' : '' }}">Dashboard</a>
-                <a href="{{ route('manajerial.dapurs.index') }}" class="nav-link {{ request()->routeIs('manajerial.dapurs*') ? 'nav-link-active' : '' }}">Dapur</a>
-                <a href="{{ route('manajerial.cctvs.index') }}" class="nav-link {{ request()->routeIs('manajerial.cctvs*') ? 'nav-link-active' : '' }}">CCTV</a>
-                <a href="{{ route('manajerial.cctv-anomalies.index') }}" class="nav-link {{ request()->routeIs('manajerial.cctv-anomalies*') ? 'nav-link-active' : '' }}">Anomali</a>
-                <a href="{{ route('manajerial.sp-warnings.index') }}" class="nav-link {{ request()->routeIs('manajerial.sp-warnings*') ? 'nav-link-active' : '' }}">SP Warning</a>
-                <a href="{{ route('manajerial.absensi.index') }}" class="nav-link {{ request()->routeIs('manajerial.absensi*') ? 'nav-link-active' : '' }}">Absensi</a>
-            </div>
+<body x-data="{
+    sidebarOpen: false,
+    toast: { show: false, message: '' },
+    currentPage: '{{ request()->route()->getName() ?? 'dashboard' }}',
+    init() {
+        window.showToast = (msg) => {
+            this.toast.message = msg;
+            this.toast.show = true;
+            setTimeout(() => this.toast.show = false, 2800);
+        };
+    }
+}" class="min-h-screen font-sans antialiased flex app">
+    <header class="topbar bg-white border-b border-[var(--color-border)] sticky top-0 z-100">
+        <div class="brand flex items-center gap-3 px-6 py-4">
+            <div class="brandmark w-10 h-10 rounded-xl bg-[var(--color-primary)] grid place-items-center text-white font-bold text-xl">G</div>
+            <div>GENTA <small class="text-xs font-medium opacity-75 tracking-wide block mt-0.5">MANAJERIAL PANEL</small></div>
         </div>
-    </nav>
-
-    {{-- Flash messages --}}
-    @if (session('status'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm">{{ session('status') }}</div>
+        <div class="top-actions flex items-center gap-3">
+            <span class="demo-pill hidden sm:inline-block text-xs font-extrabold tracking-wide border border-[var(--color-border)] rounded-full px-3 py-1.5">MODE PRODUKSI</span>
+            <div class="avatar w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm" x-text="auth()->user()->name.charAt(0).toUpperCase()"></div>
         </div>
-    @endif
-
-    {{-- Content --}}
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        @yield('content')
-    </main>
-
-    {{-- Footer --}}
-    <footer class="border-t border-[var(--color-border)] bg-[var(--color-surface)] py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-center gap-2 mb-2">
-                <img src="{{ asset('logo.png') }}" alt="GENTA Banten" class="w-5 h-5 object-contain">
-                <span class="font-semibold text-sm tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Banten</span></span>
+    </header>
+    
+    <div class="shell flex flex-1">
+        <aside id="sidebar" 
+            :class="{ 'open': sidebarOpen, 'lg:translate-x-0': true }" 
+            class="fixed top-0 left-0 bottom-0 z-999 w-[230px] flex-shrink-0 bg-[var(--color-surface)] border-r border-[var(--color-border)] p-4 overflow-y-auto transition-slide lg:static lg:translate-x-0 lg:shadow-none lg:z-auto"
+            x-show="sidebarOpen || true"
+            @click.outside="sidebarOpen = false">
+            
+            <div class="side-label text-[10px] tracking-widest text-[var(--color-text-muted)] font-extrabold px-3 py-2 uppercase">MENU UTAMA</div>
+            
+            <a href="{{ route('manajerial.dashboard') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="dashboard">
+                <span class="sidebar-icon w-5 text-center text-lg">▦</span> Dashboard
+            </a>
+            
+            <a href="{{ route('manajerial.dapurs.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.dapurs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="dapurs">
+                <span class="sidebar-icon w-5 text-center text-lg">⌂</span> Data Dapur
+            </a>
+            
+            <a href="{{ route('manajerial.cctvs.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.cctvs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="cctvs">
+                <span class="sidebar-icon w-5 text-center text-lg">▣</span> Data CCTV
+            </a>
+            
+            <a href="{{ route('manajerial.cctvs.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.cctvs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="cctv">
+                <span class="sidebar-icon w-5 text-center text-lg">▣</span> Monitoring CCTV
+            </a>
+            
+            <a href="{{ route('manajerial.cctv-anomalies.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.cctv-anomalies*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="cctv-anomalies">
+                <span class="sidebar-icon w-5 text-center text-lg">▣</span> Anomali CCTV
+            </a>
+            
+            <a href="{{ route('manajerial.sp-warnings.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.sp-warnings*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="sp-warnings">
+                <span class="sidebar-icon w-5 text-center text-lg">⚠</span> Surat Peringatan (SP)
+            </a>
+            
+            <a href="{{ route('manajerial.absensi.index') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.absensi*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="absensi">
+                <span class="sidebar-icon w-5 text-center text-lg">▣</span> Absensi
+            </a>
+            
+            <div class="side-label text-[10px] tracking-widest text-[var(--color-text-muted)] font-extrabold px-3 pt-6 pb-2 uppercase">SISTEM</div>
+            <a href="{{ route('manajerial.settings') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
+                      {{ request()->routeIs('manajerial.settings') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               data-page="settings">
+                <span class="sidebar-icon w-5 text-center text-lg">⚙</span> Pengaturan
+            </a>
+            
+            <div class="side-note mt-7 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-4 text-[12px] leading-relaxed text-[var(--color-text-muted)]">
+                <b>ⓘ Mode Produksi</b><br>Data dapur, laporan, dan CCTV terhubung ke sistem produksi.
             </div>
-            <p class="text-center text-xs text-[var(--color-text-muted)]">
-                {{ config('app.name') }} &mdash; Monitoring Manajerial
-            </p>
-        </div>
-    </footer>
-
-    {{-- Service Worker --}}
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('{{ asset('sw.js') }}')
-                    .then(function(registration) { console.log('SW registered: ', registration.scope); })
-                    .catch(function(error) { console.log('SW registration failed: ', error); });
-            });
-        }
-    </script>
-
-    </body>
+        </aside>
+        
+        <main class="main-content lg:ml-[230px] flex-1 min-w-0 p-6 lg:p-8" id="view">
+            @yield('content')
+        </main>
+    </div>
+    
+    {{-- Toast Notification --}}
+    <div class="toast fixed bottom-6 right-6 bg-[var(--color-secondary)] text-white px-5 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300"
+         x-show="toast.show"
+         x-transition:enter="opacity-0 transform translate-y-2"
+         x-transition:leave="opacity-0 transform translate-y-2"
+         x-cloak>
+        <span x-text="toast.message"></span>
+    </div>
+</body>
+@stack('scripts')
 </html>

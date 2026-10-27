@@ -35,7 +35,7 @@ class CctvController extends Controller
             return view('manajerial.cctvs.index', compact('cctvs'));
         }
 
-        return view('cctvs.index', compact('cctvs'));
+        return view('admin.cctvs.index', compact('cctvs'));
     }
 
     public function create()
@@ -46,7 +46,7 @@ class CctvController extends Controller
 
         $dapurs = Dapur::all();
 
-        return view('cctvs.create', compact('dapurs'));
+        return view('admin.cctvs.create', compact('dapurs'));
     }
 
     public function store(Request $request)
@@ -87,7 +87,7 @@ class CctvController extends Controller
             return view('manajerial.cctvs.show', compact('cctv'));
         }
 
-        return view('cctvs.show', compact('cctv'));
+        return view('admin.cctvs.show', compact('cctv'));
     }
 
     public function edit(Cctv $cctv)
@@ -98,7 +98,7 @@ class CctvController extends Controller
 
         $dapurs = Dapur::all();
 
-        return view('cctvs.edit', compact('cctv', 'dapurs'));
+        return view('admin.cctvs.edit', compact('cctv', 'dapurs'));
     }
 
     public function update(Request $request, Cctv $cctv)
@@ -155,6 +155,6 @@ class CctvController extends Controller
             return view('manajerial.cctvs.monitoring', compact('dapur'));
         }
 
-        return view('cctvs.monitoring', compact('dapur'));
+        return view('admin.cctvs.monitoring', compact('dapur'));
     }
 }

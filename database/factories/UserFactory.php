@@ -70,4 +70,11 @@ class UserFactory extends Factory
             'role' => 'kepala_dapur',
         ]);
     }
+
+    public function withRegistrant(User|int|null $user = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'registered_by' => $user instanceof User ? $user->id : $user,
+        ]);
+    }
 }

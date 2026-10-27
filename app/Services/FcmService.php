@@ -3,16 +3,20 @@
 namespace App\Services;
 
 use App\Models\FcmToken;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 class FcmService
 {
     private ?string $serverKey;
+
     private const MAX_RETRIES = 3;
+
     private const RETRY_DELAY_MS = 100;
+
     private const CIRCUIT_BREAKER_THRESHOLD = 5; // failures before circuit opens
+
     private const CIRCUIT_BREAKER_TIMEOUT = 60; // seconds
 
     public function __construct()
@@ -44,12 +48,14 @@ class FcmService
     {
         if (empty($this->serverKey)) {
             Log::warning('FCM Server Key not configured');
+
             return ['success' => false, 'message' => 'FCM not configured'];
         }
 
         // Check circuit breaker
         if ($this->isCircuitOpen()) {
             Log::warning('FCM circuit breaker open, skipping notification');
+
             return ['success' => false, 'message' => 'FCM circuit breaker open'];
         }
 
@@ -59,11 +65,11 @@ class FcmService
 
         foreach ($chunks as $chunk) {
             $success = false;
-            
+
             for ($attempt = 1; $attempt <= self::MAX_RETRIES; $attempt++) {
                 $response = Http::retry(3, 100)
                     ->withHeaders([
-                        'Authorization' => 'key=' . $this->serverKey,
+                        'Authorization' => 'key='.$this->serverKey,
                         'Content-Type' => 'application/json',
                     ])
                     ->timeout(10)
@@ -124,7 +130,7 @@ class FcmService
     {
         $key = 'fcm:circuit:failures';
         $failures = Cache::increment($key);
-        
+
         if ($failures >= self::CIRCUIT_BREAKER_THRESHOLD) {
             Cache::put('fcm:circuit:open', true, self::CIRCUIT_BREAKER_TIMEOUT);
             Log::warning('FCM circuit breaker opened');

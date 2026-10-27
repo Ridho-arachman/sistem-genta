@@ -76,25 +76,67 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('cctvs', CctvController::class)->names('cctvs');
         Route::get('cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
 
+        // Laporan Pengawasan
+        Route::get('/laporan', function () {
+            return view('admin.laporan.index');
+        })->name('laporan.index');
+
         // Absensi (monitor & export)
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::get('absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
         Route::post('absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+
+        // Settings
+        Route::get('settings', function () {
+            return view('admin.settings');
+        })->name('settings');
     });
 
     // ==================== PENGAWAS ROUTES ====================
     Route::middleware(['role:pengawas'])->prefix('pengawas')->name('pengawas.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('pengawas.dashboard');
+            $user = auth()->user();
+            $dapurs = $user->dapur ? Dapur::where('id', $user->dapur_id)->with('cctvs')->get() : collect();
+
+            $stats = [
+                'total_dapur' => $dapurs->count(),
+                'total_cctv' => $dapurs->sum('cctvs_count'),
+                'cctv_online' => $dapurs->sum(fn ($d) => $d->cctvs->where('status', 'online')->count()),
+                'laporan_hari_ini' => Absensi::where('user_id', $user->id)->whereDate('created_at', today())->count(),
+                'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
+            ];
+
+            return view('pengawas.dashboard', compact('dapurs', 'stats'));
         })->name('dashboard');
 
-        // Absensi
+        // Data Dapur (alias absensi)
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
         Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::post('/absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+
+        // Monitoring CCTV
+        Route::get('/cctv', [CctvController::class, 'monitoring'])->name('cctv.index');
+
+        // Laporan Pengawasan
+        Route::get('/laporan', function () {
+            return view('pengawas.laporan.index');
+        })->name('laporan.index');
+        Route::get('/laporan/create', function () {
+            return view('pengawas.laporan.create');
+        })->name('laporan.create');
+
+        // Manajemen Pengguna (read only for pengawas)
+        Route::get('/users', function () {
+            return view('pengawas.users.index');
+        })->name('users.index');
+
+        // Pengaturan
+        Route::get('/settings', function () {
+            return view('pengawas.settings');
+        })->name('settings');
     });
 
     // ==================== MANAJERIAL ROUTES (READ ONLY) ====================
@@ -102,6 +144,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', function () {
             $stats = [
                 'total_pengawas' => User::where('role', 'pengawas')->count(),
+                'total_manajerial' => User::where('role', 'manajerial')->count(),
+                'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
                 'total_dapur' => Dapur::count(),
                 'total_cctv' => Cctv::count(),
                 'cctv_online' => Cctv::where('status', 'online')->count(),
@@ -112,7 +156,10 @@ Route::middleware(['auth'])->group(function () {
                 'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
             ];
 
-            return view('manajerial.dashboard', compact('stats'));
+            $dapurs = Dapur::with('cctvs')->get();
+            $recentAbsensi = Absensi::with('user', 'dapur')->latest()->limit(10)->get();
+
+            return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentAbsensi'));
         })->name('dashboard');
 
         // Dapur (read only)
@@ -138,6 +185,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
         Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
         Route::get('/absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
+
+        // Settings (read only)
+        Route::get('/settings', function () {
+            return view('manajerial.settings');
+        })->name('settings');
     });
 
     // ==================== KEPALA DAPUR ROUTES ====================

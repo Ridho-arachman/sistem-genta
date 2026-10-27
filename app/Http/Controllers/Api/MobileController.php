@@ -197,9 +197,9 @@ class MobileController extends Controller
      */
     private function findDapurNearLocation(float $lat, float $lng): ?Dapur
     {
-        $dapurs = Dapur::whereNotNull("latitude")
-            ->whereNotNull("longitude")
-            ->whereNotNull("geofence_radius")
+        $dapurs = Dapur::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereNotNull('geofence_radius')
             ->get();
 
         return $this->geolocation->findNearest($dapurs, $lat, $lng);

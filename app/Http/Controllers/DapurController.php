@@ -29,7 +29,7 @@ class DapurController extends Controller
             return view('manajerial.dapurs.index', compact('dapurs'));
         }
 
-        return view('dapurs.index', compact('dapurs'));
+        return view('admin.dapurs.index', compact('dapurs'));
     }
 
     public function create()
@@ -38,7 +38,7 @@ class DapurController extends Controller
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        return view('dapurs.create');
+        return view('admin.dapurs.create');
     }
 
     public function store(Request $request)
@@ -75,7 +75,7 @@ class DapurController extends Controller
             return view('manajerial.dapurs.show', compact('dapur'));
         }
 
-        return view('dapurs.show', compact('dapur'));
+        return view('admin.dapurs.show', compact('dapur'));
     }
 
     public function edit(Dapur $dapur)
@@ -84,7 +84,7 @@ class DapurController extends Controller
             abort(403);
         }
 
-        return view('dapurs.edit', compact('dapur'));
+        return view('admin.dapurs.edit', compact('dapur'));
     }
 
     public function update(Request $request, Dapur $dapur)

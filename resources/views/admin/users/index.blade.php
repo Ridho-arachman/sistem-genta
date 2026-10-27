@@ -1,107 +1,178 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Manajemen User'])
 
 @section('content')
-<div class="space-y-6">
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Manajemen User</h2>
-            <p class="text-[var(--color-text-muted)]">Kelola user pengawas, manajerial, dan kepala dapur</p>
+<div class="mb-6">
+    <div>
+        <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
+        <h1 class="text-2xl font-extrabold text-[var(--color-secondary)] mt-1">Manajemen User</h1>
+        <div class="text-[var(--color-text-muted)] text-sm mt-1">Kelola user pengawas, manajerial, dan kepala dapur</div>
+    </div>
+    <a href="{{ route('admin.users.create') }}" 
+       class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span>Tambah User</span>
+    </a>
+</div>
+
+<div class="form-section mb-6">
+    <div class="form-section-title flex items-center gap-2.5 mb-5 pb-4 border-b border-[var(--color-border)]">
+        <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </span>
+        <h2 class="text-sm font-bold text-[var(--color-secondary)]">Filter & Pencarian</h2>
+    </div>
+    <form method="GET" class="space-y-4">
+        <div class="flex gap-4 flex-wrap items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="search">Cari</label>
+                <div class="input-with-icon relative">
+                    <svg class="input-icon-inner absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="input-field w-full pl-10" placeholder="Cari nama atau email..." aria-label="Cari user">
+                </div>
+            </div>
+            <div class="min-w-[180px]">
+                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="role">Role</label>
+                <div class="input-with-icon relative">
+                    <select id="role" name="role" class="input-field select-enhanced w-full pr-10" aria-label="Filter role">
+                        <option value="">Semua Role</option>
+                        <option value="pengawas" {{ request('role') === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
+                        <option value="manajerial" {{ request('role') === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
+                        <option value="kepala_dapur" {{ request('role') === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
+                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="btn-primary">
-            <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Tambah User
-        </a>
-    </div>
+        <div class="flex gap-3 pt-4 border-t border-[var(--color-border)]">
+            <button type="submit" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293.707L3.293 7.293A1 1 0 003 8V4z"></path></svg>
+                <span>Filter</span>
+            </button>
+            <a href="{{ route('admin.users') }}" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold hover:bg-[var(--color-surface-hover)] transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>Reset</span>
+            </a>
+        </div>
+    </form>
+</div>
 
-    {{-- Filters --}}
-    <div class="card p-4">
-        <form method="GET" class="flex flex-col md:flex-row gap-4">
-            <div class="flex-1">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." class="input-field">
-            </div>
-            <div class="md:w-48">
-                <select name="role" class="input-field">
-                    <option value="">Semua Role</option>
-                    <option value="pengawas" {{ request('role') === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
-                    <option value="manajerial" {{ request('role') === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
-                    <option value="kepala_dapur" {{ request('role') === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-secondary whitespace-nowrap">Filter</button>
-            <a href="{{ route('admin.users') }}" class="btn-secondary whitespace-nowrap">Reset</a>
-        </form>
-    </div>
-
-    {{-- Users Table --}}
-    <div class="card overflow-hidden">
-        @if ($users->count() > 0)
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--color-surface)]">
-                        <tr>
-                            <th class="table-th">Nama</th>
-                            <th class="table-th">Email</th>
-                            <th class="table-th">Role</th>
-                            <th class="table-th">Didaftarkan Oleh</th>
-                            <th class="table-th">Tanggal Daftar</th>
-                            <th class="table-th">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--color-border)]">
-                        @foreach ($users as $user)
-                        <tr class="hover:bg-[var(--color-surface)]">
-                            <td class="table-td font-medium">{{ $user->name }}</td>
-                            <td class="table-td text-[var(--color-text-muted)]">{{ $user->email }}</td>
-                            <td class="table-td">
-                                <span class="badge 
-                                    @if($user->role === 'admin') badge-primary
-                                    @elseif($user->role === 'pengawas') badge-success
-                                    @elseif($user->role === 'manajerial') badge-warning
-                                    @elseif($user->role === 'kepala_dapur') badge-gray
-                                    @endif">
-                                    {{ ucfirst(str_replace('_', ' ', $user->role)) }}
-                                </span>
-                            </td>
-                            <td class="table-td">
-                                @if ($user->registeredBy)
-                                    {{ $user->registeredBy->name }}
-                                @else
-                                    <span class="text-[var(--color-text-muted)]">-</span>
+<div class="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden mb-6">
+    @if ($users->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse table-fixed">
+                <thead>
+                    <tr class="bg-[var(--color-surface)]">
+                        <th class="table-th w-[25%]">NAMA</th>
+                        <th class="table-th w-[20%]">PERAN</th>
+                        <th class="table-th w-[30%]">AKSES</th>
+                        <th class="table-th w-[15%] text-center">STATUS</th>
+                        <th class="table-th w-[10%] text-center">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--color-border)]">
+                    @foreach ($users as $user)
+                    <tr class="hover:bg-[var(--color-surface)] transition-colors">
+                        <td class="table-td">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-semibold text-[var(--color-secondary)]">{{ $user->name }}</span>
+                                @if ($user->id === auth()->id())
+                                    <span class="text-[10px] font-bold bg-[var(--color-primary)] text-white px-2 py-0.5 rounded-full">Anda</span>
                                 @endif
-                            </td>
-                            <td class="table-td text-[var(--color-text-muted)]">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="table-td">
-                                <div class="flex items-center gap-2">
-                                    @if ($user->id !== auth()->id() && !$user->isAdmin())
-                                    <a href="{{ route('admin.users.edit', $user) }}" class="text-[var(--color-primary)] hover:underline text-sm">Edit</a>
-                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus user ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline text-sm">Hapus</button>
-                                    </form>
-                                    @else
+                            </div>
+                        </td>
+                        <td class="table-td">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold
+                                @if($user->role === 'admin') bg-[var(--color-primary)]/15 text-[var(--color-primary)]
+                                @elseif($user->role === 'pengawas') bg-[#22C55E15] text-[#166534]
+                                @elseif($user->role === 'manajerial') bg-[#F59E0B15] text-[#854D0E]
+                                @else bg-[var(--color-border)] text-[var(--color-text-muted)]
+                                @endif">
+                                {{ $user->role_label }}
+                            </span>
+                        </td>
+                        <td class="table-td text-[13px] text-[var(--color-text)]">{{ $user->access_description }}</td>
+                        <td class="table-td text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold
+                                @if($user->status === 'Aktif') bg-[#22C55E15] text-[#166534]
+                                @else bg-[#FEF2F2] text-[#EF4444] @endif">
+                                {{ $user->status }}
+                            </span>
+                        </td>
+                        <td class="table-td text-center">
+                            <div class="inline-flex gap-2 justify-center">
+                                @if ($user->id !== auth()->id() && !$user->isAdmin())
+                                    <a href="{{ route('admin.users.edit', $user) }}" 
+                                       class="w-9 h-9 grid place-items-center rounded-lg bg-[#EFF6FF] text-[#2563EB] hover:bg-[#2563EB] hover:text-white transition-colors" 
+                                       title="Edit" aria-label="Edit user {{ $user->name }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </a>
+                                    <button type="button" 
+                                            @click="$dispatch('open-delete-modal', { url: '{{ route('admin.users.destroy', $user) }}', name: '{{ $user->name }}' })"
+                                            class="w-9 h-9 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors" 
+                                            title="Hapus" aria-label="Hapus user {{ $user->name }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                @else
                                     <span class="text-[var(--color-text-muted)] text-sm">-</span>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-4 border-t border-[var(--color-border)]">
+            {{ $users->links() }}
+        </div>
+    @else
+        <div class="py-16 text-center">
+            <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Tidak Ada User</h3>
+            <p class="text-[var(--color-text-muted)] mt-1">Belum ada user yang terdaftar</p>
+            <a href="{{ route('admin.users.create') }}" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition mt-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Tambah User Pertama</span>
+            </a>
+        </div>
+    @endif
+</div>
+
+<!-- Alpine Delete Modal -->
+<div x-data="{ show: false, url: '', name: '' }" 
+     @open-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
+     x-show="show" 
+     x-cloak 
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+     x-transition:enter="transition ease-out duration-150"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in" 
+         x-show="show" 
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-red-100 grid place-items-center">
+                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <div class="px-6 py-4 border-t border-[var(--color-border)]">
-                {{ $users->links() }}
-            </div>
-        @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Tidak Ada User</h3>
-                <p class="text-[var(--color-text-muted)] mt-1">Belum ada user yang terdaftar</p>
-                <a href="{{ route('admin.users.create') }}" class="btn-primary mt-4 inline-block">Tambah User Pertama</a>
-            </div>
-        @endif
+            <h3 class="text-lg font-semibold text-gray-900">Hapus User</h3>
+        </div>
+        <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus user <span x-text="name" class="font-semibold"></span>? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="flex gap-3 justify-end">
+            <button type="button" @click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
+            <form :action="url" method="POST" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-action px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">Hapus</button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

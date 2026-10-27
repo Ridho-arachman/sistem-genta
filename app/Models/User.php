@@ -114,4 +114,31 @@ class User extends Authenticatable
     {
         return $this->hasRole(['admin', 'manajerial']);
     }
+
+    public function getStatusAttribute(): string
+    {
+        return $this->email_verified_at ? 'Aktif' : 'Non-aktif';
+    }
+
+    public function getAccessDescriptionAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Semua data',
+            'pengawas' => 'Dapur yang diamati',
+            'kepala_dapur' => 'Dapur sendiri',
+            'manajerial' => 'Dashboard & laporan',
+            default => '-',
+        };
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Admin',
+            'pengawas' => 'Pengawas',
+            'kepala_dapur' => 'Kepala Dapur',
+            'manajerial' => 'Pimpinan',
+            default => ucfirst($this->role),
+        };
+    }
 }

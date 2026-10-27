@@ -1,139 +1,204 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Dashboard Pengawas'])
 
 @section('content')
-<div class="space-y-8">
-    {{-- Welcome Card --}}
-    <div class="card p-6 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold">Halo, {{ auth()->user()->name }}!</h2>
-                <p class="text-[var(--color-primary-light)] mt-1">Silakan melakukan absensi kehadiran Anda hari ini</p>
+<div class="role-switch" aria-label="Pilih tampilan">
+    <a href="{{ route('admin.dashboard') }}" class="role-btn">Admin Website</a>
+    <button class="role-btn active" data-role="pengawas">Pengawas App</button>
+    <a href="{{ route('manajerial.dashboard') }}" class="role-btn">Pimpinan Website</a>
+</div>
+
+<div class="heading">
+    <div>
+        <div class="eyebrow">Genta · Pengawasan MBG</div>
+        <h1>Dashboard Pengawas</h1>
+        <div class="muted">Kondisi operasional dapur dan pelaporan · {{ now()->translatedFormat('l, d F Y') }}</div>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ route('pengawas.absensi.create') }}" class="btn-primary">＋ Isi Checklist</a>
+        <a href="{{ route('pengawas.laporan.create') }}" class="btn-secondary">＋ Buat Laporan</a>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat-top">
+            <span>Total Dapur Ditugaskan</span>
+            <span class="stat-icon" style="background:var(--color-primary)/10;color:var(--color-primary)">⌂</span>
+        </div>
+        <div class="stat-value">{{ $stats['total_dapur'] ?? $dapurs->count() }}</div>
+        <div class="stat-foot">Lokasi dalam penugasan Anda</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-top">
+            <span>Kamera Online</span>
+            <span class="stat-icon" style="background:#22C55E15;color:#166534">▣</span>
+        </div>
+        <div class="stat-value" style="color:#166534">{{ $stats['cctv_online'] ?? 0 }}<span style="font-size:15px;color:#8a9a92">/{{ $stats['total_cctv'] ?? 0 }}</span></div>
+        <div class="stat-foot"><span style="color:#166534">{{ $stats['total_cctv'] > 0 ? number_format(($stats['cctv_online'] ?? 0) / ($stats['total_cctv'] ?? 1) * 100, 1) : 0 }}%</span> status konektivitas</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-top">
+            <span>Laporan Hari Ini</span>
+            <span class="stat-icon" style="background:#3B82F615;color:#1E40AF">▤</span>
+        </div>
+        <div class="stat-value">{{ $stats['laporan_hari_ini'] ?? 0 }}</div>
+        <div class="stat-foot">Checklist & laporan dikirim</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-top">
+            <span>Temuan Terbuka</span>
+            <span class="stat-icon" style="background:#F59E0B15;color:#854D0E">⚑</span>
+        </div>
+        <div class="stat-value">{{ $stats['temuan_terbuka'] ?? 0 }}</div>
+        <div class="stat-foot">Perlu tindak lanjut</div>
+    </div>
+</div>
+
+<div class="content-grid">
+    {{-- Left Column: Dapur Status --}}
+    <div>
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Status Dapur</h2>
+                <input type="text" class="search" placeholder="Cari nama dapur…" oninput="filterKitchens(this.value)" id="kitchenSearch">
             </div>
-            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <div id="kitchenList" class="kitchen-list">
+                @forelse ($dapurs as $dapur)
+                    <div class="kitchen-card">
+                        <div class="kitchen-card-content">
+                            <div class="kitchen-name">{{ $dapur->nama }}</div>
+                            <div class="kitchen-meta">{{ $dapur->lokasi ?? '-' }}</div>
+                            <div class="progress-bar">
+                                <i class="progress-fill progress-{{ $dapur->status === 'operasional' ? 'ok' : ($dapur->status === 'perlu_perhatian' ? 'warn' : 'off') }}" style="width:{{ $dapur->progress ?? 0 }}%"></i>
+                            </div>
+                            <div class="small-label">
+                                <span>{{ $dapur->cctvs_count ?? 0 }} kamera</span>
+                                <span>{{ $dapur->progress ?? 0 }}%</span>
+                            </div>
+                        </div>
+                        <span class="status-badge @if($dapur->status === 'operasional') status-ok @elseif($dapur->status === 'perlu_perhatian') status-warn @else status-off @endif">
+                            {{ ucfirst($dapur->status) }}
+                        </span>
+                    </div>
+                @empty
+                    <div class="text-center py-8 text-[var(--color-text-muted)]">
+                        Belum ada dapur terdaftar
+                    </div>
+                @endforelse
+            </div>
+            <div style="margin-top:13px;text-align:right">
+                <a href="{{ route('pengawas.absensi.index') }}" class="btn-light">Lihat semua dapur →</a>
             </div>
         </div>
     </div>
 
-    {{-- Quick Actions --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="{{ route('pengawas.absensi.create') }}" class="card p-6 hover:shadow-lg transition-shadow border-l-4 border-[var(--color-primary)]">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+    {{-- Right Column: CCTV + Activity --}}
+    <div style="display:grid;gap:16px">
+        {{-- Camera Panel --}}
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Pratinjau CCTV</h2>
+                <small>Status terkini perangkat</small>
+            </div>
+            <div class="camera">
+                <span class="cam-tag">
+                    <span class="live-dot"></span> LIVE
+                </span>
+                <div class="camera-art">
+                    <div>▥</div>
+                    <strong>Pratinjau Kamera Dapur</strong>
+                    <small>Stream CCTV akan tampil setelah integrasi perangkat</small>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-[var(--color-secondary)]">Absensi Masuk</h3>
-                    <p class="text-sm text-[var(--color-text-muted)]">Check-in dengan foto & GPS</p>
+                <span class="cam-time">CAM-01 · {{ $dapurs->first()->nama ?? 'Dapur' }}</span>
+            </div>
+            <div class="camera-list">
+                <div class="cam-row">
+                    <div class="cam-left">
+                        <div class="cam-mini ok">▣</div>
+                        <div><b>Area persiapan</b><div class="kitchen-meta">{{ $dapurs->first()->nama ?? 'Dapur' }}</div></div>
+                    </div>
+                    <span class="status-badge status-ok">Online</span>
+                </div>
+                <div class="cam-row">
+                    <div class="cam-left">
+                        <div class="cam-mini warn">▣</div>
+                        <div><b>Area memasak</b><div class="kitchen-meta">{{ $dapurs->skip(1)->first()->nama ?? 'Dapur' }}</div></div>
+                    </div>
+                    <span class="status-badge status-warn">Periksa</span>
                 </div>
             </div>
-        </a>
-        
-        <a href="{{ route('pengawas.absensi.index') }}" class="card p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        </div>
+
+        {{-- Activity Feed --}}
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Aktivitas Terbaru</h2>
+                <small>Hari ini</small>
+            </div>
+            <div class="activity">
+                <div class="activity-row">
+                    <div class="activity-icon ok">✓</div>
+                    <div><strong>Checklist dapur dikirim</strong><p>{{ auth()->user()->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
+                    <time>{{ now()->format('H:i') }}</time>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-[var(--color-secondary)]">Riwayat Absensi</h3>
-                    <p class="text-sm text-[var(--color-text-muted)]">Lihat riwayat kehadiran Anda</p>
+                <div class="activity-row">
+                    <div class="activity-icon warn">⚑</div>
+                    <div><strong>Temuan perlu tindak lanjut</strong><p>Area penyimpanan</p></div>
+                    <time>{{ now()->subMinutes(30)->format('H:i') }}</time>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-icon info">▣</div>
+                    <div><strong>Status kamera berubah</strong><p>Kamera CAM-03</p></div>
+                    <time>{{ now()->subHour()->format('H:i') }}</time>
+                </div>
+                <div class="activity-row">
+                    <div class="activity-icon purple">▤</div>
+                    <div><strong>Laporan inspeksi diperiksa</strong><p>Admin pusat</p></div>
+                    <time>{{ now()->subHours(2)->format('H:i') }}</time>
                 </div>
             </div>
-        </a>
-    </div>
-
-    {{-- Today's Absensi Status --}}
-    <div class="card">
-        <div class="px-6 py-4 border-b border-[var(--color-border)]">
-            <h3 class="text-lg font-semibold">Status Absensi Hari Ini</h3>
-        </div>
-        <div class="p-6">
-            @php
-                $todayAbsensi = auth()->user()->absensis()->whereDate('created_at', today())->first();
-            @endphp
-            @if ($todayAbsensi)
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-                        <p class="text-sm text-green-700">Status</p>
-                        <p class="text-xl font-semibold text-green-800">{{ ucfirst($todayAbsensi->status) }}</p>
-                    </div>
-                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                        <p class="text-sm text-blue-700">Check-in</p>
-                        <p class="text-xl font-semibold text-blue-800">{{ $todayAbsensi->check_in_at ? $todayAbsensi->check_in_at->format('H:i') : '-' }}</p>
-                    </div>
-                    <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
-                        <p class="text-sm text-purple-700">Check-out</p>
-                        <p class="text-xl font-semibold text-purple-800">{{ $todayAbsensi->check_out_at ? $todayAbsensi->check_out_at->format('H:i') : 'Belum check-out' }}</p>
-                    </div>
-                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                        <p class="text-sm text-gray-700">Dapur</p>
-                        <p class="text-xl font-semibold text-gray-800">{{ $todayAbsensi->dapur->nama }}</p>
-                    </div>
-                </div>
-                
-                @if (!$todayAbsensi->check_out_at)
-                <div class="mt-6">
-                    <form action="{{ route('pengawas.absensi.checkout', $todayAbsensi) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="btn-primary">
-                            <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            Check-out Sekarang
-                        </button>
-                    </form>
-                </div>
-                @endif
-            @else
-                <div class="text-center py-8">
-                    <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Belum Absensi Hari Ini</h3>
-                    <p class="text-[var(--color-text-muted)] mt-1">Silakan lakukan absensi check-in</p>
-                    <a href="{{ route('pengawas.absensi.create') }}" class="btn-primary mt-4 inline-block">Absensi Sekarang</a>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- Recent History --}}
-    <div class="card">
-        <div class="px-6 py-4 border-b border-[var(--color-border)] flex justify-between items-center">
-            <h3 class="text-lg font-semibold">Riwayat Absensi Terbaru</h3>
-            <a href="{{ route('pengawas.absensi.index') }}" class="text-sm text-[var(--color-primary)] hover:underline">Lihat semua</a>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr>
-                        <th class="table-th">Tanggal</th>
-                        <th class="table-th">Dapur</th>
-                        <th class="table-th">Check-in</th>
-                        <th class="table-th">Check-out</th>
-                        <th class="table-th">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-[var(--color-border)]">
-                    @php
-                        $recentAbsensi = auth()->user()->absensis()->latest()->take(5)->get();
-                    @endphp
-                    @forelse ($recentAbsensi as $absensi)
-                    <tr class="hover:bg-[var(--color-surface)]">
-                        <td class="table-td">{{ $absensi->created_at->format('d/m/Y') }}</td>
-                        <td class="table-td">{{ $absensi->dapur->nama }}</td>
-                        <td class="table-td">{{ $absensi->check_in_at ? $absensi->check_in_at->format('H:i') : '-' }}</td>
-                        <td class="table-td">{{ $absensi->check_out_at ? $absensi->check_out_at->format('H:i') : '-' }}</td>
-                        <td class="table-td">
-                            <span class="badge @if($absensi->status === 'hadir') badge-success @elseif($absensi->status === 'izin') badge-warning @elseif($absensi->status === 'cuti') badge-gray @else badge-danger @endif">
-                                {{ ucfirst($absensi->status) }}
-                            </span>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td class="table-td text-center py-8 text-[var(--color-text-muted)]" colspan="5">Belum ada riwayat absensi</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Kitchen search filter
+    function filterKitchens(query) {
+        const list = document.getElementById('kitchenList');
+        if (!list) return;
+        const cards = list.querySelectorAll('.kitchen-card');
+        const q = query.toLowerCase();
+        cards.forEach(card => {
+            const name = card.querySelector('.kitchen-name')?.textContent.toLowerCase() || '';
+            const meta = card.querySelector('.kitchen-meta')?.textContent.toLowerCase() || '';
+            card.style.display = (name.includes(q) || meta.includes(q)) ? 'flex' : 'none';
+        });
+    }
+
+    // Role switch buttons (links already handle navigation)
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (btn.tagName === 'BUTTON') {
+                e.preventDefault();
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                toast('Tampilan Pengawas aktif');
+            }
+        });
+    });
+
+    function toast(msg) {
+        let el = document.getElementById('toast');
+        el.textContent = msg;
+        el.style.display = 'block';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.style.display = 'none', 2800);
+    }
+    let toastTimer;
+</script>
+@endpush

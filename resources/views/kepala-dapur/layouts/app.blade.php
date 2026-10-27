@@ -13,75 +13,24 @@
     {{-- PWA Meta Tags --}}
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#E50000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="GENTA Banten">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-        :root {
-            --color-primary: #E50000;
-            --color-primary-dark: #B20000;
-            --color-primary-light: #FF3333;
-            --color-secondary: #000000;
-            --color-background: #FFFFFF;
-            --color-surface: #F5F5F5;
-            --color-surface-hover: #EEEEEE;
-            --color-border: #E0E0E0;
-            --color-text: #000000;
-            --color-text-muted: #666666;
-        }
-
-        body {
-            background-color: var(--color-background);
-            color: var(--color-text);
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            color: var(--color-secondary);
-        }
-
-        .btn-primary {
-            @apply bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-4 py-2 rounded-lg font-medium transition-colors;
-        }
-
-        .btn-secondary {
-            @apply bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border border-[var(--color-border)] px-4 py-2 rounded-lg font-medium transition-colors;
-        }
-
-        .input-field {
-            @apply w-full bg-white border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all;
-        }
-
-        .table-th {
-            @apply px-4 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider bg-[var(--color-surface)];
-        }
-
-        .table-td {
-            @apply px-4 py-3 text-sm text-[var(--color-text)];
-        }
-
-        .badge {
-            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-        }
-
-        .badge-success { @apply bg-green-500/10 text-green-700; }
-        .badge-warning { @apply bg-yellow-500/10 text-yellow-700; }
-        .badge-danger { @apply bg-red-500/10 text-red-700; }
-        .badge-gray { @apply bg-gray-500/10 text-gray-700; }
-        .badge-primary { @apply bg-[var(--color-primary)]/10 text-[var(--color-primary)]; }
-
-        .card {
-            @apply bg-white border border-[var(--color-border)] rounded-xl shadow-sm;
-        }
-    </style>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen font-sans antialiased flex flex-col">
+<body x-data="{
+    mobileMenuOpen: false,
+    toast: { show: false, message: '' },
+    init() {
+        window.showToast = (msg) => {
+            this.toast.message = msg;
+            this.toast.show = true;
+            setTimeout(() => this.toast.show = false, 2800);
+        };
+    }
+}" class="min-h-screen font-sans antialiased flex flex-col">
     {{-- Navigation --}}
     <nav class="border-b border-[var(--color-border)] bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,23 +40,29 @@
                     <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Banten</span></span>
                 </div>
                 <div class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('kepala-dapur.dashboard') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Dashboard</a>
-                    <a href="{{ route('kepala-dapur.cctvs.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">CCTV</a>
-                    <a href="{{ route('kepala-dapur.cctv-anomalies.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">Anomali</a>
+                    <a href="{{ route('kepala-dapur.dashboard') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.dashboard') ? 'text-[var(--color-primary)]' : '' }}">Dashboard</a>
+                    <a href="{{ route('kepala-dapur.cctvs.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.cctvs*') ? 'text-[var(--color-primary)]' : '' }}">CCTV</a>
+                    <a href="{{ route('kepala-dapur.cctv-anomalies.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.cctv-anomalies*') ? 'text-[var(--color-primary)]' : '' }}">Anomali</a>
                     <form action="{{ route('logout') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</button>
                     </form>
                 </div>
+                {{-- Mobile menu button --}}
+                <button class="md:hidden p-2 rounded-lg hover:bg-[var(--color-surface)] transition" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Toggle menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" :class="{ 'rotate-90': mobileMenuOpen }">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
             </div>
-        </nav>
-
+        </div>
+        
         {{-- Mobile menu --}}
-        <div class="md:hidden border-b border-[var(--color-border)] bg-white px-4 py-3 overflow-x-auto">
+        <div class="md:hidden border-b border-[var(--color-border)] bg-white px-4 py-3 overflow-x-auto" x-show="mobileMenuOpen" x-transition>
             <div class="flex gap-4 whitespace-nowrap">
-                <a href="{{ route('kepala-dapur.dashboard') }}" class="nav-link {{ request()->routeIs('kepala-dapur.dashboard') ? 'nav-link-active' : '' }}">Dashboard</a>
-                <a href="{{ route('kepala-dapur.cctvs.index') }}" class="nav-link {{ request()->routeIs('kepala-dapur.cctvs*') ? 'nav-link-active' : '' }}">CCTV</a>
-                <a href="{{ route('kepala-dapur.cctv-anomalies.index') }}" class="nav-link {{ request()->routeIs('kepala-dapur.cctv-anomalies*') ? 'nav-link-active' : '' }}">Anomali</a>
+                <a href="{{ route('kepala-dapur.dashboard') }}" class="nav-link px-3 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('kepala-dapur.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-primary)]' }}">Dashboard</a>
+                <a href="{{ route('kepala-dapur.cctvs.index') }}" class="nav-link px-3 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('kepala-dapur.cctvs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-primary)]' }}">CCTV</a>
+                <a href="{{ route('kepala-dapur.cctv-anomalies.index') }}" class="nav-link px-3 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('kepala-dapur.cctv-anomalies*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-primary)]' }}">Anomali</a>
             </div>
         </div>
     </nav>
@@ -115,7 +70,7 @@
     {{-- Flash messages --}}
     @if (session('status'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm">{{ session('status') }}</div>
+            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm" x-show="true" x-transition>{{ session('status') }}</div>
         </div>
     @endif
 
@@ -148,5 +103,14 @@
         }
     </script>
 
-    </body>
+    {{-- Toast Notification --}}
+    <div class="toast fixed bottom-6 right-6 bg-[var(--color-secondary)] text-white px-5 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300"
+         x-show="toast.show"
+         x-transition:enter="opacity-0 transform translate-y-2"
+         x-transition:leave="opacity-0 transform translate-y-2"
+         x-cloak>
+        <span x-text="toast.message"></span>
+    </div>
+</body>
+@stack('scripts')
 </html>

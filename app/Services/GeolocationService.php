@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+
 class GeolocationService
 {
     private const EARTH_RADIUS = 6371000; // meters
@@ -34,13 +36,13 @@ class GeolocationService
     /**
      * Find nearest dapur from a given location.
      */
-    public function findNearest(\Illuminate\Support\Collection $dapurs, float $lat, float $lng): ?object
+    public function findNearest(Collection $dapurs, float $lat, float $lng): ?object
     {
         return $dapurs
-            ->filter(fn($d) => $d->latitude && $d->longitude)
-            ->map(fn($d) => [
+            ->filter(fn ($d) => $d->latitude && $d->longitude)
+            ->map(fn ($d) => [
                 'dapur' => $d,
-                'distance' => $this->distance($lat, $lng, (float)$d->latitude, (float)$d->longitude),
+                'distance' => $this->distance($lat, $lng, (float) $d->latitude, (float) $d->longitude),
             ])
             ->sortBy('distance')
             ->first()['dapur'] ?? null;
