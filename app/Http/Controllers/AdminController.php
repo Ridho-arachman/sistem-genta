@@ -215,6 +215,24 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('status', 'User berhasil diperbarui.');
     }
 
+    public function toggleUserStatus($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            abort(403, 'Tidak bisa mengubah status sendiri.');
+        }
+        if ($user->isAdmin()) {
+            abort(403, 'Tidak bisa mengubah status admin.');
+        }
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        return redirect()->back()->with('status', "User berhasil {$status}.");
+    }
+
     public function destroyUser(User $user)
     {
         if ($user->id === auth()->id()) {

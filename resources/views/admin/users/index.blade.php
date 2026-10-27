@@ -126,7 +126,7 @@
                                     </a>
                                     @if (! $user->trashed())
                                         <button type="button" 
-                                                x-on:click="$dispatch('open-toggle-modal', { url: '{{ route('admin.users.update', $user) }}', name: @js($user->name), isActive: {{ $user->is_active ? 'true' : 'false' }} })"
+                                                x-on:click="$dispatch('open-toggle-modal', { url: '{{ route('admin.users.toggle-status', ['id' => $user->id]) }}', name: @js($user->name), isActive: {{ $user->is_active ? 'true' : 'false' }} })"
                                                 class="w-9 h-9 grid place-items-center rounded-lg {{ $user->is_active ? 'bg-[#F59E0B15] text-[#854D0E] hover:bg-[#F59E0B] hover:text-white' : 'bg-[#22C55E15] text-[#166534] hover:bg-[#22C55E] hover:text-white' }} transition-colors" 
                                                 title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}" 
                                                 aria-label="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }} user {{ $user->name }}">

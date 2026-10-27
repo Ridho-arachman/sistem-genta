@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+        Route::post('/users/{id}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
 
         // Archived Users (Soft Deleted) - pakai ID manual, bukan route model binding
         Route::get('/users/archive', [AdminController::class, 'archivedUsers'])->name('users.archive');
