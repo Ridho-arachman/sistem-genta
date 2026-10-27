@@ -173,7 +173,7 @@ document.addEventListener('alpine:init', () => {
         selectedRole: '',
         selectedDapurIds: [],
         kepalaDapurId: '',
-        dapurs: @json($dapurs->map(fn($d) => ['id' => $d->id, 'nama' => $d->nama, 'lokasi' => $d->lokasi, 'kepala_dapur_name' => $d->kepalaDapur ? $d->kepalaDapur->name : null]))->toArray(),
+        dapurs: @json($dapurData),
 
         get selectedKepalaDapur() {
             const selected = this.dapurs.find(d => d.id == this.kepalaDapurId);

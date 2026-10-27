@@ -41,9 +41,15 @@ class AdminController extends Controller
 
     public function createUser()
     {
-        $dapurs = Dapur::orderBy('nama')->get();
+        $dapurs = Dapur::orderBy('nama')->with('kepalaDapur')->get();
+        $dapurData = $dapurs->map(fn ($d) => [
+            'id' => $d->id,
+            'nama' => $d->nama,
+            'lokasi' => $d->lokasi,
+            'kepala_dapur_name' => $d->kepalaDapur ? $d->kepalaDapur->name : null,
+        ])->toArray();
 
-        return view('admin.users.create', compact('dapurs'));
+        return view('admin.users.create', compact('dapurs', 'dapurData'));
     }
 
     public function storeUser(Request $request)
@@ -117,9 +123,15 @@ class AdminController extends Controller
             abort(403, 'Tidak bisa mengedit admin lain.');
         }
 
-        $dapurs = Dapur::orderBy('nama')->get();
+        $dapurs = Dapur::orderBy('nama')->with('kepalaDapur')->get();
+        $dapurData = $dapurs->map(fn ($d) => [
+            'id' => $d->id,
+            'nama' => $d->nama,
+            'lokasi' => $d->lokasi,
+            'kepala_dapur_name' => $d->kepalaDapur ? $d->kepalaDapur->name : null,
+        ])->toArray();
 
-        return view('admin.users.edit', compact('user', 'dapurs'));
+        return view('admin.users.edit', compact('user', 'dapurs', 'dapurData'));
     }
 
     public function updateUser(Request $request, User $user)
