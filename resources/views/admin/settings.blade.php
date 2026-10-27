@@ -300,11 +300,12 @@ document.addEventListener('alpine:init', () => {
             this.saving = true;
             try {
                 const formData = new FormData(this.$el);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                 const response = await fetch(this.$el.action, {
                     method: 'PUT',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken,
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
                     },
