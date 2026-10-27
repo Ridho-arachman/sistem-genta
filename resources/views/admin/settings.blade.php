@@ -181,67 +181,81 @@ document.addEventListener('alpine:init', () => {
         },
 
         async initMap() {
-            // Load Google Maps API
-            if (typeof google === 'undefined') {
-                await this.loadGoogleMaps();
+            // Load Leaflet CSS/JS if not present
+            if (typeof L === 'undefined') {
+                await this.loadLeaflet();
             }
-            
-            this.map = new google.maps.Map(this.$refs.mapContainer, {
-                center: { lat: parseFloat(this.form.office_lat) || this.defaultLat, lng: parseFloat(this.form.office_lng) || this.defaultLng },
-                zoom: 16,
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false,
-                styles: [
-                    { elementType: 'geometry', stylers: [{ color: '#f5f5f5' }] },
-                    { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-                    { elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] },
-                    { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f5f5' }] },
-                    { featureType: 'administrative.land_parcel', elementType: 'labels.text.fill', stylers: [{ color: '#bdbdbd' }] },
-                    { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
-                    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
-                    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#e5e5e5' }] },
-                    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#9e9e9e' }] },
-                    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-                    { featureType: 'road.arterial', elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
-                    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#dadada' }] },
-                    { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] },
-                    { featureType: 'road.local', elementType: 'labels.text.fill', stylers: [{ color: '#9e9e9e' }] },
-                    { featureType: 'transit.line', elementType: 'geometry', stylers: [{ color: '#e5e5e5' }] },
-                    { featureType: 'transit.station', elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
-                    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c9c9c9' }] },
-                    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#9e9e9e' }] }
-                ]
+
+            const lat = parseFloat(this.form.office_lat) || this.defaultLat;
+            const lng = parseFloat(this.form.office_lng) || this.defaultLng;
+
+            this.map = L.map(this.$refs.mapContainer, {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                dragging: true,
+                doubleClickZoom: true,
+                boxZoom: true,
+                keyboard: true,
+                tap: true,
+                touchZoom: true,
+            }).setView([lat, lng], 16);
+
+            // OSM Tile Layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(this.map);
+
+            // Custom marker icon
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="width: 28px; height: 28px; background: #E50000; border: 3px solid white; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><div style="width: 12px; height: 12px; background: white; border-radius: 50%; margin: 5px auto 0; transform: rotate(45deg);"></div></div>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 28],
+                popupAnchor: [0, -28]
             });
 
-            this.marker = new google.maps.Marker({
-                position: { lat: parseFloat(this.form.office_lat) || this.defaultLat, lng: parseFloat(this.form.office_lng) || this.defaultLng },
-                map: this.map,
-                draggable: true,
-                title: 'Kantor Pusat',
+            this.marker = L.marker([lat, lng], { icon, draggable: true }).addTo(this.map);
+
+            this.marker.on('dragend', (e) => {
+                const pos = e.target.getLatLng();
+                this.form.office_lat = pos.lat;
+                this.form.office_lng = pos.lng;
             });
 
-            this.marker.addListener('dragend', () => {
-                const pos = this.marker.getPosition();
-                this.form.office_lat = pos.lat();
-                this.form.office_lng = pos.lng();
-            });
-
-            this.map.addListener('click', (e) => {
-                this.marker.setPosition(e.latLng);
-                this.form.office_lat = e.latLng.lat();
-                this.form.office_lng = e.latLng.lng();
+            this.map.on('click', (e) => {
+                this.marker.setLatLng(e.latlng);
+                this.form.office_lat = e.latlng.lat;
+                this.form.office_lng = e.latlng.lng;
             });
         },
 
-        loadGoogleMaps() {
+        loadLeaflet() {
             return new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${document.querySelector('meta[name="google-maps-key"]')?.content || ''}&callback=initMapCallback`;
-                script.async = true;
-                script.defer = true;
-                window.initMapCallback = () => resolve();
-                document.head.appendChild(script);
+                if (typeof L !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                // Load Leaflet CSS
+                if (!document.querySelector('link[href*="leaflet.css"]')) {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                    link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+                    link.crossOrigin = '';
+                    document.head.appendChild(link);
+                }
+                // Load Leaflet JS
+                if (!document.querySelector('script[src*="leaflet.js"]')) {
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                    script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+                    script.crossOrigin = '';
+                    script.onload = () => resolve();
+                    document.head.appendChild(script);
+                } else {
+                    resolve();
+                }
             });
         },
 
@@ -276,8 +290,8 @@ document.addEventListener('alpine:init', () => {
 
         updateMapPosition(lat, lng) {
             if (this.map && this.marker) {
-                const pos = new google.maps.LatLng(lat, lng);
-                this.marker.setPosition(pos);
+                const pos = [lat, lng];
+                this.marker.setLatLng(pos);
                 this.map.panTo(pos);
             }
         },

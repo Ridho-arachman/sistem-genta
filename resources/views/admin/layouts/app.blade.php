@@ -18,8 +18,7 @@
     <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_desktop') ?? 'GENTA Banten Admin' }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
 
-    {{-- Google Maps API Key --}}
-    <meta name="google-maps-key" content="{{ env('GOOGLE_MAPS_API_KEY', '') }}">
+    
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
