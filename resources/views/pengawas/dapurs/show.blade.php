@@ -39,7 +39,7 @@
                         {{ $dapur->kepalaDapur->name }} ({{ $dapur->kepalaDapur->email }})
                     </p>
                 @else
-                    <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                    <span class="text-[var(--color-text-muted)] text-sm">-</span>
                 @endif
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">

@@ -48,7 +48,7 @@
                                     {{ $dapur->kepalaDapur->name }}
                                 </span>
                             @else
-                                <span class="text-[var(--color-text-muted)] text-sm">Belum diassign</span>
+                                <span class="text-[var(--color-text-muted)] text-sm">-</span>
                             @endif
                         </td>
                         <td class="table-td">
