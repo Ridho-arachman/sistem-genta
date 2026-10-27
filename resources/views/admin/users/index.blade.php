@@ -1,14 +1,14 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Manajemen User'])
 
 @section('content')
-<div class="mb-6">
+<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
     <div>
         <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
         <h1 class="text-2xl font-extrabold text-[var(--color-secondary)] mt-1">Manajemen User</h1>
         <div class="text-[var(--color-text-muted)] text-sm mt-1">Kelola user pengawas, manajerial, dan kepala dapur</div>
     </div>
     <a href="{{ route('admin.users.create') }}" 
-       class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
+       class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition shrink-0 self-start lg:self-start">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         <span>Tambah User</span>
     </a>
