@@ -53,7 +53,7 @@
         </div>
         <div class="top-actions">
             <span class="demo-pill hidden sm:inline-block">{{ auth()->user()->name }}</span>
-            <div class="avatar" x-text="{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"></div>
+            <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
         </div>
     </header>
 
