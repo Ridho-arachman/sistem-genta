@@ -65,22 +65,59 @@
                 <div class="form-field lg:col-span-2">
                     <!-- Kepala Dapur -->
                     <template x-if="selectedRole === 'kepala_dapur'">
-                        <div x-transition>
+                        <div x-transition x-data="dapurAutocomplete()">
                             <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
-                            <div class="input-with-icon">
-                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced" x-model="kepalaDapurId">
-                                    <option value="">Pilih dapur</option>
-                                    @foreach($dapurs as $dapur)
-                                        <option value="{{ $dapur->id }}" 
-                                            {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}
-                                            :data-has-kepala="{{ $dapur->kepalaDapur ? 'true' : 'false' }}"
-                                            :data-kepala-name="{{ $dapur->kepalaDapur?->name }}">
-                                            {{ $dapur->nama }} ({{ $dapur->lokasi }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                            <div class="relative">
+                                <div class="input-with-icon">
+                                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    <input type="text" 
+                                           id="dapur_search" 
+                                           x-model="searchQuery" 
+                                           @focus="showDropdown = true"
+                                           @keydown.down.prevent="focusFirstOption()"
+                                           @keydown.up.prevent="focusLastOption()"
+                                           @keydown.enter.prevent="selectHighlighted()"
+                                           @keydown.escape="showDropdown = false"
+                                           placeholder="Cari dapur..."
+                                           class="input-field select-enhanced"
+                                           autocomplete="off">
+                                </div>
+                                <input type="hidden" id="dapur_id" name="dapur_id" :value="kepalaDapurId" required>
+                                
+                                <!-- Dropdown -->
+                                <div x-show="showDropdown && filteredDapurs.length > 0" 
+                                     class="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-[var(--color-border)] rounded-lg shadow-lg"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-y-95"
+                                     x-transition:enter-end="transform opacity-100 scale-y-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-y-100"
+                                     x-transition:leave-end="transform opacity-0 scale-y-95"
+                                     @click.outside="showDropdown = false">
+                                    <template x-for="(dapur, index) in filteredDapurs" :key="dapur.id">
+                                        <button type="button" 
+                                                @click="selectDapur(dapur)"
+                                                @mouseover="highlightedIndex = index"
+                                                :class="['w-full px-4 py-2 text-left hover:bg-[var(--color-primary)]/10', highlightedIndex === index ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : '']"
+                                                class="flex items-center gap-3">
+                                            <span class="font-medium" x-text="dapur.nama"></span>
+                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.lokasi"></span>
+                                            <template x-if="dapur.kepala_dapur_name">
+                                                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">
+                                                    Kepala: <span x-text="dapur.kepala_dapur_name"></span>
+                                                </span>
+                                            </template>
+                                        </button>
+                                    </template>
+                                    <template x-if="filteredDapurs.length === 0">
+                                        <div class="px-4 py-3 text-center text-[var(--color-text-muted)] text-sm">
+                                            Tidak ada dapur yang cocok
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
+                            
+                            <!-- Warning if dapur already has kepala (only when changing to a different dapur) -->
                             <div x-show="selectedKepalaDapur && kepalaDapurId != {{ $user->dapur_id ?? 'null' }}" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm" x-transition>
                                 <span class="font-medium">Perhatian: </span>
                                 <span x-text="'Dapur ini sudah memiliki Kepala Dapur: ' + selectedKepalaDapur"></span>
@@ -94,10 +131,17 @@
 
                     <!-- Pengawas -->
                     <template x-if="selectedRole === 'pengawas'">
-                        <div x-transition>
+                        <div x-transition x-data="dapurMultiSelect()">
                             <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
-                            <div class="input-with-icon">
-                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            
+                            <!-- Search input -->
+                            <div class="input-with-icon mb-2">
+                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <input type="text" 
+                                       x-model="searchQuery" 
+                                       placeholder="Cari dapur..."
+                                       class="input-field select-enhanced"
+                                       autocomplete="off">
                             </div>
                             
                             <!-- Selected chips -->
@@ -112,9 +156,9 @@
                                 </template>
                             </div>
 
-                            <!-- Checkbox list -->
+                            <!-- Checkbox list with filter -->
                             <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)]/50">
-                                <template x-for="dapur in dapurs" :key="dapur.id">
+                                <template x-for="dapur in filteredDapurs" :key="dapur.id">
                                     <label class="flex items-center gap-3 p-2 hover:bg-[var(--color-surface)] rounded cursor-pointer">
                                         <input type="checkbox" 
                                                :value="dapur.id" 
@@ -123,6 +167,16 @@
                                                class="w-4 h-4 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
                                         <span class="text-sm" x-text="dapur.nama + ' (' + dapur.lokasi + ')'"></span>
                                     </label>
+                                </template>
+                                <template x-if="filteredDapurs.length === 0 && searchQuery">
+                                    <div class="text-center text-[var(--color-text-muted)] text-sm py-4">
+                                        Tidak ada dapur yang cocok dengan "<span x-text="searchQuery"></span>"
+                                    </div>
+                                </template>
+                                <template x-if="!searchQuery && selectedDapurIds.length === dapurs.length">
+                                    <div class="text-center text-[var(--color-text-muted)] text-sm py-4">
+                                        Semua dapur sudah dipilih
+                                    </div>
                                 </template>
                             </div>
 
@@ -208,6 +262,74 @@
 @push('scripts')
 <script>
 document.addEventListener('alpine:init', () => {
+    // Autocomplete component for Kepala Dapur
+    Alpine.data('dapurAutocomplete', () => ({
+        searchQuery: '',
+        showDropdown: false,
+        highlightedIndex: -1,
+        
+        get filteredDapurs() {
+            if (!this.searchQuery) return this.$root.dapurs || [];
+            const q = this.searchQuery.toLowerCase();
+            return (this.$root.dapurs || []).filter(d => 
+                d.nama.toLowerCase().includes(q) || 
+                d.lokasi.toLowerCase().includes(q)
+            );
+        },
+        
+        selectDapur(dapur) {
+            this.$root.kepalaDapurId = dapur.id;
+            this.searchQuery = dapur.nama;
+            this.showDropdown = false;
+            this.highlightedIndex = -1;
+        },
+        
+        focusFirstOption() {
+            if (this.filteredDapurs.length > 0) {
+                this.highlightedIndex = 0;
+            }
+        },
+        
+        focusLastOption() {
+            if (this.filteredDapurs.length > 0) {
+                this.highlightedIndex = this.filteredDapurs.length - 1;
+            }
+        },
+        
+        selectHighlighted() {
+            if (this.highlightedIndex >= 0 && this.highlightedIndex < this.filteredDapurs.length) {
+                this.selectDapur(this.filteredDapurs[this.highlightedIndex]);
+            }
+        }
+    }));
+
+    // Multi-select component for Pengawas
+    Alpine.data('dapurMultiSelect', () => ({
+        searchQuery: '',
+        
+        get filteredDapurs() {
+            if (!this.searchQuery) return this.$root.dapurs || [];
+            const q = this.searchQuery.toLowerCase();
+            return (this.$root.dapurs || []).filter(d => 
+                d.nama.toLowerCase().includes(q) || 
+                d.lokasi.toLowerCase().includes(q)
+            );
+        },
+        
+        toggleDapur(id) {
+            this.$root.toggleDapur(id);
+        },
+        
+        removeDapur(id) {
+            this.$root.removeDapur(id);
+        },
+        
+        getDapurName(id) {
+            return this.$root.getDapurName(id);
+        }
+    }));
+
+    // Main form component
     Alpine.data('userForm', (initialRole = '', initialDapurIds = [], initialKepalaDapurId = null) => ({
         selectedRole: initialRole,
         selectedDapurIds: initialDapurIds || [],
