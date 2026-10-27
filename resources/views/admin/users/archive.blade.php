@@ -65,7 +65,6 @@
                         <th class="table-th min-w-[180px] max-w-[300px]">NAMA</th>
                         <th class="table-th min-w-[100px] max-w-[140px]">PERAN</th>
                         <th class="table-th min-w-[160px] hidden lg:table-cell">AKSES</th>
-                        <th class="table-th min-w-[120px] hidden md:table-cell">TERAKHIR AKTIF</th>
                         <th class="table-th min-w-[120px]">DIHAPUS PADA</th>
                         <th class="table-th min-w-[100px] text-center">AKSI</th>
                     </tr>
@@ -90,15 +89,6 @@
                         </td>
                         <td class="table-td min-w-0 hidden lg:table-cell line-clamp-2 text-[13px] text-[var(--color-text)]">
                             {{ $user->access_description }}
-                        </td>
-                        <td class="table-td min-w-0 hidden md:table-cell text-[13px] text-[var(--color-text-muted)]">
-                            @if ($user->deactivated_at)
-                                {{ $user->deactivated_at->format('d M Y H:i') }}
-                            @elseif ($user->updated_at)
-                                {{ $user->updated_at->format('d M Y H:i') }}
-                            @else
-                                -
-                            @endif
                         </td>
                         <td class="table-td min-w-0 text-[13px] text-[var(--color-text-muted)]">
                             {{ $user->deleted_at->format('d M Y H:i') }}

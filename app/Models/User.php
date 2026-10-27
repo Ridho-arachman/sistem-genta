@@ -18,16 +18,15 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
-    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'is_active', 'deactivated_at', 'deactivated_by', 'created_by', 'updated_by'])]
+    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'])]
     #[Hidden(['password', 'remember_token'])]
-    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'is_active', 'deactivated_at', 'deactivated_by', 'created_by', 'updated_by'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'deactivated_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
     }
@@ -60,22 +59,6 @@ class User extends Authenticatable
     public function cctvAnomalyReports(): HasMany
     {
         return $this->hasMany(CctvAnomalyReport::class, 'admin_id');
-    }
-
-    // Audit relationships
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updater(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    public function deactivator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'deactivated_by');
     }
 
     // Dapur relationships
@@ -179,12 +162,7 @@ class User extends Authenticatable
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->whereNull('deleted_at');
-    }
-
-    public function scopeWithDeactivated($query)
-    {
-        return $query->withTrashed()->where('is_active', false);
+        return $query->whereNull('deleted_at');
     }
 
     /**
@@ -192,29 +170,6 @@ class User extends Authenticatable
      */
     protected static function booted(): void
     {
-        static::creating(function (self $user) {
-            if (auth()->check()) {
-                $user->created_by = auth()->id();
-                $user->updated_by = auth()->id();
-            }
-        });
-
-        static::updating(function (self $user) {
-            if (auth()->check()) {
-                $user->updated_by = auth()->id();
-            }
-            // Auto-set deactivated_at and deactivated_by when is_active changes to false
-            if ($user->isDirty('is_active') && $user->is_active === false) {
-                $user->deactivated_at = now();
-                $user->deactivated_by = auth()->id();
-            }
-            // Clear deactivated_at and deactivated_by when reactivated
-            if ($user->isDirty('is_active') && $user->is_active === true) {
-                $user->deactivated_at = null;
-                $user->deactivated_by = null;
-            }
-        });
-
         static::deleting(function (self $user) {
             // Prevent hard delete of admin users via force delete
             if ($user->isForceDeleting() && $user->isAdmin()) {
@@ -237,9 +192,6 @@ class User extends Authenticatable
         if ($this->trashed()) {
             return 'Dihapus';
         }
-        if (! $this->is_active) {
-            return 'Non-aktif';
-        }
         if (! $this->email_verified_at) {
             return 'Belum Verifikasi';
         }
@@ -251,7 +203,6 @@ class User extends Authenticatable
     {
         return match ($this->status_label) {
             'Aktif' => 'bg-[#22C55E15] text-[#166534]',
-            'Non-aktif' => 'bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)]',
             'Belum Verifikasi' => 'bg-[#F59E0B15] text-[#854D0E]',
             'Dihapus' => 'bg-[#FEF2F2] text-[#EF4444]',
             default => 'bg-[var(--color-surface)] text-[var(--color-text-muted)]',

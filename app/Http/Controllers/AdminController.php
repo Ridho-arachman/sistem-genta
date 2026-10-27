@@ -21,12 +21,9 @@ class AdminController extends Controller
     // User Management
     public function users(Request $request)
     {
-        $query = User::with(['registeredBy', 'dapur', 'dapurs', 'creator', 'updater', 'deactivator'])->latest();
+        $query = User::with(['registeredBy', 'dapur', 'dapurs'])->latest();
 
-        // Default: only active users, unless include_deactivated filter is set
-        if (! $request->boolean('include_deactivated')) {
-            $query->active();
-        }
+        $query->active();
 
         if ($request->filled('role')) {
             $query->where('role', $request->role);
@@ -109,7 +106,6 @@ class AdminController extends Controller
             'role' => $validated['role'],
             'registered_by' => auth()->id(),
             'dapur_id' => $validated['dapur_id'] ?? null,
-            'is_active' => true,
         ]);
 
         // Sync multi-dapur for pengawas
@@ -128,8 +124,6 @@ class AdminController extends Controller
         if ($user->isAdmin()) {
             abort(403, 'Tidak bisa mengedit admin lain.');
         }
-
-        $user->load(['creator', 'updater', 'deactivator']);
 
         $dapurs = Dapur::orderBy('nama')->with('kepalaDapur')->get();
         $dapurData = $dapurs->map(fn ($d) => [
@@ -201,7 +195,6 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'role' => $validated['role'],
             'dapur_id' => $validated['dapur_id'] ?? null,
-            'is_active' => $validated['is_active'] ?? null,
         ]));
 
         // Sync multi-dapur for pengawas
@@ -232,7 +225,7 @@ class AdminController extends Controller
     // Archived Users (Soft Deleted)
     public function archivedUsers(Request $request)
     {
-        $query = User::onlyTrashed()->with(['registeredBy', 'dapur', 'dapurs', 'creator', 'updater', 'deactivator'])->latest();
+        $query = User::onlyTrashed()->with(['registeredBy', 'dapur', 'dapurs'])->latest();
 
         if ($request->filled('role')) {
             $query->where('role', $request->role);

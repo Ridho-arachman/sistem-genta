@@ -24,7 +24,6 @@ class RoleSeeder extends Seeder
                 'role' => 'admin',
                 'email_verified_at' => now(),
                 'registered_by' => null,
-                'is_active' => true,
             ]
         );
 
@@ -55,7 +54,6 @@ class RoleSeeder extends Seeder
                     'role' => $role['role'],
                     'email_verified_at' => now(),
                     'registered_by' => $admin->id,
-                    'is_active' => true,
                 ]
             );
         }
