@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Edit User: ' . $user->name])
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-5xl mx-auto">
     <div class="heading mb-8">
         <div>
             <div class="eyebrow">Genta · Admin Panel</div>
@@ -20,151 +20,186 @@
                 Data Pengguna
             </div>
 
-            <div class="form-field">
-                <label class="form-label" for="name">Nama Lengkap <span class="required">*</span></label>
-                <div class="input-with-icon">
-                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name" 
-                           class="input-field select-enhanced" placeholder="Masukkan nama lengkap">
-                </div>
-                @error('name')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="form-field">
-                <label class="form-label" for="email">Email <span class="required">*</span></label>
-                <div class="input-with-icon">
-                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email" 
-                           class="input-field select-enhanced" placeholder="Masukkan email">
-                </div>
-                @error('email')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="form-field">
-                <label class="form-label" for="role">Role <span class="required">*</span></label>
-                <select id="role" name="role" required class="input-field select-enhanced" x-model="selectedRole" @change="handleRoleChange()">
-                    <option value="">Pilih role</option>
-                    <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
-                    <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
-                    <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
-                </select>
-                @error('role')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Dapur Assignment Fields -->
-            <template x-if="selectedRole === 'kepala_dapur'">
-                <div class="form-field" x-transition>
-                    <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {{-- Nama Lengkap --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="name">Nama Lengkap <span class="required">*</span></label>
                     <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced" x-model="kepalaDapurId">
-                            <option value="">Pilih dapur</option>
-                            @foreach($dapurs as $dapur)
-                                <option value="{{ $dapur->id }}" 
-                                    {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}
-                                    :data-has-kepala="{{ $dapur->kepalaDapur ? 'true' : 'false' }}"
-                                    :data-kepala-name="{{ $dapur->kepalaDapur?->name }}">
-                                    {{ $dapur->nama }} ({{ $dapur->lokasi }})
-                                </option>
-                            @endforeach
-                        </select>
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name" 
+                               class="input-field select-enhanced" placeholder="Masukkan nama lengkap">
                     </div>
-                    <div x-show="selectedKepalaDapur && kepalaDapurId != {{ $user->dapur_id ?? 'null' }}" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm" x-transition>
-                        <span class="font-medium">Perhatian: </span>
-                        <span x-text="'Dapur ini sudah memiliki Kepala Dapur: ' + selectedKepalaDapur"></span>
-                        <br><span class="font-medium">Menimpah akan mengubah assignment kepala dapur.</span>
-                    </div>
-                    @error('dapur_id')
+                    @error('name')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
                 </div>
-            </template>
 
-            <template x-if="selectedRole === 'pengawas'">
-                <div class="form-field" x-transition>
-                    <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
+                {{-- Email --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="email">Email <span class="required">*</span></label>
                     <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email" 
+                               class="input-field select-enhanced" placeholder="Masukkan email">
                     </div>
-                    
-                    <!-- Selected chips -->
-                    <div x-show="selectedDapurIds.length > 0" class="mt-2 flex flex-wrap gap-2" x-transition>
-                        <template x-for="id in selectedDapurIds" :key="id">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                                <span x-text="getDapurName(id)"></span>
-                                <button type="button" @click="removeDapur(id)" class="hover:text-[var(--color-primary)]/70 focus:outline-none" aria-label="Hapus">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </span>
-                        </template>
-                    </div>
+                    @error('email')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <!-- Checkbox list -->
-                    <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)]/50">
-                        <template x-for="dapur in dapurs" :key="dapur.id">
-                            <label class="flex items-center gap-3 p-2 hover:bg-[var(--color-surface)] rounded cursor-pointer">
-                                <input type="checkbox" 
-                                       :value="dapur.id" 
-                                       :checked="selectedDapurIds.includes(dapur.id)"
-                                       @change="toggleDapur(dapur.id)"
-                                       class="w-4 h-4 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
-                                <span class="text-sm" x-text="dapur.nama + ' (' + dapur.lokasi + ')'"></span>
-                            </label>
-                        </template>
-                    </div>
+                {{-- Role --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="role">Role <span class="required">*</span></label>
+                    <select id="role" name="role" required class="input-field select-enhanced" x-model="selectedRole" @change="handleRoleChange()">
+                        <option value="">Pilih role</option>
+                        <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
+                        <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
+                        <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
+                    </select>
+                    @error('role')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <!-- Hidden inputs for form submission -->
-                    <template x-for="id in selectedDapurIds" :key="id">
-                        <input type="hidden" name="dapur_ids[]" :value="id">
+                {{-- Dapur Assignment (full width) --}}
+                <div class="form-field lg:col-span-2">
+                    <!-- Kepala Dapur -->
+                    <template x-if="selectedRole === 'kepala_dapur'">
+                        <div x-transition>
+                            <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
+                            <div class="input-with-icon">
+                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                <select id="dapur_id" name="dapur_id" required class="input-field select-enhanced" x-model="kepalaDapurId">
+                                    <option value="">Pilih dapur</option>
+                                    @foreach($dapurs as $dapur)
+                                        <option value="{{ $dapur->id }}" 
+                                            {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}
+                                            :data-has-kepala="{{ $dapur->kepalaDapur ? 'true' : 'false' }}"
+                                            :data-kepala-name="{{ $dapur->kepalaDapur?->name }}">
+                                            {{ $dapur->nama }} ({{ $dapur->lokasi }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div x-show="selectedKepalaDapur && kepalaDapurId != {{ $user->dapur_id ?? 'null' }}" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm" x-transition>
+                                <span class="font-medium">Perhatian: </span>
+                                <span x-text="'Dapur ini sudah memiliki Kepala Dapur: ' + selectedKepalaDapur"></span>
+                                <br><span class="font-medium">Menimpah akan mengubah assignment kepala dapur.</span>
+                            </div>
+                            @error('dapur_id')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </template>
 
-                    <p class="form-hint mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
-                    @error('dapur_ids')
+                    <!-- Pengawas -->
+                    <template x-if="selectedRole === 'pengawas'">
+                        <div x-transition>
+                            <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
+                            <div class="input-with-icon">
+                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            </div>
+                            
+                            <!-- Selected chips -->
+                            <div x-show="selectedDapurIds.length > 0" class="mt-2 flex flex-wrap gap-2" x-transition>
+                                <template x-for="id in selectedDapurIds" :key="id">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                        <span x-text="getDapurName(id)"></span>
+                                        <button type="button" @click="removeDapur(id)" class="hover:text-[var(--color-primary)]/70 focus:outline-none" aria-label="Hapus">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </span>
+                                </template>
+                            </div>
+
+                            <!-- Checkbox list -->
+                            <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)]/50">
+                                <template x-for="dapur in dapurs" :key="dapur.id">
+                                    <label class="flex items-center gap-3 p-2 hover:bg-[var(--color-surface)] rounded cursor-pointer">
+                                        <input type="checkbox" 
+                                               :value="dapur.id" 
+                                               :checked="selectedDapurIds.includes(dapur.id)"
+                                               @change="toggleDapur(dapur.id)"
+                                               class="w-4 h-4 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
+                                        <span class="text-sm" x-text="dapur.nama + ' (' + dapur.lokasi + ')'"></span>
+                                    </label>
+                                </template>
+                            </div>
+
+                            <!-- Hidden inputs for form submission -->
+                            <template x-for="id in selectedDapurIds" :key="id">
+                                <input type="hidden" name="dapur_ids[]" :value="id">
+                            </template>
+
+                            <p class="form-hint mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
+                            @error('dapur_ids')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </template>
+
+                    <!-- Manajerial - no dapur assignment -->
+                    <template x-if="selectedRole === 'manajerial'">
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <p class="font-medium text-blue-800">Role Manajerial tidak memerlukan assignment dapur</p>
+                                    <p class="text-sm text-blue-700">Manajerial memiliki akses read-only ke semua dapur dan laporan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Default: select role first -->
+                    <template x-if="!selectedRole">
+                        <div class="p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
+                            <div class="flex items-center gap-3 text-[var(--color-text-muted)]">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>Pilih role terlebih dahulu untuk melihat opsi assignment dapur</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                {{-- Password Baru --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="password">Password Baru <span class="text-muted">(kosongkan jika tidak diubah)</span></label>
+                    <div class="input-with-icon">
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <input id="password" type="password" name="password" autocomplete="new-password" 
+                               class="input-field select-enhanced" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
+                    </div>
+                    <p class="form-hint">Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter.</p>
+                    @error('password')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
                 </div>
-            </template>
 
-            <div class="form-field">
-                <label class="form-label" for="password">Password Baru <span class="text-muted">(kosongkan jika tidak diubah)</span></label>
-                <div class="input-with-icon">
-                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    <input id="password" type="password" name="password" autocomplete="new-password" 
-                           class="input-field select-enhanced" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
+                {{-- Konfirmasi Password Baru --}}
+                <div class="form-field lg:col-span-1">
+                    <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
+                    <div class="input-with-icon">
+                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" 
+                               class="input-field select-enhanced" placeholder="Ulangi password baru">
+                    </div>
+                    @error('password_confirmation')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
                 </div>
-                <p class="form-hint">Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter.</p>
-                @error('password')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="form-field">
-                <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                <div class="input-with-icon">
-                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" 
-                           class="input-field select-enhanced" placeholder="Ulangi password baru">
-                </div>
-                @error('password_confirmation')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
             </div>
         </div>
 
-        <div class="form-actions">
+        {{-- Form Actions (full width) --}}
+        <div class="form-actions lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
+            <a href="{{ route('admin.users') }}" class="btn-action btn-action-secondary">
+                <span>Batal</span>
+            </a>
             <button type="submit" class="btn-action btn-action-primary">
                 <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                 <span>Perbarui User</span>
             </button>
-            <a href="{{ route('admin.users') }}" class="btn-action btn-action-secondary">
-                <span>Batal</span>
-            </a>
         </div>
     </form>
 </div>
