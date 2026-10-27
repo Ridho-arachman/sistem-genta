@@ -94,9 +94,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
 
         // Settings
-        Route::get('settings', function () {
-            return view('admin.settings');
-        })->name('settings');
+        Route::get('settings', [AdminController::class, 'settings'])->name('settings');
+        Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     });
 
     // ==================== PENGAWAS ROUTES ====================

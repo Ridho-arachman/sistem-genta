@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ settings('app_name_web') ?? config('app.name') }}</title>
     
     {{-- Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -15,8 +15,11 @@
     <meta name="theme-color" content="#E50000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="GENTA Banten">
+    <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_web') ?? 'GENTA Banten' }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
+
+    {{-- Google Maps API Key --}}
+    <meta name="google-maps-key" content="{{ env('GOOGLE_MAPS_API_KEY', '') }}">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -36,8 +39,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2">
-                    <img src="{{ asset('logo.png') }}" alt="GENTA Banten" class="w-8 h-8 object-contain">
-                    <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Banten</span></span>
+                    <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Banten' }}" class="w-8 h-8 object-contain">
+                    <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Banten' }}</span>
                 </div>
                 <div class="hidden md:flex items-center gap-6">
                     @auth
@@ -67,7 +70,7 @@
             <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm" x-show="true" x-transition>{{ session('error') }}</div>
         </div>
     @endif
-
+    
     {{-- Content --}}
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         @yield('content')
@@ -77,7 +80,7 @@
     <footer class="border-t border-[var(--color-border)] bg-[var(--color-surface)] py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p class="text-center text-xs text-[var(--color-text-muted)]">
-                {{ config('app.name') }} &mdash; Monitoring CCTV & Absensi Geotag Dapur
+                {{ settings('app_name_web') ?? config('app.name') }} &mdash; {{ settings('app_tagline') ?? 'Monitoring CCTV & Absensi Geotag Dapur' }}
             </p>
         </div>
     </footer>

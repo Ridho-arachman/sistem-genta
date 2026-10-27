@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GENTA Pangan Banten ,  Gerakan Nasional Tani untuk Kemandirian Pangan Banten. Ketahanan pangan melalui pertanian, peternakan, perikanan, dan UMKM.">
-    <title>{{ config('app.name', 'GENTA Pangan Banten') }}</title>
+    <meta name="description" content="{{ settings('app_tagline') ?? 'Gerakan Nasional Tani untuk Kemandirian Pangan Banten. Ketahanan pangan melalui pertanian, peternakan, perikanan, dan UMKM.' }}">
+    <title>{{ settings('app_name_web') ?? config('app.name', 'GENTA Pangan Banten') }}</title>
     
     {{-- Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -17,8 +17,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="GENTA Pangan Banten">
+    <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
+
+    {{-- Google Maps API Key --}}
+    <meta name="google-maps-key" content="{{ env('GOOGLE_MAPS_API_KEY', '') }}">
     
     @vite(["resources/css/app.css", "resources/js/app.js"])
     <style>
@@ -696,9 +699,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2 whitespace-nowrap flex-shrink-0">
-                    <a href="{{ route('home') }}" class="nav-logo" aria-label="GENTA Pangan Banten - Beranda">
-                        <img src="{{ asset('logo.png') }}" alt="GENTA Pangan Banten" class="w-8 h-8 object-contain">
-                        <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Pangan Banten</span></span>
+                    <a href="{{ route('home') }}" class="nav-logo" aria-label="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }} - Beranda">
+                        <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="w-8 h-8 object-contain">
+                        <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}</span>
                     </a>
                 </div>
                 <div class="hidden md:flex items-center gap-3">
@@ -726,14 +729,14 @@
         {{-- Hero Section --}}
         <section class="hero-section landing-section">
             <div class="hero-content">
-                <img src="{{ asset('logo.png') }}" alt="GENTA Pangan Banten" class="hero-logo animate-fade-in-up">
+                <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="hero-logo animate-fade-in-up">
                 
                 <h1 class="hero-title animate-fade-in-up delay-1">
-                    GENTA <span class="highlight">Pangan Banten</span>
+                    {{ str_replace('Pangan Banten', '<span class="highlight">Pangan Banten</span>', settings('app_name_web') ?? 'GENTA Pangan Banten') }}
                 </h1>
                 
                 <p class="hero-tagline animate-fade-in-up delay-2">
-                    Gerakan Nasional Tani untuk Kemandirian Pangan ,  ketahanan pangan melalui pertanian, peternakan, perikanan, dan UMKM
+                    {{ settings('app_tagline') ?? 'Gerakan Nasional Tani untuk Kemandirian Pangan , ketahanan pangan melalui pertanian, peternakan, perikanan, dan UMKM' }}
                 </p>
                 
                 <div class="hero-buttons animate-fade-in-up delay-3">
@@ -961,7 +964,7 @@
                             <x-heroicon name="location" class="w-5 h-5" />
                         </div>
                         <h3 class="text-lg font-bold mb-2">Kantor Pusat</h3>
-                        <p class="text-[var(--color-text-muted)]">Gedung Pemprov Banten, Serang</p>
+                        <p class="text-[var(--color-text-muted)]">{{ settings('office_address') ?? 'Gedung Pemprov Banten, Serang' }}</p>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon">
@@ -993,16 +996,22 @@
         <div class="footer-content">
             <div class="footer-brand">
                 <div class="footer-logo">
-                    <img src="{{ asset('logo.png') }}" alt="GENTA Pangan Banten" class="w-10 h-10 object-contain">
-                    <span class="font-bold text-xl tracking-tight text-[var(--color-secondary)]">GENTA <span class="text-[var(--color-primary)]">Pangan Banten</span></span>
+                    <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="w-10 h-10 object-contain">
+                    <span class="font-bold text-xl tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}</span>
                 </div>
             </div>
+        </div>
+
+        {{-- Google Maps Location --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+            <h3 class="text-lg font-semibold text-[var(--color-secondary)] text-center mb-4">Lokasi Kantor Pusat</h3>
+            <x-google-map :height="'350px'" :zoom="15" :show-marker="true" :interactive="false" />
         </div>
 
         {{-- Footer Bottom --}}
         <div class="footer-bottom">
             <p class="footer-copyright">
-                &copy; {{ date('Y') }} {{ config('app.name') }} &mdash; Gerakan Nasional Tani untuk Kemandirian Pangan Banten
+                &copy; {{ date('Y') }} {{ settings('app_name_web') ?? config('app.name') }} &mdash; {{ settings('app_tagline') ?? 'Gerakan Nasional Tani untuk Kemandirian Pangan Banten' }}
             </p>
         </div>
     </footer>

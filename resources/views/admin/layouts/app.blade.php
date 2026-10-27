@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle ?? 'Admin Panel' }} - {{ config('app.name') }}</title>
+    <title>{{ $pageTitle ?? 'Admin Panel' }} - {{ settings('app_name_desktop') ?? config('app.name') }}</title>
 
     {{-- Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -15,8 +15,11 @@
     <meta name="theme-color" content="#E50000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="GENTA Banten Admin">
+    <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_desktop') ?? 'GENTA Banten Admin' }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
+
+    {{-- Google Maps API Key --}}
+    <meta name="google-maps-key" content="{{ env('GOOGLE_MAPS_API_KEY', '') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -45,9 +48,9 @@
                 </svg>
             </button>
             <div class="brandmark">
-                <img src="{{ asset('logo.png') }}" alt="GENTA Pangan Banten">
+                <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_desktop') ?? 'GENTA Pangan Banten' }}">
             </div>
-            <div>GENTA <small>ADMIN PANEL</small></div>
+            <div>{{ strtoupper(settings('app_name_desktop') ?? 'GENTA') }} <small>ADMIN PANEL</small></div>
         </div>
         <div class="top-actions">
             <span class="demo-pill hidden sm:inline-block">{{ auth()->user()->name }}</span>

@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
+use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -327,5 +328,39 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentAbsensi', 'recentAnomalies'));
+    }
+
+    // Settings
+    public function settings()
+    {
+        $settings = Settings::allKeyed();
+        $branding = Settings::group('branding');
+        $map = Settings::group('map');
+        $general = Settings::group('general');
+
+        return view('admin.settings', compact('settings', 'branding', 'map', 'general'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'app_name_desktop' => ['required', 'string', 'max:100'],
+            'app_name_web' => ['required', 'string', 'max:100'],
+            'app_tagline' => ['nullable', 'string', 'max:150'],
+            'office_lat' => ['required', 'numeric', 'between:-90,90'],
+            'office_lng' => ['required', 'numeric', 'between:-180,180'],
+            'office_address' => ['nullable', 'string', 'max:255'],
+            'timezone' => ['required', 'string', 'max:50'],
+        ]);
+
+        Settings::set('app_name_desktop', $validated['app_name_desktop']);
+        Settings::set('app_name_web', $validated['app_name_web']);
+        Settings::set('app_tagline', $validated['app_tagline'] ?? '');
+        Settings::set('office_lat', $validated['office_lat']);
+        Settings::set('office_lng', $validated['office_lng']);
+        Settings::set('office_address', $validated['office_address'] ?? '');
+        Settings::set('timezone', $validated['timezone']);
+
+        return redirect()->route('admin.settings')->with('status', 'Pengaturan berhasil disimpan.');
     }
 }
