@@ -518,31 +518,92 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        // Fallback: extract kecamatan, kabupaten, provinsi from display_name
-        // Indonesian format: "Jalan, Kelurahan, Kecamatan, Kabupaten/Kota, Provinsi, Kode Pos, Indonesia"
+        // Fallback: extract kecamatan, kabupaten, provinsi from display_name using regex
+        // Indonesian format varies, so parse by labels not position
         extractFromDisplayName(displayName) {
             const result = { kecamatan: null, kabupaten: null, provinsi: null };
             if (!displayName) return result;
             
-            // Split by comma and clean up
-            const parts = displayName.split(',').map(p => p.trim());
-            if (parts.length < 3) return result;
+            // Known Indonesian provinces for validation
+            const knownProvinces = [
+                'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau', 'Jambi',
+                'Sumatera Selatan', 'Bangka Belitung', 'Bengkulu', 'Lampung',
+                'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten',
+                'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur',
+                'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara',
+                'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat',
+                'Maluku', 'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Tengah', 'Papua Pegunungan', 'Papua Selatan', 'Papua Barat Daya'
+            ];
             
-            // From the end: Country, Province, Kabupaten/Kota, Kecamatan, Kelurahan, ...
-            // Find province (usually 2nd from end before country)
-            const countryIdx = parts.findIndex(p => p.toLowerCase() === 'indonesia');
-            const provinceIdx = countryIdx > 0 ? countryIdx - 1 : parts.length - 2;
-            const kabupatenIdx = provinceIdx > 0 ? provinceIdx - 1 : parts.length - 3;
-            const kecamatanIdx = kabupatenIdx > 0 ? kabupatenIdx - 1 : parts.length - 4;
+            // Helper to find first match from regex
+            const findFirst = (regex, str) => {
+                const m = str.match(regex);
+                return m ? m[1].trim() : null;
+            };
             
-            if (provinceIdx >= 0) result.provinsi = parts[provinceIdx];
-            if (kabupatenIdx >= 0) result.kabupaten = parts[kabupatenIdx];
-            if (kecamatanIdx >= 0) result.kecamatan = parts[kecamatanIdx];
+            // 1. Extract Provinsi - match "Provinsi X" or known province name near end
+            let provinsi = findFirst(/(?:^|,)\s*Provinsi\s+([^,]+)/i, displayName);
+            if (!provinsi) {
+                // Try known province names (case insensitive, word boundary)
+                for (const p of knownProvinces) {
+                    const regex = new RegExp(`(?:^|,)\\s*${p.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}(?=,|$)`, 'i');
+                    const m = displayName.match(regex);
+                    if (m) { provinsi = p; break; }
+                }
+            }
+            result.provinsi = provinsi;
             
-            // Clean up common prefixes
-            if (result.provinsi) result.provinsi = result.provinsi.replace(/^Provinsi\s+/i, '');
-            if (result.kabupaten) result.kabupaten = result.kabupaten.replace(/^(Kota|Kabupaten)\s+/i, '');
-            if (result.kecamatan) result.kecamatan = result.kecamatan.replace(/^Kecamatan\s+/i, '').replace(/^Kec\.\s+/i, '');
+            // 2. Extract Kabupaten/Kota - match "Kabupaten X" or "Kota X" or "Kab. X"
+            let kabupaten = findFirst(/(?:^|,)\s*(?:Kabupaten|Kota|Kab\.)\s+([^,]+)/i, displayName);
+            // Fallback: if we found provinsi, look for the part just before it
+            if (!kabupaten && provinsi) {
+                const parts = displayName.split(',').map(p => p.trim());
+                const provIdx = parts.findIndex(p => p.toLowerCase().includes(provinsi.toLowerCase()));
+                if (provIdx > 0) {
+                    const candidate = parts[provIdx - 1];
+                    // Check if it looks like a kabupaten/kota (not kecamatan/kelurahan)
+                    if (!/^(Kecamatan|Kec\.|Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
+                        kabupaten = candidate.replace(/^(Kabupaten|Kota|Kab\.)\s+/i, '');
+                    }
+                }
+            }
+            result.kabupaten = kabupaten;
+            
+            // 3. Extract Kecamatan - match "Kecamatan X" or "Kec. X"
+            let kecamatan = findFirst(/(?:^|,)\s*(?:Kecamatan|Kec\.)\s+([^,]+)/i, displayName);
+            // Fallback: if we found kabupaten, look for the part just before it
+            if (!kecamatan && kabupaten) {
+                const parts = displayName.split(',').map(p => p.trim());
+                const kabIdx = parts.findIndex(p => p.toLowerCase().includes(kabupaten.toLowerCase()));
+                if (kabIdx > 0) {
+                    const candidate = parts[kabIdx - 1];
+                    // Check if it looks like a kecamatan (not kelurahan/jalan)
+                    if (!/^(Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
+                        kecamatan = candidate.replace(/^(Kecamatan|Kec\.)\s+/i, '');
+                    }
+                }
+            }
+            // Last fallback: try to find any "Kec." pattern anywhere
+            if (!kecamatan) {
+                kecamatan = findFirst(/Kec\.\s+([^,]+)/i, displayName);
+            }
+            result.kecamatan = kecamatan;
+            
+            // Validation: if kabupaten equals kecamatan, something went wrong - discard kabupaten
+            if (result.kabupaten && result.kecamatan && 
+                result.kabupaten.toLowerCase() === result.kecamatan.toLowerCase()) {
+                result.kabupaten = null;
+            }
+            
+            // Validation: if kecamatan contains known province name, discard it
+            if (result.kecamatan) {
+                for (const p of knownProvinces) {
+                    if (result.kecamatan.toLowerCase().includes(p.toLowerCase())) {
+                        result.kecamatan = null;
+                        break;
+                    }
+                }
+            }
             
             return result;
         },
