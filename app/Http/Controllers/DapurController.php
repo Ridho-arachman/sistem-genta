@@ -11,8 +11,8 @@ class DapurController extends Controller
     use AuthorizesRequests;
 
     // Banten wilayah constants
-    protected const BANTEN_PROVINSI = 'Banten';
-    protected const BANTEN_KABUPATEN_KOTA = [
+    public const BANTEN_PROVINSI = 'Banten';
+    public const BANTEN_KABUPATEN_KOTA = [
         'Kota Serang',
         'Kota Cilegon',
         'Kota Tangerang',
