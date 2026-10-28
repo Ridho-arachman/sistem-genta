@@ -154,11 +154,14 @@ class DapurController extends Controller
 
         // Get unique values for filter dropdowns (admin only) - BANTEN ONLY
         $filterOptions = [];
+        $allKecamatanMap = [];
         if ($user->isAdmin()) {
             // Build static kecamatan list from known Banten data (not from DB)
             $allKecamatan = [];
             foreach (self::BANTEN_KABUPATEN_KOTA as $kab) {
-                $allKecamatan = array_merge($allKecamatan, $this->getKnownKecamatan($kab));
+                $kecamatanList = $this->getKnownKecamatan($kab);
+                $allKecamatanMap[$kab] = $kecamatanList;
+                $allKecamatan = array_merge($allKecamatan, $kecamatanList);
             }
             $allKecamatan = array_unique($allKecamatan);
             sort($allKecamatan);
@@ -183,7 +186,7 @@ class DapurController extends Controller
             return view('kepala-dapur.dapurs.index', compact('dapurs'));
         }
 
-        return view('admin.dapurs.index', compact('dapurs', 'dapurData', 'filterOptions'));
+        return view('admin.dapurs.index', compact('dapurs', 'dapurData', 'filterOptions', 'allKecamatanMap'));
     }
 
     public function create()

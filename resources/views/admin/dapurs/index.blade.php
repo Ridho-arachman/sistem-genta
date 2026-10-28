@@ -16,28 +16,36 @@
 <div class="panel" x-data="dapurList()">
     {{-- Filter Wilayah --}}
     <div class="panel-head" style="flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
-        <div class="flex flex-wrap gap-3 w-full sm:w-auto">
-            <select id="filterProvinsi" x-model="filter.provinsi" @change="applyFilters()"
-                    class="input-field select-enhanced text-sm min-w-[180px]">
-                <option value="">Semua Provinsi</option>
-                @foreach ($filterOptions['provinsi'] as $prov)
-                    <option value="{{ $prov }}">{{ $prov }}</option>
-                @endforeach
-            </select>
-            <select id="filterKabupaten" x-model="filter.kabupaten_kota" @change="applyFilters()"
-                    class="input-field select-enhanced text-sm min-w-[200px]">
-                <option value="">Semua Kabupaten/Kota</option>
-                @foreach ($filterOptions['kabupaten_kota'] as $kab)
-                    <option value="{{ $kab }}">{{ $kab }}</option>
-                @endforeach
-            </select>
-            <select id="filterKecamatan" x-model="filter.kecamatan" @change="applyFilters()"
-                    class="input-field select-enhanced text-sm min-w-[200px]">
-                <option value="">Semua Kecamatan</option>
-                @foreach ($filterOptions['kecamatan'] as $kec)
-                    <option value="{{ $kec }}">{{ $kec }}</option>
-                @endforeach
-            </select>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full sm:w-auto">
+            <div class="form-field">
+                <label class="form-label">Provinsi</label>
+                <input type="text" value="Banten" class="input-field" readonly>
+                <input type="hidden" name="provinsi" value="Banten">
+            </div>
+
+            <div class="form-field">
+                <label class="form-label" for="filterKabupaten">
+                    Kabupaten / Kota <span class="required">*</span>
+                </label>
+                <select id="filterKabupaten" x-model="filter.kabupaten_kota" @change="onKabupatenChange($event.target.value)"
+                        class="input-field select-enhanced text-sm">
+                    <option value="">-- Pilih Kabupaten/Kota --</option>
+                    @foreach ($filterOptions['kabupaten_kota'] as $kab)
+                        <option value="{{ $kab }}">{{ $kab }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label class="form-label" for="filterKecamatan">
+                    Kecamatan
+                </label>
+                <select id="filterKecamatan" x-model="filter.kecamatan" @change="applyFilters()"
+                        class="input-field select-enhanced text-sm"
+                        :disabled="kecamatanOptions.length === 0"
+                        x-html="getKecamatanOptionsHtml()">
+                </select>
+            </div>
         </div>
         
         <div class="flex-1 min-w-[250px]">
@@ -123,11 +131,30 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('dapurList', () => ({
         searchQuery: '',
         filter: {
-            provinsi: '',
             kabupaten_kota: '',
             kecamatan: '',
         },
+        allKecamatan: @json($allKecamatan ?? []),
         dapurs: @json($dapurData ?? []),
+        
+        get kecamatanOptions() {
+            const kab = this.filter.kabupaten_kota;
+            return kab ? (this.allKecamatan[kab] || []) : [];
+        },
+        
+        getKecamatanOptionsHtml() {
+            let html = '<option value="">-- Pilih Kecamatan --</option>';
+            for (const kec of this.kecamatanOptions) {
+                const selected = this.filter.kecamatan === kec ? 'selected' : '';
+                html += `<option value="${kec}" ${selected}>${kec}</option>`;
+            }
+            return html;
+        },
+        
+        onKabupatenChange(kab) {
+            this.filter.kabupaten_kota = kab;
+            this.filter.kecamatan = '';
+        },
         
         get filteredDapurs() {
             let result = this.dapurs;
@@ -148,9 +175,6 @@ document.addEventListener('alpine:init', () => {
             }
             
             // Wilayah filters
-            if (this.filter.provinsi) {
-                result = result.filter(d => d.provinsi === this.filter.provinsi);
-            }
             if (this.filter.kabupaten_kota) {
                 result = result.filter(d => d.kabupaten_kota === this.filter.kabupaten_kota);
             }
