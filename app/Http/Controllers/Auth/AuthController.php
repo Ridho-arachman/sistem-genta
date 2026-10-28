@@ -24,6 +24,21 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        // Check if user exists and is not soft deleted
+        $user = User::withTrashed()->where('email', $credentials['email'])->first();
+
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'email' => 'Email atau password salah.',
+            ]);
+        }
+
+        if ($user->trashed()) {
+            throw ValidationException::withMessages([
+                'email' => 'Akun ini telah dinonaktifkan. Silakan hubungi administrator.',
+            ]);
+        }
+
         if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => 'Email atau password salah.',
@@ -43,6 +58,12 @@ class AuthController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email']);
+
+        $user = User::withTrashed()->where('email', $request->email)->first();
+
+        if ($user && $user->trashed()) {
+            return back()->with(['status' => 'Jika email terdaftar, tautan reset password akan dikirim.']);
+        }
 
         $status = Password::sendResetLink(
             $request->only('email')
@@ -65,6 +86,12 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|confirmed|min:8',
         ]);
+
+        $user = User::withTrashed()->where('email', $request->email)->first();
+
+        if ($user && $user->trashed()) {
+            return back()->withErrors(['email' => 'Akun ini telah dinonaktifkan. Silakan hubungi administrator.']);
+        }
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
