@@ -4,8 +4,8 @@
     'nameLat' => 'latitude',
     'nameLng' => 'longitude',
     'readonly' => false,
-    'defaultLat' => -6.2088,
-    'defaultLng' => 106.8456,
+    'defaultLat' => -6.2,  // Banten center
+    'defaultLng' => 106.0, // Banten center
     'height' => '350px',
     'label' => 'Pilih Lokasi di Peta',
     'helpText' => 'Klik peta untuk memilih lokasi, atau gunakan tombol "Gunakan Lokasi Saya". Geser marker untuk penyesuaian.',
@@ -28,6 +28,11 @@
     'kecamatanElementId' => null,
     'kabupatenElementId' => null,
     'provinsiElementId' => null,
+    // Banten restriction props
+    'restrictToBanten' => true,
+    'bantenBounds' => [[-6.55, 105.6], [-5.75, 107.0]], // [southWest, northEast]
+    'bantenCenter' => [-6.2, 106.0],
+    'bantenZoom' => 10,
 ])
 
 <?php
@@ -202,6 +207,11 @@ document.addEventListener('alpine:init', () => {
         kecamatanElementId: '{{ $kecamatanElementId }}',
         kabupatenElementId: '{{ $kabupatenElementId }}',
         provinsiElementId: '{{ $provinsiElementId }}',
+        // Banten restriction
+        restrictToBanten: {{ $restrictToBanten ? 'true' : 'false' }},
+        bantenBounds: @js($bantenBounds),
+        bantenCenter: @js($bantenCenter),
+        bantenZoom: {{ $bantenZoom }},
 
         async init() {
             if (typeof L === 'undefined') {
@@ -211,6 +221,13 @@ document.addEventListener('alpine:init', () => {
             this.$nextTick(() => {
                 this.initMap();
             });
+        },
+
+        // Check if coordinates are within Banten bounds
+        isWithinBanten(lat, lng) {
+            if (!this.restrictToBanten) return true;
+            const bounds = this.bantenBounds;
+            return lat >= bounds[0][0] && lat <= bounds[1][0] && lng >= bounds[0][1] && lng <= bounds[1][1];
         },
 
         async loadLeaflet() {
@@ -258,7 +275,14 @@ document.addEventListener('alpine:init', () => {
                 keyboard: true,
                 tap: true,
                 touchZoom: true,
-            }).setView([lat, lng], 16);
+                maxBounds: this.restrictToBanten ? L.latLngBounds(this.bantenBounds) : null,
+                maxBoundsViscosity: 1.0, // Prevent dragging outside bounds
+            }).setView([lat, lng], this.restrictToBanten ? this.bantenZoom : 16);
+
+            // If restrictToBanten, also set initial view to Banten center if no coordinates
+            if (this.restrictToBanten && (!this.form.lat || !this.form.lng)) {
+                this.map.setView(this.bantenCenter, this.bantenZoom);
+            }
 
             // Force map to recalculate size after a tick
             setTimeout(() => {
@@ -319,6 +343,13 @@ document.addEventListener('alpine:init', () => {
             if (!this.readonly) {
                 this.marker.on('dragend', (e) => {
                     const pos = e.target.getLatLng();
+                    // Validate Banten bounds
+                    if (this.restrictToBanten && !this.isWithinBanten(pos.lat, pos.lng)) {
+                        this.showToast('Lokasi harus berada di wilayah Banten', 'error');
+                        // Reset marker to previous valid position
+                        this.marker.setLatLng([this.form.lat, this.form.lng]);
+                        return;
+                    }
                     this.form.lat = pos.lat;
                     this.form.lng = pos.lng;
                     this.updateRadiusCirclePosition(pos);
@@ -328,6 +359,12 @@ document.addEventListener('alpine:init', () => {
                 this.map.on('click', (e) => {
                     // Don't trigger if clicking on circle edge (handled above)
                     if (e.originalEvent.target._leaflet_pos) return;
+                    
+                    // Validate Banten bounds
+                    if (this.restrictToBanten && !this.isWithinBanten(e.latlng.lat, e.latlng.lng)) {
+                        this.showToast('Lokasi harus berada di wilayah Banten', 'error');
+                        return;
+                    }
                     
                     this.marker.setLatLng(e.latlng);
                     this.form.lat = e.latlng.lat;
@@ -497,6 +534,20 @@ document.addEventListener('alpine:init', () => {
                     // NO auto-clear of kabupaten just because it equals kecamatan.
                     // Valid cases exist where kecamatan and kota share the same name.
                     // The extractFromDisplayName already handles validation via explicit labels.
+                    
+                    // BANTEN RESTRICTION: Validate that the detected location is in Banten
+                    if (this.restrictToBanten && provinsi && provinsi !== 'Banten') {
+                        this.showToast('Lokasi terdeteksi di luar Banten: ' + provinsi + '. Pilih lokasi di Banten.', 'error');
+                        // Clear wilayah fields
+                        this.form.kecamatan = '';
+                        this.form.kabupaten_kota = '';
+                        this.form.provinsi = '';
+                        this.syncToElement(this.kecamatanElementId, '');
+                        this.syncToElement(this.kabupatenElementId, '');
+                        this.syncToElement(this.provinsiElementId, '');
+                        this.geocoding = false;
+                        return;
+                    }
                     
                     // Always sync individual fields (set if exists, clear if null)
                     this.form.kecamatan = kecamatan || '';
@@ -712,6 +763,14 @@ document.addEventListener('alpine:init', () => {
                 (pos) => {
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
+                    
+                    // Validate Banten bounds for current location
+                    if (this.restrictToBanten && !this.isWithinBanten(lat, lng)) {
+                        this.locating = false;
+                        this.showToast('Lokasi Anda di luar wilayah Banten. Pilih lokasi manual di peta.', 'error');
+                        return;
+                    }
+                    
                     this.form.lat = lat;
                     this.form.lng = lng;
                     this.updateMapPosition(lat, lng);
@@ -728,8 +787,12 @@ document.addEventListener('alpine:init', () => {
         },
 
         resetMap() {
-            this.form.lat = this.defaultLat;
-            this.form.lng = this.defaultLng;
+            // Use Banten center if restricted to Banten
+            const resetLat = this.restrictToBanten ? this.bantenCenter[0] : this.defaultLat;
+            const resetLng = this.restrictToBanten ? this.bantenCenter[1] : this.defaultLng;
+            
+            this.form.lat = resetLat;
+            this.form.lng = resetLng;
             this.form.radius = this.defaultRadius;
             this.form.address = '';
             this.form.kecamatan = '';
@@ -739,7 +802,7 @@ document.addEventListener('alpine:init', () => {
             this.syncToElement(this.kecamatanElementId, '');
             this.syncToElement(this.kabupatenElementId, '');
             this.syncToElement(this.provinsiElementId, '');
-            this.updateMapPosition(this.defaultLat, this.defaultLng);
+            this.updateMapPosition(resetLat, resetLng);
             this.showToast('Direset ke lokasi default');
         },
 

@@ -33,15 +33,22 @@ test('admin can create dapur', function () {
     $this->actingAs($this->admin)
         ->post(route('admin.dapurs.store'), [
             'nama' => 'Dapur Utama',
-            'lokasi' => 'Jakarta Pusat',
-            'alamat' => 'Jl. Merdeka No. 1',
+            'lokasi' => 'Kota Serang · Kec. Curug',
+            'alamat' => 'Jl. Raya Curug No. 1',
+            'provinsi' => 'Banten',
+            'kabupaten_kota' => 'Kota Serang',
+            'kecamatan' => 'Curug',
+            'latitude' => -6.15,
+            'longitude' => 106.15,
+            'geofence_radius' => 100,
         ])
         ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil ditambahkan.');
 
     $this->assertDatabaseHas('dapurs', [
         'nama' => 'Dapur Utama',
-        'lokasi' => 'Jakarta Pusat',
+        'provinsi' => 'Banten',
+        'kabupaten_kota' => 'Kota Serang',
     ]);
 });
 
@@ -54,13 +61,26 @@ test('pengawas cannot create dapur', function () {
 });
 
 test('admin can update dapur', function () {
-    $dapur = Dapur::factory()->create(['nama' => 'Dapur Lama']);
+    $dapur = Dapur::factory()->create([
+        'nama' => 'Dapur Lama',
+        'provinsi' => 'Banten',
+        'kabupaten_kota' => 'Kota Serang',
+        'kecamatan' => 'Curug',
+        'latitude' => -6.15,
+        'longitude' => 106.15,
+    ]);
 
     $this->actingAs($this->admin)
         ->put(route('admin.dapurs.update', $dapur), [
             'nama' => 'Dapur Baru',
-            'lokasi' => 'Bandung',
-            'alamat' => 'Jl. Asia Afrika',
+            'lokasi' => 'Kota Cilegon · Kec. Citangkil',
+            'alamat' => 'Jl. Raya Citangkil No. 5',
+            'provinsi' => 'Banten',
+            'kabupaten_kota' => 'Kota Cilegon',
+            'kecamatan' => 'Citangkil',
+            'latitude' => -6.0,
+            'longitude' => 106.0,
+            'geofence_radius' => 150,
         ])
         ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil diperbarui.');
@@ -68,6 +88,7 @@ test('admin can update dapur', function () {
     $this->assertDatabaseHas('dapurs', [
         'id' => $dapur->id,
         'nama' => 'Dapur Baru',
+        'kabupaten_kota' => 'Kota Cilegon',
     ]);
 });
 
