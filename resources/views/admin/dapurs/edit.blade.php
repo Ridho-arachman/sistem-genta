@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Edit Dapur: ' . $dapur->nama])
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="heading mb-8">
         <div>
             <div class="eyebrow">Genta · Admin Panel</div>
@@ -14,7 +14,7 @@
         @csrf
         @method('PUT')
 
-        {{-- Basic Info Section --}}
+        {{-- Row 1: Nama Dapur --}}
         <div class="form-section">
             <div class="form-section-title">
                 <span class="section-icon">⌂</span>
@@ -36,56 +36,56 @@
                 <label class="form-label" for="alamat">Alamat Lengkap</label>
                 <textarea id="alamat" name="alamat" rows="3" class="input-field" placeholder="Alamat lengkap dapur">{{ old('alamat', $dapur->alamat) }}</textarea>
             </div>
+        </div>
 
-            {{-- Wilayah --}}
-            <div class="form-section">
-                <div class="form-section-title">
-                    <span class="section-icon">🗺️</span>
-                    Wilayah
+        {{-- Row 2: Wilayah --}}
+        <div class="form-section">
+            <div class="form-section-title">
+                <span class="section-icon">🗺️</span>
+                Wilayah
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-field">
+                    <label class="form-label" for="kabupaten_kota">
+                        Kabupaten / Kota <span class="required">*</span>
+                    </label>
+                    <select id="kabupaten_kota" name="kabupaten_kota" 
+                            class="input-field" required
+                            x-model="form.kabupaten_kota"
+                            x-on:change="onKabupatenChange($event.target.value)">
+                        <option value="">-- Pilih Kabupaten/Kota --</option>
+                        @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
+                            <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) == $kab ? 'selected' : '' }}>
+                                {{ $kab }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('kabupaten_kota')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="form-field">
-                        <label class="form-label" for="kabupaten_kota">
-                            Kabupaten / Kota <span class="required">*</span>
-                        </label>
-                        <select id="kabupaten_kota" name="kabupaten_kota" 
-                                class="input-field" required
-                                x-model="form.kabupaten_kota"
-                                x-on:change="onKabupatenChange($event.target.value)">
-                            <option value="">-- Pilih Kabupaten/Kota --</option>
-                            @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
-                                <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) == $kab ? 'selected' : '' }}>
-                                    {{ $kab }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('kabupaten_kota')
-                            <p class="form-error">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div class="form-field">
+                    <label class="form-label" for="kecamatan">
+                        Kecamatan <span class="required">*</span>
+                    </label>
+                    <select id="kecamatan" name="kecamatan" 
+                            class="input-field" required
+                            x-model="form.kecamatan"
+                            :disabled="kecamatanOptions.length === 0"
+                            x-html="getKecamatanOptionsHtml()">
+                    </select>
+                    @error('kecamatan')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <div class="form-field">
-                        <label class="form-label" for="kecamatan">
-                            Kecamatan <span class="required">*</span>
-                        </label>
-                        <select id="kecamatan" name="kecamatan" 
-                                class="input-field" required
-                                x-model="form.kecamatan"
-                                :disabled="kecamatanOptions.length === 0"
-                                x-html="getKecamatanOptionsHtml()">
-                        </select>
-                        @error('kecamatan')
-                            <p class="form-error">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="form-field">
-                        <label class="form-label" for="provinsi">Provinsi</label>
-                        <input id="provinsi" type="text" name="provinsi" value="Banten" 
-                               class="input-field" readonly>
-                        <input type="hidden" name="provinsi" value="Banten">
-                    </div>
+                <div class="form-field">
+                    <label class="form-label" for="provinsi">Provinsi</label>
+                    <input id="provinsi" type="text" name="provinsi" value="Banten" 
+                           class="input-field" readonly>
+                    <input type="hidden" name="provinsi" value="Banten">
                 </div>
             </div>
         </div>
