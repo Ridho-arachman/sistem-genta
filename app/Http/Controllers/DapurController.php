@@ -29,6 +29,42 @@ class DapurController extends Controller
             ->latest()
             ->paginate(10);
 
+        // Prepare dapur data for Alpine.js component (admin view only)
+        $dapurData = [];
+        if ($user->isAdmin()) {
+            $dapurData = $dapurs->getCollection()->map(function ($d) {
+                $pengawas = $d->pengawas->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
+                $kepala = $d->kepalaDapur ? ['id' => $d->kepalaDapur->id, 'name' => $d->kepalaDapur->name] : null;
+                $cctvCount = $d->cctvs_count ?? 0;
+                $maxCams = 4;
+                $progress = $maxCams > 0 ? min(100, round(($cctvCount / $maxCams) * 100)) : 0;
+
+                $status = 'Operasional';
+                $statusClass = 'ok';
+                if ($cctvCount === 0) {
+                    $status = 'Belum ada kamera';
+                    $statusClass = 'off';
+                } elseif ($cctvCount < $maxCams) {
+                    $status = 'Perlu perhatian';
+                    $statusClass = 'warn';
+                }
+
+                return [
+                    'id' => $d->id,
+                    'nama' => $d->nama,
+                    'lokasi' => $d->lokasi,
+                    'alamat' => $d->alamat,
+                    'pengawas' => $pengawas,
+                    'kepalaDapur' => $kepala,
+                    'cctvs_count' => $cctvCount,
+                    'maxCams' => $maxCams,
+                    'progress' => $progress,
+                    'status' => $status,
+                    'statusClass' => $statusClass,
+                ];
+            })->toArray();
+        }
+
         if ($user->isManajerial()) {
             return view('manajerial.dapurs.index', compact('dapurs'));
         }
@@ -41,7 +77,7 @@ class DapurController extends Controller
             return view('kepala-dapur.dapurs.index', compact('dapurs'));
         }
 
-        return view('admin.dapurs.index', compact('dapurs'));
+        return view('admin.dapurs.index', compact('dapurs', 'dapurData'));
     }
 
     public function create()
