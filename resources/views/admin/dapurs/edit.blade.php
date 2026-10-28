@@ -72,9 +72,8 @@
                         <select id="kecamatan" name="kecamatan" 
                                 class="input-field" required
                                 x-model="form.kecamatan"
-                                :disabled="kecamatanOptions.length === 0">
-                            <option value="">-- Pilih Kabupaten/Kota dulu --</option>
-                            <option x-for="kec in kecamatanOptions" :key="kec" :value="kec" x-text="kec"></option>
+                                :disabled="kecamatanOptions.length === 0"
+                                x-html="getKecamatanOptionsHtml()">
                         </select>
                         @error('kecamatan')
                             <p class="form-error">{{ $message }}</p>
@@ -140,10 +139,20 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        getKecamatanOptionsHtml() {
+            if (this.kecamatanOptions.length === 0) {
+                return '<option value="">-- Pilih Kabupaten/Kota dulu --</option>';
+            }
+            return '<option value="">-- Pilih Kecamatan --</option>' + 
+                this.kecamatanOptions.map(kec => 
+                    `<option value="${kec}">${kec}</option>`
+                ).join('');
+        },
+
         init() {
             // Initialize kecamatan options if kabupaten already selected (e.g. after validation error)
             if (this.form.kabupaten_kota) {
-                this.onKabupatenChange();
+                this.onKabupatenChange(this.form.kabupaten_kota);
             }
         }
     }));
