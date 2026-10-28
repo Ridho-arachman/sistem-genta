@@ -14,6 +14,7 @@ class DapurController extends Controller
     public const BANTEN_PROVINSI = 'Banten';
     public const BANTEN_KABUPATEN_KOTA = [
         'Kota Serang',
+        'Kabupaten Serang',
         'Kota Cilegon',
         'Kota Tangerang',
         'Kota Tangerang Selatan',
@@ -34,6 +35,7 @@ class DapurController extends Controller
     {
         $knownKecamatan = [
             'Kota Serang' => ['Curug', 'Kasemen', 'Walantaka', 'Taktakan', 'Serang', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang'],
+            'Kabupaten Serang' => ['Ciruas', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang', 'Anyar', 'Taktakan', 'Walantaka', 'Kasemen', 'Curug', 'Padarincang', 'Gunungsari', 'Baros', 'Petir', 'Tirtayasa', 'Kibin'],
             'Kota Cilegon' => ['Cilegon', 'Pulo Ampel', 'Jombang', 'Citangkil', 'Grogol', 'Ciwandan', 'Gerogol'],
             'Kota Tangerang' => ['Tangerang', 'Batuceper', 'Benda', 'Jatiuwung', 'Neglasari', 'Cipondoh', 'Karawaci', 'Larangan', 'Ciledug', 'Pinang', 'Binuang', 'Pakuhaji', 'Sepatan', 'Sukadiri', 'Mekar Baru'],
             'Kota Tangerang Selatan' => ['Serpong', 'Serpong Utara', 'Pamulang', 'Ciputat', 'Ciputat Timur', 'Setu', 'Pondok Aren'],
