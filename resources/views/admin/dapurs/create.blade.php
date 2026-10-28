@@ -112,6 +112,17 @@
     </form>
 </div>
 
+@php
+$kecamatanMapping = [];
+$controller = app(\App\Http\Controllers\DapurController::class);
+foreach (\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab) {
+    $kecs = $controller->getKnownKecamatan($kab);
+    if (!empty($kecs)) {
+        $kecamatanMapping[$kab] = $kecs;
+    }
+}
+@endphp
+
 @push('scripts')
 <script>
 document.addEventListener('alpine:init', () => {
@@ -121,6 +132,7 @@ document.addEventListener('alpine:init', () => {
             kecamatan: '@js(old("kecamatan"))',
         },
         kecamatanOptions: [],
+        allKecamatan: @json($kecamatanMapping),
 
         onKabupatenChange() {
             const kabupaten = this.form.kabupaten_kota;
@@ -130,16 +142,7 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
             
-            // Get kecamatan list from server-rendered data
-            const allKecamatan = @json(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA.reduce((acc, kab) => {
-                $kecs = app(\App\Http\Controllers\DapurController::class)->getKnownKecamatan(kab);
-                if (!empty($kecs)) {
-                    acc[kab] = $kecs;
-                }
-                return acc;
-            }, []));
-            
-            this.kecamatanOptions = allKecamatan[kabupaten] || [];
+            this.kecamatanOptions = this.allKecamatan[kabupaten] || [];
             
             // Reset kecamatan if not in new options
             if (!this.kecamatanOptions.includes(this.form.kecamatan)) {
