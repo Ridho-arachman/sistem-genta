@@ -18,12 +18,12 @@ class DapurFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => fake()->company().' '.fake()->randomElement(['Pusat', 'Utama', 'Cabang', 'Satuan']),
-            'lokasi' => fake()->city(),
-            'alamat' => fake()->address(),
-            'latitude' => fake()->latitude(-6.5, -6.0),
-            'longitude' => fake()->longitude(106.5, 107.0),
-            'geofence_radius' => fake()->randomElement([50, 100, 150, 200]),
+            'nama' => fake('id_ID')->company().' '.fake('id_ID')->randomElement(['Pusat', 'Utama', 'Cabang', 'Satuan']),
+            'lokasi' => fake('id_ID')->city(),
+            'alamat' => fake('id_ID')->address(),
+            'latitude' => fake('id_ID')->latitude(-6.5, -6.0),
+            'longitude' => fake('id_ID')->longitude(106.5, 107.0),
+            'geofence_radius' => fake('id_ID')->randomElement([50, 100, 150, 200]),
         ];
     }
 }
