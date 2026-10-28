@@ -467,12 +467,17 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                     
-                    // Fallback: try to extract from display_name if address parts are missing
-                    if (!kecamatan || !kabupaten || !provinsi) {
+                    // Fallback: ONLY run if ALL THREE fields missing from OSM address object
+                    // This prevents fallback from overwriting partial correct OSM data
+                    const hasOsmKecamatan = !!kecamatan;
+                    const hasOsmKabupaten = !!kabupaten;
+                    const hasOsmProvinsi = !!provinsi;
+                    
+                    if (!hasOsmKecamatan && !hasOsmKabupaten && !hasOsmProvinsi) {
                         const fallback = this.extractFromDisplayName(data.display_name);
-                        kecamatan = kecamatan || fallback.kecamatan;
-                        kabupaten = kabupaten || fallback.kabupaten;
-                        provinsi = provinsi || fallback.provinsi;
+                        kecamatan = fallback.kecamatan;
+                        kabupaten = fallback.kabupaten;
+                        provinsi = fallback.provinsi;
                     }
                     
                     // Always sync individual fields (set if exists, clear if null)
@@ -553,49 +558,29 @@ document.addEventListener('alpine:init', () => {
             }
             result.provinsi = provinsi;
             
-            // 2. Extract Kabupaten/Kota - match "Kabupaten X" or "Kota X" or "Kab. X"
+            // 2. Extract Kabupaten/Kota - ONLY match explicit labels "Kabupaten X", "Kota X", "Kab. X"
+            // Do NOT use positional fallback (part before provinsi) - that causes swaps
             let kabupaten = findFirst(/(?:^|,)\s*(?:Kabupaten|Kota|Kab\.)\s+([^,]+)/i, displayName);
-            // Fallback: if we found provinsi, look for the part just before it
-            if (!kabupaten && provinsi) {
-                const parts = displayName.split(',').map(p => p.trim());
-                const provIdx = parts.findIndex(p => p.toLowerCase().includes(provinsi.toLowerCase()));
-                if (provIdx > 0) {
-                    const candidate = parts[provIdx - 1];
-                    // Check if it looks like a kabupaten/kota (not kecamatan/kelurahan)
-                    if (!/^(Kecamatan|Kec\.|Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
-                        kabupaten = candidate.replace(/^(Kabupaten|Kota|Kab\.)\s+/i, '');
-                    }
-                }
-            }
             result.kabupaten = kabupaten;
             
-            // 3. Extract Kecamatan - match "Kecamatan X" or "Kec. X"
+            // 3. Extract Kecamatan - ONLY match explicit labels "Kecamatan X", "Kec. X"
+            // Do NOT use positional fallback (part before kabupaten) - that causes swaps
             let kecamatan = findFirst(/(?:^|,)\s*(?:Kecamatan|Kec\.)\s+([^,]+)/i, displayName);
-            // Fallback: if we found kabupaten, look for the part just before it
-            if (!kecamatan && kabupaten) {
-                const parts = displayName.split(',').map(p => p.trim());
-                const kabIdx = parts.findIndex(p => p.toLowerCase().includes(kabupaten.toLowerCase()));
-                if (kabIdx > 0) {
-                    const candidate = parts[kabIdx - 1];
-                    // Check if it looks like a kecamatan (not kelurahan/jalan)
-                    if (!/^(Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
-                        kecamatan = candidate.replace(/^(Kecamatan|Kec\.)\s+/i, '');
-                    }
-                }
-            }
-            // Last fallback: try to find any "Kec." pattern anywhere
-            if (!kecamatan) {
-                kecamatan = findFirst(/Kec\.\s+([^,]+)/i, displayName);
-            }
             result.kecamatan = kecamatan;
             
-            // Validation: if kabupaten equals kecamatan, something went wrong - discard kabupaten
-            if (result.kabupaten && result.kecamatan && 
-                result.kabupaten.toLowerCase() === result.kecamatan.toLowerCase()) {
+            // Validation guards to prevent cross-contamination:
+            
+            // Guard 1: If kabupaten value contains kecamatan keywords, it's likely a false match
+            if (result.kabupaten && /^(Kecamatan|Kec\.|Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(result.kabupaten)) {
                 result.kabupaten = null;
             }
             
-            // Validation: if kecamatan contains known province name, discard it
+            // Guard 2: If kecamatan value contains kabupaten/kota keywords, it's likely a false match
+            if (result.kecamatan && /^(Kabupaten|Kota|Kab\.)/i.test(result.kecamatan)) {
+                result.kecamatan = null;
+            }
+            
+            // Guard 3: If kecamatan contains known province name, discard it (likely matched province instead)
             if (result.kecamatan) {
                 for (const p of knownProvinces) {
                     if (result.kecamatan.toLowerCase().includes(p.toLowerCase())) {
@@ -603,6 +588,19 @@ document.addEventListener('alpine:init', () => {
                         break;
                     }
                 }
+            }
+            
+            // Guard 4: If kabupaten equals kecamatan, discard both (ambiguous)
+            if (result.kabupaten && result.kecamatan && 
+                result.kabupaten.toLowerCase() === result.kecamatan.toLowerCase()) {
+                result.kabupaten = null;
+                result.kecamatan = null;
+            }
+            
+            // Guard 5: If kabupaten contains province name, discard it
+            if (result.kabupaten && result.provinsi && 
+                result.kabupaten.toLowerCase().includes(result.provinsi.toLowerCase())) {
+                result.kabupaten = null;
             }
             
             return result;
