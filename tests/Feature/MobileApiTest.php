@@ -222,41 +222,14 @@ test('mobile sync locations validation', function () {
         ->assertJsonValidationErrors(['locations.0.lat', 'locations.0.lng']);
 });
 
-test('dapur geofence radius validation', function () {
-    $this->actingAs($this->admin)
-        ->post(route('admin.dapurs.store'), [
-            'nama' => 'Test Dapur',
-            'provinsi' => 'Banten',
-            'kabupaten_kota' => 'Kota Serang',
-            'kecamatan' => 'Curug',
-            'latitude' => -6.15,
-            'longitude' => 106.15,
-            'geofence_radius' => 5, // too small (min 10)
-        ])
-        ->assertSessionHasErrors('geofence_radius');
-
-    $this->actingAs($this->admin)
-        ->post(route('admin.dapurs.store'), [
-            'nama' => 'Test Dapur',
-            'provinsi' => 'Banten',
-            'kabupaten_kota' => 'Kota Serang',
-            'kecamatan' => 'Curug',
-            'latitude' => -6.15,
-            'longitude' => 106.15,
-            'geofence_radius' => 10000, // too large (max 5000)
-        ])
-        ->assertSessionHasErrors('geofence_radius');
-
-    // Valid radius
+test('admin dapur create validates kabupaten_kota and kecamatan', function () {
+    // Valid with required fields
     $this->actingAs($this->admin)
         ->post(route('admin.dapurs.store'), [
             'nama' => 'Test Dapur Valid',
             'provinsi' => 'Banten',
             'kabupaten_kota' => 'Kota Serang',
             'kecamatan' => 'Curug',
-            'latitude' => -6.15,
-            'longitude' => 106.15,
-            'geofence_radius' => 500,
         ])
         ->assertRedirect(route('admin.dapurs.index'));
 });

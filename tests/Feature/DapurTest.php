@@ -38,9 +38,6 @@ test('admin can create dapur', function () {
             'provinsi' => 'Banten',
             'kabupaten_kota' => 'Kota Serang',
             'kecamatan' => 'Curug',
-            'latitude' => -6.15,
-            'longitude' => 106.15,
-            'geofence_radius' => 100,
         ])
         ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil ditambahkan.');
@@ -66,8 +63,6 @@ test('admin can update dapur', function () {
         'provinsi' => 'Banten',
         'kabupaten_kota' => 'Kota Serang',
         'kecamatan' => 'Curug',
-        'latitude' => -6.15,
-        'longitude' => 106.15,
     ]);
 
     $this->actingAs($this->admin)
@@ -78,9 +73,6 @@ test('admin can update dapur', function () {
             'provinsi' => 'Banten',
             'kabupaten_kota' => 'Kota Cilegon',
             'kecamatan' => 'Citangkil',
-            'latitude' => -6.0,
-            'longitude' => 106.0,
-            'geofence_radius' => 150,
         ])
         ->assertRedirect(route('admin.dapurs.index'))
         ->assertSessionHas('status', 'Dapur berhasil diperbarui.');

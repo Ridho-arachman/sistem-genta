@@ -22,26 +22,27 @@ class DapurController extends Controller
         'Kabupaten Tangerang',
     ];
 
-    // Banten bounding box for map restriction [south, west, north, east]
-    protected const BANTEN_BOUNDS = [
-        [-6.55, 105.6],  // Southwest
-        [-5.75, 107.0],  // Northeast
-    ];
-
     public function __construct()
     {
         $this->middleware('auth');
     }
 
     /**
-     * Validate if coordinates are within Banten bounds
+     * Get known kecamatan for a given kabupaten/kota
      */
-    protected function isWithinBanten(float $lat, float $lng): bool
+    protected function getKnownKecamatan(string $kabupatenKota): array
     {
-        return $lat >= self::BANTEN_BOUNDS[0][0] 
-            && $lat <= self::BANTEN_BOUNDS[1][0]
-            && $lng >= self::BANTEN_BOUNDS[0][1]
-            && $lng <= self::BANTEN_BOUNDS[1][1];
+        $knownKecamatan = [
+            'Kota Serang' => ['Curug', 'Kasemen', 'Walantaka', 'Taktakan', 'Serang', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang'],
+            'Kota Cilegon' => ['Cilegon', 'Pulo Ampel', 'Jombang', 'Citangkil', 'Grogol', 'Ciwandan', 'Gerogol'],
+            'Kota Tangerang' => ['Tangerang', 'Batuceper', 'Benda', 'Jatiuwung', 'Neglasari', 'Cipondoh', 'Karawaci', 'Larangan', 'Ciledug', 'Pinang', 'Binuang', 'Pakuhaji', 'Sepatan', 'Sukadiri', 'Mekar Baru'],
+            'Kota Tangerang Selatan' => ['Serpong', 'Serpong Utara', 'Pamulang', 'Ciputat', 'Ciputat Timur', 'Setu', 'Pondok Aren'],
+            'Kabupaten Pandeglang' => ['Pandeglang', 'Munjul', 'Cibaliung', 'Cimanggu', 'Angsana', 'Karangsak', 'Sobang', 'Cibitung', 'Mandalawangi', 'Cikeudel', 'Panimbang', 'Sumur', 'Ujung Jaya', 'Pulosari', 'Cigeulis', 'Pagelaran', 'Majasari', 'Kaduhejo'],
+            'Kabupaten Lebak' => ['Rangkasbitung', 'Cibadak', 'Muncang', 'Sobang', 'Cihara', 'Malenggang', 'Bayah', 'Cilangkap', 'Cileles', 'Cijaku', 'Cigemblong', 'Wanasalam', 'Gunung Kencana', 'Mekar Jaya', 'Panggarangan', 'Sajira', 'Cibengkung', 'Leuwidamar', 'Bojongmanik', 'Sukaresmi', 'Kencana', 'Gunung Kencana', 'Cibadak', 'Warunggunung'],
+            'Kabupaten Tangerang' => ['Tigaraksa', 'Kosambi', 'Sepatan', 'Rajeg', 'Cikupa', 'Kelapa Dua', 'Curug', 'Solear', 'Kresek', 'Kaduhejo', 'Pagedangan', 'Cadasari', 'Jayanti', 'Balaraja', 'Bojongmanik', 'Kronjo', 'Mauk', 'Sukamulya', 'Gunung Kaler', 'Jasinga', 'Caringin', 'Cigemblong', 'Sindang Jaya', 'Jambe', 'Kramatwatu', 'Carenang', 'Sindang', 'Pasar Kemis'],
+        ];
+
+        return $knownKecamatan[$kabupatenKota] ?? [];
     }
 
     /**
@@ -73,21 +74,13 @@ class DapurController extends Controller
      */
     protected function isKnownKecamatan(string $kabupatenKota, string $kecamatan): ?bool
     {
-        $knownKecamatan = [
-            'Kota Serang' => ['Curug', 'Kasemen', 'Walantaka', 'Taktakan', 'Serang', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang'],
-            'Kota Cilegon' => ['Cilegon', 'Pulo Ampel', 'Jombang', 'Citangkil', 'Grogol', 'Ciwandan', 'Gerogol'],
-            'Kota Tangerang' => ['Tangerang', 'Batuceper', 'Benda', 'Jatiuwung', 'Neglasari', 'Cipondoh', 'Karawaci', 'Larangan', 'Ciledug', 'Pinang', 'Binuang', 'Pakuhaji', 'Sepatan', 'Sukadiri', 'Mekar Baru'],
-            'Kota Tangerang Selatan' => ['Serpong', 'Serpong Utara', 'Pamulang', 'Ciputat', 'Ciputat Timur', 'Setu', 'Pondok Aren'],
-            'Kabupaten Pandeglang' => ['Pandeglang', 'Munjul', 'Cibaliung', 'Cimanggu', 'Angsana', 'Karangsak', 'Sobang', 'Cibitung', 'Mandalawangi', 'Cikeudel', 'Panimbang', 'Sumur', 'Ujung Jaya', 'Pulosari', 'Cigeulis', 'Pagelaran', 'Majasari', 'Kaduhejo'],
-            'Kabupaten Lebak' => ['Rangkasbitung', 'Cibadak', 'Muncang', 'Sobang', 'Cihara', 'Malenggang', 'Bayah', 'Cilangkap', 'Cileles', 'Cijaku', 'Cigemblong', 'Wanasalam', 'Gunung Kencana', 'Mekar Jaya', 'Panggarangan', 'Sajira', 'Cibengkung', 'Leuwidamar', 'Bojongmanik', 'Sukaresmi', 'Kencana', 'Gunung Kencana', 'Cibadak', 'Warunggunung'],
-            'Kabupaten Tangerang' => ['Tigaraksa', 'Kosambi', 'Sepatan', 'Rajeg', 'Cikupa', 'Kelapa Dua', 'Curug', 'Solear', 'Kresek', 'Kaduhejo', 'Pagedangan', 'Cadasari', 'Jayanti', 'Balaraja', 'Bojongmanik', 'Kronjo', 'Mauk', 'Sukamulya', 'Gunung Kaler', 'Jasinga', 'Caringin', 'Cigemblong', 'Sindang Jaya', 'Jambe', 'Kramatwatu', 'Carenang', 'Sindang', 'Pasar Kemis'],
-        ];
+        $knownKecamatan = $this->getKnownKecamatan($kabupatenKota);
 
-        if (!isset($knownKecamatan[$kabupatenKota])) {
+        if (empty($knownKecamatan)) {
             return null; // Unknown kabupaten, can't validate
         }
 
-        return in_array($kecamatan, $knownKecamatan[$kabupatenKota], true);
+        return in_array($kecamatan, $knownKecamatan, true);
     }
 
     public function index()
@@ -207,9 +200,6 @@ class DapurController extends Controller
             'kecamatan' => ['nullable', 'string', 'max:100'],
             'kabupaten_kota' => ['nullable', 'string', 'max:100'],
             'provinsi' => ['nullable', 'string', 'max:100'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'geofence_radius' => ['nullable', 'integer', 'min:10', 'max:5000'],
         ]);
 
         // Validate Banten wilayah
@@ -223,12 +213,8 @@ class DapurController extends Controller
             return back()->withErrors($wilayahErrors)->withInput();
         }
 
-        // Validate coordinates are within Banten bounds
-        if (isset($validated['latitude'], $validated['longitude'])) {
-            if (!$this->isWithinBanten((float)$validated['latitude'], (float)$validated['longitude'])) {
-                return back()->withErrors(['Koordinat harus berada di wilayah Banten.'])->withInput();
-            }
-        }
+        // Force provinsi to Banten
+        $validated['provinsi'] = self::BANTEN_PROVINSI;
 
         Dapur::create($validated);
 
@@ -287,9 +273,6 @@ class DapurController extends Controller
             'kecamatan' => ['nullable', 'string', 'max:100'],
             'kabupaten_kota' => ['nullable', 'string', 'max:100'],
             'provinsi' => ['nullable', 'string', 'max:100'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'geofence_radius' => ['nullable', 'integer', 'min:10', 'max:5000'],
         ]);
 
         // Validate Banten wilayah
@@ -303,12 +286,8 @@ class DapurController extends Controller
             return back()->withErrors($wilayahErrors)->withInput();
         }
 
-        // Validate coordinates are within Banten bounds
-        if (isset($validated['latitude'], $validated['longitude'])) {
-            if (!$this->isWithinBanten((float)$validated['latitude'], (float)$validated['longitude'])) {
-                return back()->withErrors(['Koordinat harus berada di wilayah Banten.'])->withInput();
-            }
-        }
+        // Force provinsi to Banten
+        $validated['provinsi'] = self::BANTEN_PROVINSI;
 
         $dapur->update($validated);
 

@@ -6,11 +6,11 @@
         <div>
             <div class="eyebrow">Genta · Admin Panel</div>
             <h1>Edit Dapur: {{ $dapur->nama }}</h1>
-            <div class="muted">Perbarui data dapur dan geofence</div>
+            <div class="muted">Perbarui data dapur</div>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.dapurs.update', $dapur) }}" class="space-y-6">
+    <form method="POST" action="{{ route('admin.dapurs.update', $dapur) }}" class="space-y-6" x-data="dapurForm()">
         @csrf
         @method('PUT')
 
@@ -45,77 +45,59 @@
                 <textarea id="alamat" name="alamat" rows="3" class="input-field" placeholder="Alamat lengkap dapur">{{ old('alamat', $dapur->alamat) }}</textarea>
             </div>
 
-            {{-- Wilayah (auto-filled from map) --}}
+            {{-- Wilayah --}}
             <div class="form-section">
                 <div class="form-section-title">
                     <span class="section-icon">🗺️</span>
-                    Wilayah (Terisi Otomatis dari Peta)
+                    Wilayah
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="form-field">
-                        <label class="form-label" for="kecamatan">Kecamatan</label>
-                        <input id="kecamatan" type="text" name="kecamatan" value="{{ old('kecamatan', $dapur->kecamatan) }}" 
-                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                        <label class="form-label" for="kabupaten_kota">
+                            Kabupaten / Kota <span class="required">*</span>
+                        </label>
+                        <select id="kabupaten_kota" name="kabupaten_kota" 
+                                class="input-field" required
+                                x-model="form.kabupaten_kota"
+                                @change="onKabupatenChange()">
+                            <option value="">-- Pilih Kabupaten/Kota --</option>
+                            @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
+                                <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) == $kab ? 'selected' : '' }}>
+                                    {{ $kab }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('kabupaten_kota')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
+
                     <div class="form-field">
-                        <label class="form-label" for="kabupaten_kota">Kabupaten / Kota</label>
-                        <input id="kabupaten_kota" type="text" name="kabupaten_kota" value="{{ old('kabupaten_kota', $dapur->kabupaten_kota) }}" 
-                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                        <label class="form-label" for="kecamatan">
+                            Kecamatan <span class="required">*</span>
+                        </label>
+                        <select id="kecamatan" name="kecamatan" 
+                                class="input-field" required
+                                x-model="form.kecamatan"
+                                :disabled="kecamatanOptions.length === 0">
+                            <option value="">-- Pilih Kabupaten/Kota dulu --</option>
+                            <template x-for="kec in kecamatanOptions" :key="kec">
+                                <option :value="kec" :selected="kec === form.kecamatan">{{ kec }}</option>
+                            </template>
+                        </select>
+                        @error('kecamatan')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
+
                     <div class="form-field">
                         <label class="form-label" for="provinsi">Provinsi</label>
-                        <input id="provinsi" type="text" name="provinsi" value="{{ old('provinsi', $dapur->provinsi) }}" 
-                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                        <input id="provinsi" type="text" name="provinsi" value="Banten" 
+                               class="input-field" readonly>
+                        <input type="hidden" name="provinsi" value="Banten">
                     </div>
                 </div>
-                <p class="text-xs text-[var(--color-text-muted)] mt-2">Field di atas terisi otomatis saat memilih lokasi di peta. Bisa diedit manual jika perlu.</p>
-            </div>
-        </div>
-
-        {{-- Coordinates & Map Section --}}
-        <div class="form-section">
-            <div class="form-section-title">
-                <span class="section-icon">📍</span>
-                Koordinat & Geofence
-            </div>
-
-            <!-- Map Picker Component (includes radius + auto address) -->
-            <x-leaflet-map-picker 
-                :latitude="old('latitude', $dapur->latitude)"
-                :longitude="old('longitude', $dapur->longitude)"
-                :radius="old('geofence_radius', $dapur->geofence_radius ?? 100)"
-                :nameLat="'latitude'"
-                :nameLng="'longitude'"
-                :nameRadius="'geofence_radius'"
-                :nameAddress="'alamat'"
-                :nameKecamatan="'kecamatan'"
-                :nameKabupaten="'kabupaten_kota'"
-                :nameProvinsi="'provinsi'"
-                :reverseGeocode="true"
-                :addressElementId="'alamat'"
-                :kecamatanElementId="'kecamatan'"
-                :kabupatenElementId="'kabupaten_kota'"
-                :provinsiElementId="'provinsi'"
-                :readonly="false"
-                :editableRadius="true"
-                :height="'350px'"
-                :label="'Pilih Lokasi Dapur di Peta'"
-                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat & wilayah otomatis terisi via OpenStreetMap.'"
-            />
-
-            <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <h4 class="font-medium text-blue-800 mb-2 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Tips Koordinat
-                </h4>
-                <ul class="text-sm text-blue-700 space-y-1">
-                    <li>• Klik peta di atas untuk memilih lokasi dapur</li>
-                    <li>• Atau klik "Gunakan Lokasi Saya" untuk ambil lokasi GPS perangkat</li>
-                    <li>• Marker merah bisa digeser untuk penyesuaian presisi</li>
-                    <li>• Format: Latitude (negatif untuk LS), Longitude (positif untuk BT)</li>
-                    <li>• Radius geofence: jarak toleransi GPS pengawas saat absensi</li>
-                </ul>
             </div>
         </div>
 
@@ -130,4 +112,50 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('dapurForm', () => ({
+        form: {
+            kabupaten_kota: '@js(old("kabupaten_kota", $dapur->kabupaten_kota))',
+            kecamatan: '@js(old("kecamatan", $dapur->kecamatan))',
+        },
+        kecamatanOptions: [],
+
+        onKabupatenChange() {
+            const kabupaten = this.form.kabupaten_kota;
+            if (!kabupaten) {
+                this.kecamatanOptions = [];
+                this.form.kecamatan = '';
+                return;
+            }
+            
+            // Get kecamatan list from server-rendered data
+            const allKecamatan = @json(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA.reduce((acc, kab) => {
+                $kecs = app(\App\Http\Controllers\DapurController::class)->getKnownKecamatan(kab);
+                if (!empty($kecs)) {
+                    acc[kab] = $kecs;
+                }
+                return acc;
+            }, []));
+            
+            this.kecamatanOptions = allKecamatan[kabupaten] || [];
+            
+            // Reset kecamatan if not in new options
+            if (!this.kecamatanOptions.includes(this.form.kecamatan)) {
+                this.form.kecamatan = '';
+            }
+        },
+
+        init() {
+            // Initialize kecamatan options if kabupaten already selected (e.g. after validation error)
+            if (this.form.kabupaten_kota) {
+                this.onKabupatenChange();
+            }
+        }
+    }));
+});
+</script>
+@endpush
 @endsection
