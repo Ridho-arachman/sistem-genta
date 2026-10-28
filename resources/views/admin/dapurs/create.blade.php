@@ -126,6 +126,9 @@ document.addEventListener('alpine:init', () => {
 
         onKabupatenChange() {
             const kabupaten = this.form.kabupaten_kota;
+            console.log('[DEBUG] kabupaten selected:', kabupaten);
+            console.log('[DEBUG] allKecamatan keys:', Object.keys(this.allKecamatan));
+            console.log('[DEBUG] allKecamatan[kabupaten]:', this.allKecamatan[kabupaten]);
             if (!kabupaten) {
                 this.kecamatanOptions = [];
                 this.form.kecamatan = '';
@@ -133,6 +136,7 @@ document.addEventListener('alpine:init', () => {
             }
             
             this.kecamatanOptions = this.allKecamatan[kabupaten] || [];
+            console.log('[DEBUG] kecamatanOptions now:', this.kecamatanOptions);
             
             // Reset kecamatan if not in new options
             if (!this.kecamatanOptions.includes(this.form.kecamatan)) {
