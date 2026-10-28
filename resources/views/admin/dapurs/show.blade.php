@@ -2,6 +2,14 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="heading mb-8">
+        <div>
+            <div class="eyebrow">Genta · Admin Panel</div>
+            <h1>Detail Dapur</h1>
+            <div class="muted">Informasi detail dapur</div>
+        </div>
+    </div>
+
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
