@@ -51,7 +51,7 @@
                         <select id="kabupaten_kota" name="kabupaten_kota" 
                                 class="input-field" required
                                 x-model="form.kabupaten_kota"
-                                @change="onKabupatenChange()">
+                                x-on:change="onKabupatenChange()">
                             <option value="">-- Pilih Kabupaten/Kota --</option>
                             @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
                                 <option value="{{ $kab }}" {{ old('kabupaten_kota') == $kab ? 'selected' : '' }}>
