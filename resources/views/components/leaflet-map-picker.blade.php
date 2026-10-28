@@ -20,6 +20,7 @@
     'nameAddress' => 'alamat',
     'reverseGeocode' => true,
     'geocodeUserAgent' => 'GENTA-Pangan-Banten/1.0',
+    'addressElementId' => null, // ID of visible textarea/input to sync address with
 ])
 
 <?php
@@ -37,7 +38,7 @@ $alpineId = 'mapPicker' . uniqid();
      class="form-field"
      :id="containerId"
      style="position: relative;">
-    
+   
     <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="{{ $latId }}">
         {{ $label }}
     </label>
@@ -181,6 +182,7 @@ document.addEventListener('alpine:init', () => {
         reverseGeocode: {{ $reverseGeocode ? 'true' : 'false' }},
         geocodeUserAgent: '{{ $geocodeUserAgent }}',
         nameAddress: '{{ $nameAddress }}',
+        addressElementId: '{{ $addressElementId }}',
 
         async init() {
             if (typeof L === 'undefined') {
@@ -412,6 +414,7 @@ document.addEventListener('alpine:init', () => {
                     }
                     
                     this.form.address = address;
+                    this.syncAddressToElement(address);
                     this.showToast('Alamat terdeteksi otomatis', 'success');
                 }
             } catch (e) {
@@ -422,8 +425,20 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        // Sync address to visible textarea/input element by ID
+        syncAddressToElement(address) {
+            if (!this.addressElementId) return;
+            const el = document.getElementById(this.addressElementId);
+            if (el) {
+                el.value = address;
+                // Trigger input event so Alpine/other listeners react
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        },
+
         clearAddress() {
             this.form.address = '';
+            this.syncAddressToElement('');
             this.showToast('Alamat dikosongkan, isi manual', 'info');
         },
 
@@ -458,6 +473,7 @@ document.addEventListener('alpine:init', () => {
             this.form.lng = this.defaultLng;
             this.form.radius = this.defaultRadius;
             this.form.address = '';
+            this.syncAddressToElement('');
             this.updateMapPosition(this.defaultLat, this.defaultLng);
             this.showToast('Direset ke lokasi default');
         },

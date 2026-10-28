@@ -63,6 +63,7 @@
                 :nameRadius="'geofence_radius'"
                 :nameAddress="'alamat'"
                 :reverseGeocode="true"
+                :addressElementId="'alamat'"
                 :readonly="false"
                 :editableRadius="true"
                 :height="'350px'"
