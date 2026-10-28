@@ -16,6 +16,10 @@
     'minRadius' => 10,
     'maxRadius' => 5000,
     'editableRadius' => true,
+    // Address auto-fill props
+    'nameAddress' => 'alamat',
+    'reverseGeocode' => true,
+    'geocodeUserAgent' => 'GENTA-Pangan-Banten/1.0',
 ])
 
 <?php
@@ -23,6 +27,7 @@ $id = $id ?? 'map-' . uniqid();
 $latId = $id . '-lat';
 $lngId = $id . '-lng';
 $radiusId = $id . '-radius';
+$addressId = $id . '-address';
 $containerId = $id . '-container';
 $alpineId = 'mapPicker' . uniqid();
 ?>
@@ -42,6 +47,9 @@ $alpineId = 'mapPicker' . uniqid();
         <input type="hidden" :name="nameLat" :id="latId" x-model="form.lat">
         <input type="hidden" :name="nameLng" :id="lngId" x-model="form.lng">
         <input type="hidden" :name="nameRadius" :id="radiusId" x-model="form.radius">
+        @if ($reverseGeocode)
+        <input type="hidden" :name="nameAddress" :id="addressId" x-model="form.address">
+        @endif
 
         <!-- Map Container -->
         <div :id="containerId" 
@@ -56,7 +64,7 @@ $alpineId = 'mapPicker' . uniqid();
             <button type="button" 
                     @click="locateMe()" 
                     class="btn-action inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold hover:bg-[var(--color-surface-hover)] transition opacity-100 disabled:opacity-75 disabled:cursor-not-allowed"
-                    :disabled="locating">
+                    :disabled="locating || geocoding">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -121,6 +129,25 @@ $alpineId = 'mapPicker' . uniqid();
             </div>
         </div>
 
+        @if ($reverseGeocode && !$readonly)
+        <!-- Detected Address Display -->
+        <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg" x-show="form.address">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-green-800 mb-1">Alamat Terdeteksi</p>
+                    <p class="text-sm text-green-700 truncate" x-text="form.address"></p>
+                </div>
+                <button type="button" 
+                        @click="clearAddress()" 
+                        class="flex-shrink-0 text-xs text-green-600 hover:text-green-800 font-medium"
+                        title="Hapus alamat otomatis, isi manual">
+                    Hapus
+                </button>
+            </div>
+            <p class="text-xs text-green-600 mt-2">Klik "Hapus" untuk isi alamat manual, atau geser marker untuk update otomatis.</p>
+        </div>
+        @endif
+
         @if ($helpText && !$readonly)
         <p class="mt-1 text-xs text-[var(--color-text-muted)]">{{ $helpText }}</p>
         @endif
@@ -135,11 +162,14 @@ document.addEventListener('alpine:init', () => {
             lat: @js($latitude ?? ''),
             lng: @js($longitude ?? ''),
             radius: @js($radius ?? 100),
+            address: @js($reverseGeocode ? '' : ''),
         },
         map: null,
         marker: null,
         radiusCircle: null,
         locating: false,
+        geocoding: false,
+        geocodeTimeout: null,
         defaultLat: {{ $defaultLat }},
         defaultLng: {{ $defaultLng }},
         defaultRadius: {{ $radius ?? 100 }},
@@ -148,6 +178,9 @@ document.addEventListener('alpine:init', () => {
         height: '{{ $height }}',
         readonly: {{ $readonly ? 'true' : 'false' }},
         editableRadius: {{ $editableRadius ? 'true' : 'false' }},
+        reverseGeocode: {{ $reverseGeocode ? 'true' : 'false' }},
+        geocodeUserAgent: '{{ $geocodeUserAgent }}',
+        nameAddress: '{{ $nameAddress }}',
 
         async init() {
             if (typeof L === 'undefined') {
@@ -268,6 +301,7 @@ document.addEventListener('alpine:init', () => {
                     this.form.lat = pos.lat;
                     this.form.lng = pos.lng;
                     this.updateRadiusCirclePosition(pos);
+                    this.triggerGeocode(pos.lat, pos.lng);
                 });
 
                 this.map.on('click', (e) => {
@@ -278,6 +312,7 @@ document.addEventListener('alpine:init', () => {
                     this.form.lat = e.latlng.lat;
                     this.form.lng = e.latlng.lng;
                     this.updateRadiusCirclePosition(e.latlng);
+                    this.triggerGeocode(e.latlng.lat, e.latlng.lng);
                 });
             }
         },
@@ -321,6 +356,77 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        // Debounced reverse geocoding
+        triggerGeocode(lat, lng) {
+            if (!this.reverseGeocode) return;
+            
+            clearTimeout(this.geocodeTimeout);
+            this.geocodeTimeout = setTimeout(() => {
+                this.reverseGeocodeLatLng(lat, lng);
+            }, 500); // 500ms debounce to avoid rate limiting
+        },
+
+        async reverseGeocodeLatLng(lat, lng) {
+            if (this.geocoding) return;
+            
+            this.geocoding = true;
+            this.showToast('Mencari alamat...', 'info');
+            
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=18&addressdetails=1`;
+                const response = await fetch(url, {
+                    headers: {
+                        'User-Agent': this.geocodeUserAgent,
+                        'Accept': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.display_name) {
+                    // Use display_name or construct from address parts for Indonesia
+                    let address = data.display_name;
+                    
+                    // Optionally, format address for Indonesia (road, city, province)
+                    if (data.address) {
+                        const parts = [];
+                        if (data.address.road) parts.push(data.address.road);
+                        if (data.address.village || data.address.suburb || data.address.neighbourhood) {
+                            parts.push(data.address.village || data.address.suburb || data.address.neighbourhood);
+                        }
+                        if (data.address.city || data.address.town || data.address.municipality) {
+                            parts.push(data.address.city || data.address.town || data.address.municipality);
+                        }
+                        if (data.address.state || data.address.province) {
+                            parts.push(data.address.state || data.address.province);
+                        }
+                        if (data.address.country) parts.push(data.address.country);
+                        
+                        if (parts.length > 0) {
+                            address = parts.join(', ');
+                        }
+                    }
+                    
+                    this.form.address = address;
+                    this.showToast('Alamat terdeteksi otomatis', 'success');
+                }
+            } catch (e) {
+                console.warn('Reverse geocoding failed:', e);
+                // Silent fail - user can still type manually
+            } finally {
+                this.geocoding = false;
+            }
+        },
+
+        clearAddress() {
+            this.form.address = '';
+            this.showToast('Alamat dikosongkan, isi manual', 'info');
+        },
+
         locateMe() {
             if (!navigator.geolocation) {
                 this.showToast('Geolocation tidak didukung browser ini');
@@ -335,6 +441,7 @@ document.addEventListener('alpine:init', () => {
                     this.form.lat = lat;
                     this.form.lng = lng;
                     this.updateMapPosition(lat, lng);
+                    this.triggerGeocode(lat, lng);
                     this.locating = false;
                     this.showToast('Lokasi Anda digunakan');
                 },
@@ -350,6 +457,7 @@ document.addEventListener('alpine:init', () => {
             this.form.lat = this.defaultLat;
             this.form.lng = this.defaultLng;
             this.form.radius = this.defaultRadius;
+            this.form.address = '';
             this.updateMapPosition(this.defaultLat, this.defaultLng);
             this.showToast('Direset ke lokasi default');
         },
@@ -373,12 +481,18 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        showToast(message) {
+        showToast(message, type = 'success') {
             const existing = document.querySelector('.map-toast');
             if (existing) existing.remove();
             
+            const colors = {
+                success: 'bg-green-600',
+                info: 'bg-blue-600',
+                error: 'bg-red-600',
+            };
+            
             const toast = document.createElement('div');
-            toast.className = 'map-toast fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg z-[9999]';
+            toast.className = `map-toast fixed bottom-6 right-6 ${colors[type] || colors.success} text-white px-5 py-3 rounded-lg shadow-lg z-[9999]`;
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);

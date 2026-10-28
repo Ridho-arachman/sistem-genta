@@ -53,7 +53,7 @@
                 Koordinat & Geofence
             </div>
 
-            <!-- Map Picker Component (includes radius) -->
+            <!-- Map Picker Component (includes radius + auto address) -->
             <x-leaflet-map-picker 
                 :latitude="old('latitude', $dapur->latitude)"
                 :longitude="old('longitude', $dapur->longitude)"
@@ -61,11 +61,13 @@
                 :nameLat="'latitude'"
                 :nameLng="'longitude'"
                 :nameRadius="'geofence_radius'"
+                :nameAddress="'alamat'"
+                :reverseGeocode="true"
                 :readonly="false"
                 :editableRadius="true"
                 :height="'350px'"
                 :label="'Pilih Lokasi Dapur di Peta'"
-                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Atau gunakan slider radius di bawah.'"
+                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat otomatis terisi via OpenStreetMap.'"
             />
 
             <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
