@@ -393,19 +393,52 @@ document.addEventListener('alpine:init', () => {
                     // Use display_name or construct from address parts for Indonesia
                     let address = data.display_name;
                     
-                    // Optionally, format address for Indonesia (road, city, province)
+                    // Optionally, format address for Indonesia with more granular details
                     if (data.address) {
                         const parts = [];
-                        if (data.address.road) parts.push(data.address.road);
-                        if (data.address.village || data.address.suburb || data.address.neighbourhood) {
-                            parts.push(data.address.village || data.address.suburb || data.address.neighbourhood);
+                        
+                        // House/building level detail (most granular)
+                        if (data.address.house_number) {
+                            const housePart = data.address.road 
+                                ? `${data.address.road} ${data.address.house_number}`
+                                : data.address.house_number;
+                            parts.push(housePart);
+                        } else if (data.address.road) {
+                            parts.push(data.address.road);
                         }
-                        if (data.address.city || data.address.town || data.address.municipality) {
-                            parts.push(data.address.city || data.address.town || data.address.municipality);
+                        
+                        // Building name if available
+                        if (data.address.building && !parts.some(p => p.includes(data.address.building))) {
+                            parts.push(data.address.building);
                         }
-                        if (data.address.state || data.address.province) {
-                            parts.push(data.address.state || data.address.province);
-                        }
+                        
+                        // Hamlet / Dusun / RW / RT level
+                        if (data.address.hamlet) parts.push(data.address.hamlet);
+                        if (data.address.subdivision) parts.push(data.address.subdivision);
+                        
+                        // Village / Kelurahan / Desa level
+                        if (data.address.village) parts.push(data.address.village);
+                        else if (data.address.suburb) parts.push(data.address.suburb);
+                        else if (data.address.neighbourhood) parts.push(data.address.neighbourhood);
+                        
+                        // Subdistrict / Kecamatan level
+                        if (data.address.subdistrict) parts.push(data.address.subdistrict);
+                        else if (data.address.city_district) parts.push(data.address.city_district);
+                        else if (data.address.district) parts.push(data.address.district);
+                        
+                        // City / Kota / Kabupaten level
+                        if (data.address.city) parts.push(data.address.city);
+                        else if (data.address.town) parts.push(data.address.town);
+                        else if (data.address.municipality) parts.push(data.address.municipality);
+                        
+                        // Province level
+                        if (data.address.state) parts.push(data.address.state);
+                        else if (data.address.province) parts.push(data.address.province);
+                        
+                        // Postcode
+                        if (data.address.postcode) parts.push(data.address.postcode);
+                        
+                        // Country
                         if (data.address.country) parts.push(data.address.country);
                         
                         if (parts.length > 0) {
