@@ -18,9 +18,9 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
-    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'])]
+    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'created_by', 'updated_by', 'deleted_by'])]
     #[Hidden(['password', 'remember_token'])]
-    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'created_by', 'updated_by', 'deleted_by'];
 
     protected function casts(): array
     {
@@ -28,6 +28,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_at' => 'datetime',
+            'created_by' => 'integer',
+            'updated_by' => 'integer',
+            'deleted_by' => 'integer',
         ];
     }
 
@@ -44,6 +47,21 @@ class User extends Authenticatable
     public function registeredBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'registered_by');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 
     public function spWarnings(): HasMany
@@ -170,10 +188,28 @@ class User extends Authenticatable
      */
     protected static function booted(): void
     {
+        static::creating(function (self $user) {
+            $user->created_by = auth()->id();
+            $user->updated_by = auth()->id();
+            // registered_by is set in controller for consistency
+            if (! $user->registered_by && auth()->check()) {
+                $user->registered_by = auth()->id();
+            }
+        });
+
+        static::updating(function (self $user) {
+            $user->updated_by = auth()->id();
+        });
+
         static::deleting(function (self $user) {
             // Prevent hard delete of admin users via force delete
             if ($user->isForceDeleting() && $user->isAdmin()) {
                 return false;
+            }
+            // Set deleted_by on soft delete
+            if (! $user->isForceDeleting() && auth()->check()) {
+                $user->deleted_by = auth()->id();
+                $user->saveQuietly();
             }
             // Detach dapur_user pivot on soft delete
             if (! $user->isForceDeleting()) {
