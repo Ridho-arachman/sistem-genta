@@ -42,17 +42,24 @@ class DapurController extends Controller
                 $status = 'Operasional';
                 $statusClass = 'ok';
                 if ($cctvCount === 0) {
-                    $status = 'Belum ada kamera';
+                    $status = 'Kamera bermasalah';
                     $statusClass = 'off';
                 } elseif ($cctvCount < $maxCams) {
                     $status = 'Perlu perhatian';
                     $statusClass = 'warn';
                 }
 
+                // Build lokasiPengawas string like "Kota Serang · Pengawas: Siti Rahma"
+                $lokasiPengawas = $d->lokasi ?? '—';
+                if ($d->pengawas->count() > 0) {
+                    $lokasiPengawas .= ' · Pengawas: ' . $d->pengawas->first()->name;
+                }
+
                 return [
                     'id' => $d->id,
                     'nama' => $d->nama,
                     'lokasi' => $d->lokasi,
+                    'lokasiPengawas' => $lokasiPengawas,
                     'alamat' => $d->alamat,
                     'pengawas' => $pengawas,
                     'kepalaDapur' => $kepala,
