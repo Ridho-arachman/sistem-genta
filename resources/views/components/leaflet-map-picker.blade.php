@@ -413,6 +413,10 @@ document.addEventListener('alpine:init', () => {
                     let address = data.display_name;
                     
                     // Optionally, format address for Indonesia with more granular details
+                    let kecamatan = null;
+                    let kabupaten = null;
+                    let provinsi = null;
+                    
                     if (data.address) {
                         const parts = [];
                         
@@ -441,15 +445,15 @@ document.addEventListener('alpine:init', () => {
                         else if (data.address.neighbourhood) parts.push(data.address.neighbourhood);
                         
                         // Subdistrict / Kecamatan level
-                        const kecamatan = data.address.subdistrict || data.address.city_district || data.address.district;
+                        kecamatan = data.address.subdistrict || data.address.city_district || data.address.district;
                         if (kecamatan) parts.push(kecamatan);
                         
                         // City / Kota / Kabupaten level
-                        const kabupaten = data.address.city || data.address.town || data.address.municipality || data.address.county;
+                        kabupaten = data.address.city || data.address.town || data.address.municipality || data.address.county;
                         if (kabupaten) parts.push(kabupaten);
                         
                         // Province level
-                        const provinsi = data.address.state || data.address.province;
+                        provinsi = data.address.state || data.address.province;
                         if (provinsi) parts.push(provinsi);
                         
                         // Postcode
@@ -461,21 +465,25 @@ document.addEventListener('alpine:init', () => {
                         if (parts.length > 0) {
                             address = parts.join(', ');
                         }
-                        
-                        // Sync individual fields
-                        if (kecamatan) {
-                            this.form.kecamatan = kecamatan;
-                            this.syncToElement(this.kecamatanElementId, kecamatan);
-                        }
-                        if (kabupaten) {
-                            this.form.kabupaten_kota = kabupaten;
-                            this.syncToElement(this.kabupatenElementId, kabupaten);
-                        }
-                        if (provinsi) {
-                            this.form.provinsi = provinsi;
-                            this.syncToElement(this.provinsiElementId, provinsi);
-                        }
                     }
+                    
+                    // Fallback: try to extract from display_name if address parts are missing
+                    if (!kecamatan || !kabupaten || !provinsi) {
+                        const fallback = this.extractFromDisplayName(data.display_name);
+                        kecamatan = kecamatan || fallback.kecamatan;
+                        kabupaten = kabupaten || fallback.kabupaten;
+                        provinsi = provinsi || fallback.provinsi;
+                    }
+                    
+                    // Always sync individual fields (set if exists, clear if null)
+                    this.form.kecamatan = kecamatan || '';
+                    this.syncToElement(this.kecamatanElementId, kecamatan || '');
+                    
+                    this.form.kabupaten_kota = kabupaten || '';
+                    this.syncToElement(this.kabupatenElementId, kabupaten || '');
+                    
+                    this.form.provinsi = provinsi || '';
+                    this.syncToElement(this.provinsiElementId, provinsi || '');
                     
                     this.form.address = address;
                     this.syncAddressToElement(address);
@@ -508,6 +516,35 @@ document.addEventListener('alpine:init', () => {
                 el.value = value;
                 el.dispatchEvent(new Event('input', { bubbles: true }));
             }
+        },
+
+        // Fallback: extract kecamatan, kabupaten, provinsi from display_name
+        // Indonesian format: "Jalan, Kelurahan, Kecamatan, Kabupaten/Kota, Provinsi, Kode Pos, Indonesia"
+        extractFromDisplayName(displayName) {
+            const result = { kecamatan: null, kabupaten: null, provinsi: null };
+            if (!displayName) return result;
+            
+            // Split by comma and clean up
+            const parts = displayName.split(',').map(p => p.trim());
+            if (parts.length < 3) return result;
+            
+            // From the end: Country, Province, Kabupaten/Kota, Kecamatan, Kelurahan, ...
+            // Find province (usually 2nd from end before country)
+            const countryIdx = parts.findIndex(p => p.toLowerCase() === 'indonesia');
+            const provinceIdx = countryIdx > 0 ? countryIdx - 1 : parts.length - 2;
+            const kabupatenIdx = provinceIdx > 0 ? provinceIdx - 1 : parts.length - 3;
+            const kecamatanIdx = kabupatenIdx > 0 ? kabupatenIdx - 1 : parts.length - 4;
+            
+            if (provinceIdx >= 0) result.provinsi = parts[provinceIdx];
+            if (kabupatenIdx >= 0) result.kabupaten = parts[kabupatenIdx];
+            if (kecamatanIdx >= 0) result.kecamatan = parts[kecamatanIdx];
+            
+            // Clean up common prefixes
+            if (result.provinsi) result.provinsi = result.provinsi.replace(/^Provinsi\s+/i, '');
+            if (result.kabupaten) result.kabupaten = result.kabupaten.replace(/^(Kota|Kabupaten)\s+/i, '');
+            if (result.kecamatan) result.kecamatan = result.kecamatan.replace(/^Kecamatan\s+/i, '').replace(/^Kec\.\s+/i, '');
+            
+            return result;
         },
 
         clearAddress() {
