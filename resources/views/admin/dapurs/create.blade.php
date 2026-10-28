@@ -51,7 +51,7 @@
                         <select id="kabupaten_kota" name="kabupaten_kota" 
                                 class="input-field" required
                                 x-model="form.kabupaten_kota"
-                                x-on:change="onKabupatenChange()">
+                                x-on:change="onKabupatenChange($event.target.value)">
                             <option value="">-- Pilih Kabupaten/Kota --</option>
                             @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
                                 <option value="{{ $kab }}" {{ old('kabupaten_kota') == $kab ? 'selected' : '' }}>
@@ -124,9 +124,8 @@ document.addEventListener('alpine:init', () => {
         kecamatanOptions: [],
         allKecamatan: @json($kecamatanMapping),
 
-        onKabupatenChange() {
-            const kabupaten = this.form.kabupaten_kota;
-            console.log('[DEBUG] kabupaten selected:', kabupaten);
+        onKabupatenChange(kabupaten) {
+            console.log('[DEBUG] kabupaten received:', kabupaten);
             console.log('[DEBUG] allKecamatan keys:', Object.keys(this.allKecamatan));
             console.log('[DEBUG] allKecamatan[kabupaten]:', this.allKecamatan[kabupaten]);
             if (!kabupaten) {
