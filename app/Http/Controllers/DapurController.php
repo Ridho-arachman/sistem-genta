@@ -30,7 +30,7 @@ class DapurController extends Controller
     /**
      * Get known kecamatan for a given kabupaten/kota
      */
-    protected function getKnownKecamatan(string $kabupatenKota): array
+    public function getKnownKecamatan(string $kabupatenKota): array
     {
         $knownKecamatan = [
             'Kota Serang' => ['Curug', 'Kasemen', 'Walantaka', 'Taktakan', 'Serang', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang'],
