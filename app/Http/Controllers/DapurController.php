@@ -155,13 +155,19 @@ class DapurController extends Controller
         // Get unique values for filter dropdowns (admin only) - BANTEN ONLY
         $filterOptions = [];
         if ($user->isAdmin()) {
+            // Build static kecamatan list from known Banten data (not from DB)
+            $allKecamatan = [];
+            foreach (self::BANTEN_KABUPATEN_KOTA as $kab) {
+                $allKecamatan = array_merge($allKecamatan, $this->getKnownKecamatan($kab));
+            }
+            $allKecamatan = array_unique($allKecamatan);
+            sort($allKecamatan);
+
             // Force provinsi to only Banten
             $filterOptions = [
                 'provinsi' => collect([self::BANTEN_PROVINSI]),
                 'kabupaten_kota' => collect(self::BANTEN_KABUPATEN_KOTA)->sort()->values(),
-                'kecamatan' => Dapur::whereNotNull('kecamatan')
-                    ->where('provinsi', self::BANTEN_PROVINSI)
-                    ->distinct()->pluck('kecamatan')->sort()->values(),
+                'kecamatan' => collect($allKecamatan)->values(),
             ];
         }
 

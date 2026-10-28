@@ -13,7 +13,7 @@
     </a>
 </div>
 
-<div class="panel">
+<div class="panel" x-data="dapurList()">
     {{-- Filter Wilayah --}}
     <div class="panel-head" style="flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
         <div class="flex flex-wrap gap-3 w-full sm:w-auto">
@@ -55,7 +55,7 @@
     </div>
 
     @if ($dapurs->count() > 0)
-        <div id="dapurList" class="space-y-3" x-data="dapurList()">
+        <div id="dapurList" class="space-y-3">
             <template x-for="dapur in filteredDapurs" :key="dapur.id">
                 <article class="dapur-row group bg-white border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-primary)]/50 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                          @click="goToDetail(dapur.id)">
