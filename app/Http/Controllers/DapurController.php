@@ -34,14 +34,14 @@ class DapurController extends Controller
     public function getKnownKecamatan(string $kabupatenKota): array
     {
         $knownKecamatan = [
-            'Kota Serang' => ['Curug', 'Kasemen', 'Walantaka', 'Taktakan', 'Serang', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang'],
-            'Kabupaten Serang' => ['Ciruas', 'Cikeusal', 'Kramatwatu', 'Pabuaran', 'Cinangka', 'Carenang', 'Anyar', 'Taktakan', 'Walantaka', 'Kasemen', 'Curug', 'Padarincang', 'Gunungsari', 'Baros', 'Petir', 'Tirtayasa', 'Kibin'],
-            'Kota Cilegon' => ['Cilegon', 'Pulo Ampel', 'Jombang', 'Citangkil', 'Grogol', 'Ciwandan', 'Gerogol'],
-            'Kota Tangerang' => ['Tangerang', 'Batuceper', 'Benda', 'Jatiuwung', 'Neglasari', 'Cipondoh', 'Karawaci', 'Larangan', 'Ciledug', 'Pinang', 'Binuang', 'Pakuhaji', 'Sepatan', 'Sukadiri', 'Mekar Baru'],
-            'Kota Tangerang Selatan' => ['Serpong', 'Serpong Utara', 'Pamulang', 'Ciputat', 'Ciputat Timur', 'Setu', 'Pondok Aren'],
-            'Kabupaten Pandeglang' => ['Pandeglang', 'Munjul', 'Cibaliung', 'Cimanggu', 'Angsana', 'Karangsak', 'Sobang', 'Cibitung', 'Mandalawangi', 'Cikeudel', 'Panimbang', 'Sumur', 'Ujung Jaya', 'Pulosari', 'Cigeulis', 'Pagelaran', 'Majasari', 'Kaduhejo'],
-            'Kabupaten Lebak' => ['Rangkasbitung', 'Cibadak', 'Muncang', 'Sobang', 'Cihara', 'Malenggang', 'Bayah', 'Cilangkap', 'Cileles', 'Cijaku', 'Cigemblong', 'Wanasalam', 'Gunung Kencana', 'Mekar Jaya', 'Panggarangan', 'Sajira', 'Cibengkung', 'Leuwidamar', 'Bojongmanik', 'Sukaresmi', 'Kencana', 'Gunung Kencana', 'Cibadak', 'Warunggunung'],
-            'Kabupaten Tangerang' => ['Tigaraksa', 'Kosambi', 'Sepatan', 'Rajeg', 'Cikupa', 'Kelapa Dua', 'Curug', 'Solear', 'Kresek', 'Kaduhejo', 'Pagedangan', 'Cadasari', 'Jayanti', 'Balaraja', 'Bojongmanik', 'Kronjo', 'Mauk', 'Sukamulya', 'Gunung Kaler', 'Jasinga', 'Caringin', 'Cigemblong', 'Sindang Jaya', 'Jambe', 'Kramatwatu', 'Carenang', 'Sindang', 'Pasar Kemis'],
+            'Kota Serang' => ['Cipocok Jaya', 'Curug', 'Kasemen', 'Serang', 'Taktakan', 'Walantaka'],
+            'Kabupaten Serang' => ['Anyar', 'Bandung', 'Baros', 'Binuang', 'Bojonegara', 'Carenang', 'Cikande', 'Cikeusal', 'Cinangka', 'Ciomas', 'Ciruas', 'Gunungsari', 'Jawilan', 'Kibin', 'Kopo', 'Kragilan', 'Kramatwatu', 'Lebak Wangi', 'Mancak', 'Pabuaran', 'Padarincang', 'Pamarayan', 'Petir', 'Pontang', 'Pulo Ampel', 'Tanara', 'Tirtayasa', 'Tunjungteja', 'Waringinkurung'],
+            'Kota Cilegon' => ['Cibeber', 'Cilegon', 'Citangkil', 'Ciwandan', 'Gerogan', 'Jombang', 'Pulomerak', 'Purwakarta'],
+            'Kota Tangerang' => ['Batuceper', 'Benda', 'Cibodas', 'Ciledug', 'Cipondoh', 'Jatiuwung', 'Karang Tengah', 'Karawaci', 'Larangan', 'Neglasari', 'Periuk', 'Pinang', 'Tangerang'],
+            'Kota Tangerang Selatan' => ['Ciputat', 'Ciputat Timur', 'Pamulang', 'Pondok Aren', 'Serpong', 'Serpong Utara', 'Setu'],
+            'Kabupaten Pandeglang' => ['Angsana', 'Banjar', 'Bojong', 'Cadasari', 'Carita', 'Cibaliung', 'Cibitung', 'Cigeulis', 'Cikedal', 'Cikeusik', 'Cimanggu', 'Cimanuk', 'Cipeucang', 'Cisata', 'Jiput', 'Kaduhejo', 'Karang Tanjung', 'Koroncong', 'Labuan', 'Majasari', 'Mandalawangi', 'Mekarjaya', 'Menes', 'Munjul', 'Pagelaran', 'Pandeglang', 'Panimbang', 'Patia', 'Picung', 'Pulosari', 'Saketi', 'Sindangresmi', 'Sobang', 'Sukaresmi', 'Sumur'],
+            'Kabupaten Lebak' => ['Banjarsari', 'Bayah', 'Bojongmanik', 'Cibadak', 'Cibeber', 'Cigemblong', 'Cihara', 'Cijaku', 'Cikulur', 'Cileles', 'Cilograng', 'Cimarga', 'Cipanas', 'Cirinten', 'Curugbitung', 'Gunungkencana', 'Kalanganyar', 'Lebak Gedong', 'Leuwidamar', 'Maja', 'Malingping', 'Muncang', 'Panggarangan', 'Rangkasbitung', 'Sajira', 'Sobang', 'Wanasalam', 'Warunggunung'],
+            'Kabupaten Tangerang' => ['Balaraja', 'Cikupa', 'Cisauk', 'Cisoka', 'Curug', 'Gunung Kaler', 'Jambe', 'Jayanti', 'Kelapa Dua', 'Kemiri', 'Kosambi', 'Kresek', 'Kronjo', 'Legok', 'Mauk', 'Mekar Baru', 'Pagedangan', 'Pakuhaji', 'Panongan', 'Pasar Kemis', 'Rajeg', 'Sepatan', 'Sepatan Timur', 'Sindang Jaya', 'Solear', 'Sukadiri', 'Sukamulya', 'Teluknaga', 'Tigaraksa'],
         ];
 
         return $knownKecamatan[$kabupatenKota] ?? [];
