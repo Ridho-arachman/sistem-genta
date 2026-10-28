@@ -165,7 +165,6 @@ document.addEventListener('alpine:init', () => {
                 result = result.filter(d =>
                     d.nama.toLowerCase().includes(q) ||
                     (d.lokasiPengawas && d.lokasiPengawas.toLowerCase().includes(q)) ||
-                    (d.lokasi && d.lokasi.toLowerCase().includes(q)) ||
                     (d.provinsi && d.provinsi.toLowerCase().includes(q)) ||
                     (d.kabupaten_kota && d.kabupaten_kota.toLowerCase().includes(q)) ||
                     (d.kecamatan && d.kecamatan.toLowerCase().includes(q)) ||

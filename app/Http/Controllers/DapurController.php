@@ -127,7 +127,7 @@ class DapurController extends Controller
                 }
 
                 // Build lokasiPengawas string
-                $lokasiPengawas = $d->lokasi ?? ($d->kabupaten_kota ? "{$d->kabupaten_kota} · {$d->kecamatan}" : '—');
+                $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';
                 if ($d->pengawas->count() > 0) {
                     $lokasiPengawas .= ' · Pengawas: ' . $d->pengawas->first()->name;
                 }
@@ -135,7 +135,6 @@ class DapurController extends Controller
                 return [
                     'id' => $d->id,
                     'nama' => $d->nama,
-                    'lokasi' => $d->lokasi,
                     'kecamatan' => $d->kecamatan,
                     'kabupaten_kota' => $d->kabupaten_kota,
                     'provinsi' => $d->provinsi,
@@ -206,25 +205,22 @@ class DapurController extends Controller
 
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'lokasi' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
-            'kecamatan' => ['nullable', 'string', 'max:100'],
-            'kabupaten_kota' => ['nullable', 'string', 'max:100'],
-            'provinsi' => ['nullable', 'string', 'max:100'],
+            'kecamatan' => ['required', 'string', 'max:100'],
+            'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
 
-        // Validate Banten wilayah
+        // Validate Banten wilayah (provinsi auto-set to Banten)
         $wilayahErrors = $this->validateBantenWilayah(
-            $validated['provinsi'] ?? '',
-            $validated['kabupaten_kota'] ?? '',
-            $validated['kecamatan'] ?? null
+            self::BANTEN_PROVINSI,
+            $validated['kabupaten_kota'],
+            $validated['kecamatan']
         );
 
         if (!empty($wilayahErrors)) {
             return back()->withErrors($wilayahErrors)->withInput();
         }
 
-        // Force provinsi to Banten
         $validated['provinsi'] = self::BANTEN_PROVINSI;
 
         Dapur::create($validated);
@@ -279,25 +275,22 @@ class DapurController extends Controller
 
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'lokasi' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
-            'kecamatan' => ['nullable', 'string', 'max:100'],
-            'kabupaten_kota' => ['nullable', 'string', 'max:100'],
-            'provinsi' => ['nullable', 'string', 'max:100'],
+            'kecamatan' => ['required', 'string', 'max:100'],
+            'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
 
-        // Validate Banten wilayah
+        // Validate Banten wilayah (provinsi auto-set to Banten)
         $wilayahErrors = $this->validateBantenWilayah(
-            $validated['provinsi'] ?? '',
-            $validated['kabupaten_kota'] ?? '',
-            $validated['kecamatan'] ?? null
+            self::BANTEN_PROVINSI,
+            $validated['kabupaten_kota'],
+            $validated['kecamatan']
         );
 
         if (!empty($wilayahErrors)) {
             return back()->withErrors($wilayahErrors)->withInput();
         }
 
-        // Force provinsi to Banten
         $validated['provinsi'] = self::BANTEN_PROVINSI;
 
         $dapur->update($validated);

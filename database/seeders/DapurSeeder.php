@@ -6,6 +6,7 @@ use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Http\Controllers\DapurController;
 
 class DapurSeeder extends Seeder
 {
@@ -24,43 +25,38 @@ class DapurSeeder extends Seeder
         $dapurs = [
             [
                 'nama' => 'Dapur Genta Pusat Serang',
-                'lokasi' => 'Serang',
                 'alamat' => 'Jl. Raya Serang No. 1, Kecamatan Serang, Kota Serang, Banten',
-                'latitude' => -6.1148,
-                'longitude' => 106.1503,
-                'geofence_radius' => 150,
+                'kecamatan' => 'Serang',
+                'kabupaten_kota' => 'Kota Serang',
+                'provinsi' => DapurController::BANTEN_PROVINSI,
             ],
             [
                 'nama' => 'Dapur Genta Cilegon',
-                'lokasi' => 'Cilegon',
                 'alamat' => 'Jl. Merak No. 45, Kecamatan Citangkil, Kota Cilegon, Banten',
-                'latitude' => -5.9897,
-                'longitude' => 106.0105,
-                'geofence_radius' => 100,
+                'kecamatan' => 'Citangkil',
+                'kabupaten_kota' => 'Kota Cilegon',
+                'provinsi' => DapurController::BANTEN_PROVINSI,
             ],
             [
                 'nama' => 'Dapur Genta Tangerang',
-                'lokasi' => 'Tangerang',
                 'alamat' => 'Jl. Jenderal Sudirman No. 78, Kecamatan Tangerang, Kota Tangerang, Banten',
-                'latitude' => -6.1783,
-                'longitude' => 106.6319,
-                'geofence_radius' => 200,
+                'kecamatan' => 'Tangerang',
+                'kabupaten_kota' => 'Kota Tangerang',
+                'provinsi' => DapurController::BANTEN_PROVINSI,
             ],
             [
                 'nama' => 'Dapur Genta Pandeglang',
-                'lokasi' => 'Pandeglang',
                 'alamat' => 'Jl. Raya Labuan No. 12, Kecamatan Labuan, Kabupaten Pandeglang, Banten',
-                'latitude' => -6.3502,
-                'longitude' => 105.9321,
-                'geofence_radius' => 100,
+                'kecamatan' => 'Labuan',
+                'kabupaten_kota' => 'Kabupaten Pandeglang',
+                'provinsi' => DapurController::BANTEN_PROVINSI,
             ],
             [
                 'nama' => 'Dapur Genta Lebak',
-                'lokasi' => 'Lebak',
                 'alamat' => 'Jl. Raya Rangkasbitung No. 56, Kecamatan Rangkasbitung, Kabupaten Lebak, Banten',
-                'latitude' => -6.3667,
-                'longitude' => 106.2500,
-                'geofence_radius' => 150,
+                'kecamatan' => 'Rangkasbitung',
+                'kabupaten_kota' => 'Kabupaten Lebak',
+                'provinsi' => DapurController::BANTEN_PROVINSI,
             ],
         ];
 
@@ -85,12 +81,13 @@ class DapurSeeder extends Seeder
 
         $this->command->info('Dapur seeded successfully!');
         $this->command->table(
-            ['Nama Dapur', 'Lokasi', 'Kepala Dapur', 'Pengawas'],
+            ['Nama Dapur', 'Kabupaten/Kota', 'Kecamatan', 'Kepala Dapur', 'Pengawas'],
             Dapur::with('kepalaDapur', 'pengawas')
                 ->get()
                 ->map(fn ($d) => [
                     $d->nama,
-                    $d->lokasi,
+                    $d->kabupaten_kota,
+                    $d->kecamatan,
                     $d->kepalaDapur?->name ?? 'Belum diassign',
                     $d->pengawas->pluck('name')->join(', ') ?: 'Belum diassign',
                 ])

@@ -17,8 +17,6 @@
                 <p class="text-[var(--color-text-muted)] mt-1">
                     @if ($dapur->kecamatan && $dapur->kabupaten_kota)
                         {{ $dapur->kecamatan }}, {{ $dapur->kabupaten_kota }}, {{ $dapur->provinsi ?? 'Banten' }}
-                    @elseif ($dapur->lokasi)
-                        {{ $dapur->lokasi }}
                     @else
                         Wilayah tidak diset
                     @endif
