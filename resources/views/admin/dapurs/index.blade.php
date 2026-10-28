@@ -79,7 +79,7 @@
                             </template>
                         </div>
                         <div class="flex items-center gap-4 mt-2 text-sm text-[var(--color-text-muted)]">
-                            <span x-text="dapur.cctvs_count + '/' + dapur.maxCams + ' kamera online'"></span>
+                            <span x-text="dapur.cctvs_count_online + '/' + dapur.cctvs_count_total + ' kamera online'"></span>
                             <span class="font-medium text-[var(--color-secondary)]" x-text="dapur.progress + '%'"></span>
                         </div>
                         <div class="progress-bar h-1.5 bg-[var(--color-surface)] rounded-full overflow-hidden mt-2">

@@ -95,7 +95,8 @@ class DapurController extends Controller
 
         $query = Dapur::forUser($user)
             ->with(['pengawas', 'kepalaDapur'])
-            ->withCount('cctvs');
+            ->withCount('cctvs')
+            ->withCount(['cctvs as cctvs_online_count' => fn ($q) => $q->where('status', 'online')]);
 
         // Filter by wilayah (admin only)
         if ($user->isAdmin() && request()->has(['provinsi', 'kabupaten_kota', 'kecamatan'])) {
@@ -112,16 +113,19 @@ class DapurController extends Controller
             $dapurData = $dapurs->getCollection()->map(function ($d) {
                 $pengawas = $d->pengawas->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
                 $kepala = $d->kepalaDapur ? ['id' => $d->kepalaDapur->id, 'name' => $d->kepalaDapur->name] : null;
-                $cctvCount = $d->cctvs_count ?? 0;
-                $maxCams = 4;
-                $progress = $maxCams > 0 ? min(100, round(($cctvCount / $maxCams) * 100)) : 0;
+                $totalCctvs = $d->cctvs_count ?? 0;
+                $onlineCctvs = $d->cctvs_online_count ?? 0;
+                $progress = $totalCctvs > 0 ? min(100, round(($onlineCctvs / $totalCctvs) * 100)) : 0;
 
                 $status = 'Operasional';
                 $statusClass = 'ok';
-                if ($cctvCount === 0) {
+                if ($totalCctvs === 0) {
                     $status = 'Kamera bermasalah';
                     $statusClass = 'off';
-                } elseif ($cctvCount < $maxCams) {
+                } elseif ($onlineCctvs === 0) {
+                    $status = 'Kamera bermasalah';
+                    $statusClass = 'off';
+                } elseif ($onlineCctvs < $totalCctvs) {
                     $status = 'Perlu perhatian';
                     $statusClass = 'warn';
                 }
@@ -142,8 +146,8 @@ class DapurController extends Controller
                     'alamat' => $d->alamat,
                     'pengawas' => $pengawas,
                     'kepalaDapur' => $kepala,
-                    'cctvs_count' => $cctvCount,
-                    'maxCams' => $maxCams,
+                    'cctvs_count_total' => $totalCctvs,
+                    'cctvs_count_online' => $onlineCctvs,
                     'progress' => $progress,
                     'status' => $status,
                     'statusClass' => $statusClass,
