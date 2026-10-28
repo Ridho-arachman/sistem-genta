@@ -52,7 +52,6 @@
                 <div class="form-field lg:col-span-1">
                     <label class="form-label" for="role">Role <span class="required">*</span></label>
                     <select id="role" name="role" required class="input-field select-enhanced" x-model="selectedRole" @change="handleRoleChange()">
-                        <option value="">Pilih role</option>
                         <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
                         <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
