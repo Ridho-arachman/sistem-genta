@@ -478,8 +478,10 @@ document.addEventListener('alpine:init', () => {
                     }
                     
                     // Fallback for kabupaten if OSM didn't provide one
-                    // Additional guard: if OSM kabupaten equals OSM kecamatan, it's likely wrong - use fallback
-                    if (!kabupaten || (kecamatan && kabupaten && kabupaten.toLowerCase() === kecamatan.toLowerCase())) {
+                    // IMPORTANT: Don't auto-discard kabupaten just because it equals kecamatan.
+                    // Valid Indonesian cases: Kecamatan Serang in Kota Serang, Kecamatan Cirebon in Kota Cirebon, etc.
+                    // Only use fallback if kabupaten is genuinely missing (null/empty).
+                    if (!kabupaten) {
                         if (fallback.kabupaten) {
                             kabupaten = fallback.kabupaten;
                         } else {
@@ -492,10 +494,9 @@ document.addEventListener('alpine:init', () => {
                         provinsi = fallback.provinsi;
                     }
                     
-                    // Guard: if after all this, kabupaten still equals kecamatan, clear kabupaten
-                    if (kecamatan && kabupaten && kabupaten.toLowerCase() === kecamatan.toLowerCase()) {
-                        kabupaten = '';
-                    }
+                    // NO auto-clear of kabupaten just because it equals kecamatan.
+                    // Valid cases exist where kecamatan and kota share the same name.
+                    // The extractFromDisplayName already handles validation via explicit labels.
                     
                     // Always sync individual fields (set if exists, clear if null)
                     this.form.kecamatan = kecamatan || '';
@@ -653,10 +654,30 @@ document.addEventListener('alpine:init', () => {
                 }
             }
             
-            // Guard 4: If kabupaten equals kecamatan, discard kabupaten (kecamatan from OSM is more reliable)
+            // Guard 4: Handle same-name kecamatan/kabupaten (e.g., Kecamatan Serang in Kota Serang)
+            // If BOTH have explicit labels in display_name and names match, KEEP BOTH - this is valid in Indonesia
+            // Only discard if one or both came from positional fallback (no explicit label)
             if (result.kabupaten && result.kecamatan && 
                 result.kabupaten.toLowerCase() === result.kecamatan.toLowerCase()) {
-                result.kabupaten = null;
+                
+                // Check if both have explicit labels in display_name
+                const hasExplicitKabupaten = /(?:^|,)\s*(?:Kabupaten|Kota|Kab\.)\s+([^,]+)/i.test(displayName);
+                const hasExplicitKecamatan = /(?:^|,)\s*(?:Kecamatan|Kec\.)\s+([^,]+)/i.test(displayName);
+                
+                if (hasExplicitKabupaten && hasExplicitKecamatan) {
+                    // Both have explicit labels - valid Indonesian case (e.g., "Kecamatan Serang, Kota Serang")
+                    // Keep both, do nothing
+                } else if (hasExplicitKabupaten && !hasExplicitKecamatan) {
+                    // Only kabupaten has explicit label - kecamatan likely from positional fallback, discard kecamatan
+                    result.kecamatan = null;
+                } else if (!hasExplicitKabupaten && hasExplicitKecamatan) {
+                    // Only kecamatan has explicit label - kabupaten likely from positional fallback, discard kabupaten
+                    result.kabupaten = null;
+                } else {
+                    // Neither has explicit label - both from positional fallback, ambiguous
+                    // Keep kecamatan (more granular), discard kabupaten
+                    result.kabupaten = null;
+                }
             }
             
             // Guard 5: If kabupaten contains province name, discard it
