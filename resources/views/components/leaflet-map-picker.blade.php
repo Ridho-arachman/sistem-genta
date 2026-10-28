@@ -444,12 +444,13 @@ document.addEventListener('alpine:init', () => {
                         else if (data.address.suburb) parts.push(data.address.suburb);
                         else if (data.address.neighbourhood) parts.push(data.address.neighbourhood);
                         
-                        // Subdistrict / Kecamatan level
+                        // Subdistrict / Kecamatan level - prioritize subdistrict > city_district > district
+                        // Note: in Indonesia, 'district' often = kecamatan, but can sometimes be ambiguous
                         kecamatan = data.address.subdistrict || data.address.city_district || data.address.district;
                         if (kecamatan) parts.push(kecamatan);
                         
-                        // City / Kota / Kabupaten level
-                        kabupaten = data.address.city || data.address.town || data.address.municipality || data.address.county;
+                        // City / Kota / Kabupaten level - prioritize city > municipality > county > town
+                        kabupaten = data.address.city || data.address.municipality || data.address.county || data.address.town;
                         if (kabupaten) parts.push(kabupaten);
                         
                         // Province level
@@ -467,17 +468,33 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                     
-                    // Fallback: ONLY run if ALL THREE fields missing from OSM address object
-                    // This prevents fallback from overwriting partial correct OSM data
-                    const hasOsmKecamatan = !!kecamatan;
-                    const hasOsmKabupaten = !!kabupaten;
-                    const hasOsmProvinsi = !!provinsi;
+                    // PER-FIELD FALLBACK: run extractFromDisplayName for each missing field individually
+                    // This prevents "kecamatan found but kabupaten missing" scenarios
+                    const fallback = this.extractFromDisplayName(data.display_name);
                     
-                    if (!hasOsmKecamatan && !hasOsmKabupaten && !hasOsmProvinsi) {
-                        const fallback = this.extractFromDisplayName(data.display_name);
+                    // Fallback for kecamatan if OSM didn't provide one
+                    if (!kecamatan && fallback.kecamatan) {
                         kecamatan = fallback.kecamatan;
-                        kabupaten = fallback.kabupaten;
+                    }
+                    
+                    // Fallback for kabupaten if OSM didn't provide one
+                    // Additional guard: if OSM kabupaten equals OSM kecamatan, it's likely wrong - use fallback
+                    if (!kabupaten || (kecamatan && kabupaten && kabupaten.toLowerCase() === kecamatan.toLowerCase())) {
+                        if (fallback.kabupaten) {
+                            kabupaten = fallback.kabupaten;
+                        } else {
+                            kabupaten = '';
+                        }
+                    }
+                    
+                    // Fallback for provinsi if OSM didn't provide one
+                    if (!provinsi && fallback.provinsi) {
                         provinsi = fallback.provinsi;
+                    }
+                    
+                    // Guard: if after all this, kabupaten still equals kecamatan, clear kabupaten
+                    if (kecamatan && kabupaten && kabupaten.toLowerCase() === kecamatan.toLowerCase()) {
+                        kabupaten = '';
                     }
                     
                     // Always sync individual fields (set if exists, clear if null)
@@ -524,7 +541,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         // Fallback: extract kecamatan, kabupaten, provinsi from display_name using regex
-        // Indonesian format varies, so parse by labels not position
+        // Indonesian format varies, so parse by labels first, then positional fallback with strict validation
         extractFromDisplayName(displayName) {
             const result = { kecamatan: null, kabupaten: null, provinsi: null };
             if (!displayName) return result;
@@ -558,15 +575,59 @@ document.addEventListener('alpine:init', () => {
             }
             result.provinsi = provinsi;
             
-            // 2. Extract Kabupaten/Kota - ONLY match explicit labels "Kabupaten X", "Kota X", "Kab. X"
-            // Do NOT use positional fallback (part before provinsi) - that causes swaps
+            // 2. Extract Kabupaten/Kota - match explicit labels "Kabupaten X", "Kota X", "Kab. X"
             let kabupaten = findFirst(/(?:^|,)\s*(?:Kabupaten|Kota|Kab\.)\s+([^,]+)/i, displayName);
             result.kabupaten = kabupaten;
             
-            // 3. Extract Kecamatan - ONLY match explicit labels "Kecamatan X", "Kec. X"
-            // Do NOT use positional fallback (part before kabupaten) - that causes swaps
+            // 3. Extract Kecamatan - match explicit labels "Kecamatan X", "Kec. X"
             let kecamatan = findFirst(/(?:^|,)\s*(?:Kecamatan|Kec\.)\s+([^,]+)/i, displayName);
             result.kecamatan = kecamatan;
+            
+            // 4. Positional fallback (LAST RESORT) - only if explicit labels not found
+            // Split by comma and analyze from the end: Indonesia, Provinsi, Kabupaten, Kecamatan, Kelurahan, ...
+            if (!result.kecamatan || !result.kabupaten || !result.provinsi) {
+                const parts = displayName.split(',').map(p => p.trim()).filter(p => p.length > 0);
+                if (parts.length >= 3) {
+                    // Find province index (from end)
+                    let provIdx = -1;
+                    if (result.provinsi) {
+                        provIdx = parts.findIndex(p => p.toLowerCase().includes(result.provinsi.toLowerCase()));
+                    } else {
+                        // Try to find known province from end
+                        for (let i = parts.length - 1; i >= 0; i--) {
+                            for (const p of knownProvinces) {
+                                if (parts[i].toLowerCase() === p.toLowerCase() || parts[i].toLowerCase().includes(' ' + p.toLowerCase())) {
+                                    provIdx = i;
+                                    result.provinsi = p;
+                                    break;
+                                }
+                            }
+                            if (provIdx >= 0) break;
+                        }
+                    }
+                    
+                    // Kabupaten is typically the part before province
+                    if (!result.kabupaten && provIdx > 0) {
+                        const candidate = parts[provIdx - 1];
+                        // Validate: not a kecamatan/kelurahan/jalan
+                        if (!/^(Kecamatan|Kec\.|Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
+                            result.kabupaten = candidate.replace(/^(Kabupaten|Kota|Kab\.)\s+/i, '');
+                        }
+                    }
+                    
+                    // Kecamatan is typically the part before kabupaten
+                    if (!result.kecamatan && result.kabupaten) {
+                        const kabIdx = parts.findIndex(p => p.toLowerCase().includes(result.kabupaten.toLowerCase()));
+                        if (kabIdx > 0) {
+                            const candidate = parts[kabIdx - 1];
+                            // Validate: not a kelurahan/jalan
+                            if (!/^(Kelurahan|Desa|Kel\.|Dusun|RW|RT|Jalan|Jl\.)/i.test(candidate)) {
+                                result.kecamatan = candidate.replace(/^(Kecamatan|Kec\.)\s+/i, '');
+                            }
+                        }
+                    }
+                }
+            }
             
             // Validation guards to prevent cross-contamination:
             
@@ -580,21 +641,22 @@ document.addEventListener('alpine:init', () => {
                 result.kecamatan = null;
             }
             
-            // Guard 3: If kecamatan contains known province name, discard it (likely matched province instead)
+            // Guard 3: If kecamatan contains known province name as whole word, discard it
             if (result.kecamatan) {
                 for (const p of knownProvinces) {
-                    if (result.kecamatan.toLowerCase().includes(p.toLowerCase())) {
+                    // Use word boundary to avoid false positives like "Tangerang" in "Kec. Tangerang"
+                    const wordBoundaryRegex = new RegExp(`\\b${p.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\b`, 'i');
+                    if (wordBoundaryRegex.test(result.kecamatan)) {
                         result.kecamatan = null;
                         break;
                     }
                 }
             }
             
-            // Guard 4: If kabupaten equals kecamatan, discard both (ambiguous)
+            // Guard 4: If kabupaten equals kecamatan, discard kabupaten (kecamatan from OSM is more reliable)
             if (result.kabupaten && result.kecamatan && 
                 result.kabupaten.toLowerCase() === result.kecamatan.toLowerCase()) {
                 result.kabupaten = null;
-                result.kecamatan = null;
             }
             
             // Guard 5: If kabupaten contains province name, discard it
