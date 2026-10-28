@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" x-data="userForm(@entangle($user->role), @json($user->dapurs->pluck('id')->toArray()), @json($user->dapur_id))" x-cloak>
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" x-data="userForm(@json($user->role), @json($user->dapurs->pluck('id')->toArray()), @json($user->dapur_id))" x-cloak>
         @csrf
         @method('PUT')
 
