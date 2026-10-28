@@ -6,16 +6,23 @@
     'readonly' => false,
     'defaultLat' => -6.2088,
     'defaultLng' => 106.8456,
-    'height' => '300px',
+    'height' => '350px',
     'label' => 'Pilih Lokasi di Peta',
-    'helpText' => 'Klik peta untuk memilih lokasi, atau gunakan tombol "Gunakan Lokasi Saya"',
+    'helpText' => 'Klik peta untuk memilih lokasi, atau gunakan tombol "Gunakan Lokasi Saya". Geser marker untuk penyesuaian.',
     'id' => null,
+    // Radius props
+    'radius' => 100,
+    'nameRadius' => 'geofence_radius',
+    'minRadius' => 10,
+    'maxRadius' => 5000,
+    'editableRadius' => true,
 ])
 
 <?php
 $id = $id ?? 'map-' . uniqid();
 $latId = $id . '-lat';
 $lngId = $id . '-lng';
+$radiusId = $id . '-radius';
 $containerId = $id . '-container';
 $alpineId = 'mapPicker' . uniqid();
 ?>
@@ -23,7 +30,8 @@ $alpineId = 'mapPicker' . uniqid();
 <div x-data="{{ $alpineId }}()"
      x-init="init()"
      class="form-field"
-     :id="containerId">
+     :id="containerId"
+     style="position: relative;">
     
     <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="{{ $latId }}">
         {{ $label }}
@@ -33,12 +41,14 @@ $alpineId = 'mapPicker' . uniqid();
         <!-- Hidden inputs for form submission -->
         <input type="hidden" :name="nameLat" :id="latId" x-model="form.lat">
         <input type="hidden" :name="nameLng" :id="lngId" x-model="form.lng">
+        <input type="hidden" :name="nameRadius" :id="radiusId" x-model="form.radius">
 
         <!-- Map Container -->
         <div :id="containerId" 
              class="rounded-xl border border-[var(--color-border)] overflow-hidden" 
              :style="'height: ' + height"
-             x-ref="mapContainer"></div>
+             x-ref="mapContainer"
+             style="position: relative; width: 100%;"></div>
 
         @if (!$readonly)
         <!-- Action Buttons -->
@@ -61,18 +71,53 @@ $alpineId = 'mapPicker' . uniqid();
                 </svg>
                 <span>Reset ke Default</span>
             </button>
+            @if ($editableRadius)
+            <button type="button" 
+                    @click="resetRadius()" 
+                    class="btn-action inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[var(--color-border)] rounded-lg text-sm font-semibold hover:bg-[var(--color-surface)] transition opacity-100 disabled:opacity-75 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Reset Radius</span>
+            </button>
+            @endif
+        </div>
+        @endif
+
+        @if ($editableRadius && !$readonly)
+        <!-- Radius Slider -->
+        <div class="mt-3 p-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-[var(--color-secondary)]">Radius Geofence</span>
+                <span class="text-sm font-mono text-[var(--color-primary)]" x-text="form.radius + ' m'"></span>
+            </div>
+            <input type="range" 
+                   :min="minRadius" 
+                   :max="maxRadius" 
+                   :step="10"
+                   x-model="form.radius"
+                   @input="onRadiusChange()"
+                   class="w-full h-2 bg-[var(--color-border)] rounded-lg appearance-none accent-[var(--color-primary)] cursor-pointer">
+            <div class="flex justify-between text-xs text-[var(--color-text-muted)] mt-1">
+                <span x-text="minRadius + ' m'"></span>
+                <span x-text="maxRadius + ' m'"></span>
+            </div>
         </div>
         @endif
 
         <!-- Coordinates Display -->
-        <div class="mt-3 p-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <div class="mt-3 p-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div>
                 <span class="text-[var(--color-text-muted)] block">Latitude</span>
-                <span class="font-mono font-medium text-[var(--color-secondary)]" x-text="form.lat || '—'"></span>
+                <span class="font-mono font-medium text-[var(--color-secondary)]" x-text="form.lat ? form.lat.toFixed(6) : '—'"></span>
             </div>
             <div>
                 <span class="text-[var(--color-text-muted)] block">Longitude</span>
-                <span class="font-mono font-medium text-[var(--color-secondary)]" x-text="form.lng || '—'"></span>
+                <span class="font-mono font-medium text-[var(--color-secondary)]" x-text="form.lng ? form.lng.toFixed(6) : '—'"></span>
+            </div>
+            <div>
+                <span class="text-[var(--color-text-muted)] block">Radius</span>
+                <span class="font-mono font-medium text-[var(--color-secondary)]" x-text="form.radius + ' m'"></span>
             </div>
         </div>
 
@@ -89,20 +134,29 @@ document.addEventListener('alpine:init', () => {
         form: {
             lat: @js($latitude ?? ''),
             lng: @js($longitude ?? ''),
+            radius: @js($radius ?? 100),
         },
         map: null,
         marker: null,
+        radiusCircle: null,
         locating: false,
         defaultLat: {{ $defaultLat }},
         defaultLng: {{ $defaultLng }},
+        defaultRadius: {{ $radius ?? 100 }},
+        minRadius: {{ $minRadius ?? 10 }},
+        maxRadius: {{ $maxRadius ?? 5000 }},
         height: '{{ $height }}',
         readonly: {{ $readonly ? 'true' : 'false' }},
+        editableRadius: {{ $editableRadius ? 'true' : 'false' }},
 
         async init() {
             if (typeof L === 'undefined') {
                 await this.loadLeaflet();
             }
-            this.initMap();
+            // Wait for next tick to ensure DOM is ready
+            this.$nextTick(() => {
+                this.initMap();
+            });
         },
 
         async loadLeaflet() {
@@ -135,8 +189,11 @@ document.addEventListener('alpine:init', () => {
         },
 
         initMap() {
+            if (!this.$refs.mapContainer) return;
+            
             const lat = parseFloat(this.form.lat) || this.defaultLat;
             const lng = parseFloat(this.form.lng) || this.defaultLng;
+            const radius = parseFloat(this.form.radius) || this.defaultRadius;
 
             this.map = L.map(this.$refs.mapContainer, {
                 zoomControl: true,
@@ -148,6 +205,11 @@ document.addEventListener('alpine:init', () => {
                 tap: true,
                 touchZoom: true,
             }).setView([lat, lng], 16);
+
+            // Force map to recalculate size after a tick
+            setTimeout(() => {
+                if (this.map) this.map.invalidateSize();
+            }, 100);
 
             // OSM Tile Layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -169,18 +231,93 @@ document.addEventListener('alpine:init', () => {
                 draggable: !this.readonly 
             }).addTo(this.map);
 
+            // Radius Circle
+            if (this.editableRadius || !this.readonly) {
+                this.radiusCircle = L.circle([lat, lng], {
+                    radius: radius,
+                    color: '#E50000',
+                    fillColor: '#E50000',
+                    fillOpacity: 0.15,
+                    weight: 2,
+                    dashArray: '5, 10',
+                    interactive: this.editableRadius && !this.readonly,
+                }).addTo(this.map);
+
+                // Make circle radius draggable by clicking on its edge
+                if (this.editableRadius && !this.readonly) {
+                    this.radiusCircle.on('click', (e) => {
+                        if (!e.originalEvent) return;
+                        // Check if click is near the edge (within ~20px of radius)
+                        const clickLatLng = e.latlng;
+                        const center = this.marker.getLatLng();
+                        const distance = this.map.distance(center, clickLatLng);
+                        const radiusMeters = this.radiusCircle.getRadius();
+                        const tolerance = 30; // meters
+                        
+                        if (Math.abs(distance - radiusMeters) < tolerance) {
+                            // Click near edge - start radius editing mode
+                            this.startRadiusDrag(e);
+                        }
+                    });
+                }
+            }
+
             if (!this.readonly) {
                 this.marker.on('dragend', (e) => {
                     const pos = e.target.getLatLng();
                     this.form.lat = pos.lat;
                     this.form.lng = pos.lng;
+                    this.updateRadiusCirclePosition(pos);
                 });
 
                 this.map.on('click', (e) => {
+                    // Don't trigger if clicking on circle edge (handled above)
+                    if (e.originalEvent.target._leaflet_pos) return;
+                    
                     this.marker.setLatLng(e.latlng);
                     this.form.lat = e.latlng.lat;
                     this.form.lng = e.latlng.lng;
+                    this.updateRadiusCirclePosition(e.latlng);
                 });
+            }
+        },
+
+        // Radius editing via drag
+        startRadiusDrag(e) {
+            const startLatLng = e.latlng;
+            const center = this.marker.getLatLng();
+            
+            const onMove = (moveEvent) => {
+                const newLatLng = moveEvent.latlng;
+                const newRadius = this.map.distance(center, newLatLng);
+                const clampedRadius = Math.max(this.minRadius, Math.min(this.maxRadius, newRadius));
+                this.form.radius = Math.round(clampedRadius);
+                this.radiusCircle.setRadius(clampedRadius);
+            };
+            
+            const onUp = () => {
+                this.map.off('mousemove', onMove);
+                this.map.off('mouseup', onUp);
+                this.map.dragging.enable();
+            };
+            
+            this.map.dragging.disable();
+            this.map.on('mousemove', onMove);
+            this.map.on('mouseup', onUp);
+        },
+
+        onRadiusChange() {
+            if (this.radiusCircle) {
+                this.radiusCircle.setRadius(this.form.radius);
+                // Fit bounds to show full circle
+                const bounds = this.radiusCircle.getBounds();
+                this.map.fitBounds(bounds, { padding: [20, 20], maxZoom: 16 });
+            }
+        },
+
+        updateRadiusCirclePosition(latlng) {
+            if (this.radiusCircle) {
+                this.radiusCircle.setLatLng(latlng);
             }
         },
 
@@ -212,20 +349,31 @@ document.addEventListener('alpine:init', () => {
         resetMap() {
             this.form.lat = this.defaultLat;
             this.form.lng = this.defaultLng;
+            this.form.radius = this.defaultRadius;
             this.updateMapPosition(this.defaultLat, this.defaultLng);
             this.showToast('Direset ke lokasi default');
+        },
+
+        resetRadius() {
+            this.form.radius = this.defaultRadius;
+            if (this.radiusCircle) {
+                this.radiusCircle.setRadius(this.defaultRadius);
+            }
+            this.showToast('Radius direset ke default');
         },
 
         updateMapPosition(lat, lng) {
             if (this.map && this.marker) {
                 const pos = [lat, lng];
                 this.marker.setLatLng(pos);
+                this.updateRadiusCirclePosition(pos);
                 this.map.panTo(pos);
+                // Ensure map renders correctly
+                setTimeout(() => this.map.invalidateSize(), 50);
             }
         },
 
         showToast(message) {
-            // Simple toast - you can enhance this
             const existing = document.querySelector('.map-toast');
             if (existing) existing.remove();
             

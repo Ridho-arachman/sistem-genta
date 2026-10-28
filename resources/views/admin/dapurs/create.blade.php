@@ -52,27 +52,20 @@
                 Koordinat & Geofence
             </div>
 
-            <!-- Map Picker Component -->
+            <!-- Map Picker Component (includes radius) -->
             <x-leaflet-map-picker 
                 :latitude="old('latitude')"
                 :longitude="old('longitude')"
+                :radius="old('geofence_radius', 100)"
                 :nameLat="'latitude'"
                 :nameLng="'longitude'"
+                :nameRadius="'geofence_radius'"
                 :readonly="false"
+                :editableRadius="true"
                 :height="'350px'"
                 :label="'Pilih Lokasi Dapur di Peta'"
-                :helpText="'Klik peta untuk memilih lokasi, atau gunakan tombol \"Gunakan Lokasi Saya\". Marker merah bisa digeser.'"
+                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Atau gunakan slider radius di bawah.'"
             />
-
-            <div class="form-field mt-4">
-                <label class="form-label" for="geofence_radius">Radius Geofence (meter)</label>
-                <div class="input-with-icon">
-                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                    <input id="geofence_radius" type="number" name="geofence_radius" value="{{ old('geofence_radius', 100) }}" min="10" max="5000" 
-                           class="input-field select-enhanced" placeholder="100">
-                </div>
-                <p class="form-hint">Radius validasi GPS absensi (default: 100 meter, max: 5000 meter)</p>
-            </div>
 
             <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                 <h4 class="font-medium text-blue-800 mb-2 flex items-center gap-2">
