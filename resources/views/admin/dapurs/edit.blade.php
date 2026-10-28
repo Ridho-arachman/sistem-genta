@@ -46,36 +46,26 @@
             </div>
         </div>
 
-        {{-- Coordinates Section --}}
+        {{-- Coordinates & Map Section --}}
         <div class="form-section">
             <div class="form-section-title">
                 <span class="section-icon">📍</span>
                 Koordinat & Geofence
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-field">
-                    <label class="form-label" for="latitude">Latitude</label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <input id="latitude" type="number" step="any" name="latitude" value="{{ old('latitude', $dapur->latitude) }}" 
-                               class="input-field select-enhanced" placeholder="-6.123456">
-                    </div>
-                    <p class="form-hint">Contoh: -6.123456 (negatif untuk LS)</p>
-                </div>
+            <!-- Map Picker Component -->
+            <x-leaflet-map-picker 
+                :latitude="old('latitude', $dapur->latitude)"
+                :longitude="old('longitude', $dapur->longitude)"
+                :nameLat="'latitude'"
+                :nameLng="'longitude'"
+                :readonly="false"
+                :height="'350px'"
+                :label="'Pilih Lokasi Dapur di Peta'"
+                :helpText="'Klik peta untuk memilih lokasi, atau gunakan tombol \"Gunakan Lokasi Saya\". Marker merah bisa digeser.'"
+            />
 
-                <div class="form-field">
-                    <label class="form-label" for="longitude">Longitude</label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <input id="longitude" type="number" step="any" name="longitude" value="{{ old('longitude', $dapur->longitude) }}" 
-                               class="input-field select-enhanced" placeholder="106.123456">
-                    </div>
-                    <p class="form-hint">Contoh: 106.123456 (positif untuk BT)</p>
-                </div>
-            </div>
-
-            <div class="form-field">
+            <div class="form-field mt-4">
                 <label class="form-label" for="geofence_radius">Radius Geofence (meter)</label>
                 <div class="input-with-icon">
                     <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542 7z"></path></svg>
@@ -91,7 +81,9 @@
                     Tips Koordinat
                 </h4>
                 <ul class="text-sm text-blue-700 space-y-1">
-                    <li>• Gunakan Google Maps: klik kanan titik lokasi → "Apa di sini?" untuk dapatkan koordinat</li>
+                    <li>• Klik peta di atas untuk memilih lokasi dapur</li>
+                    <li>• Atau klik "Gunakan Lokasi Saya" untuk ambil lokasi GPS perangkat</li>
+                    <li>• Marker merah bisa digeser untuk penyesuaian presisi</li>
                     <li>• Format: Latitude (negatif untuk LS), Longitude (positif untuk BT)</li>
                     <li>• Radius geofence: jarak toleransi GPS pengawas saat absensi</li>
                 </ul>

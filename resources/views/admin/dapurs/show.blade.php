@@ -85,21 +85,24 @@
         </div>
 
         {{-- Map Preview --}}
-        @if ($dapur->latitude && $dapur->longitude)
         <div class="border-t border-[var(--color-border)] pt-6 mb-6">
             <h3 class="text-lg font-semibold mb-4">Lokasi di Peta</h3>
-            <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden relative">
-                <iframe 
-                    width="100%" 
-                    height="100%" 
-                    frameborder="0" 
-                    style="border:0" 
-                    src="https://www.google.com/maps/embed/v1/place?key=&q={{ $dapur->latitude }},{{ $dapur->longitude }}&zoom=16" 
-                    allowfullscreen>
-                </iframe>
-            </div>
+            @if ($dapur->latitude && $dapur->longitude)
+                <x-leaflet-map-picker 
+                    :latitude="$dapur->latitude"
+                    :longitude="$dapur->longitude"
+                    :readonly="true"
+                    :height="'350px'"
+                    :label="'Lokasi Dapur: ' . $dapur->nama"
+                    :helpText="false"
+                />
+            @else
+                <div class="p-8 text-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl">
+                    <svg class="w-12 h-12 mx-auto text-[var(--color-text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <p class="text-[var(--color-text-muted)]">Lokasi belum diset. Klik <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="text-[var(--color-primary)] hover:underline">Edit</a> untuk menambah koordinat.</p>
+                </div>
+            @endif
         </div>
-        @endif
 
         {{-- CCTV List --}}
         @if ($dapur->cctvs->count() > 0)
