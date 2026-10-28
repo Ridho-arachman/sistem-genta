@@ -44,6 +44,33 @@
                 <label class="form-label" for="alamat">Alamat Lengkap</label>
                 <textarea id="alamat" name="alamat" rows="3" class="input-field" placeholder="Alamat lengkap dapur">{{ old('alamat', $dapur->alamat) }}</textarea>
             </div>
+
+            {{-- Wilayah (auto-filled from map) --}}
+            <div class="form-section">
+                <div class="form-section-title">
+                    <span class="section-icon">🗺️</span>
+                    Wilayah (Terisi Otomatis dari Peta)
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="form-field">
+                        <label class="form-label" for="kecamatan">Kecamatan</label>
+                        <input id="kecamatan" type="text" name="kecamatan" value="{{ old('kecamatan', $dapur->kecamatan) }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="kabupaten_kota">Kabupaten / Kota</label>
+                        <input id="kabupaten_kota" type="text" name="kabupaten_kota" value="{{ old('kabupaten_kota', $dapur->kabupaten_kota) }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="provinsi">Provinsi</label>
+                        <input id="provinsi" type="text" name="provinsi" value="{{ old('provinsi', $dapur->provinsi) }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                </div>
+                <p class="text-xs text-[var(--color-text-muted)] mt-2">Field di atas terisi otomatis saat memilih lokasi di peta. Bisa diedit manual jika perlu.</p>
+            </div>
         </div>
 
         {{-- Coordinates & Map Section --}}
@@ -62,13 +89,19 @@
                 :nameLng="'longitude'"
                 :nameRadius="'geofence_radius'"
                 :nameAddress="'alamat'"
+                :nameKecamatan="'kecamatan'"
+                :nameKabupaten="'kabupaten_kota'"
+                :nameProvinsi="'provinsi'"
                 :reverseGeocode="true"
                 :addressElementId="'alamat'"
+                :kecamatanElementId="'kecamatan'"
+                :kabupatenElementId="'kabupaten_kota'"
+                :provinsiElementId="'provinsi'"
                 :readonly="false"
                 :editableRadius="true"
                 :height="'350px'"
                 :label="'Pilih Lokasi Dapur di Peta'"
-                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat otomatis terisi via OpenStreetMap.'"
+                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat & wilayah otomatis terisi via OpenStreetMap.'"
             />
 
             <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
@@ -88,7 +121,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn-action btn-action-primary">
-                <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 002-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                 <span>Perbarui Dapur</span>
             </button>
             <a href="{{ route('admin.dapurs.index') }}" class="btn-action btn-action-secondary">

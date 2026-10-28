@@ -16,8 +16,8 @@ class Dapur extends Model
     /** @use HasFactory<DapurFactory> */
     use HasFactory;
 
-    #[Fillable(['nama', 'lokasi', 'alamat', 'latitude', 'longitude', 'geofence_radius'])]
-    protected $fillable = ['nama', 'lokasi', 'alamat', 'latitude', 'longitude', 'geofence_radius'];
+    #[Fillable(['nama', 'lokasi', 'alamat', 'kecamatan', 'kabupaten_kota', 'provinsi', 'latitude', 'longitude', 'geofence_radius'])]
+    protected $fillable = ['nama', 'lokasi', 'alamat', 'kecamatan', 'kabupaten_kota', 'provinsi', 'latitude', 'longitude', 'geofence_radius'];
 
     protected $casts = [
         'latitude' => 'decimal:7',

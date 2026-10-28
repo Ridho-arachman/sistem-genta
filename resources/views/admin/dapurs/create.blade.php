@@ -43,6 +43,33 @@
                 <label class="form-label" for="alamat">Alamat Lengkap</label>
                 <textarea id="alamat" name="alamat" rows="3" class="input-field" placeholder="Alamat lengkap dapur">{{ old('alamat') }}</textarea>
             </div>
+
+            {{-- Wilayah (auto-filled from map) --}}
+            <div class="form-section">
+                <div class="form-section-title">
+                    <span class="section-icon">🗺️</span>
+                    Wilayah (Terisi Otomatis dari Peta)
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="form-field">
+                        <label class="form-label" for="kecamatan">Kecamatan</label>
+                        <input id="kecamatan" type="text" name="kecamatan" value="{{ old('kecamatan') }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="kabupaten_kota">Kabupaten / Kota</label>
+                        <input id="kabupaten_kota" type="text" name="kabupaten_kota" value="{{ old('kabupaten_kota') }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="provinsi">Provinsi</label>
+                        <input id="provinsi" type="text" name="provinsi" value="{{ old('provinsi') }}" 
+                               class="input-field" placeholder="Otomatis dari peta" readonly>
+                    </div>
+                </div>
+                <p class="text-xs text-[var(--color-text-muted)] mt-2">Field di atas terisi otomatis saat memilih lokasi di peta. Bisa diedit manual jika perlu.</p>
+            </div>
         </div>
 
         {{-- Coordinates & Map Section --}}
@@ -61,13 +88,19 @@
                 :nameLng="'longitude'"
                 :nameRadius="'geofence_radius'"
                 :nameAddress="'alamat'"
+                :nameKecamatan="'kecamatan'"
+                :nameKabupaten="'kabupaten_kota'"
+                :nameProvinsi="'provinsi'"
                 :reverseGeocode="true"
                 :addressElementId="'alamat'"
+                :kecamatanElementId="'kecamatan'"
+                :kabupatenElementId="'kabupaten_kota'"
+                :provinsiElementId="'provinsi'"
                 :readonly="false"
                 :editableRadius="true"
                 :height="'350px'"
                 :label="'Pilih Lokasi Dapur di Peta'"
-                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat otomatis terisi via OpenStreetMap.'"
+                :helpText="'Klik peta untuk memilih lokasi. Geser marker merah untuk pindah lokasi. Klik & tarik tepi lingkaran radius untuk atur jangkauan. Alamat & wilayah otomatis terisi via OpenStreetMap.'"
             />
 
             <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">

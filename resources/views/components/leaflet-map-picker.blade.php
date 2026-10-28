@@ -21,6 +21,13 @@
     'reverseGeocode' => true,
     'geocodeUserAgent' => 'GENTA-Pangan-Banten/1.0',
     'addressElementId' => null, // ID of visible textarea/input to sync address with
+    // Wilayah auto-fill props
+    'nameKecamatan' => 'kecamatan',
+    'nameKabupaten' => 'kabupaten_kota',
+    'nameProvinsi' => 'provinsi',
+    'kecamatanElementId' => null,
+    'kabupatenElementId' => null,
+    'provinsiElementId' => null,
 ])
 
 <?php
@@ -29,6 +36,9 @@ $latId = $id . '-lat';
 $lngId = $id . '-lng';
 $radiusId = $id . '-radius';
 $addressId = $id . '-address';
+$kecamatanId = $id . '-kecamatan';
+$kabupatenId = $id . '-kabupaten';
+$provinsiId = $id . '-provinsi';
 $containerId = $id . '-container';
 $alpineId = 'mapPicker' . uniqid();
 ?>
@@ -50,6 +60,9 @@ $alpineId = 'mapPicker' . uniqid();
         <input type="hidden" :name="nameRadius" :id="radiusId" x-model="form.radius">
         @if ($reverseGeocode)
         <input type="hidden" :name="nameAddress" :id="addressId" x-model="form.address">
+        <input type="hidden" :name="nameKecamatan" :id="kecamatanId" x-model="form.kecamatan">
+        <input type="hidden" :name="nameKabupaten" :id="kabupatenId" x-model="form.kabupaten_kota">
+        <input type="hidden" :name="nameProvinsi" :id="provinsiId" x-model="form.provinsi">
         @endif
 
         <!-- Map Container -->
@@ -164,6 +177,9 @@ document.addEventListener('alpine:init', () => {
             lng: @js($longitude ?? ''),
             radius: @js($radius ?? 100),
             address: @js($reverseGeocode ? '' : ''),
+            kecamatan: @js($reverseGeocode ? '' : ''),
+            kabupaten_kota: @js($reverseGeocode ? '' : ''),
+            provinsi: @js($reverseGeocode ? '' : ''),
         },
         map: null,
         marker: null,
@@ -183,6 +199,9 @@ document.addEventListener('alpine:init', () => {
         geocodeUserAgent: '{{ $geocodeUserAgent }}',
         nameAddress: '{{ $nameAddress }}',
         addressElementId: '{{ $addressElementId }}',
+        kecamatanElementId: '{{ $kecamatanElementId }}',
+        kabupatenElementId: '{{ $kabupatenElementId }}',
+        provinsiElementId: '{{ $provinsiElementId }}',
 
         async init() {
             if (typeof L === 'undefined') {
@@ -422,18 +441,16 @@ document.addEventListener('alpine:init', () => {
                         else if (data.address.neighbourhood) parts.push(data.address.neighbourhood);
                         
                         // Subdistrict / Kecamatan level
-                        if (data.address.subdistrict) parts.push(data.address.subdistrict);
-                        else if (data.address.city_district) parts.push(data.address.city_district);
-                        else if (data.address.district) parts.push(data.address.district);
+                        const kecamatan = data.address.subdistrict || data.address.city_district || data.address.district;
+                        if (kecamatan) parts.push(kecamatan);
                         
                         // City / Kota / Kabupaten level
-                        if (data.address.city) parts.push(data.address.city);
-                        else if (data.address.town) parts.push(data.address.town);
-                        else if (data.address.municipality) parts.push(data.address.municipality);
+                        const kabupaten = data.address.city || data.address.town || data.address.municipality || data.address.county;
+                        if (kabupaten) parts.push(kabupaten);
                         
                         // Province level
-                        if (data.address.state) parts.push(data.address.state);
-                        else if (data.address.province) parts.push(data.address.province);
+                        const provinsi = data.address.state || data.address.province;
+                        if (provinsi) parts.push(provinsi);
                         
                         // Postcode
                         if (data.address.postcode) parts.push(data.address.postcode);
@@ -443,6 +460,20 @@ document.addEventListener('alpine:init', () => {
                         
                         if (parts.length > 0) {
                             address = parts.join(', ');
+                        }
+                        
+                        // Sync individual fields
+                        if (kecamatan) {
+                            this.form.kecamatan = kecamatan;
+                            this.syncToElement(this.kecamatanElementId, kecamatan);
+                        }
+                        if (kabupaten) {
+                            this.form.kabupaten_kota = kabupaten;
+                            this.syncToElement(this.kabupatenElementId, kabupaten);
+                        }
+                        if (provinsi) {
+                            this.form.provinsi = provinsi;
+                            this.syncToElement(this.provinsiElementId, provinsi);
                         }
                     }
                     
@@ -469,9 +500,25 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        // Generic sync to any element
+        syncToElement(elementId, value) {
+            if (!elementId) return;
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.value = value;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        },
+
         clearAddress() {
             this.form.address = '';
+            this.form.kecamatan = '';
+            this.form.kabupaten_kota = '';
+            this.form.provinsi = '';
             this.syncAddressToElement('');
+            this.syncToElement(this.kecamatanElementId, '');
+            this.syncToElement(this.kabupatenElementId, '');
+            this.syncToElement(this.provinsiElementId, '');
             this.showToast('Alamat dikosongkan, isi manual', 'info');
         },
 
@@ -506,7 +553,13 @@ document.addEventListener('alpine:init', () => {
             this.form.lng = this.defaultLng;
             this.form.radius = this.defaultRadius;
             this.form.address = '';
+            this.form.kecamatan = '';
+            this.form.kabupaten_kota = '';
+            this.form.provinsi = '';
             this.syncAddressToElement('');
+            this.syncToElement(this.kecamatanElementId, '');
+            this.syncToElement(this.kabupatenElementId, '');
+            this.syncToElement(this.provinsiElementId, '');
             this.updateMapPosition(this.defaultLat, this.defaultLng);
             this.showToast('Direset ke lokasi default');
         },

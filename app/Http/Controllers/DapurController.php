@@ -23,11 +23,18 @@ class DapurController extends Controller
             abort(403);
         }
 
-        $dapurs = Dapur::forUser($user)
+        $query = Dapur::forUser($user)
             ->with(['pengawas', 'kepalaDapur'])
-            ->withCount('cctvs')
-            ->latest()
-            ->paginate(10);
+            ->withCount('cctvs');
+
+        // Filter by wilayah (admin only)
+        if ($user->isAdmin() && request()->has(['provinsi', 'kabupaten_kota', 'kecamatan'])) {
+            $query->when(request('provinsi'), fn ($q, $v) => $q->where('provinsi', $v));
+            $query->when(request('kabupaten_kota'), fn ($q, $v) => $q->where('kabupaten_kota', $v));
+            $query->when(request('kecamatan'), fn ($q, $v) => $q->where('kecamatan', $v));
+        }
+
+        $dapurs = $query->latest()->paginate(10);
 
         // Prepare dapur data for Alpine.js component (admin view only)
         $dapurData = [];
@@ -49,8 +56,8 @@ class DapurController extends Controller
                     $statusClass = 'warn';
                 }
 
-                // Build lokasiPengawas string like "Kota Serang · Pengawas: Siti Rahma"
-                $lokasiPengawas = $d->lokasi ?? '—';
+                // Build lokasiPengawas string
+                $lokasiPengawas = $d->lokasi ?? ($d->kabupaten_kota ? "{$d->kabupaten_kota} · {$d->kecamatan}" : '—');
                 if ($d->pengawas->count() > 0) {
                     $lokasiPengawas .= ' · Pengawas: ' . $d->pengawas->first()->name;
                 }
@@ -59,6 +66,9 @@ class DapurController extends Controller
                     'id' => $d->id,
                     'nama' => $d->nama,
                     'lokasi' => $d->lokasi,
+                    'kecamatan' => $d->kecamatan,
+                    'kabupaten_kota' => $d->kabupaten_kota,
+                    'provinsi' => $d->provinsi,
                     'lokasiPengawas' => $lokasiPengawas,
                     'alamat' => $d->alamat,
                     'pengawas' => $pengawas,
@@ -70,6 +80,16 @@ class DapurController extends Controller
                     'statusClass' => $statusClass,
                 ];
             })->toArray();
+        }
+
+        // Get unique values for filter dropdowns (admin only)
+        $filterOptions = [];
+        if ($user->isAdmin()) {
+            $filterOptions = [
+                'provinsi' => Dapur::whereNotNull('provinsi')->distinct()->pluck('provinsi')->sort()->values(),
+                'kabupaten_kota' => Dapur::whereNotNull('kabupaten_kota')->distinct()->pluck('kabupaten_kota')->sort()->values(),
+                'kecamatan' => Dapur::whereNotNull('kecamatan')->distinct()->pluck('kecamatan')->sort()->values(),
+            ];
         }
 
         if ($user->isManajerial()) {
@@ -84,7 +104,7 @@ class DapurController extends Controller
             return view('kepala-dapur.dapurs.index', compact('dapurs'));
         }
 
-        return view('admin.dapurs.index', compact('dapurs', 'dapurData'));
+        return view('admin.dapurs.index', compact('dapurs', 'dapurData', 'filterOptions'));
     }
 
     public function create()
@@ -106,6 +126,9 @@ class DapurController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'lokasi' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
+            'kecamatan' => ['nullable', 'string', 'max:100'],
+            'kabupaten_kota' => ['nullable', 'string', 'max:100'],
+            'provinsi' => ['nullable', 'string', 'max:100'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'geofence_radius' => ['nullable', 'integer', 'min:10', 'max:5000'],
@@ -165,6 +188,9 @@ class DapurController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'lokasi' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
+            'kecamatan' => ['nullable', 'string', 'max:100'],
+            'kabupaten_kota' => ['nullable', 'string', 'max:100'],
+            'provinsi' => ['nullable', 'string', 'max:100'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'geofence_radius' => ['nullable', 'integer', 'min:10', 'max:5000'],
