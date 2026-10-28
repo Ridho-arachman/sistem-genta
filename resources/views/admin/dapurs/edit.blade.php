@@ -83,7 +83,7 @@
                                 :disabled="kecamatanOptions.length === 0">
                             <option value="">-- Pilih Kabupaten/Kota dulu --</option>
                             <template x-for="kec in kecamatanOptions" :key="kec">
-                                <option :value="kec" :selected="kec === form.kecamatan">{{ kec }}</option>
+                                <option :value="kec" :selected="kec === form.kecamatan">@{{ kec }}</option>
                             </template>
                         </select>
                         @error('kecamatan')
