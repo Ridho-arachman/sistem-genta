@@ -21,23 +21,15 @@
                 Informasi Dasar
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-field">
-                    <label class="form-label" for="nama">
-                        Nama Dapur <span class="required">*</span>
-                    </label>
-                    <input id="nama" type="text" name="nama" value="{{ old('nama', $dapur->nama) }}" required 
-                           class="input-field" placeholder="Contoh: Dapur Pusat Kota" autofocus>
-                    @error('nama')
-                        <p class="form-error">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="form-field">
-                    <label class="form-label" for="lokasi">Lokasi / Area</label>
-                    <input id="lokasi" type="text" name="lokasi" value="{{ old('lokasi', $dapur->lokasi) }}" 
-                           class="input-field" placeholder="Contoh: Kecamatan Tengah">
-                </div>
+            <div class="form-field">
+                <label class="form-label" for="nama">
+                    Nama Dapur <span class="required">*</span>
+                </label>
+                <input id="nama" type="text" name="nama" value="{{ old('nama', $dapur->nama) }}" required 
+                       class="input-field" placeholder="Contoh: Dapur Pusat Kota" autofocus>
+                @error('nama')
+                    <p class="form-error">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-field">
