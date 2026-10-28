@@ -1,12 +1,20 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail Dapur: ' . $dapur->nama])
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-[var(--color-secondary)]">{{ $dapur->nama }}</h2>
-                <p class="text-[var(--color-text-muted)] mt-1">{{ $dapur->lokasi ?? 'Lokasi tidak diset' }}</p>
+                <p class="text-[var(--color-text-muted)] mt-1">
+                    @if ($dapur->kecamatan && $dapur->kabupaten_kota)
+                        {{ $dapur->kecamatan }}, {{ $dapur->kabupaten_kota }}, {{ $dapur->provinsi ?? 'Banten' }}
+                    @elseif ($dapur->lokasi)
+                        {{ $dapur->lokasi }}
+                    @else
+                        Wilayah tidak diset
+                    @endif
+                </p>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn-action btn-action-secondary">Edit</a>
@@ -58,50 +66,32 @@
             </div>
         </div>
 
-        {{-- Basic Info --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Alamat</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->alamat ?? '-' }}</p>
+        {{-- Wilayah --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
+                <p class="text-sm text-[var(--color-text-muted)]">Kabupaten / Kota</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->kabupaten_kota ?? '-' }}</p>
             </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Koordinat</p>
-                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm">
-                    @if ($dapur->latitude && $dapur->longitude)
-                        {{ $dapur->latitude }}, {{ $dapur->longitude }}
-                    @else
-                        Belum diset
-                    @endif
-                </p>
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
+                <p class="text-sm text-[var(--color-text-muted)]">Kecamatan</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->kecamatan ?? '-' }}</p>
             </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Radius Geofence</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->geofence_radius ?? 100 }} meter</p>
-            </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Jumlah CCTV</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->cctvs->count() }}</p>
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
+                <p class="text-sm text-[var(--color-text-muted)]">Provinsi</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->provinsi ?? 'Banten' }}</p>
             </div>
         </div>
 
-        {{-- Map Preview --}}
-        <div class="border-t border-[var(--color-border)] pt-6 mb-6">
-            <h3 class="text-lg font-semibold mb-4">Lokasi di Peta</h3>
-            @if ($dapur->latitude && $dapur->longitude)
-                <x-leaflet-map-picker 
-                    :latitude="$dapur->latitude"
-                    :longitude="$dapur->longitude"
-                    :readonly="true"
-                    :height="'350px'"
-                    :label="'Lokasi Dapur: ' . $dapur->nama"
-                    :helpText="false"
-                />
-            @else
-                <div class="p-8 text-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl">
-                    <svg class="w-12 h-12 mx-auto text-[var(--color-text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <p class="text-[var(--color-text-muted)]">Lokasi belum diset. Klik <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="text-[var(--color-primary)] hover:underline">Edit</a> untuk menambah koordinat.</p>
-                </div>
-            @endif
+        {{-- Basic Info --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
+                <p class="text-sm text-[var(--color-text-muted)]">Alamat Lengkap</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->alamat ?? '-' }}</p>
+            </div>
+            <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
+                <p class="text-sm text-[var(--color-text-muted)]">Jumlah CCTV</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->cctvs->count() }}</p>
+            </div>
         </div>
 
         {{-- CCTV List --}}
