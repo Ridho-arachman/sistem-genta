@@ -110,7 +110,7 @@
             </div>
         </aside>
 
-        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-[28px] ml-[230px]" id="view">
+        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-[28px] lg:ml-[230px]" id="view">
             @yield('content')
         </main>
     </div>
