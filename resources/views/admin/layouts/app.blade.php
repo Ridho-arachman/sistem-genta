@@ -84,12 +84,6 @@
                      {{ request()->routeIs('admin.cctvs.monitoring*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
             </a>
-            <a href="{{ route('admin.cctvs.index') }}" 
-               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                     {{ request()->routeIs('admin.cctvs.index') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
-               style="padding-left: 38px; font-size: 12px;">
-                <span class="sidebar-icon w-[22px] text-center text-[14px]">⋮</span> Kelola CCTV
-            </a>
 
             <a href="{{ route('admin.laporan.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors

@@ -185,33 +185,21 @@ class CctvController extends Controller
 
         $dapurIds = $user->getAccessibleDapurIds();
 
-        // Get stats
-        $stats = [
-            'total' => Cctv::whereIn('dapur_id', $dapurIds)->count(),
-            'online' => Cctv::whereIn('dapur_id', $dapurIds)->where('status', 'online')->count(),
-            'offline' => Cctv::whereIn('dapur_id', $dapurIds)->where('status', 'offline')->count(),
-            'maintenance' => Cctv::whereIn('dapur_id', $dapurIds)->where('status', 'maintenance')->count(),
-        ];
-
         // Get all CCTV with dapur relationship, ordered by dapur then camera_number
         $cctvs = Cctv::with('dapur')
             ->whereIn('dapur_id', $dapurIds)
             ->orderBy('dapur_id')
             ->orderBy('camera_number')
-            ->get()
-            ->groupBy('dapur_id');
-
-        // Get dapurs for filter dropdown
-        $dapurs = Dapur::whereIn('id', $dapurIds)->get(['id', 'nama']);
+            ->get();
 
         if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.monitoring-dashboard', compact('stats', 'cctvs', 'dapurs'));
+            return view('kepala-dapur.cctvs.monitoring-dashboard', compact('cctvs'));
         } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.monitoring-dashboard', compact('stats', 'cctvs', 'dapurs'));
+            return view('manajerial.cctvs.monitoring-dashboard', compact('cctvs'));
         } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.monitoring-dashboard', compact('stats', 'cctvs', 'dapurs'));
+            return view('pengawas.cctvs.monitoring-dashboard', compact('cctvs'));
         }
 
-        return view('admin.cctvs.monitoring-dashboard', compact('stats', 'cctvs', 'dapurs'));
+        return view('admin.cctvs.monitoring-dashboard', compact('cctvs'));
     }
 }
