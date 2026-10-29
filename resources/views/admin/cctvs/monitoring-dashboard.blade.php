@@ -12,11 +12,11 @@
     </div>
 
     <!-- Camera Grid - 2 columns fixed like demo -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         @foreach ($cctvs as $cctv)
-        <div class="card overflow-hidden" style="min-height: 300px;">
-            <div class="p-4 border-b border-[var(--color-border)]">
-                <div class="flex items-center justify-between mb-3">
+        <div class="card overflow-hidden">
+            <div class="p-3 border-b border-[var(--color-border)]">
+                <div class="flex items-center justify-between mb-2">
                     <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded" style="font-family: monospace;">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
@@ -31,9 +31,9 @@
                 </div>
             </div>
             
-            <div class="aspect-video bg-[#0a0f0d] relative flex flex-col items-center justify-center text-white/60 p-6">
+            <div class="aspect-[4/3] bg-[#0a0f0d] relative flex flex-col items-center justify-center text-white/60 p-4">
                 <div class="text-center">
-                    <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width: 1.5;">
+                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width: 1.5;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg>
@@ -42,12 +42,12 @@
                 </div>
                 
                 <!-- Area label overlay at bottom -->
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                     <p class="text-xs text-white/70 font-medium">{{ $cctv->section ?? 'Area tidak diset' }}</p>
                 </div>
             </div>
             
-            <div class="p-4 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
+            <div class="p-3 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
                 <p class="text-sm font-medium text-[var(--color-secondary)] mb-1">{{ $cctv->nama }}</p>
                 <p class="text-xs text-[var(--color-text-muted)]">{{ $cctv->dapur->nama ?? 'Dapur tidak diketahui' }}</p>
             </div>
