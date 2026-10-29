@@ -12,15 +12,15 @@
     </div>
 
     <!-- Camera Grid - 2 columns fixed like demo, cards smaller -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-full">
         @foreach ($cctvs as $cctv)
         <div class="card overflow-hidden max-w-xs">
             <div class="p-2 border-b border-[var(--color-border)]">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded" style="font-family: monospace;">
+                <div class="flex items-center justify-between mb-1 min-w-0">
+                    <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0" style="font-family: monospace;">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
-                    <span class="status-badge 
+                    <span class="status-badge shrink-0
                         @if($cctv->status === 'online') ok
                         @elseif($cctv->status === 'offline') off
                         @else warn @endif">
@@ -43,13 +43,13 @@
                 
                 <!-- Area label overlay at bottom -->
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
-                    <p class="text-[10px] text-white/70 font-medium">{{ $cctv->section ?? 'Area tidak diset' }}</p>
+                    <p class="text-[10px] text-white/70 font-medium truncate">{{ $cctv->section ?? 'Area tidak diset' }}</p>
                 </div>
             </div>
             
             <div class="p-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
-                <p class="text-sm font-medium text-[var(--color-secondary)] mb-0.5">{{ $cctv->nama }}</p>
-                <p class="text-xs text-[var(--color-text-muted)]">{{ $cctv->dapur->nama ?? 'Dapur tidak diketahui' }}</p>
+                <p class="text-sm font-medium text-[var(--color-secondary)] mb-0.5 truncate">{{ $cctv->nama }}</p>
+                <p class="text-xs text-[var(--color-text-muted)] truncate">{{ $cctv->dapur->nama ?? 'Dapur tidak diketahui' }}</p>
             </div>
         </div>
         @endforeach
