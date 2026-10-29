@@ -7,7 +7,10 @@
         <h1>Data CCTV</h1>
         <div class="muted">Kelola kamera CCTV per dapur</div>
     </div>
-    <a href="{{ route('admin.cctvs.create') }}" class="btn-primary">＋ Tambah CCTV</a>
+    <div class="flex items-center gap-3">
+        <a href="{{ route('admin.cctvs.monitoring-dashboard') }}" class="btn-secondary">Monitoring</a>
+        <a href="{{ route('admin.cctvs.create') }}" class="btn-primary">＋ Tambah CCTV</a>
+    </div>
 </div>
 
 <div class="panel">

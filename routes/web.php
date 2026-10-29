@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
         // Dapur (full CRUD)
         Route::resource('dapurs', DapurController::class)->names('dapurs');
 
+        Route::get('cctvs/monitoring', [CctvController::class, 'monitoringDashboard'])->name('cctvs.monitoring-dashboard');
         // CCTV (full CRUD)
         Route::resource('cctvs', CctvController::class)->names('cctvs');
         Route::get('cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');

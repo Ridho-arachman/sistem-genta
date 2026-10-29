@@ -18,9 +18,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_desktop') ?? 'GENTA Banten Admin' }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
-
     
-
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body x-data="{
@@ -70,31 +69,37 @@
             
             <a href="{{ route('admin.dashboard') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs('admin.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">▦</span> Dashboard
             </a>
 
             <a href="{{ route('admin.dapurs.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.dapurs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs('admin.dapurs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">⌂</span> Data Dapur
             </a>
 
+            <a href="{{ route('admin.cctvs.monitoring-dashboard') }}" 
+               class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
+                     {{ request()->routeIs('admin.cctvs.monitoring*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
+            </a>
             <a href="{{ route('admin.cctvs.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.cctvs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
-                <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
+                     {{ request()->routeIs('admin.cctvs.index') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+               style="padding-left: 38px; font-size: 12px;">
+                <span class="sidebar-icon w-[22px] text-center text-[14px]">⋮</span> Kelola CCTV
             </a>
 
             <a href="{{ route('admin.laporan.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.laporan*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs('admin.laporan*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">▤</span> Laporan Pengawasan
             </a>
 
             <a href="{{ route('admin.users') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.users*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs('admin.users*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">♙</span> Manajemen Pengguna
             </a>
 
@@ -102,7 +107,7 @@
 
             <a href="{{ route('admin.settings') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                      {{ request()->routeIs('admin.settings') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs('admin.settings') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">⚙</span> Pengaturan
             </a>
 
