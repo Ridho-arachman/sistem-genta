@@ -12,7 +12,7 @@
     </div>
 
     <!-- Camera Grid - 2 columns fixed like demo, cards smaller -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         @foreach ($cctvs as $cctv)
         <div class="card overflow-hidden max-w-xs">
             <div class="p-2 border-b border-[var(--color-border)]">

@@ -61,8 +61,8 @@
         <aside 
             id="sidebar" 
             :class="{ 'open': sidebarOpen }" 
-            class="hidden lg:block fixed top-[72px] left-0 bottom-0 z-999 w-[230px] flex-shrink-0 bg-[var(--color-background)] border-r border-[var(--color-border)] p-[22px_14px] overflow-y-auto transition-slide"
-            x-show="sidebarOpen"
+            class="fixed top-[72px] left-0 bottom-0 z-999 w-[230px] flex-shrink-0 bg-[var(--color-background)] border-r border-[var(--color-border)] p-[22px_14px] overflow-y-auto transition-slide"
+            x-show="sidebarOpen || true"
             @click.outside="sidebarOpen = false">
             
             <div class="side-label">MENU UTAMA</div>
@@ -110,7 +110,7 @@
             </div>
         </aside>
 
-        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-[28px] lg:pt-[96px] lg:ml-[230px] lg:pl-[14px] lg:pr-[28px] lg:pb-[28px]" id="view">
+        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-[28px] ml-[230px] pl-[14px] pr-[28px]" id="view">
             @yield('content')
         </main>
     </div>
