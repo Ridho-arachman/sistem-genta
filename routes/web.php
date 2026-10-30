@@ -88,6 +88,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/laporan/{id}', function ($id) {
             return view('admin.laporan.show', compact('id'));
         })->name('laporan.show');
+        Route::put('/laporan/{id}', function ($id) {
+            // Demo: update status/catatan admin
+            // In production, persist to database
+            return redirect()->route('admin.laporan.show', $id);
+        })->name('laporan.update');
 
         // Absensi (monitor & export)
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
