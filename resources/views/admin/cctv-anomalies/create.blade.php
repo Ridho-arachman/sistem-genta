@@ -1,12 +1,16 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Buat Laporan Anomali CCTV'])
 
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="card p-8">
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Buat Laporan Anomali CCTV</h2>
-            <p class="text-[var(--color-text-muted)] mt-1">Laporan ini akan dikirim notifikasi ke manajerial</p>
-        </div>
+
+<div class="heading mb-8">
+    <div>
+        <div class="eyebrow">Genta · Admin Panel</div>
+        <h1>Laporan Anomali CCTV</h1>
+        <div class="muted">Buat laporan anomali baru</div>
+    </div>
+</div>
+
+<div class="card p-8">
 
         <form method="POST" action="{{ route('admin.cctv-anomalies.store') }}" class="space-y-6">
             @csrf
@@ -51,5 +55,4 @@
             </div>
         </form>
     </div>
-</div>
 @endsection
