@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail CCTV: ' . $cctv->display_name])
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -111,7 +111,6 @@
         </div>
         @endif
     </div>
-</div>
 
 @if ($cctv->hls_url)
 @push('scripts')
@@ -140,3 +139,5 @@
 </script>
 @endpush
 @endif
+
+@endsection
