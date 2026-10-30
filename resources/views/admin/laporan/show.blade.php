@@ -67,7 +67,7 @@
                 <button type="button" class="btn-action btn-action-outline mt-2" onclick="openCamera()">
                     ðŸ“¸ Ambil Foto
                 </button>
-                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">\n                <div id="locationMap" class="mt-2 w-full h-32 rounded-lg hidden border"></div>
+                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">\n                <div id="locationMap" class="mt-2 w-full rounded-lg hidden border" style="height: 256px;"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
                 <input type="hidden" name="latitude" id="latitudeInput" value="-6.130000">
                 <input type="hidden" name="longitude" id="longitudeInput" value="106.140000">
