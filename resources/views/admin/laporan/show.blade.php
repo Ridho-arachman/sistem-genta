@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="card p-8" id="laporanDetail" data-current-status="{{ $laporan->status }}" data-has-coords="{{ $laporan->latitude && $laporan->longitude ? '1' : '0' }}" data-default-lat="{{ $laporan->latitude ?? '' }}" data-default-lng="{{ $laporan->longitude ?? '' }}">
+<div class="panel" id="laporanDetail" data-current-status="{{ $laporan->status }}" data-has-coords="{{ $laporan->latitude && $laporan->longitude ? '1' : '0' }}" data-default-lat="{{ $laporan->latitude ?? '' }}" data-default-lng="{{ $laporan->longitude ?? '' }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
@@ -92,6 +92,8 @@
         <a href="{{ route('admin.laporan.index') }}" class="btn-secondary">Kembali</a>
     </div>
 </div>
+
+@endsection
 
 @push('scripts')
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">
