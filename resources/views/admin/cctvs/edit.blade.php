@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Edit CCTV: ' . $cctv->nama])
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+
     <div class="heading mb-8">
         <div>
             <div class="eyebrow">Genta · Admin Panel</div>
@@ -114,4 +114,5 @@
         </div>
     </form>
 </div>
+
 @endsection
