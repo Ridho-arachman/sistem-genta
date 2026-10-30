@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="card p-8" id="laporanDetail">
+<div class="card p-8" id="laporanDetail" data-current-status="Temuan">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
@@ -53,6 +53,7 @@
         </div>
     </div>
 
+    <!-- Catatan Admin: muncul ketika STATUS BARU dipilih = "temuan" -->
     <div id="catatanSection" class="mt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2" id="catatanLabel">Catatan Verifikasi</p>
         <form method="POST" action="/admin/laporan/1/update" id="catatanForm">
@@ -60,7 +61,7 @@
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" value="temuan">
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
-            <button type="submit" class="btn-action btn-action-primary mt-3">
+            <button type="submit" class="btn-action btn-action-primary mt-3" id="saveBtn">
                 Simpan Verifikasi
             </button>
         </form>
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         editor = new Quill('#catatan-admin', {
             theme: 'snow',
-            placeholder: 'Tuliskan temuan, rekomendasi, atau tindak lanjut admin...',
+            placeholder: 'Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...',
             modules: {
                 toolbar: [
                     [{ 'header': [false, 1, 2, 3] }],
@@ -100,11 +101,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const catatanSection = document.getElementById('catatanSection');
     const statusInput = document.getElementById('statusInput');
     const form = document.getElementById('catatanForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const currentStatusDisplay = document.querySelector('[data-current-status]');
+    const labelEl = document.getElementById('catatanLabel');
     
-    // Toggle catatan section visibility based on status
+    // Check if current status is 'selesai' - lock editing
+    let isSelesai = false;
+    if (currentStatusDisplay && currentStatusDisplay.dataset.currentStatus.toLowerCase() === 'selesai') {
+        isSelesai = true;
+        statusSelect.disabled = true;
+        catatanSection.style.display = 'none';
+        saveBtn.disabled = true;
+    }
+    
+    // Toggle catatan section visibility based on new status selection
     function updateCatatanVisibility() {
         const status = statusSelect.value;
-        const catatanLabel = document.getElementById('catatanLabel');
         
         // Form shows for diperiksa, temuan, tindak lanjut - only hidden for selesai
         if (status === 'selesai') {
@@ -113,20 +125,20 @@ document.addEventListener('DOMContentLoaded', function() {
             catatanSection.style.display = 'block';
         }
         
-        // Update label based on status
+        // Update label based on new status
         const labels = {
             'diperiksa': 'Catatan Verifikasi Pemeriksaan',
             'temuan': 'Catatan Temuan & Tindak Lanjut',
             'tindak lanjut': 'Catatan Tindak Lanjut',
             'selesai': 'Catatan Selesai'
         };
-        catatanLabel.textContent = labels[status] || 'Catatan Admin';
+        labelEl.textContent = labels[status] || 'Catatan Admin';
     }
     
-    // Set initial label
+    // Set initial label and visibility
     updateCatatanVisibility();
     
-    // Listen for status changes
+    // Listen for new status changes
     statusSelect.addEventListener('change', function() {
         const status = this.value;
         statusInput.value = status;
@@ -135,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sync Quill content to textarea before form submit
     form.addEventListener('submit', function(e) {
+        if (isSelesai) {
+            e.preventDefault();
+            return;
+        }
         if (editor) {
             document.getElementById('catatan-admin').value = editor.root.innerHTML;
         }
