@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="card p-8">
+<div class="card p-8" x-data="laporanDetail(1)">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
@@ -32,18 +32,18 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status Saat Ini</p>
-                <span class="badge badge-danger" x-text="currentStatus">Temuan</span>
+                <span class="badge" :class="statusBadgeClass" x-text="currentStatus">Temuan</span>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)] mb-2">Status Baru</p>
-                <form method="POST" action="{{ route('admin.laporan.update', 1) }}" class="inline">
-                    @csrf
-                    @method('PUT')
-                    <select name="status" onchange="this.form.submit()" class="input-field">
-                        <option value="diperiksa">Diperiksa</option>
-                        <option value="temuan" selected>Temuan</option>
-                        <option value="tindak lanjut">Tindak Lanjut</option>
-                        <option value="selesai">Selesai</option>
+                <form method="POST" :action="'/admin/laporan/' + id + '/update'" class="inline">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <select name="status" @change="this.form.submit()" class="input-field">
+                        <option value="diperiksa" :selected="currentStatus === 'diperiksa'">Diperiksa</option>
+                        <option value="temuan" :selected="currentStatus === 'temuan'">Temuan</option>
+                        <option value="tindak lanjut" :selected="currentStatus === 'tindak lanjut'">Tindak Lanjut</option>
+                        <option value="selesai" :selected="currentStatus === 'selesai'">Selesai</option>
                     </select>
                 </form>
             </div>
@@ -57,11 +57,12 @@
         </div>
     </div>
 
-    <div class="mt-6">
+    <!-- Catatan Admin hanya muncul jika statusnya "temuan" -->
+    <div x-show="currentStatus === 'temuan'" class="mt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2">Catatan Admin (Temuan & Tindak Lanjut)</p>
-        <form method="POST" action="{{ route('admin.laporan.update', 1) }}">
+        <form method="POST" :action="'/admin/laporan/' + id + '/update'">
             @csrf
-            @method('PUT')
+            <input type="hidden" name="status" value="temuan">
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan temuan, rekomendasi, atau tindak lanjut admin..."></textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3">
                 Simpan Verifikasi
@@ -94,5 +95,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Alpine.js data for laporan detail
+function laporanDetail(id) {
+    return {
+        id: id,
+        currentStatus: 'Temuan',
+        reportDate: '30 Okt 2026',
+        reportLocation: 'Serang 01',
+        reportPengawas: 'Siti Rahma',
+        reportCategory: 'Kebersihan dan sanitasi',
+        get statusBadgeClass() {
+            const classes = {
+                'Diperiksa': 'badge-success',
+                'Temuan': 'badge-danger',
+                'Tindak Lanjut': 'badge-warning',
+                'Selesai': 'badge-success'
+            };
+            return classes[this.currentStatus] || 'badge-secondary';
+        }
+    };
+}
 </script>
 @endpush
