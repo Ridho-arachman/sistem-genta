@@ -53,14 +53,13 @@
         </div>
     </div>
 
-    <!-- Catatan Admin: muncul ketika STATUS BARU dipilih = "temuan" -->
     <div id="catatanSection" class="mt-6">
-        <p class="text-sm text-[var(--color-text-muted)] mb-2">Catatan Admin (Temuan & Tindak Lanjut)</p>
+        <p class="text-sm text-[var(--color-text-muted)] mb-2" id="catatanLabel">Catatan Verifikasi</p>
         <form method="POST" action="/admin/laporan/1/update" id="catatanForm">
             @csrf
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" value="temuan">
-            <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan temuan, rekomendasi, atau tindak lanjut admin..."></textarea>
+            <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3">
                 Simpan Verifikasi
             </button>
@@ -105,14 +104,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Toggle catatan section visibility based on status
     function updateCatatanVisibility() {
         const status = statusSelect.value;
-        if (status === 'temuan') {
-            catatanSection.style.display = 'block';
-        } else {
+        const catatanLabel = document.getElementById('catatanLabel');
+        
+        // Form shows for diperiksa, temuan, tindak lanjut - only hidden for selesai
+        if (status === 'selesai') {
             catatanSection.style.display = 'none';
+        } else {
+            catatanSection.style.display = 'block';
         }
+        
+        // Update label based on status
+        const labels = {
+            'diperiksa': 'Catatan Verifikasi Pemeriksaan',
+            'temuan': 'Catatan Temuan & Tindak Lanjut',
+            'tindak lanjut': 'Catatan Tindak Lanjut',
+            'selesai': 'Catatan Selesai'
+        };
+        catatanLabel.textContent = labels[status] || 'Catatan Admin';
     }
     
-    // Initialize visibility
+    // Set initial label
     updateCatatanVisibility();
     
     // Listen for status changes
