@@ -272,7 +272,7 @@
     .hamburger:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,0.4); }
     .hamburger svg { width: 24px; height: 24px; }
 
-    .shell { display: flex; overflow-x: hidden; }
+    .shell { display: flex; min-height: 100vh; }
 
     aside {
         width: 230px;
@@ -303,8 +303,10 @@
     .side-note { margin: 28px 5px 0; background: var(--color-surface); border-radius: 14px; padding: 14px; font-size: 12px; line-height: 1.6; color: var(--color-text-muted); }
 
     main {
+        flex: 1;
         min-width: 0;
         padding-top: 96px;
+        padding-bottom: 28px;
     }
 
     .heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 23px; flex-wrap: wrap; }
