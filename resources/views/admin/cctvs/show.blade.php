@@ -19,7 +19,7 @@
             <div class="flex gap-2">
                 <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="btn-secondary">Edit</a>
                 <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="btn-secondary flex items-center gap-2">
-                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
+                    <span>!</span>
                     <span>Laporkan Anomali</span>
                 </a>
                 <a href="{{ route('admin.cctvs.index') }}" class="btn-secondary">Kembali</a>

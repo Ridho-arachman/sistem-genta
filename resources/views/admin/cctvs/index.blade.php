@@ -13,7 +13,7 @@
             <span>Tambah CCTV</span>
         </a>
         <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn-action btn-action-primary">
-            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
+            <span>!</span>
             <span>Laporan Anomali</span>
         </a>
     </div>
@@ -103,7 +103,7 @@
                 <div class="p-3 flex items-center justify-between gap-2">
                     <a href="{{ route('admin.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat detail</a>
                     <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="flex items-center gap-1 text-red-600 hover:underline text-sm font-medium ml-1">
-                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
+                        <span>!</span>
                         <span>Laporkan anomali</span>
                     </a>
                 </div>
