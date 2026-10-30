@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="card p-8" id="laporanDetail" data-current-status="{{ $laporan->status }}">
+<div class="card p-8" id="laporanDetail" data-current-status="{{ $laporan->status }}" data-has-coords="{{ $laporan->latitude && $laporan->longitude ? "1" : "0" }}" data-default-lat="{{ $laporan->latitude ?? "" }}" data-default-lng="{{ $laporan->longitude ?? "" }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
@@ -306,11 +306,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('catatan-admin').readOnly = true;
     }
 
-    // Auto-init map on page load with DAPUR coordinates (akurat)
+    // Ambil default koordinat dari atribut data
+    const defaultLat = document.getElementById('laporanDetail').dataset.defaultLat;
+    const defaultLng = document.getElementById('laporanDetail').dataset.defaultLng;
+    const hasCoords = document.getElementById('laporanDetail').dataset.hasCoords === '1';
+
+    // Set input ke default (saved coords atau fallback)
+    latInput.value = defaultLat || latInput.value;
+    lngInput.value = defaultLng || lngInput.value;
+
+    // Auto-init map with default coords (frozen after save)
     showMap();
 
-    // Optional: update map dengan GPS aktual jika user izinkan dan akurat
-    if (!isSelesai && typeof navigator !== 'undefined' && navigator.geolocation) {
+    // Hanya update GPS di background jika laporan BELUM punya koordinat tersimpan
+    if (!hasCoords && !isSelesai && typeof navigator !== 'undefined' && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(pos) {
                 const accuracy = pos.coords.accuracy;
@@ -324,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gpsAccuracyEl.classList.remove('hidden');
                 showMap();
             },
-            function() { /* GPS denied - tetap pakai fallback di input value */ },
+            function() { /* GPS denied - tetap pakai default coords di input */ },
             { enableHighAccuracy: true }
         );
     }

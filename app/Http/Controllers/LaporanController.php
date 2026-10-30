@@ -28,14 +28,14 @@ class LaporanController extends Controller
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',
             'selfie_photo' => 'nullable|string', // base64 data URL
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $laporan->status = $validated['status'];
         $laporan->catatan = $validated['catatan'] ?? null;
-        $laporan->latitude = $validated['latitude'] ?? null;
-        $laporan->longitude = $validated['longitude'] ?? null;
+        $laporan->latitude = $validated['latitude'];
+        $laporan->longitude = $validated['longitude'];
 
         // Handle selfie photo upload (base64 -> file)
         if (! empty($validated['selfie_photo'])) {
