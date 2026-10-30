@@ -1,9 +1,9 @@
-@extends('admin.layouts.app', ['pageTitle' => 'Detail Laporan'])
+﻿@extends('admin.layouts.app', ['pageTitle' => 'Detail Laporan'])
 
 @section('content')
 <div class="heading mb-8">
     <div>
-        <div class="eyebrow">Genta · Admin Panel</div>
+        <div class="eyebrow">Genta Â· Admin Panel</div>
         <h1>Detail Laporan</h1>
         <div class="muted">Verifikasi dan tindak lan-jut laporan penemuan</div>
     </div>
@@ -65,9 +65,9 @@
             <div class="mb-3">
                 <label class="text-xs text-[var(--color-text-muted)] block mb-1">Foto Selfie Pengawas</label>
                 <button type="button" class="btn-action btn-action-outline mt-2" onclick="openCamera()">
-                    📸 Ambil Foto
+                    ðŸ“¸ Ambil Foto
                 </button>
-                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">
+                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">\n                <div id="locationMap" class="mt-2 w-full h-32 rounded-lg hidden border"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
                 <input type="hidden" name="latitude" id="latitudeInput">
                 <input type="hidden" name="longitude" id="longitudeInput">
@@ -90,11 +90,11 @@
     <div class="bg-[var(--color-background)] rounded-lg p-4 max-w-md w-full">
         <div class="flex justify-between items-center mb-3">
             <h3 class="text-lg font-semibold">Ambil Foto Selfie</h3>
-            <button class="btn-secondary" onclick="closeCamera()">×</button>
+            <button class="btn-secondary" onclick="closeCamera()">Ã—</button>
         </div>
         <video id="videoStream" class="w-full rounded-lg mb-3" autoplay playsinline></video>
         <div class="flex gap-2">
-            <button class="btn-action btn-action-outline" onclick="capturePhoto()">📸 Capture</button>
+            <button class="btn-action btn-action-outline" onclick="capturePhoto()">ðŸ“¸ Capture</button>
             <button class="btn-action btn-action-outline" onclick="closeCamera()">Batal</button>
         </div>
     </div>
@@ -102,8 +102,8 @@
 @endsection
 
 @push('scripts')
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">\n<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>\n<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Quill Rich Text Editor
@@ -231,6 +231,20 @@ document.addEventListener('DOMContentLoaded', function() {
         selfieInput.value = dataURL;
         
         closeCamera();
+        showMap();
+    }
+
+    // Show or refresh Leaflet map at current coords
+    function showMap() {
+        const mapEl = document.getElementById('locationMap');
+        if (!mapEl || !latInput.value || !lngInput.value || typeof L === 'undefined') return;
+        mapEl.classList.remove('hidden');
+        if (mapEl._leafletInstance) { mapEl._leafletInstance.remove(); }
+        const map = L.map(mapEl).setView([parseFloat(latInput.value), parseFloat(lngInput.value)], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([parseFloat(latInput.value), parseFloat(lngInput.value)]).addTo(map)
+            .bindPopup('Lokasi Foto').openPopup();
+        mapEl._leafletInstance = map;
     }
     
     // Set initial visibility and label
@@ -238,6 +252,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (isSelesai) {
         document.getElementById('catatan-admin').readOnly = true;
+    }
+    
+    // Auto-init map with browser geolocation on page load
+    if (!isSelesai && typeof navigator !== undefined && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                latInput.value = pos.coords.latitude.toFixed(6);
+                lngInput.value = pos.coords.longitude.toFixed(6);
+                showMap();
+            },
+            function() { /* GPS denied - map shows after capture */ }
+        );
     }
     
     // Listen for new status changes
