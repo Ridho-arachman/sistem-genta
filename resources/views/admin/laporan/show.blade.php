@@ -69,8 +69,8 @@
                 </button>
                 <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">\n                <div id="locationMap" class="mt-2 w-full h-32 rounded-lg hidden border"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
-                <input type="hidden" name="latitude" id="latitudeInput">
-                <input type="hidden" name="longitude" id="longitudeInput">
+                <input type="hidden" name="latitude" id="latitudeInput" value="-6.130000">
+                <input type="hidden" name="longitude" id="longitudeInput" value="106.140000">
             </div>
             
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
@@ -254,7 +254,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('catatan-admin').readOnly = true;
     }
     
-    // Auto-init map with browser geolocation on page load
+    // Auto-init map on page load
+    showMap();
+    
+    // Optional: update map with real GPS if user allows
     if (!isSelesai && typeof navigator !== undefined && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(pos) {
@@ -262,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lngInput.value = pos.coords.longitude.toFixed(6);
                 showMap();
             },
-            function() { /* GPS denied - map shows after capture */ }
+            function() { /* GPS denied - keep default coords */ }
         );
     }
     
