@@ -3,7 +3,7 @@
 @section('content')
 <div class="heading mb-8">
     <div>
-        <div class="eyebrow">Genta Â· Admin Panel</div>
+        <div class="eyebrow">Genta · Admin Panel</div>
         <h1>Detail Laporan</h1>
         <div class="muted">Verifikasi dan tindak lan-jut laporan penemuan</div>
     </div>
@@ -60,19 +60,21 @@
             @csrf
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" value="temuan">
-            
+
             <!-- Photo capture -->
             <div class="mb-3">
                 <label class="text-xs text-[var(--color-text-muted)] block mb-1">Foto Selfie Pengawas</label>
                 <button type="button" class="btn-action btn-action-outline mt-2" onclick="openCamera()">
-                    ðŸ“¸ Ambil Foto
+                    📸 Ambil Foto
                 </button>
-                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">\n                <div id="locationMap" class="mt-2 w-full rounded-lg hidden border" style="height: 256px;"></div>
+                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">
+                <div id="locationMap" class="mt-2 w-full rounded-lg hidden border" style="height: 256px;"></div>
+                <div id="gpsAccuracy" class="text-xs text-[var(--color-text-muted)] mt-1 hidden"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
-                <input type="hidden" name="latitude" id="latitudeInput" value="-6.130000">
-                <input type="hidden" name="longitude" id="longitudeInput" value="106.140000">
+                <input type="hidden" name="latitude" id="latitudeInput" value="-6.108900">
+                <input type="hidden" name="longitude" id="longitudeInput" value="106.145000">
             </div>
-            
+
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3" id="saveBtn">
                 Simpan Verifikasi
@@ -90,11 +92,11 @@
     <div class="bg-[var(--color-background)] rounded-lg p-4 max-w-md w-full">
         <div class="flex justify-between items-center mb-3">
             <h3 class="text-lg font-semibold">Ambil Foto Selfie</h3>
-            <button class="btn-secondary" onclick="closeCamera()">Ã—</button>
+            <button class="btn-secondary" onclick="closeCamera()">×</button>
         </div>
         <video id="videoStream" class="w-full rounded-lg mb-3" autoplay playsinline></video>
         <div class="flex gap-2">
-            <button class="btn-action btn-action-outline" onclick="capturePhoto()">ðŸ“¸ Capture</button>
+            <button class="btn-action btn-action-outline" onclick="capturePhoto()">📸 Capture</button>
             <button class="btn-action btn-action-outline" onclick="closeCamera()">Batal</button>
         </div>
     </div>
@@ -102,8 +104,10 @@
 @endsection
 
 @push('scripts')
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">\n<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>\n<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Quill Rich Text Editor
@@ -124,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {
         console.error('Quill init error:', e);
     }
-    
+
     const statusSelect = document.getElementById('statusSelect');
     const catatanSection = document.getElementById('catatanSection');
     const statusInput = document.getElementById('statusInput');
@@ -136,11 +140,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const selfieInput = document.getElementById('selfiePhoto');
     const latInput = document.getElementById('latitudeInput');
     const lngInput = document.getElementById('longitudeInput');
+    const gpsAccuracyEl = document.getElementById('gpsAccuracy');
     const videoEl = document.getElementById('videoStream');
     const modal = document.getElementById('cameraModal');
-    
+
     let stream = null;
-    
+
+    // Default koordinat dapur Serang 01 (fallback jika GPS tidak terpakai)
+    const DEFAULT_DAPUR_LAT = -6.108900;
+    const DEFAULT_DAPUR_LNG = 106.145000;
+
+    // GPS accuracy threshold (meter) - di bawah ini dianggap akurat
+    const GPS_ACCURACY_THRESHOLD = 50;
+
     // Check if current status is 'selesai' - lock editing
     let isSelesai = false;
     if (currentStatusDisplay && currentStatusDisplay.dataset.currentStatus.toLowerCase() === 'selesai') {
@@ -149,14 +161,14 @@ document.addEventListener('DOMContentLoaded', function() {
         saveBtn.disabled = true;
         document.getElementById('catatan-admin').readOnly = true;
     }
-    
+
     // Toggle catatan section visibility based on new status selection
     function updateCatatanVisibility() {
         const status = statusSelect.value;
         const textarea = document.getElementById('catatan-admin');
-        
+
         catatanSection.style.display = 'block';
-        
+
         if (status === 'selesai') {
             textarea.readOnly = true;
             saveBtn.disabled = true;
@@ -164,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea.readOnly = false;
             saveBtn.disabled = false;
         }
-        
+
         const labels = {
             'diperiksa': 'Catatan Verifikasi Pemeriksaan',
             'temuan': 'Catatan Temuan & Tindak Lanjut',
@@ -173,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         labelEl.textContent = labels[status] || 'Catatan Admin';
     }
-    
+
     // Open camera modal
     window.openCamera = function() {
         modal.classList.remove('hidden');
@@ -187,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeCamera();
             });
     };
-    
+
     // Close camera modal
     window.closeCamera = function() {
         if (stream) {
@@ -196,26 +208,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         modal.classList.add('hidden');
     };
-    
+
     // Capture photo and get geolocation
     window.capturePhoto = function() {
         // Get geolocation first
         if (!latInput.value || !lngInput.value) {
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
-                    latInput.value = pos.coords.latitude.toFixed(6);
-                    lngInput.value = pos.coords.longitude.toFixed(6);
-                    doSavePhoto();
+                    handleGPS(pos, doSavePhoto);
                 },
                 function(err) {
-                    alert('GPS tidak tersedia: ' + err.message);
-                }
+                    alert('GPS tidak tersedia: ' + err.message + '. Menggunakan koordinat default dapur.');
+                    latInput.value = DEFAULT_DAPUR_LAT.toFixed(6);
+                    lngInput.value = DEFAULT_DAPUR_LNG.toFixed(6);
+                    gpsAccuracyEl.classList.add('hidden');
+                    doSavePhoto();
+                },
+                { enableHighAccuracy: true }
             );
         } else {
             doSavePhoto();
         }
     };
-    
+
+    // Handle GPS result with accuracy check
+    function handleGPS(position, callback) {
+        const accuracy = position.coords.accuracy;
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        if (accuracy <= GPS_ACCURACY_THRESHOLD) {
+            // Akurat - gunakan GPS aktual
+            latInput.value = lat.toFixed(6);
+            lngInput.value = lng.toFixed(6);
+            gpsAccuracyEl.textContent = 'Akurasi GPS: ±' + Math.round(accuracy) + 'm';
+            gpsAccuracyEl.classList.remove('hidden');
+        } else {
+            // Terlalu jauh - konfirmasi ke user
+            if (confirm('GPS kurang akurat (±' + Math.round(accuracy) + 'm). Pakai koordinat dapur default (' + DEFAULT_DAPUR_LAT + ', ' + DEFAULT_DAPUR_LNG + ')?')) {
+                latInput.value = DEFAULT_DAPUR_LAT.toFixed(6);
+                lngInput.value = DEFAULT_DAPUR_LNG.toFixed(6);
+                gpsAccuracyEl.classList.add('hidden');
+            } else {
+                // Tetap gunakan GPS meskipun kurang akurat
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
+                gpsAccuracyEl.textContent = 'Akurasi GPS: ±' + Math.round(accuracy) + 'm (lemah)';
+                gpsAccuracyEl.classList.remove('hidden');
+            }
+        }
+        callback();
+    }
+
     function doSavePhoto() {
         // Convert video frame to image
         const canvas = document.createElement('canvas');
@@ -223,13 +267,13 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.height = videoEl.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(videoEl, 0, 0);
-        
+
         // Convert to base64 and save
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
         previewImg.src = dataURL;
         previewImg.classList.remove('hidden');
         selfieInput.value = dataURL;
-        
+
         closeCamera();
         showMap();
     }
@@ -243,39 +287,38 @@ document.addEventListener('DOMContentLoaded', function() {
         const map = L.map(mapEl).setView([parseFloat(latInput.value), parseFloat(lngInput.value)], 16);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         L.marker([parseFloat(latInput.value), parseFloat(lngInput.value)]).addTo(map)
-            .bindPopup('Lokasi Foto').openPopup();
+            .bindPopup('Lokasi Foto (' + latInput.value + ', ' + lngInput.value + ')').openPopup();
         mapEl._leafletInstance = map;
     }
-    
+
     // Set initial visibility and label
     updateCatatanVisibility();
-    
+
     if (isSelesai) {
         document.getElementById('catatan-admin').readOnly = true;
     }
-    
-    // Auto-init map on page load
+
+    // Auto-init map on page load with default dapur coords
     showMap();
-    
-    // Optional: update map with real GPS if user allows
-    if (!isSelesai && typeof navigator !== undefined && navigator.geolocation) {
+
+    // Optional: update map with real GPS if user allows (only once)
+    if (!isSelesai && typeof navigator !== 'undefined' && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(pos) {
-                latInput.value = pos.coords.latitude.toFixed(6);
-                lngInput.value = pos.coords.longitude.toFixed(6);
-                showMap();
+                handleGPS(pos, showMap);
             },
-            function() { /* GPS denied - keep default coords */ }
+            function() { /* GPS denied - keep default dapur coords */ },
+            { enableHighAccuracy: true }
         );
     }
-    
+
     // Listen for new status changes
     statusSelect.addEventListener('change', function() {
         const status = this.value;
         statusInput.value = status;
         updateCatatanVisibility();
     });
-    
+
     // Sync Quill content to textarea before form submit
     form.addEventListener('submit', function(e) {
         if (isSelesai) {
