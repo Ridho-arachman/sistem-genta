@@ -77,8 +77,8 @@
                 <div id="locationMap" class="mt-2 w-full rounded-lg hidden border" style="height: 256px;"></div>
                 <div id="gpsAccuracy" class="text-xs text-[var(--color-text-muted)] mt-1 hidden"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
-                <input type="hidden" name="latitude" id="latitudeInput" value="{{ $laporan->dapur->latitude ?? old('latitude', -6.108900) }}">
-                <input type="hidden" name="longitude" id="longitudeInput" value="{{ $laporan->dapur->longitude ?? old('longitude', 106.145000) }}">
+                <input type="hidden" name="latitude" id="latitudeInput" value="{{ old('latitude', $laporan->latitude ?? -6.108900) }}">
+                <input type="hidden" name="longitude" id="longitudeInput" value="{{ old('longitude', $laporan->longitude ?? 106.145000) }}">
             </div>
 
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...">{{ old('catatan', $laporan->catatan) }}</textarea>
@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let stream = null;
 
     // Default koordinat dapur (akurat dari DB)
-    const DAPPUR_LAT = parseFloat({{ json_encode($laporan->dapur->latitude ?? -6.108900) }});
-    const DAPPUR_LNG = parseFloat({{ json_encode($laporan->dapur->longitude ?? 106.145000) }});
+    const FALLBACK_LAT = -6.108900;
+    const FALLBACK_LNG = 106.145000;
 
     // GPS accuracy threshold (meter) - di bawah ini dianggap akurat (±10m)
     const GPS_ACCURACY_THRESHOLD = 10;
@@ -216,42 +216,57 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.classList.add('hidden');
     };
 
-    // Capture photo - GPS opsional, paksa dapur jika GPS lemah
+    // Capture photo - GPS wajib, source of truth untuk lokasi
     window.capturePhoto = function() {
-        // Ambil foto dulu, GPS opsional
-        doSavePhoto();
+        let retryCount = 0;
+        const maxRetries = 3;
 
-        // GPS di background (non-blocking)
-        if (typeof navigator !== 'undefined' && navigator.geolocation) {
+        function getGPSAndCapture() {
+            if (typeof navigator === 'undefined' || !navigator.geolocation) {
+                alert('GPS tidak tersedia. Perlu izin lokasi untuk akurasi titik.');
+                return;
+            }
+
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
                     const accuracy = pos.coords.accuracy;
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lng = pos.coords.longitude.toFixed(6);
+
+                    // Set koordinat GPS ke form
+                    latInput.value = lat;
+                    lngInput.value = lng;
+
                     if (accuracy <= GPS_ACCURACY_THRESHOLD) {
-                        // GPS akurat - update marker dan input
-                        latInput.value = pos.coords.latitude.toFixed(6);
-                        lngInput.value = pos.coords.longitude.toFixed(6);
                         gpsAccuracyEl.textContent = 'GPS akurat ±' + Math.round(accuracy) + 'm';
                         gpsAccuracyEl.classList.remove('hidden');
-                        showMap();
+                        doSavePhoto();
                     } else {
-                        // GPS lemah - paksa pakai dapur (akurat)
-                        latInput.value = DAPPUR_LAT.toFixed(6);
-                        lngInput.value = DAPPUR_LNG.toFixed(6);
-                        gpsAccuracyEl.textContent = 'GPS lemah (±' + Math.round(accuracy) + 'm) - pakai koordinat dapur';
+                        // GPS lemah, tapi tetap pakai (user bilang GPS akurat)
+                        gpsAccuracyEl.textContent = 'GPS ±' + Math.round(accuracy) + 'm (gunakan GPS sebagai titik)';
                         gpsAccuracyEl.classList.remove('hidden');
-                        showMap();
+                        doSavePhoto();
                     }
                 },
                 function(err) {
-                    // GPS ditolak - paksa pakai dapur
-                    latInput.value = DAPPUR_LAT.toFixed(6);
-                    lngInput.value = DAPPUR_LNG.toFixed(6);
-                    gpsAccuracyEl.classList.add('hidden');
-                    showMap();
+                    retryCount++;
+                    if (retryCount <= maxRetries) {
+                        alert('GPS diperlukan. Klik OK untuk mengulang (coba di luar ruangan): ' + (retryCount + 1) + '/' + (maxRetries + 1));
+                        getGPSAndCapture();
+                    } else {
+                        alert('GPS gagal didapatkan. Koordinat default digunakan. Pastikan izin lokasi aktif.');
+                        latInput.value = FALLBACK_LAT.toFixed(6);
+                        lngInput.value = FALLBACK_LNG.toFixed(6);
+                        gpsAccuracyEl.textContent = 'Menggunakan koordinat fallback (GPS gagal)';
+                        gpsAccuracyEl.classList.remove('hidden');
+                        doSavePhoto();
+                    }
                 },
-                { enableHighAccuracy: true }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
+
+        getGPSAndCapture();
     };
 
     function doSavePhoto() {
@@ -299,21 +314,17 @@ document.addEventListener('DOMContentLoaded', function() {
         navigator.geolocation.getCurrentPosition(
             function(pos) {
                 const accuracy = pos.coords.accuracy;
+                latInput.value = pos.coords.latitude.toFixed(6);
+                lngInput.value = pos.coords.longitude.toFixed(6);
                 if (accuracy <= GPS_ACCURACY_THRESHOLD) {
-                    latInput.value = pos.coords.latitude.toFixed(6);
-                    lngInput.value = pos.coords.longitude.toFixed(6);
                     gpsAccuracyEl.textContent = 'GPS akurat ±' + Math.round(accuracy) + 'm';
-                    gpsAccuracyEl.classList.remove('hidden');
-                    showMap();
                 } else {
-                    // GPS lemah - tetap pakai dapur
-                    latInput.value = DAPPUR_LAT.toFixed(6);
-                    lngInput.value = DAPPUR_LNG.toFixed(6);
-                    gpsAccuracyEl.textContent = 'GPS lemah (±' + Math.round(accuracy) + 'm) - pakai dapur';
-                    gpsAccuracyEl.classList.remove('hidden');
+                    gpsAccuracyEl.textContent = 'GPS ±' + Math.round(accuracy) + 'm';
                 }
+                gpsAccuracyEl.classList.remove('hidden');
+                showMap();
             },
-            function() { /* GPS denied - pakai dapur */ },
+            function() { /* GPS denied - tetap pakai fallback di input value */ },
             { enableHighAccuracy: true }
         );
     }
