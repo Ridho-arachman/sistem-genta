@@ -150,8 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const DEFAULT_DAPUR_LAT = -6.108900;
     const DEFAULT_DAPUR_LNG = 106.145000;
 
-    // GPS accuracy threshold (meter) - di bawah ini dianggap akurat
-    const GPS_ACCURACY_THRESHOLD = 50;
+    // GPS accuracy threshold (meter) - di bawah ini dianggap akurat (±10m)
+    const GPS_ACCURACY_THRESHOLD = 10;
 
     // Check if current status is 'selesai' - lock editing
     let isSelesai = false;
