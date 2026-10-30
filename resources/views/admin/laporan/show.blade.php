@@ -53,13 +53,26 @@
         </div>
     </div>
 
-    <!-- Catatan Admin: muncul ketika STATUS BARU dipilih = "temuan" -->
+    <!-- Catatan Admin -->
     <div id="catatanSection" class="mt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2" id="catatanLabel">Catatan Verifikasi</p>
-        <form method="POST" action="/admin/laporan/1/update" id="catatanForm">
+        <form method="POST" action="/admin/laporan/1/update" id="catatanForm" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" value="temuan">
+            
+            <!-- Photo capture -->
+            <div class="mb-3">
+                <label class="text-xs text-[var(--color-text-muted)] block mb-1">Foto Selfie Pengawas</label>
+                <button type="button" class="btn-action btn-action-outline mt-2" onclick="openCamera()">
+                    📸 Ambil Foto
+                </button>
+                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">
+                <input type="hidden" name="selfie_photo" id="selfiePhoto">
+                <input type="hidden" name="latitude" id="latitudeInput">
+                <input type="hidden" name="longitude" id="longitudeInput">
+            </div>
+            
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3" id="saveBtn">
                 Simpan Verifikasi
@@ -69,6 +82,21 @@
 
     <div class="mt-6 flex items-center justify-end gap-2">
         <a href="{{ route('admin.laporan.index') }}" class="btn-secondary">Kembali</a>
+    </div>
+</div>
+
+<!-- Camera Modal -->
+<div id="cameraModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] hidden">
+    <div class="bg-[var(--color-background)] rounded-lg p-4 max-w-md w-full">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold">Ambil Foto Selfie</h3>
+            <button class="btn-secondary" onclick="closeCamera()">×</button>
+        </div>
+        <video id="videoStream" class="w-full rounded-lg mb-3" autoplay playsinline></video>
+        <div class="flex gap-2">
+            <button class="btn-action btn-action-outline" onclick="capturePhoto()">📸 Capture</button>
+            <button class="btn-action btn-action-outline" onclick="closeCamera()">Batal</button>
+        </div>
     </div>
 </div>
 @endsection
@@ -104,6 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveBtn = document.getElementById('saveBtn');
     const currentStatusDisplay = document.querySelector('[data-current-status]');
     const labelEl = document.getElementById('catatanLabel');
+    const previewImg = document.getElementById('capturePreview');
+    const selfieInput = document.getElementById('selfiePhoto');
+    const latInput = document.getElementById('latitudeInput');
+    const lngInput = document.getElementById('longitudeInput');
+    const videoEl = document.getElementById('videoStream');
+    const modal = document.getElementById('cameraModal');
+    
+    let stream = null;
     
     // Check if current status is 'selesai' - lock editing
     let isSelesai = false;
@@ -119,10 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const status = statusSelect.value;
         const textarea = document.getElementById('catatan-admin');
         
-        // Form always shows - disabled when selesai
         catatanSection.style.display = 'block';
         
-        // When status is selesai: textarea readonly, button disabled
         if (status === 'selesai') {
             textarea.readOnly = true;
             saveBtn.disabled = true;
@@ -131,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
             saveBtn.disabled = false;
         }
         
-        // Update label based on new status
         const labels = {
             'diperiksa': 'Catatan Verifikasi Pemeriksaan',
             'temuan': 'Catatan Temuan & Tindak Lanjut',
@@ -141,10 +174,68 @@ document.addEventListener('DOMContentLoaded', function() {
         labelEl.textContent = labels[status] || 'Catatan Admin';
     }
     
+    // Open camera modal
+    window.openCamera = function() {
+        modal.classList.remove('hidden');
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+            .then(function(s) {
+                stream = s;
+                videoEl.srcObject = s;
+            })
+            .catch(function(err) {
+                alert('Kamera tidak tersedia: ' + err.message);
+                closeCamera();
+            });
+    };
+    
+    // Close camera modal
+    window.closeCamera = function() {
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+        }
+        modal.classList.add('hidden');
+    };
+    
+    // Capture photo and get geolocation
+    window.capturePhoto = function() {
+        // Get geolocation first
+        if (!latInput.value || !lngInput.value) {
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    latInput.value = pos.coords.latitude.toFixed(6);
+                    lngInput.value = pos.coords.longitude.toFixed(6);
+                    doSavePhoto();
+                },
+                function(err) {
+                    alert('GPS tidak tersedia: ' + err.message);
+                }
+            );
+        } else {
+            doSavePhoto();
+        }
+    };
+    
+    function doSavePhoto() {
+        // Convert video frame to image
+        const canvas = document.createElement('canvas');
+        canvas.width = videoEl.videoWidth;
+        canvas.height = videoEl.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0);
+        
+        // Convert to base64 and save
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        previewImg.src = dataURL;
+        previewImg.classList.remove('hidden');
+        selfieInput.value = dataURL;
+        
+        closeCamera();
+    }
+    
     // Set initial visibility and label
     updateCatatanVisibility();
     
-    // Handle initial state for selesai
     if (isSelesai) {
         document.getElementById('catatan-admin').readOnly = true;
     }
