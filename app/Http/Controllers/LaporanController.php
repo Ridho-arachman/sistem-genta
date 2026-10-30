@@ -15,6 +15,40 @@ class LaporanController extends Controller
         return view('admin.laporan.index', compact('laporans'));
     }
 
+    public function create()
+    {
+        return view('pengawas.laporan.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'dapur_id' => 'required|exists:dapurs,id',
+            'kategori' => 'nullable|string',
+            'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
+            'catatan' => 'nullable|string',
+            'selfie_photo' => 'required|string', // base64 data URL
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        // Create laporan first (need ID for folder)
+        $laporan = Laporan::create([
+            'dapur_id' => $validated['dapur_id'],
+            'status' => $validated['status'],
+            'catatan' => $validated['catatan'] ?? null,
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+        ]);
+
+        // Store selfie photo
+        $laporan->selfie_photo = $this->storeSelfie($validated['selfie_photo'], $laporan->id);
+        $laporan->save();
+
+        return redirect()->route('pengawas.laporan.index')
+            ->with('success', 'Laporan berhasil dikirim.');
+    }
+
     public function show(Laporan $laporan)
     {
         $laporan->load('dapur');
