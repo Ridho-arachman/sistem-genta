@@ -76,16 +76,18 @@ Route::middleware(['auth'])->group(function () {
 
         // Dapur (full CRUD)
         Route::resource('dapurs', DapurController::class)->names('dapurs');
-
-        Route::get('cctvs/monitoring', [CctvController::class, 'monitoringDashboard'])->name('cctvs.monitoring-dashboard');
-        // CCTV (full CRUD)
+        Route::get('cctvs/monitoring', function () {
+            return redirect()->route('admin.cctvs.index');
+        })->name('cctvs.monitoring');
         Route::resource('cctvs', CctvController::class)->names('cctvs');
-        Route::get('cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
 
         // Laporan Pengawasan
         Route::get('/laporan', function () {
             return view('admin.laporan.index');
         })->name('laporan.index');
+        Route::get('/laporan/{id}', function ($id) {
+            return view('admin.laporan.show', compact('id'));
+        })->name('laporan.show');
 
         // Absensi (monitor & export)
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
@@ -123,7 +125,6 @@ Route::middleware(['auth'])->group(function () {
         // CCTV (read only)
         Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
         Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
-        Route::get('/cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
 
         // Data Dapur (alias absensi)
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
@@ -180,7 +181,6 @@ Route::middleware(['auth'])->group(function () {
         // CCTV (read only)
         Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
         Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
-        Route::get('/cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
 
         // CCTV Anomaly Reports (read + receive notifications)
         Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
@@ -219,8 +219,6 @@ Route::middleware(['auth'])->group(function () {
         // CCTV Dashboard
         Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
         Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
-        Route::get('/cctvs/{dapur}/monitoring', [CctvController::class, 'monitoring'])->name('cctvs.monitoring');
-
         // CCTV Anomaly History (read only)
         Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
         Route::get('/cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');

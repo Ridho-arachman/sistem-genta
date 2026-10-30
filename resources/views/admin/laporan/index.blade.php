@@ -7,7 +7,16 @@
         <h1>Laporan Pengawasan</h1>
         <div class="muted">Rekap inspeksi dan tindak lanjut</div>
     </div>
-    <a href="#" class="btn-light">⇩ Ekspor</a>
+    <div class="flex gap-2">
+        <a href="?format=xlsx" class="btn-action btn-action-primary">
+            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Excel
+        </a>
+        <a href="?format=pdf" class="btn-action btn-action-secondary">
+            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
+            PDF
+        </a>
+    </div>
 </div>
 
 <div class="panel" x-data="laporanFilter()">
@@ -106,6 +115,7 @@
                     <th class="table-th">LOKASI</th>
                     <th class="table-th">PENGAWAS</th>
                     <th class="table-th">STATUS</th>
+                    <th class="table-th">AKSI</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-[var(--color-border)]">
@@ -117,10 +127,13 @@
                         <td class="table-td">
                             <span class="badge" :class="row.badgeClass" x-text="row.status"></span>
                         </td>
+                        <td class="table-td">
+                            <a :href="'/admin/laporan/' + row.id" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat</a>
+                        </td>
                     </tr>
                 </template>
-                <tr x-show="filteredRows.length === 0">
-                    <td colspan="4" class="table-td text-center py-8 text-[var(--color-text-muted)]">
+                <tr x-show="filteredRows.length === 0" colspan="5">
+                    <td class="table-td text-center py-8 text-[var(--color-text-muted)]">
                         Tidak ada data yang cocok
                     </td>
                 </tr>
