@@ -2,6 +2,14 @@
 
 @section('content')
 
+<div class="heading mb-8">
+    <div>
+        <div class="eyebrow">Genta · Admin Panel</div>
+        <h1>Detail CCTV</h1>
+        <div class="muted">Informasi dan pratinjau kamera CCTV</div>
+    </div>
+</div>
+
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
