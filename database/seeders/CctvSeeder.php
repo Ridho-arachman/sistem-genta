@@ -19,6 +19,7 @@ class CctvSeeder extends Seeder
         // Only seed if no CCTV exists (idempotent for local dev)
         if (Cctv::count() > 0) {
             $this->command->info('CCTV already seeded, skipping.');
+
             return;
         }
 
@@ -26,6 +27,7 @@ class CctvSeeder extends Seeder
 
         if ($dapurs->isEmpty()) {
             $this->command->warn('No dapurs found. Run DapurSeeder first.');
+
             return;
         }
 

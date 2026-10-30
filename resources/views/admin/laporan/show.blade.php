@@ -9,20 +9,20 @@
     </div>
 </div>
 
-<div class="card p-8" id="laporanDetail" data-current-status="Temuan">
+<div class="card p-8" id="laporanDetail" data-current-status="{{ $laporan->status }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Tanggal Laporan</p>
-                <p class="font-semibold text-[var(--color-secondary)]">30 Okt 2026</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $laporan->created_at->format('d M Y') }}</p>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Lokasi / Dapur</p>
-                <p class="font-semibold text-[var(--color-secondary)]">Serang 01</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $laporan->dapur->nama ?? 'Serang 01' }}</p>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Pengawas</p>
-                <p class="font-semibold text-[var(--color-secondary)]">Siti Rahma</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $laporan->dapur->kepalaDapur?->name ?? 'Siti Rahma' }}</p>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Kategori Pemeriksaan</p>
@@ -32,15 +32,15 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status Saat Ini</p>
-                <span class="badge badge-danger">Temuan</span>
+                <span class="badge badge-{{ $laporan->status === 'temuan' ? 'danger' : ($laporan->status === 'selesai' ? 'success' : 'secondary') }}">{{ ucfirst($laporan->status) }}</span>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)] mb-2">Status Baru</p>
                 <select id="statusSelect" class="input-field">
-                    <option value="diperiksa">Diperiksa</option>
-                    <option value="temuan" selected>Temuan</option>
-                    <option value="tindak lanjut">Tindak Lanjut</option>
-                    <option value="selesai">Selesai</option>
+                    <option value="diperiksa" {{ old('status', $laporan->status) === 'diperiksa' ? 'selected' : '' }}>Diperiksa</option>
+                    <option value="temuan" {{ old('status', $laporan->status) === 'temuan' ? 'selected' : '' }}>Temuan</option>
+                    <option value="tindak lanjut" {{ old('status', $laporan->status) === 'tindak lanjut' ? 'selected' : '' }}>Tindak Lanjut</option>
+                    <option value="selesai" {{ old('status', $laporan->status) === 'selesai' ? 'selected' : '' }}>Selesai</option>
                 </select>
             </div>
         </div>
@@ -49,17 +49,17 @@
     <div class="mt-6 border-t border-[var(--color-border)] pt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2">Deskripsi Temuan</p>
         <div class="p-3 bg-[var(--color-surface)] rounded-lg text-sm text-[var(--color-text)]">
-            Temuan kritikal pada area pendingin gudang: suhu tidak konsisten, ada titik panas pada pos POS-02 yang menyebabkan penurunan kualitas produk.
+            {{ old('catatan', $laporan->catatan ?? 'Temuan kritikal pada area pendingin gudang: suhu tidak konsisten, ada titik panas pada pos POS-02 yang menyebabkan penurunan kualitas produk.') }}
         </div>
     </div>
 
     <!-- Catatan Admin -->
     <div id="catatanSection" class="mt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2" id="catatanLabel">Catatan Verifikasi</p>
-        <form method="POST" action="/admin/laporan/1/update" id="catatanForm" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.laporan.update', $laporan->id) }}" id="catatanForm" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="status" id="statusInput" value="temuan">
+            <input type="hidden" name="status" id="statusInput" value="{{ old('status', $laporan->status) }}">
 
             <!-- Photo capture -->
             <div class="mb-3">
@@ -67,15 +67,21 @@
                 <button type="button" class="btn-action btn-action-outline mt-2" onclick="openCamera()">
                     📸 Ambil Foto
                 </button>
-                <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">
+
+                @if ($laporan->selfie_photo)
+                    <img id="existingSelfie" src="{{ asset('storage/' . $laporan->selfie_photo) }}" alt="Selfie pengawas" class="mt-2 max-w-xs rounded-lg border">
+                @else
+                    <img id="capturePreview" src="" alt="Preview foto" class="mt-2 max-w-xs rounded-lg hidden border">
+                @endif
+
                 <div id="locationMap" class="mt-2 w-full rounded-lg hidden border" style="height: 256px;"></div>
                 <div id="gpsAccuracy" class="text-xs text-[var(--color-text-muted)] mt-1 hidden"></div>
                 <input type="hidden" name="selfie_photo" id="selfiePhoto">
-                <input type="hidden" name="latitude" id="latitudeInput" value="-6.108900">
-                <input type="hidden" name="longitude" id="longitudeInput" value="106.145000">
+                <input type="hidden" name="latitude" id="latitudeInput" value="{{ old('latitude', $laporan->latitude ?? -6.108900) }}">
+                <input type="hidden" name="longitude" id="longitudeInput" value="{{ old('longitude', $laporan->longitude ?? 106.145000) }}">
             </div>
 
-            <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin..."></textarea>
+            <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...">{{ old('catatan', $laporan->catatan) }}</textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3" id="saveBtn">
                 Simpan Verifikasi
             </button>
@@ -212,23 +218,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Capture photo and get geolocation
     window.capturePhoto = function() {
         // Get geolocation first
-        if (!latInput.value || !lngInput.value) {
-            navigator.geolocation.getCurrentPosition(
-                function(pos) {
-                    handleGPS(pos, doSavePhoto);
-                },
-                function(err) {
-                    alert('GPS tidak tersedia: ' + err.message + '. Menggunakan koordinat default dapur.');
-                    latInput.value = DEFAULT_DAPUR_LAT.toFixed(6);
-                    lngInput.value = DEFAULT_DAPUR_LNG.toFixed(6);
-                    gpsAccuracyEl.classList.add('hidden');
-                    doSavePhoto();
-                },
-                { enableHighAccuracy: true }
-            );
-        } else {
-            doSavePhoto();
-        }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                handleGPS(pos, doSavePhoto);
+            },
+            function(err) {
+                alert('GPS tidak tersedia: ' + err.message + '. Menggunakan koordinat default dapur.');
+                latInput.value = DEFAULT_DAPUR_LAT.toFixed(6);
+                lngInput.value = DEFAULT_DAPUR_LNG.toFixed(6);
+                gpsAccuracyEl.classList.add('hidden');
+                doSavePhoto();
+            },
+            { enableHighAccuracy: true }
+        );
     };
 
     // Handle GPS result with accuracy check
@@ -238,19 +240,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const lng = position.coords.longitude;
 
         if (accuracy <= GPS_ACCURACY_THRESHOLD) {
-            // Akurat - gunakan GPS aktual
             latInput.value = lat.toFixed(6);
             lngInput.value = lng.toFixed(6);
             gpsAccuracyEl.textContent = 'Akurasi GPS: ±' + Math.round(accuracy) + 'm';
             gpsAccuracyEl.classList.remove('hidden');
         } else {
-            // Terlalu jauh - konfirmasi ke user
             if (confirm('GPS kurang akurat (±' + Math.round(accuracy) + 'm). Pakai koordinat dapur default (' + DEFAULT_DAPUR_LAT + ', ' + DEFAULT_DAPUR_LNG + ')?')) {
                 latInput.value = DEFAULT_DAPUR_LAT.toFixed(6);
                 lngInput.value = DEFAULT_DAPUR_LNG.toFixed(6);
                 gpsAccuracyEl.classList.add('hidden');
             } else {
-                // Tetap gunakan GPS meskipun kurang akurat
                 latInput.value = lat.toFixed(6);
                 lngInput.value = lng.toFixed(6);
                 gpsAccuracyEl.textContent = 'Akurasi GPS: ±' + Math.round(accuracy) + 'm (lemah)';

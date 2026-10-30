@@ -17,7 +17,7 @@ class CctvController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
@@ -25,22 +25,65 @@ class CctvController extends Controller
             abort(403);
         }
 
+        // Get filter values from query string
+        $provinsi = $request->query('provinsi', 'Banten');
+        $kabupatenKota = $request->query('kabupaten_kota');
+        $kecamatan = $request->query('kecamatan');
+        $dapurId = $request->query('dapur_id');
+
+        // Get accessible dapur IDs for the user
         $dapurIds = $user->getAccessibleDapurIds();
 
-        $cctvs = Cctv::with('dapur')
-            ->whereIn('dapur_id', $dapurIds)
-            ->latest()
-            ->paginate(10);
+        // Build dapur query with role-based access
+        $dapurQuery = Dapur::whereIn('id', $dapurIds)
+            ->where('provinsi', $provinsi);
 
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.index', compact('cctvs'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.index', compact('cctvs'));
-        } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.index', compact('cctvs'));
+        // Get distinct options for dropdowns
+        // Kabupaten: show ALL kabupaten_kota in provinsi (don't filter by kabupaten_kota)
+        $kabupatenKotas = Dapur::whereIn('id', $dapurIds)
+            ->where('provinsi', $provinsi)
+            ->distinct()
+            ->pluck('kabupaten_kota', 'kabupaten_kota')
+            ->sort();
+
+        // Kecamatan: filter by kabupaten_kota only if kabupaten_kota is selected
+        $kecamatanQuery = Dapur::whereIn('id', $dapurIds)
+            ->where('provinsi', $provinsi);
+        if ($kabupatenKota) {
+            $kecamatanQuery->where('kabupaten_kota', $kabupatenKota);
+        }
+        $kecamatans = $kecamatanQuery->distinct()->pluck('kecamatan', 'kecamatan')->sort();
+
+        // Get filtered dapurs for actual CCTV results
+        $filteredDapurs = Dapur::whereIn('id', $dapurIds)
+            ->where('provinsi', $provinsi);
+        if ($kabupatenKota) {
+            $filteredDapurs = $filteredDapurs->where('kabupaten_kota', $kabupatenKota);
+        }
+        if ($kecamatan) {
+            $filteredDapurs = $filteredDapurs->where('kecamatan', $kecamatan);
+        }
+        $filteredDapurs = $filteredDapurs->get();
+
+        // Build CCTV query
+        $cctvQuery = Cctv::with('dapur')->whereIn('dapur_id', $filteredDapurs->pluck('id'));
+
+        // If specific dapur selected, filter by it
+        if ($dapurId) {
+            $cctvQuery->where('dapur_id', $dapurId);
         }
 
-        return view('admin.cctvs.index', compact('cctvs'));
+        $cctvs = $cctvQuery->orderBy('dapur_id')->orderBy('camera_number')->paginate(10);
+
+        if ($user->isKepalaDapur()) {
+            return view('kepala-dapur.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
+        } elseif ($user->isManajerial()) {
+            return view('manajerial.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
+        } elseif ($user->isPengawas()) {
+            return view('pengawas.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
+        }
+
+        return view('admin.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
     }
 
     public function create()
@@ -148,31 +191,6 @@ class CctvController extends Controller
         $cctv->delete();
 
         return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil dihapus.');
-    }
-
-    public function monitoring(Dapur $dapur)
-    {
-        $user = auth()->user();
-
-        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur', 'pengawas'])) {
-            abort(403);
-        }
-
-        if (! $user->canAccessDapur($dapur->id)) {
-            abort(403);
-        }
-
-        $dapur->load('cctvs');
-
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.monitoring', compact('dapur'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.monitoring', compact('dapur'));
-        } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.monitoring', compact('dapur'));
-        }
-
-        return view('admin.cctvs.monitoring', compact('dapur'));
     }
 
     public function monitoringDashboard()

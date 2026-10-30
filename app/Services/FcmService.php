@@ -194,7 +194,7 @@ class FcmService
             'cctv_name' => $cctvName,
             'status' => $status,
             'dapur_id' => $dapurId,
-            'action_url' => "/cctvs/monitoring/{$dapurId}",
+            'action_url' => "/admin/cctvs?dapur_id={$dapurId}",
         ]);
     }
 

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\DapurController;
 use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Http\Controllers\DapurController;
 
 class DapurSeeder extends Seeder
 {

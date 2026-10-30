@@ -57,7 +57,7 @@
         </div>
     </header>
 
-    <div class="shell">
+    <div class="shell overflow-y-hidden items-start">
         <aside 
             id="sidebar" 
             :class="{ 'open': sidebarOpen }" 
@@ -79,9 +79,9 @@
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">⌂</span> Data Dapur
             </a>
 
-            <a href="{{ route('admin.cctvs.monitoring-dashboard') }}" 
+            <a href="{{ route('admin.cctvs.index') }}" 
                class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                     {{ request()->routeIs('admin.cctvs.monitoring*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                     {{ request()->routeIs(['admin.cctvs.index', 'admin.cctv-anomalies.*']) ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
                 <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
             </a>
 
@@ -110,7 +110,7 @@
             </div>
         </aside>
 
-        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-[28px] lg:ml-[230px]" id="view">
+        <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-0 lg:ml-[230px]" id="view">
             @yield('content')
         </main>
     </div>

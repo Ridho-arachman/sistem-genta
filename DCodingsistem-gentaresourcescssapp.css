@@ -1,0 +1,16 @@
+
+/* Ensure main content respects sidebar on all breakpoints */
+.main-content {
+    padding-top: env(safe-area-inset-top, 96px);
+    padding-left: env(safe-area-inset-left, 28px);
+    padding-right: env(safe-area-inset-right, 28px);
+    padding-bottom: env(safe-area-inset-bottom, 28px);
+}
+
+@media (min-width: 1024px) {
+    .main-content { padding-left: 28px; padding-right: 28px; margin-left: 230px; }
+}
+
+@media (max-width: 1023px) {
+    .main-content { margin-left: 0; }
+}

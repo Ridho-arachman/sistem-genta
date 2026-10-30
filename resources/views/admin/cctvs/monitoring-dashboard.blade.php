@@ -12,15 +12,15 @@
     </div>
 
     <!-- Camera Grid - 2 columns fixed like demo, cards smaller -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-2 w-full max-w-full min-w-0">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-2 max-w-7xl mx-auto justify-center">
         @foreach ($cctvs as $cctv)
-        <div class="card overflow-hidden min-w-0">
+        <div class="card overflow-hidden min-w-0 w-full max-w-[480px]">
             <div class="p-2 border-b border-[var(--color-border)]">
                 <div class="flex items-center justify-between mb-1 min-w-0">
-                    <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0" style="font-family: monospace;">
+                    <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0 truncate" style="font-family: monospace;">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
-                    <span class="status-badge shrink-0
+                    <span class="status-badge shrink-0 truncate
                         @if($cctv->status === 'online') ok
                         @elseif($cctv->status === 'offline') off
                         @else warn @endif">
@@ -31,7 +31,7 @@
                 </div>
             </div>
             
-            <div class="h-32 bg-[#0a0f0d] relative flex flex-col items-center justify-center text-white/60 p-2">
+            <div class="aspect-video bg-[#0a0f0d] relative flex flex-col items-center justify-center text-white/60 p-2">
                 <div class="text-center">
                     <svg class="w-8 h-8 mx-auto mb-1.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width: 1.5;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

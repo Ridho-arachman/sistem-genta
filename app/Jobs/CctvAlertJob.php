@@ -46,7 +46,7 @@ class CctvAlertJob implements ShouldQueue
                 'cctv_name' => $cctv->nama,
                 'status' => $this->status,
                 'dapur_id' => $dapur?->id,
-                'action_url' => $dapur ? "/cctvs/monitoring/{$dapur->id}" : null,
+                'action_url' => $dapur ? "/admin/cctvs?dapur_id={$dapur->id}" : null,
             ]);
         } elseif ($dapur) {
             // Notify pengawas assigned to this dapur (optional: you can add dapur-user relation)

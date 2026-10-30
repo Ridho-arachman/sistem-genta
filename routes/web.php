@@ -8,11 +8,13 @@ use App\Http\Controllers\CctvAnomalyReportController;
 use App\Http\Controllers\CctvController;
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SpWarningController;
 use App\Models\Absensi;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
+use App\Models\Laporan;
 use App\Models\SpWarning;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -82,17 +84,9 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('cctvs', CctvController::class)->names('cctvs');
 
         // Laporan Pengawasan
-        Route::get('/laporan', function () {
-            return view('admin.laporan.index');
-        })->name('laporan.index');
-        Route::get('/laporan/{id}', function ($id) {
-            return view('admin.laporan.show', compact('id'));
-        })->name('laporan.show');
-        Route::put('/laporan/{id}', function ($id) {
-            // Demo: update status/catatan admin
-            // In production, persist to database
-            return redirect()->route('admin.laporan.show', $id);
-        })->name('laporan.update');
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
+        Route::put('/laporan/{laporan}', [LaporanController::class, 'update'])->name('laporan.update');
 
         // Absensi (monitor & export)
         Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');

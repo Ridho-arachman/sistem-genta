@@ -37,7 +37,6 @@
                             </td>
                             <td class="table-td">
                                 <a href="{{ route('manajerial.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
-                                <a href="{{ route('manajerial.cctvs.monitoring', $cctv->dapur) }}" class="text-blue-600 hover:underline text-sm ml-2">Monitoring</a>
                             </td>
                         </tr>
                         @endforeach

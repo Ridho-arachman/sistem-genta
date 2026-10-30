@@ -363,7 +363,7 @@ class AdminController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Pengaturan berhasil disimpan.'
+                'message' => 'Pengaturan berhasil disimpan.',
             ]);
         }
 

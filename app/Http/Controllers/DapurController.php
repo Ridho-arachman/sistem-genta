@@ -12,6 +12,7 @@ class DapurController extends Controller
 
     // Banten wilayah constants
     public const BANTEN_PROVINSI = 'Banten';
+
     public const BANTEN_KABUPATEN_KOTA = [
         'Kota Serang',
         'Kabupaten Serang',
@@ -58,7 +59,7 @@ class DapurController extends Controller
             $errors[] = 'Provinsi harus Banten.';
         }
 
-        if (!in_array($kabupatenKota, self::BANTEN_KABUPATEN_KOTA, true)) {
+        if (! in_array($kabupatenKota, self::BANTEN_KABUPATEN_KOTA, true)) {
             $errors[] = 'Kabupaten/Kota harus di wilayah Banten.';
         }
 
@@ -133,7 +134,7 @@ class DapurController extends Controller
                 // Build lokasiPengawas string
                 $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';
                 if ($d->pengawas->count() > 0) {
-                    $lokasiPengawas .= ' · Pengawas: ' . $d->pengawas->first()->name;
+                    $lokasiPengawas .= ' · Pengawas: '.$d->pengawas->first()->name;
                 }
 
                 return [
@@ -221,7 +222,7 @@ class DapurController extends Controller
             $validated['kecamatan']
         );
 
-        if (!empty($wilayahErrors)) {
+        if (! empty($wilayahErrors)) {
             return back()->withErrors($wilayahErrors)->withInput();
         }
 
@@ -291,7 +292,7 @@ class DapurController extends Controller
             $validated['kecamatan']
         );
 
-        if (!empty($wilayahErrors)) {
+        if (! empty($wilayahErrors)) {
             return back()->withErrors($wilayahErrors)->withInput();
         }
 

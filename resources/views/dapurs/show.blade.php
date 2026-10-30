@@ -54,7 +54,7 @@
                 @if ($dapur->cctvs->isEmpty())
                     <p class="text-zinc-500 text-sm">Belum ada kamera untuk dipantau.</p>
                 @else
-                    <a href="{{ route('admin.cctvs.monitoring', $dapur) }}" class="w-full bg-surface border border-zinc-700 rounded-lg py-4 text-center text-green-400 hover:bg-zinc-900 hover:border-green-500 transition-colors text-sm font-medium">
+                    <a href="{{ route('admin.cctvs.index', ['dapur_id' => $dapur->id]) }}" class="w-full bg-surface border border-zinc-700 rounded-lg py-4 text-center text-green-400 hover:bg-zinc-900 hover:border-green-500 transition-colors text-sm font-medium">
                         ▶ Lihat Monitoring CCTV
                     </a>
                 @endif

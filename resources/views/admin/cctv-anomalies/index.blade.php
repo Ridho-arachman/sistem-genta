@@ -2,20 +2,24 @@
 
 @section('content')
 <div class="space-y-6">
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="heading flex items-center justify-between gap-6">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Laporan Anomali CCTV</h2>
-            <p class="text-[var(--color-text-muted)]">Kelola laporan anomali CCTV dari admin</p>
+            <div class="eyebrow">Genta · Monitoring CCTV</div>
+            <h1>Monitoring CCTV</h1>
+            <div class="muted">Status perangkat dan pratinjau feed kamera</div>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn-success">
+            <a href="{{ route('admin.cctvs.index') }}" class="btn-primary">
+                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-5 7-5"></path></svg>
+                Kembali
+            </a>
+            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Excel
             </a>
-            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'csv'])) }}" class="btn-secondary">
-                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                CSV
+            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'pdf'])) }}" class="btn-primary">
+                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
+                PDF
             </a>
             <a href="{{ route('admin.cctv-anomalies.create') }}" class="btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
