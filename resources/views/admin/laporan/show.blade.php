@@ -110,19 +110,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentStatusDisplay && currentStatusDisplay.dataset.currentStatus.toLowerCase() === 'selesai') {
         isSelesai = true;
         statusSelect.disabled = true;
-        catatanSection.style.display = 'none';
         saveBtn.disabled = true;
+        document.getElementById('catatan-admin').readOnly = true;
     }
     
     // Toggle catatan section visibility based on new status selection
     function updateCatatanVisibility() {
         const status = statusSelect.value;
+        const textarea = document.getElementById('catatan-admin');
         
-        // Form shows for diperiksa, temuan, tindak lanjut - only hidden for selesai
+        // Form always shows - disabled when selesai
+        catatanSection.style.display = 'block';
+        
+        // When status is selesai: textarea readonly, button disabled
         if (status === 'selesai') {
-            catatanSection.style.display = 'none';
+            textarea.readOnly = true;
+            saveBtn.disabled = true;
         } else {
-            catatanSection.style.display = 'block';
+            textarea.readOnly = false;
+            saveBtn.disabled = false;
         }
         
         // Update label based on new status
@@ -135,8 +141,13 @@ document.addEventListener('DOMContentLoaded', function() {
         labelEl.textContent = labels[status] || 'Catatan Admin';
     }
     
-    // Set initial label and visibility
+    // Set initial visibility and label
     updateCatatanVisibility();
+    
+    // Handle initial state for selesai
+    if (isSelesai) {
+        document.getElementById('catatan-admin').readOnly = true;
+    }
     
     // Listen for new status changes
     statusSelect.addEventListener('change', function() {
