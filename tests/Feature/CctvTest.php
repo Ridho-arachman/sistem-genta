@@ -19,7 +19,7 @@ test('authenticated user can view cctv index', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.cctvs.index'))
         ->assertOk()
-        ->assertSee('Daftar CCTV');
+        ->assertSee('Daftar Monitor Kamera');
 });
 
 test('admin can create cctv', function () {
@@ -42,14 +42,15 @@ test('admin can create cctv', function () {
     ]);
 });
 
-test('pengawas cannot create cctv', function () {
+test('pengawas cannot create cctv via web (mobile only)', function () {
     $this->actingAs($this->pengawas)
         ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Belakang',
             'status' => 'offline',
         ])
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('user can update cctv', function () {
@@ -100,16 +101,10 @@ test('cctv show page loads', function () {
         ->assertSee($cctv->hls_url);
 });
 
-test('monitoring page loads for dapur', function () {
-    $cctv1 = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'online']);
-    $cctv2 = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'offline']);
-
+test('monitoring page redirects to cctv index', function () {
     $this->actingAs($this->admin)
-        ->get(route('admin.cctvs.monitoring', $this->dapur))
-        ->assertOk()
-        ->assertSee($this->dapur->nama)
-        ->assertSee($cctv1->nama)
-        ->assertSee($cctv2->nama);
+        ->get(route('admin.cctvs.monitoring'))
+        ->assertRedirect(route('admin.cctvs.index'));
 });
 
 test('cctv status enum validation', function () {

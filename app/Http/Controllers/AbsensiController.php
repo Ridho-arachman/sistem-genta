@@ -73,6 +73,9 @@ class AbsensiController extends Controller
     {
         $this->authorize('create', Absensi::class);
 
+        $user = auth()->user();
+        $isAdminCreatingForPengawas = $user->isAdmin() && $request->filled('user_id');
+
         $validated = $request->validate([
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'lat' => ['required', 'numeric', 'between:-90,90'],
@@ -85,7 +88,12 @@ class AbsensiController extends Controller
             $validated['selfie_path'] = $request->file('selfie_path')->store('selfies', 'public');
         }
 
-        $validated['user_id'] = auth()->id();
+        // Allow admin to create absensi for specific pengawas
+        if ($isAdminCreatingForPengawas) {
+            $validated['user_id'] = $request->user_id;
+        } else {
+            $validated['user_id'] = auth()->id();
+        }
         $validated['check_in_at'] = now();
 
         $dapur = Dapur::find($validated['dapur_id']);
@@ -105,13 +113,12 @@ class AbsensiController extends Controller
         $absensi = Absensi::create($validated);
 
         AbsensiReminderJob::dispatch(
-            auth()->id(),
+            $validated['user_id'],
             'checkout_reminder',
             $validated['dapur_id'],
             '17:00'
         )->delay(now()->addHours(8));
 
-        $user = auth()->user();
         $redirectRoute = $user->isPengawas() ? 'pengawas.absensi.index' : ($user->isAdmin() ? 'admin.absensi.index' : 'manajerial.absensi.index');
 
         return redirect()->route($redirectRoute)->with('status', 'Absensi check-in berhasil.');

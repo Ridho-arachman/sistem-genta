@@ -45,6 +45,17 @@ class AuthController extends Controller
             ]);
         }
 
+        // Pengawas hanya boleh login via aplikasi mobile (API Sanctum)
+        if (Auth::user()->isPengawas()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun pengawas hanya dapat login melalui aplikasi mobile.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('user can login', function () {
-    $user = User::factory()->create([
+    $user = User::factory()->admin()->create([
         'email' => 'test@example.com',
         'password' => bcrypt('password123'),
     ]);
@@ -57,12 +57,13 @@ test('admin can access admin dashboard', function () {
         ->assertOk();
 });
 
-test('pengawas can access pengawas dashboard', function () {
+test('pengawas cannot access pengawas dashboard via web', function () {
     $pengawas = User::factory()->create(['role' => 'pengawas', 'password' => bcrypt('password123')]);
 
     $this->actingAs($pengawas)
         ->get(route('pengawas.dashboard'))
-        ->assertOk();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('manajerial can access manajerial dashboard', function () {
@@ -81,10 +82,11 @@ test('kepala_dapur can access kepala-dapur dashboard', function () {
         ->assertOk();
 });
 
-test('role middleware blocks wrong dashboard', function () {
+test('pengawas cannot access admin dashboard via web', function () {
     $pengawas = User::factory()->create(['role' => 'pengawas', 'password' => bcrypt('password123')]);
 
     $this->actingAs($pengawas)
         ->get(route('admin.dashboard'))
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });

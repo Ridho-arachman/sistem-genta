@@ -15,31 +15,11 @@ beforeEach(function () {
     Storage::fake('public');
 });
 
-test('pengawas can view absensi index', function () {
-    $dapur = Dapur::factory()->create();
-    // Create 3 records with different dapur to avoid unique constraint
-    Absensi::factory()->create([
-        'user_id' => $this->pengawas->id,
-        'dapur_id' => $dapur->id,
-        'created_at' => now()->subMinutes(3),
-    ]);
-    $dapur2 = Dapur::factory()->create();
-    Absensi::factory()->create([
-        'user_id' => $this->pengawas->id,
-        'dapur_id' => $dapur2->id,
-        'created_at' => now()->subMinutes(2),
-    ]);
-    $dapur3 = Dapur::factory()->create();
-    Absensi::factory()->create([
-        'user_id' => $this->pengawas->id,
-        'dapur_id' => $dapur3->id,
-        'created_at' => now()->subMinutes(1),
-    ]);
-
+test('pengawas cannot view absensi index via web (mobile only)', function () {
     $this->actingAs($this->pengawas)
         ->get(route('pengawas.absensi.index'))
-        ->assertOk()
-        ->assertSee('Absensi Saya');
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('admin can view absensi index', function () {
@@ -67,7 +47,7 @@ test('admin can view absensi index', function () {
         ->assertOk();
 });
 
-test('pengawas can create absensi check-in', function () {
+test('pengawas cannot create absensi via web (mobile only)', function () {
     $dapur = Dapur::factory()->create([
         'latitude' => -6.2088,
         'longitude' => 106.8456,
@@ -83,19 +63,11 @@ test('pengawas can create absensi check-in', function () {
             'status' => 'hadir',
             'selfie_path' => $selfie,
         ])
-        ->assertRedirect(route('pengawas.absensi.index'))
-        ->assertSessionHas('status', 'Absensi check-in berhasil.');
-
-    $this->assertDatabaseHas('absensis', [
-        'user_id' => $this->pengawas->id,
-        'dapur_id' => $dapur->id,
-        'status' => 'hadir',
-        'lat' => -6.2088,
-        'lng' => 106.8456,
-    ]);
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
-test('absensi check-in stores check_in_at timestamp', function () {
+test('admin can create absensi check-in for pengawas', function () {
     $dapur = Dapur::factory()->create([
         'latitude' => -6.2088,
         'longitude' => 106.8456,
@@ -103,21 +75,24 @@ test('absensi check-in stores check_in_at timestamp', function () {
     ]);
     $selfie = UploadedFile::fake()->image('selfie.jpg', 800, 600);
 
-    $this->actingAs($this->pengawas)
-        ->post(route('pengawas.absensi.store'), [
+    $this->actingAs($this->admin)
+        ->post(route('admin.absensi.store'), [
+            'user_id' => $this->pengawas->id,
             'dapur_id' => $dapur->id,
             'lat' => -6.2088,
             'lng' => 106.8456,
             'status' => 'hadir',
             'selfie_path' => $selfie,
-        ]);
+        ])
+        ->assertRedirect();
 
     $absensi = Absensi::latest()->first();
     $this->assertNotNull($absensi->check_in_at);
     $this->assertNull($absensi->check_out_at);
+    $this->assertEquals($this->pengawas->id, $absensi->user_id);
 });
 
-test('absensi validation requires dapur_id', function () {
+test('pengawas cannot access absensi store validation via web', function () {
     $selfie = UploadedFile::fake()->image('selfie.jpg', 800, 600);
 
     $this->actingAs($this->pengawas)
@@ -127,10 +102,11 @@ test('absensi validation requires dapur_id', function () {
             'status' => 'hadir',
             'selfie_path' => $selfie,
         ])
-        ->assertSessionHasErrors('dapur_id');
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
-test('absensi validation requires valid lat/lng', function () {
+test('pengawas cannot access absensi lat/lng validation via web', function () {
     $dapur = Dapur::factory()->create([
         'latitude' => -6.2088,
         'longitude' => 106.8456,
@@ -146,10 +122,11 @@ test('absensi validation requires valid lat/lng', function () {
             'status' => 'hadir',
             'selfie_path' => $selfie,
         ])
-        ->assertSessionHasErrors(['lat', 'lng']);
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
-test('absensi validation requires valid status', function () {
+test('pengawas cannot access absensi status validation via web', function () {
     $dapur = Dapur::factory()->create([
         'latitude' => -6.2088,
         'longitude' => 106.8456,
@@ -165,10 +142,11 @@ test('absensi validation requires valid status', function () {
             'status' => 'invalid',
             'selfie_path' => $selfie,
         ])
-        ->assertSessionHasErrors('status');
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
-test('user can check-out own absensi', function () {
+test('pengawas cannot check-out via web (mobile only)', function () {
     $dapur = Dapur::factory()->create();
     $absensi = Absensi::factory()->create([
         'user_id' => $this->pengawas->id,
@@ -178,16 +156,11 @@ test('user can check-out own absensi', function () {
 
     $this->actingAs($this->pengawas)
         ->post(route('pengawas.absensi.checkout', $absensi))
-        ->assertRedirect()
-        ->assertSessionHas('status', 'Check-out berhasil dicatat.');
-
-    $this->assertDatabaseHas('absensis', [
-        'id' => $absensi->id,
-        'check_out_at' => $absensi->fresh()->check_out_at,
-    ]);
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
-test('user cannot check-out other user absensi', function () {
+test('pengawas cannot check-out other user absensi via web', function () {
     $dapur = Dapur::factory()->create();
     $otherUser = User::factory()->create(['role' => 'pengawas']);
     $absensi = Absensi::factory()->create([
@@ -197,7 +170,8 @@ test('user cannot check-out other user absensi', function () {
 
     $this->actingAs($this->pengawas)
         ->post(route('pengawas.absensi.checkout', $absensi))
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('admin can check-out any absensi', function () {
@@ -297,7 +271,7 @@ test('absensi filter by date range', function () {
     $this->assertEquals(1, $absensis->total());
 });
 
-test('absensi status enum values', function () {
+test('absensi status enum values (via admin for web test)', function () {
     foreach (['hadir', 'izin', 'cuti', 'tidak_hadir'] as $status) {
         $dapur = Dapur::factory()->create([
             'latitude' => -6.2088,
@@ -306,8 +280,9 @@ test('absensi status enum values', function () {
         ]);
         $selfie = UploadedFile::fake()->image('selfie.jpg', 800, 600);
 
-        $this->actingAs($this->pengawas)
-            ->post(route('pengawas.absensi.store'), [
+        $this->actingAs($this->admin)
+            ->post(route('admin.absensi.store'), [
+                'user_id' => $this->pengawas->id,
                 'dapur_id' => $dapur->id,
                 'lat' => -6.2088,
                 'lng' => 106.8456,

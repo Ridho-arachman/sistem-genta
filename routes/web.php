@@ -33,7 +33,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
 
 // Protected routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
     // Dashboard - role based
     Route::get('/dashboard', function () {
         $user = auth()->user();

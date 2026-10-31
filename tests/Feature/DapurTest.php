@@ -21,12 +21,13 @@ test('admin can view dapur index', function () {
         ->assertSee('Daftar Dapur');
 });
 
-test('pengawas cannot view dapur index', function () {
+test('pengawas cannot view dapur index via web', function () {
     Dapur::factory()->count(3)->create();
 
     $this->actingAs($this->pengawas)
         ->get(route('admin.dapurs.index'))
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('admin can create dapur', function () {
@@ -49,12 +50,13 @@ test('admin can create dapur', function () {
     ]);
 });
 
-test('pengawas cannot create dapur', function () {
+test('pengawas cannot create dapur via web', function () {
     $this->actingAs($this->pengawas)
         ->post(route('admin.dapurs.store'), [
             'nama' => 'Dapur Utama',
         ])
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('admin can update dapur', function () {
@@ -84,14 +86,15 @@ test('admin can update dapur', function () {
     ]);
 });
 
-test('pengawas cannot update dapur', function () {
+test('pengawas cannot update dapur via web', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->pengawas)
         ->put(route('admin.dapurs.update', $dapur), [
             'nama' => 'Dapur Baru',
         ])
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('admin can delete dapur', function () {
@@ -105,12 +108,13 @@ test('admin can delete dapur', function () {
     $this->assertDatabaseMissing('dapurs', ['id' => $dapur->id]);
 });
 
-test('pengawas cannot delete dapur', function () {
+test('pengawas cannot delete dapur via web', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->pengawas)
         ->delete(route('admin.dapurs.destroy', $dapur))
-        ->assertForbidden();
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors('email');
 });
 
 test('dapur show loads cctvs relationship', function () {
