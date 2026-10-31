@@ -369,4 +369,31 @@ class AdminController extends Controller
 
         return redirect()->route('admin.settings')->with('status', 'Pengaturan berhasil disimpan.');
     }
+
+    // Profile Settings
+    public function editProfile()
+    {
+        $user = auth()->user();
+
+        return view('admin.settings.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update(array_filter([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'] ? Hash::make($validated['password']) : null,
+        ]));
+
+        return redirect()->route('admin.settings.profile')->with('status', 'Profil berhasil diperbarui.');
+    }
 }

@@ -51,10 +51,19 @@
                     <a href="{{ route('kepala-dapur.dashboard') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.dashboard') ? 'text-[var(--color-primary)]' : '' }}">Dashboard</a>
                     <a href="{{ route('kepala-dapur.cctvs.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.cctvs*') ? 'text-[var(--color-primary)]' : '' }}">CCTV</a>
                     <a href="{{ route('kepala-dapur.cctv-anomalies.index') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('kepala-dapur.cctv-anomalies*') ? 'text-[var(--color-primary)]' : '' }}">Anomali</a>
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</button>
-                    </form>
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-2" aria-expanded="open" aria-label="Profile menu">
+                            <span class="text-sm font-medium text-[var(--color-text)]">{{ auth()->user()->name }}</span>
+                            <div class="avatar w-8 h-8 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm" x-text="auth()->user()->name.charAt(0).toUpperCase()"></div>
+                        </button>
+                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:leave="transition ease-in duration-75" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
+                            <a href="{{ route('kepala-dapur.settings') }}" class="block px-4 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]">Pengaturan</a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[var(--color-surface)]">Keluar</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 {{-- Mobile menu button --}}
                 <button class="md:hidden p-2 rounded-lg hover:bg-[var(--color-surface)] transition" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Toggle menu">

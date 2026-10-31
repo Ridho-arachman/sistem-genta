@@ -98,6 +98,10 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // Settings
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+
+        // Profile Settings
+        Route::get('settings/profile', [AdminController::class, 'editProfile'])->name('settings.profile');
+        Route::put('settings/profile', [AdminController::class, 'updateProfile'])->name('settings.profile.update');
     });
 
     // ==================== PENGAWAS ROUTES ====================
@@ -220,6 +224,11 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // CCTV Anomaly History (read only)
         Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
         Route::get('/cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
+
+        // Settings
+        Route::get('/settings', function () {
+            return view('kepala-dapur.settings');
+        })->name('settings');
     });
 });
 

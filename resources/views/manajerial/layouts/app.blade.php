@@ -47,7 +47,19 @@
         </div>
         <div class="top-actions flex items-center gap-3">
             <span class="demo-pill hidden sm:inline-block text-xs font-extrabold tracking-wide border border-[var(--color-border)] rounded-full px-3 py-1.5">MODE PRODUKSI</span>
-            <div class="avatar w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm" x-text="auth()->user()->name.charAt(0).toUpperCase()"></div>
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="flex items-center gap-2" aria-expanded="open" aria-label="Profile menu">
+                    <span class="demo-pill hidden sm:inline-block text-xs font-extrabold tracking-wide border border-[var(--color-border)] rounded-full px-3 py-1.5">{{ auth()->user()->name }}</span>
+                    <div class="avatar w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm" x-text="auth()->user()->name.charAt(0).toUpperCase()"></div>
+                </button>
+                <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:leave="transition ease-in duration-75" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
+                    <a href="{{ route('manajerial.settings') }}" class="block px-4 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]">Pengaturan</a>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[var(--color-surface)]">Keluar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </header>
     
