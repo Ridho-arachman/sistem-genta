@@ -1,12 +1,12 @@
 // Service Worker for GENTAPANGAN PWA
 // Cache-first strategy for static assets, network-first for API
 
-const CACHE_NAME = 'gentapangan-v1';
+const CACHE_NAME = 'gentapangan-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
-  '/build/assets/app-6jSCucsl.css',
-  '/build/assets/app-BvRk9kiK.js',
+  '/build/assets/app-CYHCe1Rd.css',
+  '/build/assets/app-CDhytwuE.js',
 ];
 
 const CACHE_STRATEGIES = {
