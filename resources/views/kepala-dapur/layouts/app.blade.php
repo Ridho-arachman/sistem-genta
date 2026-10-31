@@ -19,6 +19,13 @@
     <meta name="apple-mobile-web-app-title" content="GENTA Banten">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
     
+    {{-- Service Worker Registration --}}
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body x-data="{
@@ -92,17 +99,6 @@
             </p>
         </div>
     </footer>
-
-    {{-- Service Worker --}}
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('{{ asset('sw.js') }}')
-                    .then(function(registration) { console.log('SW registered: ', registration.scope); })
-                    .catch(function(error) { console.log('SW registration failed: ', error); });
-            });
-        }
-    </script>
 
     {{-- Toast Notification --}}
     <div class="toast fixed bottom-6 right-6 bg-[var(--color-secondary)] text-white px-5 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300"

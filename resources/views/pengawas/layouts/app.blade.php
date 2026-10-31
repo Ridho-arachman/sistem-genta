@@ -18,7 +18,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="GENTA Banten">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
-
+    
+    {{-- Service Worker Registration --}}
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body x-data="{
