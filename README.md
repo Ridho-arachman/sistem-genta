@@ -1,58 +1,157 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# GENTA Pangan Banten
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem pengawasan dapur MBG (Makan Bergizi Gratis) untuk wilayah Banten. Aplikasi web untuk memantau dapur, CCTV, absensi pengawas berbasis GPS, laporan, dan surat peringatan, dilengkapi API untuk aplikasi mobile (Android/iOS).
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Modul | Keterangan |
+|---|---|
+| **Landing & Auth** | Halaman publik, login, logout, lupa/reset password, redirect sesuai peran |
+| **Dashboard** | Ringkasan statistik per peran: jumlah dapur, CCTV, absensi, laporan |
+| **Dapur** | CRUD data dapur, status operasional, progres, geofence (lat/lng/radius), wilayah |
+| **CCTV** | Registrasi perangkat, status online/offline/maintenance, live preview (HLS), monitoring |
+| **Anomali CCTV** | Pelaporan dan penanganan anomali kamera, export data |
+| **Absensi** | Check-in/check-out dengan validasi geofence (Haversine), foto, status hadir/izin/cuti/alpha, export |
+| **Laporan** | Laporan pengawas dan tindak lanjut |
+| **Surat Peringatan** | SP1–SP3, riwayat dan export |
+| **Manajemen Pengguna** | CRUD user, arsip (soft delete), restore/force delete, audit kolom |
+| **Pengaturan** | Pengaturan aplikasi (admin) dan profil/email/password (semua peran) |
+| **API Mobile** | Token FCM, sinkronisasi lokasi, geofence dapur, auto check-in (Sanctum) |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Peran Pengguna
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Peran | Akses |
+|---|---|
+| `admin` | Semua modul, manajemen pengguna, pengaturan sistem |
+| `manajerial` | Dashboard, dapur, CCTV, anomali, SP, absensi (read/export), pengaturan |
+| `pengawas` | Dashboard, dapur, CCTV, absensi, laporan, profil |
+| `kepala_dapur` | Dashboard, dapur, CCTV, anomali, SP terkait dapurnya |
 
-## Learning Laravel
+## Teknologi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend**: Laravel 13, PHP 8.5, Laravel Sanctum (API), barryvdh/laravel-dompdf (export PDF)
+- **Frontend**: Blade, Tailwind CSS 4, Alpine.js 3, Leaflet (peta), Vite 8
+- **Database**: SQLite (default), MySQL/PostgreSQL didukung
+- **Mobile**: Capacitor (Android & iOS), FCM untuk notifikasi
+- **Testing**: Pest 5
+- **Tooling**: Laravel Pint, Laravel Boost
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Struktur Direktori
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+```
+app/
+├── Http/
+│   ├── Controllers/        # Absensi, Admin, Cctv, Dapur, Laporan, SpWarning, ...
+│   │   ├── Api/            # MobileController (API mobile)
+│   │   └── Auth/           # AuthController
+│   ├── Middleware/         # RoleMiddleware, RestrictPengawasFromWeb
+│   └── Requests/
+├── Models/                 # User, Dapur, Cctv, Absensi, Laporan, SpWarning, CctvAnomalyReport, Settings, FcmToken
+├── Policies/               # Otorisasi per model
+├── Services/               # Haversine/geofence, notifikasi FCM
+└── helpers.php
 
-## Agentic Development
+resources/views/
+├── admin/  manajerial/  pengawas/  kepala-dapur/   # Panel per peran
+├── auth/   components/   layouts/
+└── welcome.blade.php
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+routes/web.php              # Web + route API mobile (`api/mobile`, Sanctum)
+database/migrations/        # Skema database
+database/seeders/           # RoleSeeder, DapurSeeder, CctvSeeder, SettingsSeeder
+android/  ios/              # Proyek Capacitor
+docs/                       # Dokumentasi teknis per modul
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Persyaratan
 
-## Contributing
+- PHP 8.3+ (disarankan 8.5) dengan ekstensi standar Laravel
+- Composer
+- Node.js 20+ dan npm
+- Android Studio / Xcode (hanya jika membangun aplikasi mobile)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Instalasi
 
-## Code of Conduct
+```bash
+composer run setup
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Perintah tersebut menjalankan `composer install`, menyalin `.env`, generate key, migrasi database, `npm install`, dan `npm run build`.
 
-## Security Vulnerabilities
+Jika ingin langkah manual:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install
+npm run build
+php artisan serve
+```
 
-## License
+Untuk pengembangan dengan hot reload:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer run dev
+```
+
+## Akun Demo (setelah `php artisan migrate --seed`)
+
+| Email | Password | Peran |
+|---|---|---|
+| `admin@test.com` | `password` | admin |
+| `pengawas@test.com` | `password` | pengawas |
+| `manajerial@test.com` | `password` | manajerial |
+| `kepaladapur@test.com` | `password` | kepala_dapur |
+
+> Ganti seluruh akun dan password demo sebelum dipakai di produksi.
+
+## API Mobile
+
+Semua endpoint berada di prefix `api/mobile` dan memerlukan token Sanctum (`Authorization: Bearer <token>`):
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/api/mobile/fcm-token` | Simpan token FCM perangkat |
+| POST | `/api/mobile/sync-locations` | Sinkronisasi titik lokasi |
+| GET | `/api/mobile/dapurs/geofences` | Ambil geofence dapur |
+| POST | `/api/mobile/absensi/auto-checkin` | Check-in otomatis berdasarkan lokasi |
+
+## Build Aplikasi Android
+
+```bash
+npm run build
+npx cap sync android
+```
+
+Atau gunakan skrip yang tersedia:
+
+```bash
+./build-apk.ps1      # PowerShell
+build-apk.bat        # CMD
+```
+
+APK release ditandatangani dengan `gentapangan.keystore` (tidak disimpan di repositori).
+
+## Testing
+
+```bash
+php artisan test --compact
+```
+
+Cakupan saat ini: autentikasi, dashboard, dapur, CCTV, absensi, dan API mobile.
+
+## Kode Gaya
+
+```bash
+vendor/bin/pint --dirty
+```
+
+## Dokumentasi
+
+Penjelasan detail tiap modul ada di [`docs/`](docs/), mulai dari [`docs/01-project-overview.md`](docs/01-project-overview.md).
+
+## Lisensi
+
+Aplikasi internal GENTA Pangan Banten.
