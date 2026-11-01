@@ -41,6 +41,10 @@ gentapangan.keystore
 gentapangan-release-*.apk
 ENDOFSCRIPT
 /.opencode
+/.agents
+/.playwright-mcp
+/public/fonts-manifest.dev.json
+D*Codingsistem-genta*
 cookies.txt
 desktop.ini
 Screenshot*.png
