@@ -1,12 +1,13 @@
-@extends('pengawas.layouts.app', ['pageTitle' => 'Absensi'])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Absensi Saya'])
 
 @section('content')
 <div class="space-y-6">
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    {{-- Standard Header --}}
+    <div class="heading">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Absensi Saya</h2>
-            <p class="text-[var(--color-text-muted)]">Riwayat kehadiran Anda</p>
+            <div class="eyebrow">Genta · Pengawasan MBG</div>
+            <h1>Absensi Saya</h1>
+            <div class="muted">Riwayat kehadiran Anda</div>
         </div>
         <a href="{{ route('pengawas.absensi.create') }}" class="btn-primary">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>

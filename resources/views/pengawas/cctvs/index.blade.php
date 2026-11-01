@@ -1,9 +1,9 @@
-@extends('admin.layouts.app', ['pageTitle' => 'Data CCTV'])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Data CCTV'])
 
 @section('content')
 <div class="heading">
     <div>
-        <div class="eyebrow">Genta · Admin Panel</div>
+        <div class="eyebrow">Genta · Pengawasan MBG</div>
         <h1>Data CCTV</h1>
         <div class="muted">Kamera CCTV di dapur yang Anda awasi</div>
     </div>

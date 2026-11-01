@@ -45,8 +45,11 @@ class AuthController extends Controller
             ]);
         }
 
-        // Pengawas hanya boleh login via aplikasi mobile (API Sanctum)
-        if (Auth::user()->isPengawas()) {
+        $user = Auth::user();
+
+        // Pengawas hanya boleh login via aplikasi mobile
+        $isMobileApp = str_contains($request->header('User-Agent'), 'GentaCapacitor');
+        if ($user->isPengawas() && ! $isMobileApp) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -56,7 +59,15 @@ class AuthController extends Controller
             ]);
         }
 
+        // Regenerate session AFTER role check to prevent session fixation
         $request->session()->regenerate();
+
+        // Force login with user object to ensure session is saved with user_id
+        Auth::login($user, true);
+
+        // Explicitly save session to database to ensure user_id is persisted
+        $request->session()->put('login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d', $user->id);
+        $request->session()->save();
 
         return redirect()->intended(route('dashboard'));
     }

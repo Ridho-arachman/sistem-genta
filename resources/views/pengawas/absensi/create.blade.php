@@ -2,12 +2,17 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto">
-    <div class="card p-8">
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Absensi Check-in</h2>
-            <p class="text-[var(--color-text-muted)] mt-1">Ambil foto selfie dan pastikan GPS aktif untuk validasi lokasi</p>
+    {{-- Standard Header --}}
+    <div class="heading">
+        <div>
+            <div class="eyebrow">Genta · Pengawasan MBG</div>
+            <h1>Absensi Check-in</h1>
+            <div class="muted">Ambil foto selfie dan pastikan GPS aktif untuk validasi lokasi</div>
         </div>
+        <a href="{{ route('pengawas.absensi.index') }}" class="btn-secondary">← Kembali</a>
+    </div>
 
+    <div class="card p-8">
         <form method="POST" action="{{ route('pengawas.absensi.store') }}" enctype="multipart/form-data" class="space-y-6" id="absensiForm">
             @csrf
 
@@ -94,7 +99,9 @@
         </form>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
     let watchId = null;
     let currentPosition = null;
@@ -273,4 +280,4 @@
         }
     }
 </script>
-@endsection
+@endpush

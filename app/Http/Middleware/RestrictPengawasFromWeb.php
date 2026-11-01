@@ -17,6 +17,13 @@ class RestrictPengawasFromWeb
                 return $next($request);
             }
 
+            // Allow access from mobile Capacitor app (User-Agent or cookie fallback)
+            $isMobileApp = str_contains($request->header('User-Agent'), 'GentaCapacitor')
+                || $request->cookies->get('capacitor_app') === '1';
+            if ($isMobileApp) {
+                return $next($request);
+            }
+
             // Logout and redirect to login with message
             auth()->logout();
             $request->session()->invalidate();

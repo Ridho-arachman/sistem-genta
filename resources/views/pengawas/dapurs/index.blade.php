@@ -1,9 +1,9 @@
-@extends('admin.layouts.app', ['pageTitle' => 'Data Dapur'])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Data Dapur'])
 
 @section('content')
 <div class="heading">
     <div>
-        <div class="eyebrow">Genta · Admin Panel</div>
+        <div class="eyebrow">Genta · Pengawasan MBG</div>
         <h1>Data Dapur</h1>
         <div class="muted">Dapur yang Anda awasi</div>
     </div>

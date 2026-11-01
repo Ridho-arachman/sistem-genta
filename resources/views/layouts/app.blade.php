@@ -25,6 +25,13 @@
             navigator.serviceWorker.register('/sw.js');
         }
     </script>
+
+    {{-- Tandai request dari mobile Capacitor WebView agar pengawas bisa login via app --}}
+    <script>
+        if (window.Capacitor) {
+            document.cookie = 'capacitor_app=1; path=/; max-age=3600; SameSite=Lax';
+        }
+    </script>
     
     
     

@@ -1,18 +1,18 @@
-@extends('admin.layouts.app', ['pageTitle' => 'Detail CCTV: ' . $cctv->display_name])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Detail CCTV: ' . $cctv->display_name])
 
 @section('content')
 <div class="max-w-3xl mx-auto">
-    <div class="card p-8">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-[var(--color-secondary)]">{{ $cctv->display_name }}</h2>
-                <p class="text-[var(--color-text-muted)] mt-1">{{ $cctv->dapur->nama }}</p>
-            </div>
-            <div class="flex gap-2">
-                <a href="{{ route('pengawas.cctvs.index') }}" class="btn-action btn-action-secondary">Kembali</a>
-            </div>
+    {{-- Standard Header --}}
+    <div class="heading">
+        <div>
+            <div class="eyebrow">Genta · Pengawasan MBG</div>
+            <h1>{{ $cctv->display_name }}</h1>
+            <div class="muted">{{ $cctv->dapur->nama }}</div>
         </div>
+        <a href="{{ route('pengawas.cctvs.index') }}" class="btn-secondary">Kembali</a>
+    </div>
 
+    <div class="card p-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">Dapur</p>

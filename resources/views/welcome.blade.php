@@ -51,12 +51,17 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             background-color: var(--color-background);
             color: var(--color-text);
             font-family: 'Inter', system-ui, sans-serif;
             overflow-x: hidden;
             overflow-y: auto;
+            max-width: 100vw;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -171,8 +176,13 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            white-space: nowrap;
+            min-width: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .nav-logo span {
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .nav-logo:hover {
@@ -703,7 +713,7 @@
                         <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}</span>
                     </a>
                 </div>
-                <div class="hidden md:flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-wrap">
                     @auth
                         <a href="{{ route('dashboard') }}" class="nav-link">Dashboard</a>
                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
@@ -1027,6 +1037,13 @@
                         console.log('SW registration failed: ', error);
                     });
             });
+        }
+    </script>
+
+    {{-- Tandai request dari mobile Capacitor WebView agar pengawas bisa login via app --}}
+    <script>
+        if (window.Capacitor) {
+            document.cookie = 'capacitor_app=1; path=/; max-age=3600; SameSite=Lax';
         }
     </script>
 
