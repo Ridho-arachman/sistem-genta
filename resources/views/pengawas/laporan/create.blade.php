@@ -200,7 +200,7 @@
         {{-- Submit --}}
         <div class="flex gap-3 justify-end pt-4 border-t border-[var(--color-border)]">
             <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Batal</a>
-            <button type="submit" class="btn-primary" id="submitBtn">Kirim Laporan</button>
+            <button type="button" class="btn-primary" id="submitBtn">Kirim Laporan</button>
         </div>
     </form>
 </div>
@@ -985,10 +985,9 @@ window.confirm = function(message) {
     return showConfirm(message, 'warning');
 };
 
-// Make submit handler async to support custom confirm dialogs
+// Handle submit button click - prevents form submission and handles validation
     let isSubmitting = false; // Prevent double submission
-    form.addEventListener('submit', async function(e) {
-        // ALWAYS prevent default first - we'll submit manually if all validations pass
+    submitBtn.addEventListener('click', async function(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -1071,6 +1070,7 @@ Tidak = Cek Lagi');
             submitBtn.textContent = 'Kirim Laporan';
         }
     });
+});;
 });
 </script>
 @endpush
