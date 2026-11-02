@@ -40,7 +40,7 @@
                 <div id="card_indikator_1" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(1)" data-indikator="1">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">📸 Foto Kebersihan dan sanitasi</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2-6 12-6-12 4-2z"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
@@ -68,7 +68,7 @@
                 <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">📦 Foto Penyimpanan bahan</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
@@ -96,7 +96,7 @@
                 <div id="card_indikator_3" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(3)" data-indikator="3">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">⚙️ Foto Proses pengolahan</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
@@ -124,7 +124,7 @@
                 <div id="card_indikator_4" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(4)" data-indikator="4">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">🍽️ Foto Distribusi makanan</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
@@ -152,7 +152,7 @@
                 <div id="card_indikator_5" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(5)" data-indikator="5">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">🔧 Foto Peralatan dan fasilitas</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
@@ -177,7 +177,7 @@
                 <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)]">🤳 Selfie di depan dapur</span>
-                        <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        
                     </div>
                     <input type="file" id="photo_selfie" name="photo_selfie" accept="image/*" capture="environment" class="hidden" data-indikator="selfie" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_selfie_preview" class="mt-2 hidden"></div>
