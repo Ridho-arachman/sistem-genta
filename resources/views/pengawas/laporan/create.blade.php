@@ -446,12 +446,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-            showToast('File harus berupa gambar: ' + file.name);
+            window.alert('File harus berupa gambar: ' + file.name);
             input.value = '';
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            showToast('Ukuran foto maksimal 5MB: ' + file.name);
+            window.alert('Ukuran foto maksimal 5MB: ' + file.name);
             input.value = '';
             return;
         }
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getCurrentLocationForPhoto(photoId, dataUrl);
         } catch (err) {
             console.error('Photo processing error:', err);
-            showToast('Gagal memproses foto: ' + err.message);
+            window.alert('Gagal memproses foto: ' + err.message);
         } finally {
             showLoading(false);
         }
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         if (missingIndikator) {
-            showToast('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator);
+            window.alert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator);
             return false;
         }
 
@@ -887,14 +887,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
 
         if (!allHavePhotos) {
-            showToast('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
+            window.alert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
             return false;
         }
 
         // Check if any photo still processing (no watermark yet)
         const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
         if (stillProcessing) {
-            showToast('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
+            window.alert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
             return false;
         }
 
