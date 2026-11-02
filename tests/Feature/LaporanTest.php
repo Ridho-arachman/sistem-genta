@@ -34,6 +34,7 @@ test('pengawas can create laporan with 6 photos and GPS via mobile app', functio
             'latitude' => [-6.208800, -6.208900, -6.209000, -6.209100, -6.209200, -6.209300],
             'longitude' => [106.845600, 106.845700, 106.845800, 106.845900, 106.846000, 106.846100],
             'address' => ['Jl. A', 'Jl. B', 'Jl. C', 'Jl. D', 'Jl. E', 'Jl. F'],
+            'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
         ])
         ->assertRedirect(route('pengawas.laporan.index'))
         ->assertSessionHas('success');
@@ -66,8 +67,9 @@ test('pengawas cannot create laporan without photos', function () {
             'latitude' => [],
             'longitude' => [],
             'address' => [],
+            'hasil' => ['', '', '', '', ''],
         ])
-        ->assertSessionHasErrors(['photo_indikator_1', 'photo_selfie', 'latitude', 'longitude', 'address']);
+        ->assertSessionHasErrors(['photo_indikator_1', 'photo_selfie', 'latitude', 'longitude', 'address', 'hasil.0', 'hasil.1', 'hasil.2', 'hasil.3', 'hasil.4']);
 });
 
 test('pengawas cannot create laporan with incomplete photos', function () {
@@ -89,6 +91,7 @@ test('pengawas cannot create laporan with incomplete photos', function () {
             'latitude' => [-6.208800, -6.208900, -6.209000, -6.209100, -6.209200, -6.209300],
             'longitude' => [106.845600, 106.845700, 106.845800, 106.845900, 106.846000, 106.846100],
             'address' => ['Jl. A', 'Jl. B', 'Jl. C', 'Jl. D', 'Jl. E', 'Jl. F'],
+            'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
         ])
         ->assertSessionHasErrors(['photo_indikator_5']);
 });

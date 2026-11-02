@@ -40,6 +40,9 @@ class LaporanController extends Controller
             'longitude' => 'required|array|min:6|max:6',
             'longitude.*' => 'required|numeric|between:-180,180',
             'address' => 'required|array|min:6|max:6',
+            // 5 hasil pemeriksaan indikator (wajib dipilih)
+            'hasil' => 'required|array|size:5',
+            'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
         // Create laporan first (need ID for folder)

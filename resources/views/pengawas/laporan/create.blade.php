@@ -41,6 +41,7 @@
                     <span class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi</span>
                     <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
                     <select name="hasil[]" class="input-field w-48">
+                        <option value="">-- Pilih Hasil --</option>
                         <option value="diperiksa">Sesuai standar</option>
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
@@ -54,6 +55,7 @@
                     <span class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan</span>
                     <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
                     <select name="hasil[]" class="input-field w-48">
+                        <option value="">-- Pilih Hasil --</option>
                         <option value="diperiksa">Sesuai standar</option>
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
@@ -67,6 +69,7 @@
                     <span class="font-medium text-[var(--color-secondary)]">Proses pengolahan</span>
                     <input type="hidden" name="kategori[]" value="Proses pengolahan">
                     <select name="hasil[]" class="input-field w-48">
+                        <option value="">-- Pilih Hasil --</option>
                         <option value="diperiksa">Sesuai standar</option>
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
@@ -80,6 +83,7 @@
                     <span class="font-medium text-[var(--color-secondary)]">Distribusi makanan</span>
                     <input type="hidden" name="kategori[]" value="Distribusi makanan">
                     <select name="hasil[]" class="input-field w-48">
+                        <option value="">-- Pilih Hasil --</option>
                         <option value="diperiksa">Sesuai standar</option>
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
@@ -93,6 +97,7 @@
                     <span class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas</span>
                     <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
                     <select name="hasil[]" class="input-field w-48">
+                        <option value="">-- Pilih Hasil --</option>
                         <option value="diperiksa">Sesuai standar</option>
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
@@ -109,7 +114,7 @@
             </div>
 
             {{-- Kebersihan dan sanitasi --}}
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_1').click()">
+            <div id="card_indikator_1" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(1)" data-indikator="1">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">📸 Kebersihan dan sanitasi</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2-6 12-6-12 4-2z"></path></svg>
@@ -119,7 +124,7 @@
             </div>
 
             {{-- Penyimpanan bahan --}}
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_2').click()">
+            <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">📦 Penyimpanan bahan</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -129,7 +134,7 @@
             </div>
 
             {{-- Proses pengolahan --}}
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_3').click()">
+            <div id="card_indikator_3" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(3)" data-indikator="3">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">⚙️ Proses pengolahan</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -139,7 +144,7 @@
             </div>
 
             {{-- Distribusi makanan --}}
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_4').click()">
+            <div id="card_indikator_4" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(4)" data-indikator="4">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">🍽️ Distribusi makanan</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
@@ -149,7 +154,7 @@
             </div>
 
             {{-- Peralatan dan fasilitas --}}
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_5').click()">
+            <div id="card_indikator_5" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(5)" data-indikator="5">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">🔧 Peralatan dan fasilitas</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -165,7 +170,7 @@
                 <label class="block text-sm font-medium text-[var(--color-secondary)] mb-0">Foto Selfie di Depan Dapur</label>
                 <span class="text-xs text-[var(--color-text-muted)]">1 foto · Dilengkapi peta + GPS</span>
             </div>
-            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_selfie').click()">
+            <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                     <span class="text-sm font-medium text-[var(--color-text)]">🤳 Selfie di depan dapur</span>
                     <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -348,8 +353,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         targetEl.innerHTML = `
             <div class="relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-                <img src="${p.dataUrl}" alt="Foto ${indikator}" class="w-full h-32 object-cover rounded-md">
-                <button type="button" onclick="removeIndicatorPhoto('${indikator}')" class="absolute top-1 right-1 text-red-600 hover:text-red-800" aria-label="Hapus foto">
+                <img src="${p.dataUrl}" alt="Foto ${indikator}" class="w-full h-32 object-cover rounded-md cursor-pointer" onclick="openIndicatorPhotoPreview('${indikator}')">
+                <button type="button" onclick="removeIndicatorPhoto('${indikator}')" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-2 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
                 ${gpsHtml}
@@ -358,10 +363,79 @@ document.addEventListener('DOMContentLoaded', function() {
         targetEl.classList.remove('hidden');
     }
 
+    // Open photo preview modal for indicator photo
+    window.openIndicatorPhotoPreview = function(indikator) {
+        const p = photos.find(x => x.indikator == indikator);
+        if (!p || !p.dataUrl) return;
+
+        const previewImg = document.getElementById('previewImage');
+        const previewGps = document.getElementById('previewGps');
+        const modal = document.getElementById('photoPreviewModal');
+
+        previewImg.src = p.dataUrl;
+
+        if (p.lat && p.lng) {
+            previewGps.innerHTML = '📍 ' + p.lat + ', ' + p.lng + (p.accuracy ? '  (±' + Math.round(p.accuracy) + 'm)' : '') +
+                (p.address ? '<br><span style="font-size: 0.85em;">' + p.address + '</span>' : '');
+        } else {
+            previewGps.textContent = 'GPS tidak tersedia';
+        }
+
+        hideAllTrashButtons();
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    // Update card button muted state based on whether photo exists
+    function updateCardButtonStates() {
+        for (let i = 1; i <= 5; i++) {
+            const card = document.getElementById('card_indikator_' + i);
+            const p = photos.find(x => x.indikator == i);
+            if (p && p.dataUrl) {
+                card.onclick = null;
+            } else {
+                card.onclick = function() { toggleIndicatorCamera(i); };
+            }
+        }
+        const selfieCard = document.getElementById('card_indikator_selfie');
+        const selfieP = photos.find(x => x.indikator === 'selfie');
+        if (selfieP && selfieP.dataUrl) {
+            selfieCard.onclick = null;
+        } else {
+            selfieCard.onclick = function() { toggleIndicatorCamera('selfie'); };
+        }
+    }
+
+    // Hide/show all trash buttons to prevent z-index overlap with preview modal
+    function hideAllTrashButtons() {
+        document.querySelectorAll('.delete-photo-btn').forEach(btn => {
+            btn.style.display = 'none';
+        });
+    }
+
+    function showAllTrashButtons() {
+        document.querySelectorAll('.delete-photo-btn').forEach(btn => {
+            btn.style.display = '';
+        });
+    }
+
+    // Toggle camera or open preview based on whether photo exists
+    window.toggleIndicatorCamera = function(indikator) {
+        const p = photos.find(x => x.indikator == indikator);
+        if (p && p.dataUrl) {
+            openIndicatorPhotoPreview(indikator);
+        } else {
+            const inputId = indikator === 'selfie' ? 'photo_selfie' : 'photo_indikator_' + indikator;
+            document.getElementById(inputId).click();
+        }
+    };
+
     // Remove an indicator photo
     window.removeIndicatorPhoto = function(indikator) {
         photos = photos.filter(p => p.indikator != indikator);
         renderIndicatorPreview(indikator);
+        updateCardButtonStates();
         updateHiddenInputs();
     };
 
@@ -372,12 +446,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-            alert('File harus berupa gambar: ' + file.name);
+            await showAlert('File harus berupa gambar: ' + file.name, 'error');
             input.value = '';
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            alert('Ukuran foto maksimal 5MB: ' + file.name);
+            await showAlert('Ukuran foto maksimal 5MB: ' + file.name, 'error');
             input.value = '';
             return;
         }
@@ -412,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
             photos.push(photo);
 
             renderIndicatorPreview(indikator);
+            updateCardButtonStates();
             updateHiddenInputs();
 
             // Reset input
@@ -421,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getCurrentLocationForPhoto(photoId, dataUrl);
         } catch (err) {
             console.error('Photo processing error:', err);
-            alert('Gagal memproses foto: ' + err.message);
+            await showAlert('Gagal memproses foto: ' + err.message, 'error');
         } finally {
             showLoading(false);
         }
@@ -478,6 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
             photos[photoIndex].gpsStatus = 'success';
 
             renderIndicatorPreview(photos[photoIndex].indikator);
+            updateCardButtonStates();
             updateHiddenInputs();
         } catch (err) {
             photos[photoIndex].lat = '';
@@ -501,6 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
             photos[photoIndex].dataUrl = combinedDataUrl;
             
             renderIndicatorPreview(photos[photoIndex].indikator);
+            updateCardButtonStates();
             updateHiddenInputs();
         }
     }
@@ -759,6 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('photoPreviewModal');
         modal.classList.add('hidden');
         document.body.style.overflow = '';
+        showAllTrashButtons();
     };
 
     // Close modal on Escape key
@@ -775,8 +853,168 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Populate hidden inputs on submit
-    form.addEventListener('submit', function(e) {
+// ========== CUSTOM ALERT/CONFIRM MODAL ==========
+const CustomDialog = {
+    modal: null,
+    init() {
+        if (!this.modal) {
+            this.modal = document.createElement('div');
+            this.modal.id = 'customDialog';
+            this.modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] hidden';
+            this.modal.innerHTML = `
+                <div class="bg-[var(--color-surface)] rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
+                    <div class="p-6">
+                        <div class="flex items-start gap-3">
+                            <div id="dialogIcon" class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 id="dialogTitle" class="text-lg font-semibold text-[var(--color-text)]"></h3>
+                                <p id="dialogMessage" class="mt-1 text-[var(--color-text-muted)] text-sm"></p>
+                            </div>
+                        </div>
+                        <div id="dialogActions" class="mt-6 flex justify-end gap-3">
+                            <button id="dialogCancel" type="button" class="btn-secondary px-4 py-2" style="display:none;">Batal</button>
+                            <button id="dialogConfirm" type="button" class="btn-primary px-4 py-2">OK</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(this.modal);
+            
+            this.iconEl = this.modal.querySelector('#dialogIcon');
+            this.titleEl = this.modal.querySelector('#dialogTitle');
+            this.messageEl = this.modal.querySelector('#dialogMessage');
+            this.cancelBtn = this.modal.querySelector('#dialogCancel');
+            this.confirmBtn = this.modal.querySelector('#dialogConfirm');
+            this.actionsEl = this.modal.querySelector('#dialogActions');
+            
+            this.cancelBtn.addEventListener('click', () => this.hide(false));
+            this.confirmBtn.addEventListener('click', () => this.hide(true));
+            this.modal.addEventListener('click', (e) => {
+                if (e.target === this.modal) this.hide(false);
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) this.hide(false);
+            });
+        }
+    },
+    showAlert(message, type = 'info') {
+        this.init();
+        const icons = {
+            info: { svg: '<svg class="w-6 h-6 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', title: 'Informasi', color: 'text-[var(--color-primary)]' },
+            warning: { svg: '<svg class="w-6 h-6 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Peringatan', color: 'text-[var(--color-warning)]' },
+            error: { svg: '<svg class="w-6 h-6 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', title: 'Error', color: 'text-[var(--color-error)]' },
+            success: { svg: '<svg class="w-6 h-6 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>', title: 'Berhasil', color: 'text-[var(--color-success)]' }
+        };
+        const icon = icons[type] || icons.info;
+        this.iconEl.innerHTML = icon.svg;
+        this.iconEl.className = 'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-surface)]/50 ' + icon.color;
+        this.titleEl.textContent = icon.title;
+        this.messageEl.textContent = message;
+        
+        this.cancelBtn.style.display = 'none';
+        this.confirmBtn.textContent = 'OK';
+        this.confirmBtn.onclick = () => this.hide(true);
+        
+        this.modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        this.confirmBtn.focus();
+    },
+    showConfirm(message, onConfirm, type = 'warning') {
+        this.init();
+        const icons = {
+            warning: { svg: '<svg class="w-6 h-6 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Konfirmasi' },
+            danger: { svg: '<svg class="w-6 h-6 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Peringatan' }
+        };
+        const icon = icons[type] || icons.warning;
+        this.iconEl.innerHTML = icon.svg;
+        this.iconEl.className = 'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-surface)]/50 text-[var(--color-warning)]';
+        this.titleEl.textContent = icon.title;
+        this.messageEl.textContent = message;
+        
+        this.cancelBtn.style.display = 'inline-flex';
+        this.cancelBtn.textContent = 'Batal';
+        this.cancelBtn.onclick = () => this.hide(false);
+        
+        this.confirmBtn.textContent = type === 'danger' ? 'Ya, Hapus' : 'Ya, Lanjutkan';
+        this.confirmBtn.onclick = () => {
+            this.hide(true);
+            if (onConfirm) onConfirm();
+        };
+        
+        this.modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        this.confirmBtn.focus();
+    },
+    hide(result) {
+        this.modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (this._resolve) {
+            this._resolve(result);
+            this._resolve = null;
+        }
+    }
+};
+
+// Wrapper functions for backward compatibility
+function showAlert(message, type = 'info') {
+    return new Promise((resolve) => {
+        CustomDialog._resolve = resolve;
+        CustomDialog.showAlert(message, type);
+    });
+}
+
+function showConfirm(message, type = 'warning') {
+    return new Promise((resolve) => {
+        CustomDialog._resolve = resolve;
+        CustomDialog.showConfirm(message, null, type);
+    });
+}
+
+// Replace native alert/confirm
+window.alert = function(message) {
+    return showAlert(message, 'warning');
+};
+
+window.confirm = function(message) {
+    return showConfirm(message, 'warning');
+};
+
+// Make submit handler async to support custom confirm dialogs
+    form.addEventListener('submit', async function(e) {
+        // ALWAYS prevent default first - we'll submit manually if all validations pass
+        e.preventDefault();
+
+        // Konfirmasi sebelum kirim laporan inspeksi
+        const confirmed = await showConfirm('⚠️ Konfirmasi Laporan Inspeksi
+
+Apakah semua foto inspeksi (5 indikator + 1 selfie dapur) sudah lengkap dengan peta dan GPS?
+
+Ya = Kirim Laporan
+Tidak = Cek Lagi');
+        if (!confirmed) {
+            return false;
+        }
+
+        // Validate all 5 hasil select dropdowns have values
+        const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
+        const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
+        let missingIndikator = null;
+        hasilSelects.forEach((select, index) => {
+            if (!select.value) {
+                missingIndikator = indikatorNames[index];
+            }
+        });
+        if (missingIndikator) {
+            await showAlert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator, 'warning');
+            return false;
+        }
+
         // Check all 5 indikators + selfie have photos
         const indikatorPhotos = [];
         for (let i = 1; i <= 5; i++) {
@@ -786,16 +1024,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
 
         if (!allHavePhotos) {
-            e.preventDefault();
-            alert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
+            await showAlert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.', 'warning');
             return false;
         }
 
         // Check if any photo still processing (no watermark yet)
         const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
         if (stillProcessing) {
-            e.preventDefault();
-            alert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
+            await showAlert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.', 'warning');
             return false;
         }
 
@@ -803,15 +1039,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const hasGps = photos.some(p => p.lat && p.lng);
         if (!hasGps) {
-            if (!confirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?')) {
-                e.preventDefault();
+            const gpsConfirmed = await showConfirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?', 'warning');
+            if (!gpsConfirmed) {
                 return false;
             }
         }
 
+        // All validations passed - submit the form programmatically
         submitBtn.disabled = true;
         submitBtn.textContent = 'Mengirim...';
+        form.submit();
     });
+});;
 });
 </script>
 @endpush
