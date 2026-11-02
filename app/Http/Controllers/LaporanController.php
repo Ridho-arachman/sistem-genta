@@ -23,8 +23,15 @@ class LaporanController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->user();
+
+        // Validasi dapur harus milik pengawas yang login
+        $dapurRule = $user->isPengawas()
+            ? 'required|exists:dapurs,id|in:' . implode(',', $user->getAccessibleDapurIds())
+            : 'required|exists:dapurs,id';
+
         $validated = $request->validate([
-            'dapur_id' => 'required|exists:dapurs,id',
+            'dapur_id' => $dapurRule,
             'kategori' => 'nullable|string',
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',

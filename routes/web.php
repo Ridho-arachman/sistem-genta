@@ -117,7 +117,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
                 'total_dapur' => $dapurs->count(),
                 'total_cctv' => $dapurs->sum('cctvs_count'),
                 'cctv_online' => $dapurs->sum(fn ($d) => $d->cctvs->where('status', 'online')->count()),
-                'laporan_hari_ini' => Absensi::where('user_id', $user->id)->whereDate('created_at', today())->count(),
+                'laporan_hari_ini' => \App\Models\Laporan::where('user_id', $user->id)->whereDate('created_at', today())->count(),
                 'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
             ];
 
@@ -200,15 +200,15 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
                 'cctv_online' => Cctv::where('status', 'online')->count(),
                 'cctv_offline' => Cctv::where('status', 'offline')->count(),
                 'cctv_maintenance' => Cctv::where('status', 'maintenance')->count(),
-                'absensi_hari_ini' => Absensi::whereDate('created_at', today())->count(),
+                'laporan_hari_ini' => \App\Models\Laporan::whereDate('created_at', today())->count(),
                 'sp_warnings_aktif' => SpWarning::where('status', 'aktif')->count(),
                 'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
             ];
 
             $dapurs = Dapur::with('cctvs')->get();
-            $recentAbsensi = Absensi::with('user', 'dapur')->latest()->limit(10)->get();
+            $recentLaporans = \App\Models\Laporan::with('user', 'dapur')->latest()->limit(10)->get();
 
-            return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentAbsensi'));
+            return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentLaporans'));
         })->name('dashboard');
 
         // Dapur (read only)

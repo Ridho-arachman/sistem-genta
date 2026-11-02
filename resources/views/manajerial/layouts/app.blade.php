@@ -76,11 +76,11 @@
             <span class="sidebar-icon w-5 text-center text-lg">⚠</span> Surat Peringatan (SP)
         </a>
         
-        <a href="{{ route('manajerial.absensi.index') }}" 
+        <a href="{{ route('manajerial.inspeksi.index') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-[var(--color-text-muted)] transition-colors
-                  {{ request()->routeIs('manajerial.absensi*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
-           data-page="absensi">
-            <span class="sidebar-icon w-5 text-center text-lg">▣</span> Absensi
+                  {{ request()->routeIs('manajerial.inspeksi*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}"
+           data-page="inspeksi">
+            <span class="sidebar-icon w-5 text-center text-lg">▣</span> Inspeksi
         </a>
         
         <div class="side-label text-[10px] tracking-widest text-[var(--color-text-muted)] font-extrabold px-3 pt-6 pb-2 uppercase">SISTEM</div>

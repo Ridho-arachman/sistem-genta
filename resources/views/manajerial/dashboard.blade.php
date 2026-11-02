@@ -98,11 +98,11 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="stat-card">
             <div class="stat-top">
-                <span>Absensi Hari Ini</span>
+                <span>Laporan Hari Ini</span>
                 <span class="stat-icon bg-indigo-100 text-indigo-600">▣</span>
             </div>
-            <div class="stat-value">{{ $stats['absensi_hari_ini'] }}</div>
-            <div class="stat-foot">Check-in hari ini</div>
+            <div class="stat-value">{{ $stats['laporan_hari_ini'] }}</div>
+            <div class="stat-foot">Laporan hari ini</div>
         </div>
         
         <div class="stat-card">
@@ -198,7 +198,7 @@
             <div class="activity space-y-4">
                 <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="activity-icon w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                    <div class="flex-1"><strong>Absensi check-in baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentAbsensi->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
+                    <div class="flex-1"><strong>Laporan inspeksi baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentLaporans->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
                     <time class="text-sm text-[var(--color-text-muted)]">{{ now()->format('H:i') }}</time>
                 </div>
                 <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">

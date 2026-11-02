@@ -26,8 +26,14 @@
         <div>
             <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur</label>
             <select id="dapur_id" name="dapur_id" class="input-field">
-                <option value="{{ auth()->user()->dapur->id ?? '' }}">{{ auth()->user()->dapur->nama ?? 'Dapur Anda' }}</option>
+                <option value="">-- Pilih Dapur --</option>
+                @foreach (auth()->user()->dapurs as $dapur)
+                    <option value="{{ $dapur->id }}">{{ $dapur->nama }}</option>
+                @endforeach
             </select>
+            @error('dapur_id')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Indikator 1: Kebersihan dan sanitasi --}}

@@ -93,10 +93,10 @@
 
 <div class="panel export-panel mb-4">
     <div class="panel-head">
-        <h2>Ekspor Data Absensi</h2>
+        <h2>Ekspor Data Inspeksi</h2>
         <small>Filter dengan range tanggal, pilih format</small>
     </div>
-    <form method="GET" action="{{ route('admin.absensi.export') }}" class="export-form" id="exportForm">
+    <form method="GET" action="{{ route('admin.inspeksi.export') }}" class="export-form" id="exportForm">
         {{-- Date Presets --}}
         <div class="export-presets" role="group" aria-label="Pilihan cepat rentang tanggal">
             <button type="button" class="preset-btn" data-preset="today" title="Hari ini">Hari ini</button>
@@ -178,7 +178,7 @@
                     Menyiapkan...
                 </span>
             </button>
-            <a href="{{ route('admin.absensi.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn-export btn-export-secondary">
+            <a href="{{ route('admin.inspeksi.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn-export btn-export-secondary">
                 <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 <span>Excel Cepat</span>
             </a>
@@ -304,7 +304,7 @@
             <div class="activity space-y-4">
                 <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="activity-icon w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                    <div class="flex-1"><strong>Absensi check-in baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentAbsensi->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
+                    <div class="flex-1"><strong>Laporan inspeksi baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentLaporans->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
                     <time class="text-sm text-[var(--color-text-muted)]">{{ now()->format('H:i') }}</time>
                 </div>
                 <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">

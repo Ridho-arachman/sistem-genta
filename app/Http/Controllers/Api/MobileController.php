@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Absensi;
 use App\Models\Dapur;
 use App\Models\FcmToken;
+use App\Models\Laporan;
+use App\Models\LaporanPhoto;
 use App\Models\User;
 use App\Services\GeolocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MobileController extends Controller
 {
@@ -71,24 +73,7 @@ class MobileController extends Controller
                 $dapur = $this->findDapurNearLocation($loc['lat'], $loc['lng']);
 
                 if ($dapur) {
-                    // Check if user already has recent absensi for this dapur
-                    $existing = Absensi::where('user_id', Auth::id())
-                        ->where('dapur_id', $dapur->id)
-                        ->whereDate('created_at', today())
-                        ->lockForUpdate()->first();
-
-                    if (! $existing) {
-                        // Auto check-in if within geofence
-                        Absensi::create([
-                            'user_id' => Auth::id(),
-                            'dapur_id' => $dapur->id,
-                            'check_in_at' => now(),
-                            'lat' => $loc['lat'],
-                            'lng' => $loc['lng'],
-                            'status' => 'hadir',
-                        ]);
-                        $synced++;
-                    }
+                    $synced++;
                 }
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
@@ -130,7 +115,7 @@ class MobileController extends Controller
     }
 
     /**
-     * Auto check-in via geofence trigger.
+     * Auto check-in via geofence trigger - now creates Laporan instead of Absensi.
      */
     public function autoCheckin(Request $request)
     {
@@ -144,25 +129,24 @@ class MobileController extends Controller
         $dapur = Dapur::find($validated['dapur_id']);
 
         if ($validated['trigger'] === 'entry') {
-            // Check if already checked in today
-            $existing = Absensi::where('user_id', Auth::id())
+            // Check if already has laporan today for this dapur
+            $existing = Laporan::where('user_id', Auth::id())
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
                 ->lockForUpdate()->first();
 
             if (! $existing) {
-                $absensi = Absensi::create([
+                $laporan = Laporan::create([
                     'user_id' => Auth::id(),
                     'dapur_id' => $dapur->id,
-                    'check_in_at' => now(),
                     'lat' => $validated['lat'],
                     'lng' => $validated['lng'],
-                    'status' => 'hadir',
+                    'status' => 'diperiksa',
                 ]);
 
                 return response()->json([
                     'status' => 'checked_in',
-                    'absensi_id' => $absensi->id,
+                    'laporan_id' => $laporan->id,
                 ]);
             }
 
@@ -170,19 +154,19 @@ class MobileController extends Controller
         }
 
         if ($validated['trigger'] === 'exit') {
-            // Auto check-out on exit
-            $absensi = Absensi::where('user_id', Auth::id())
+            // Auto check-out on exit - update status to selesai
+            $laporan = Laporan::where('user_id', Auth::id())
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
-                ->whereNull('check_out_at')
+                ->where('status', '!=', 'selesai')
                 ->lockForUpdate()->first();
 
-            if ($absensi) {
-                $absensi->update(['check_out_at' => now()]);
+            if ($laporan) {
+                $laporan->update(['status' => 'selesai']);
 
                 return response()->json([
                     'status' => 'checked_out',
-                    'absensi_id' => $absensi->id,
+                    'laporan_id' => $laporan->id,
                 ]);
             }
 

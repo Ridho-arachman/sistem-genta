@@ -158,13 +158,24 @@ document.addEventListener('alpine:init', () => {
         dateFrom: '',
         dateTo: '',
         
-        // Demo data - same as original static rows
-        allRows: [
-            { id: 1, tanggal: '{{ now()->format("d M Y") }}', lokasi: 'Serang 01', pengawas: 'Siti Rahma', status: 'Diperiksa', badgeClass: 'badge-success', date: '{{ now()->format("Y-m-d") }}' },
-            { id: 2, tanggal: '{{ now()->subDay()->format("d M Y") }}', lokasi: 'Cilegon 02', pengawas: 'Andi Saputra', status: 'Tindak lanjut', badgeClass: 'badge-warning', date: '{{ now()->subDay()->format("Y-m-d") }}' },
-            { id: 3, tanggal: '{{ now()->subDay()->format("d M Y") }}', lokasi: 'Pandeglang 01', pengawas: 'Rina Putri', status: 'Selesai', badgeClass: 'badge-success', date: '{{ now()->subDay()->format("Y-m-d") }}' },
-            { id: 4, tanggal: '{{ now()->subDays(2)->format("d M Y") }}', lokasi: 'Lebak 03', pengawas: 'Budi Santoso', status: 'Temuan', badgeClass: 'badge-danger', date: '{{ now()->subDays(2)->format("Y-m-d") }}' },
-        ],
+        // Data dari server (di-inject via Blade)
+        allRows: @json($laporans->map(function ($l) {
+            return [
+                'id' => $l->id,
+                'tanggal' => $l->created_at->format('d M Y'),
+                'lokasi' => $l->dapur->nama ?? '-',
+                'pengawas' => $l->user->name ?? '-',
+                'status' => ucfirst(str_replace('_', ' ', $l->status)),
+                'badgeClass' => match($l->status) {
+                    'diperiksa' => 'badge-success',
+                    'temuan' => 'badge-danger',
+                    'tindak lanjut' => 'badge-warning',
+                    'selesai' => 'badge-success',
+                    default => 'badge-gray',
+                },
+                'date' => $l->created_at->format('Y-m-d'),
+            ];
+        })),
         
         filteredRows: [],
         

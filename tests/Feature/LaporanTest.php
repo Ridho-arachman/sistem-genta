@@ -16,6 +16,9 @@ beforeEach(function () {
 test('pengawas can create laporan with 6 photos and GPS via mobile app', function () {
     $dapur = Dapur::factory()->create();
 
+    // Assign dapur to pengawas via dapur_user pivot
+    $this->pengawas->dapurs()->attach($dapur->id);
+
     $photoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
     $response = $this->actingAs($this->pengawas)

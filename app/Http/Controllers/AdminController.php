@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Absensi;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
+use App\Models\Laporan;
 use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -317,7 +317,7 @@ class AdminController extends Controller
                 ];
             });
 
-        $recentAbsensi = Absensi::with('user', 'dapur')
+        $recentLaporans = Laporan::with('user', 'dapur')
             ->latest()
             ->limit(10)
             ->get();
@@ -327,7 +327,7 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentAbsensi', 'recentAnomalies'));
+        return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentLaporans', 'recentAnomalies'));
     }
 
     // Settings
