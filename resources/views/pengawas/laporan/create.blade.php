@@ -986,70 +986,92 @@ window.confirm = function(message) {
 };
 
 // Make submit handler async to support custom confirm dialogs
+    let isSubmitting = false; // Prevent double submission
     form.addEventListener('submit', async function(e) {
         // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
+        e.stopPropagation();
 
-        // Konfirmasi sebelum kirim laporan inspeksi
-        const confirmed = await showConfirm('⚠️ Konfirmasi Laporan Inspeksi
+        // Prevent double submission
+        if (isSubmitting) {
+            return false;
+        }
+        isSubmitting = true;
+
+        try {
+            // Konfirmasi sebelum kirim laporan inspeksi
+            const confirmed = await showConfirm('⚠️ Konfirmasi Laporan Inspeksi
 
 Apakah semua foto inspeksi (5 indikator + 1 selfie dapur) sudah lengkap dengan peta dan GPS?
 
 Ya = Kirim Laporan
 Tidak = Cek Lagi');
-        if (!confirmed) {
-            return false;
-        }
-
-        // Validate all 5 hasil select dropdowns have values
-        const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
-        const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
-        let missingIndikator = null;
-        hasilSelects.forEach((select, index) => {
-            if (!select.value) {
-                missingIndikator = indikatorNames[index];
-            }
-        });
-        if (missingIndikator) {
-            await showAlert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator, 'warning');
-            return false;
-        }
-
-        // Check all 5 indikators + selfie have photos
-        const indikatorPhotos = [];
-        for (let i = 1; i <= 5; i++) {
-            indikatorPhotos.push(photos.find(p => p.indikator == i));
-        }
-        const selfiePhoto = photos.find(p => p.indikator === 'selfie');
-        const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
-
-        if (!allHavePhotos) {
-            await showAlert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.', 'warning');
-            return false;
-        }
-
-        // Check if any photo still processing (no watermark yet)
-        const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
-        if (stillProcessing) {
-            await showAlert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.', 'warning');
-            return false;
-        }
-
-        updateHiddenInputs();
-
-        const hasGps = photos.some(p => p.lat && p.lng);
-        if (!hasGps) {
-            const gpsConfirmed = await showConfirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?', 'warning');
-            if (!gpsConfirmed) {
+            if (!confirmed) {
+                isSubmitting = false;
                 return false;
             }
-        }
 
-        // All validations passed - submit the form programmatically
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Mengirim...';
-        form.submit();
+            // Validate all 5 hasil select dropdowns have values
+            const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
+            const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
+            let missingIndikator = null;
+            hasilSelects.forEach((select, index) => {
+                if (!select.value) {
+                    missingIndikator = indikatorNames[index];
+                }
+            });
+            if (missingIndikator) {
+                await showAlert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator, 'warning');
+                isSubmitting = false;
+                return false;
+            }
+
+            // Check all 5 indikators + selfie have photos
+            const indikatorPhotos = [];
+            for (let i = 1; i <= 5; i++) {
+                indikatorPhotos.push(photos.find(p => p.indikator == i));
+            }
+            const selfiePhoto = photos.find(p => p.indikator === 'selfie');
+            const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
+
+            if (!allHavePhotos) {
+                await showAlert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.', 'warning');
+                isSubmitting = false;
+                return false;
+            }
+
+            // Check if any photo still processing (no watermark yet)
+            const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
+            if (stillProcessing) {
+                await showAlert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.', 'warning');
+                isSubmitting = false;
+                return false;
+            }
+
+            updateHiddenInputs();
+
+            const hasGps = photos.some(p => p.lat && p.lng);
+            if (!hasGps) {
+                const gpsConfirmed = await showConfirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?', 'warning');
+                if (!gpsConfirmed) {
+                    isSubmitting = false;
+                    return false;
+                }
+            }
+
+            // All validations passed - submit the form programmatically
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+            form.submit();
+        } catch (err) {
+            console.error('Submit error:', err);
+            await showAlert('Terjadi kesalahan saat memproses laporan: ' + err.message, 'error');
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Kirim Laporan';
+        }
     });
+});;
 });;
 });
 </script>
