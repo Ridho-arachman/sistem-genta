@@ -101,31 +101,87 @@
             </div>
         </div>
 
-        {{-- Foto Selfie di Lokasi (Multiple) --}}
-        <div>
-            <div class="flex items-center justify-between mb-3">
-                <label class="block text-sm font-medium text-[var(--color-secondary)] mb-0">Foto Selfie di Lokasi</label>
-                <span class="text-xs text-[var(--color-text-muted)]">Maksimal 6 foto · Setiap foto otomatis dilengkapi peta + GPS</span>
+        {{-- Foto per Indikator (5 foto) --}}
+        <div class="space-y-3">
+            <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-[var(--color-secondary)] mb-0">Foto Pemeriksaan per Indikator</label>
+                <span class="text-xs text-[var(--color-text-muted)]">Satu foto per indikator · Setiap foto dilengkapi peta + GPS</span>
             </div>
 
-            {{-- Native camera input --}}
-            <label for="selfie_photo" class="btn-action btn-action-outline w-full cursor-pointer flex items-center justify-center gap-2 mb-4" aria-label="Ambil foto selfie">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                <span>Ambil Foto Selfi (dengan GPS & Peta)</span>
-            </label>
-            <input type="file" id="selfie_photo" name="selfie_photo[]" accept="image/*" capture="environment" multiple class="hidden" onchange="handlePhotosSelected(this)">
+            {{-- Kebersihan dan sanitasi --}}
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_1').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">📸 Kebersihan dan sanitasi</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2-6 12-6-12 4-2z"></path></svg>
+                </div>
+                <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
+            </div>
 
-            {{-- Photo Gallery Grid --}}
-            <div id="photoGallery" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                <!-- Photo cards inserted here by JS -->
+            {{-- Penyimpanan bahan --}}
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_2').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">📦 Penyimpanan bahan</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
+            </div>
+
+            {{-- Proses pengolahan --}}
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_3').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">⚙️ Proses pengolahan</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
+            </div>
+
+            {{-- Distribusi makanan --}}
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_4').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">🍽️ Distribusi makanan</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
+                </div>
+                <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
+            </div>
+
+            {{-- Peralatan dan fasilitas --}}
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_indikator_5').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">🔧 Peralatan dan fasilitas</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
+            </div>
+        </div>
+
+        {{-- Foto Selfie di Depan Dapur (1 foto) --}}
+        <div class="space-y-3">
+            <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-[var(--color-secondary)] mb-0">Foto Selfie di Depan Dapur</label>
+                <span class="text-xs text-[var(--color-text-muted)]">1 foto · Dilengkapi peta + GPS</span>
+            </div>
+            <div class="relative group cursor-pointer" onclick="document.getElementById('photo_selfie').click()">
+                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                    <span class="text-sm font-medium text-[var(--color-text)]">🤳 Selfie di depan dapur</span>
+                    <svg class="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <input type="file" id="photo_selfie" name="photo_selfie" accept="image/*" capture="environment" class="hidden" data-indikator="selfie" onchange="handleIndicatorPhotoSelected(this)">
+                <div id="photo_selfie_preview" class="mt-2 hidden"></div>
             </div>
         </div>
 
         {{-- Hidden inputs for photo data (base64) and GPS arrays --}}
-        <input type="hidden" name="selfie_photo[]" id="photoDataInput" value="">
+        <input type="hidden" name="photo_indikator_1" id="photo_indikator_1_data" value="">
+        <input type="hidden" name="photo_indikator_2" id="photo_indikator_2_data" value="">
+        <input type="hidden" name="photo_indikator_3" id="photo_indikator_3_data" value="">
+        <input type="hidden" name="photo_indikator_4" id="photo_indikator_4_data" value="">
+        <input type="hidden" name="photo_indikator_5" id="photo_indikator_5_data" value="">
+        <input type="hidden" name="photo_selfie" id="photo_selfie_data" value="">
         <input type="hidden" name="latitude[]" id="latitudeInput" value="">
         <input type="hidden" name="longitude[]" id="longitudeInput" value="">
         <input type="hidden" name="address[]" id="addressInput" value="">
@@ -223,12 +279,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Update hidden inputs from photos array
+    // Update hidden inputs per-indikator
     function updateHiddenInputs() {
-        photoDataInput.value = photos.map(p => p.dataUrl).join('|');
-        latInput.value = photos.map(p => p.lat || '').join(',');
-        lngInput.value = photos.map(p => p.lng || '').join(',');
-        addressInput.value = photos.map(p => (p.address || '').replace(/\|/g, ' ')).join('|');
+        // Reset all
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById('photo_indikator_' + i + '_data').value = '';
+        }
+        document.getElementById('photo_selfie_data').value = '';
+        document.getElementById('latitudeInput').value = '';
+        document.getElementById('longitudeInput').value = '';
+        document.getElementById('addressInput').value = '';
+
+        photos.forEach((p) => {
+            if (p.indikator === 'selfie') {
+                document.getElementById('photo_selfie_data').value = p.dataUrl;
+            } else {
+                document.getElementById('photo_indikator_' + p.indikator + '_data').value = p.dataUrl;
+            }
+        });
+        // lat/lng/address arrays (first 5 = indikators, last = selfie)
+        const lats = [], lngs = [], addrs = [];
+        for (let i = 1; i <= 5; i++) {
+            const p = photos.find(x => x.indikator == i);
+            lats.push(p && p.lat ? p.lat : '');
+            lngs.push(p && p.lng ? p.lng : '');
+            addrs.push(p && p.address ? p.address : '');
+        }
+        const selfie = photos.find(x => x.indikator === 'selfie');
+        lats.push(selfie && selfie.lat ? selfie.lat : '');
+        lngs.push(selfie && selfie.lng ? selfie.lng : '');
+        addrs.push(selfie && selfie.address ? selfie.address : '');
+        document.getElementById('latitudeInput').value = lats.join(',');
+        document.getElementById('longitudeInput').value = lngs.join(',');
+        document.getElementById('addressInput').value = addrs.join(',');
     }
 
     // Show/hide loading overlay
@@ -241,116 +324,108 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Render photo gallery - setiap foto sudah berisi peta + GPS di dalamnya (combined)
-    function renderPhotoGallery() {
-        photoGallery.innerHTML = '';
+    // Render per-indikator photo preview
+    function renderIndicatorPreview(indikator) {
+        const p = photos.find(x => x.indikator == indikator);
+        const el = document.getElementById('photo_indikator_' + indikator + '_preview');
+        const selfieEl = document.getElementById('photo_selfie_preview');
+        const targetEl = indikator === 'selfie' ? selfieEl : el;
 
-        photos.forEach((photo, index) => {
-            const card = document.createElement('div');
-            card.id = 'photo-card-' + photo.id;
-            card.className = 'photo-card relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 transition-all cursor-pointer';
-            card.onclick = () => openPhotoPreview(photo.id);
+        if (!p || !p.dataUrl) {
+            targetEl.innerHTML = '';
+            targetEl.classList.add('hidden');
+            return;
+        }
 
-            card.innerHTML = `
-                <div class="relative group">
-                    <img src="${photo.dataUrl}" alt="Foto ${index + 1}" class="w-full h-48 object-cover rounded-md">
-                </div>
+        const gpsHtml = p.lat && p.lng
+            ? `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
+                <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 ${p.lat}, ${p.lng}</span>
+                <p class="text-[9px] text-[var(--color-text-muted)]">${p.address ? p.address : 'GPS tersimpan'}</p>
+               </div>`
+            : `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
+                <p class="text-[9px] text-[var(--color-text-muted)]">Memproses GPS...</p>
+               </div>`;
 
-                <div class="flex items-center justify-between text-xs mt-1 pt-1 border-t border-[var(--color-border)]">
-                    <span class="text-[var(--color-text-muted)] truncate">Foto ${index + 1}</span>
-                    <button type="button" onclick="event.stopPropagation(); removePhoto('${photo.id}')" class="text-red-600 hover:text-red-800" aria-label="Hapus foto">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                </div>
-                ${photo.lat && photo.lng ? `
-                <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
-                    <span class="text-[10px] font-medium text-[var(--color-primary)]">📍 ${photo.lat}, ${photo.lng}</span>
-                    <p class="text-[10px] text-[var(--color-text-muted)]">${photo.accuracy ? '±' + Math.round(photo.accuracy) + 'm' : 'GPS tersimpan'}</p>
-                    ${photo.address ? `<p class="text-[9px] text-[var(--color-text-muted)] mt-1 truncate max-w-full">${photo.address}</p>` : ''}
-                </div>
-                ` : `
-                <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
-                    <p class="text-[10px] text-[var(--color-text-muted)]">Memproses GPS...</p>
-                </div>
-                `}
-            `;
-
-            photoGallery.appendChild(card);
-        });
+        targetEl.innerHTML = `
+            <div class="relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                <img src="${p.dataUrl}" alt="Foto ${indikator}" class="w-full h-32 object-cover rounded-md">
+                <button type="button" onclick="removeIndicatorPhoto('${indikator}')" class="absolute top-1 right-1 text-red-600 hover:text-red-800" aria-label="Hapus foto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+                ${gpsHtml}
+            </div>
+        `;
+        targetEl.classList.remove('hidden');
     }
 
-    // Remove a photo
-    window.removePhoto = function(photoId) {
-        photos = photos.filter(p => p.id !== photoId);
-        renderPhotoGallery();
+    // Remove an indicator photo
+    window.removeIndicatorPhoto = function(indikator) {
+        photos = photos.filter(p => p.indikator != indikator);
+        renderIndicatorPreview(indikator);
         updateHiddenInputs();
     };
 
-    // Handle multiple photo selection from native camera/file input
-    window.handlePhotosSelected = async function(input) {
+    // Handle indicator photo selection from native camera/file input
+    window.handleIndicatorPhotoSelected = async function(input) {
         const files = Array.from(input.files);
         if (!files.length) return;
 
-        const remainingSlots = MAX_PHOTOS - photos.length;
-        if (files.length > remainingSlots) {
-            alert('Maksimal ' + MAX_PHOTOS + ' foto. Anda masih bisa menambahkan ' + remainingSlots + ' foto lagi.');
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+            alert('File harus berupa gambar: ' + file.name);
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Ukuran foto maksimal 5MB: ' + file.name);
             input.value = '';
             return;
         }
 
-            // Filter valid images and compress if > 5MB
-            const validFiles = [];
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    alert('File harus berupa gambar: ' + file.name);
-                    continue;
-                }
-                validFiles.push(file);
-            }
+        const indikator = input.getAttribute('data-indikator');
 
-            if (validFiles.length === 0) {
-                input.value = '';
-                return;
-            }
+        // Show loading
+        showLoading(true);
 
-            // Compress oversized files
-            const processedFiles = await Promise.all(validFiles.map(async (file) => {
-                if (file.size > 5 * 1024 * 1024) {
-                    return await compressImage(file, 5);
-                }
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(file);
-                });
-            }));
-
-            // Add photos to gallery immediately (original for display, will be replaced with combined)
-            const newPhotos = processedFiles.map((dataUrl, i) => {
-                const photoId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                return {
-                    id: photoId,
-                    dataUrl: dataUrl,
-                    lat: '',
-                    lng: '',
-                    accuracy: '',
-                    address: '',
-                    gpsStatus: 'loading'
-                };
+        try {
+            // Compress if > 5MB
+            let dataUrl = file.size > 5 * 1024 * 1024 ? await compressImage(file, 5) : await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
             });
 
-            photos.push(...newPhotos);
-            renderPhotoGallery();
+            // Remove existing photo for this indikator if any
+            photos = photos.filter(p => p.indikator != indikator);
+
+            const photoId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const photo = {
+                id: photoId,
+                dataUrl: dataUrl,
+                indikator: indikator,
+                lat: '',
+                lng: '',
+                accuracy: '',
+                address: '',
+                gpsStatus: 'loading'
+            };
+            photos.push(photo);
+
+            renderIndicatorPreview(indikator);
             updateHiddenInputs();
 
-            // Reset input immediately so user can take next photo while processing continues
+            // Reset input
             input.value = '';
 
-            // Process GPS + watermark in background (non-blocking, don't await)
-            newPhotos.forEach(photo =>
-                getCurrentLocationForPhoto(photo.id, photo.dataUrl)
-            );
-        };
+            // Process GPS + watermark in background
+            getCurrentLocationForPhoto(photoId, dataUrl);
+        } catch (err) {
+            console.error('Photo processing error:', err);
+            alert('Gagal memproses foto: ' + err.message);
+        } finally {
+            showLoading(false);
+        }
+    };
 
     // Get GPS for a specific photo using Capacitor Geolocation, then create combined image
     async function getCurrentLocationForPhoto(photoId, originalDataUrl) {
@@ -402,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
             photos[photoIndex].address = address;
             photos[photoIndex].gpsStatus = 'success';
 
-            renderPhotoGallery();
+            renderIndicatorPreview(photos[photoIndex].indikator);
             updateHiddenInputs();
         } catch (err) {
             photos[photoIndex].lat = '';
@@ -425,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const combinedDataUrl = await createCombinedImage(originalDataUrl, '', '', '');
             photos[photoIndex].dataUrl = combinedDataUrl;
             
-            renderPhotoGallery();
+            renderIndicatorPreview(photos[photoIndex].indikator);
             updateHiddenInputs();
         }
     }
@@ -702,9 +777,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Populate hidden inputs on submit
     form.addEventListener('submit', function(e) {
-        if (photos.length === 0) {
+        // Check all 5 indikators + selfie have photos
+        const indikatorPhotos = [];
+        for (let i = 1; i <= 5; i++) {
+            indikatorPhotos.push(photos.find(p => p.indikator == i));
+        }
+        const selfiePhoto = photos.find(p => p.indikator === 'selfie');
+        const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
+
+        if (!allHavePhotos) {
             e.preventDefault();
-            alert('Ambil setidaknya 1 foto selfie!');
+            alert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
             return false;
         }
 

@@ -53,21 +53,24 @@
         </div>
     </div>
 
-    <!-- Foto Selfie (READ-ONLY, setiap foto sudah dilengkapi peta + GPS) -->
+    <!-- Foto per Indikator + Selfie (READ-ONLY, setiap foto sudah dilengkapi peta + GPS) -->
     <div class="mt-6">
-        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Selfie Pengawas (dengan Peta & GPS)</p>
+        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Pemeriksaan per Indikator (dengan Peta & GPS)</p>
         @if ($laporan->photos->count() > 0)
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 @foreach ($laporan->photos as $photo)
                     <?php
                         $lat = (float) $photo->latitude;
-                    $lng = (float) $photo->longitude;
-                    $zoom = 16;
-                    $n = pow(2, $zoom);
-                    $tileX = floor(($lng + 180) / 360 * $n);
-                    $tileY = floor((1 - log(tan(deg2rad($lat)) + 1 / cos(deg2rad($lat))) / M_PI) / 2 * $n);
+                        $lng = (float) $photo->longitude;
+                        $zoom = 16;
+                        $n = pow(2, $zoom);
+                        $tileX = floor(($lng + 180) / 360 * $n);
+                        $tileY = floor((1 - log(tan(deg2rad($lat)) + 1 / cos(deg2rad($lat))) / M_PI) / 2 * $n);
                     ?>
                     <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                        <div class="flex items-start justify-between mb-1">
+                            <span class="text-[9px] font-medium text-[var(--color-primary)] uppercase tracking-tighter">{{ $photo->indikator }}</span>
+                        </div>
                         <div class="relative">
                             <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Foto pengawas" class="w-full h-48 object-cover rounded-md">
                             @if ($photo->latitude && $photo->longitude)
@@ -80,8 +83,8 @@
                             @endif
                         </div>
                         <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
-                            <span class="text-[10px] font-medium text-[var(--color-primary)]">📍 {{ $photo->latitude }}, {{ $photo->longitude }}</span>
-                            <p class="text-[10px] text-[var(--color-text-muted)]">{{ $photo->accuracy ? '±' + $photo->accuracy + 'm' : 'GPS tersimpan' }}</p>
+                            <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 {{ $photo->latitude }}, {{ $photo->longitude }}</span>
+                            <p class="text-[9px] text-[var(--color-text-muted)]">{{ $photo->address ? $photo->address : 'GPS tersimpan' }}</p>
                         </div>
                     </div>
                 @endforeach
