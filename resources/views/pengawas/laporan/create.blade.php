@@ -1071,8 +1071,6 @@ Tidak = Cek Lagi');
             submitBtn.textContent = 'Kirim Laporan';
         }
     });
-});;
-});;
 });
 </script>
 @endpush
