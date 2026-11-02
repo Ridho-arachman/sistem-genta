@@ -48,7 +48,8 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // Pengawas hanya boleh login via aplikasi mobile
-        $isMobileApp = str_contains($request->header('User-Agent'), 'GentaCapacitor');
+        $isMobileApp = str_contains($request->header('User-Agent'), 'GentaCapacitor')
+            || $request->cookies->get('capacitor_app') === '1';
         if ($user->isPengawas() && ! $isMobileApp) {
             Auth::logout();
             $request->session()->invalidate();

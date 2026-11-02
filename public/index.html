@@ -4,61 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a0b">
-    <title>GENTAPANGAN</title>
+    <title>GENTA Pangan Banten</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GENTAPANGAN">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             background: #0a0a0b;
             color: #e4e4e7;
-            font-family: system-ui, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            padding: 24px;
         }
-        .loader { text-align: center; }
-        .spinner {
-            width: 48px; height: 48px;
-            border: 4px solid #27272a;
-            border-top-color: #22c55e;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
+        .card { width: 100%; max-width: 420px; }
+        .logo { font-size: 24px; font-weight: 700; color: #22c55e; text-align: center; margin-bottom: 4px; }
+        .sub { text-align: center; color: #a1a1aa; font-size: 14px; margin-bottom: 24px; }
+        .loader { text-align: center; padding: 40px 0; }
+        .spinner { width: 48px; height: 48px; border: 4px solid #27272a; border-top-color: #22c55e; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .logo {
-            font-size: 24px; font-weight: 700; color: #22c55e;
+        label { display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 6px; }
+        input[type=text] {
+            width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #27272a;
+            background: #18181b; color: #e4e4e7; font-size: 15px; outline: none;
         }
+        input[type=text]:focus { border-color: #22c55e; }
+        .btn {
+            width: 100%; padding: 12px 14px; border: none; border-radius: 10px; margin-top: 12px;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+        }
+        .btn-primary { background: #22c55e; color: #0a0a0b; }
+        .btn-primary:disabled { opacity: .6; }
+        .btn-ghost { background: transparent; color: #a1a1aa; border: 1px solid #27272a; }
+        .hint { font-size: 12px; color: #71717a; margin-top: 12px; line-height: 1.5; }
+        .err { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 16px; }
+        .history { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .chip { padding: 4px 10px; border-radius: 999px; border: 1px solid #27272a; background: #18181b; color: #a1a1aa; font-size: 12px; cursor: pointer; }
+        .chip:hover { border-color: #22c55e; color: #22c55e; }
+        .form { display: none; }
+        .default-row { margin-top: 8px; }
+        code { color: #22c55e; }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <div class="spinner"></div>
+    <div class="card">
         <div class="logo">GENTA<span style="color:#22c55e">PANGAN</span></div>
-        <p>Memuat aplikasi...</p>
+        <div class="sub">GENTA Pangan Banten</div>
+
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <p id="loaderText">Memuat aplikasi...</p>
+        </div>
+
+        <div id="form" class="form">
+            <label for="url">Alamat server</label>
+            <input id="url" type="text" placeholder="http://192.168.1.10:8000" autocomplete="off">
+            <div id="history" class="history"></div>
+            <div class="default-row">
+                <span class="chip" data-url="http://192.168.101.6:8000">IP default (192.168.101.6)</span>
+            </div>
+            <button id="connect" class="btn btn-primary">Hubungkan</button>
+            <button id="reset" class="btn btn-ghost">Reset alamat tersimpan</button>
+            <div id="err" class="err"></div>
+            <p class="hint">
+                Tips: alamat ini adalah laptop server (hasil <code>switch-mode.bat mobile</code>:
+                lihat baris "Akses HP"). Kalau jaringan berubah, cukup ketik IP baru di sini,
+                tanpa install ulang aplikasi.
+            </p>
+        </div>
     </div>
+
     <script>
-        (function() {
-            var isCapacitor = typeof Capacitor !== 'undefined';
-            var isBrowser = !isCapacitor && window.location.protocol !== 'capacitor:';
-            
-            // When running as Capacitor native app, Capacitor will automatically
-            // load the server URL from capacitor.config.json (server.url)
-            // The index.html is just a fallback/initial page
-            
-            if (isBrowser) {
-                // Running in regular browser - redirect to Laravel app
-                window.location.href = '/';
-            }
-            // If Capacitor native, it handles the server URL automatically
-        })();
+    (function () {
+        var KEY = 'genta_server_url';
+        var HIST = 'genta_server_history';
+        var isCapacitor = typeof Capacitor !== 'undefined';
+        var isBrowser = !isCapacitor && window.location.protocol !== 'capacitor:';
+
+        if (isBrowser) { window.location.href = '/'; return; }
+
+        function history() {
+            try { return JSON.parse(localStorage.getItem(HIST) || '[]'); } catch (e) { return []; }
+        }
+        function saveHistory(url) {
+            var h = history().filter(function (x) { return x !== url; });
+            h.unshift(url);
+            if (h.length > 5) h.length = 5;
+            localStorage.setItem(HIST, JSON.stringify(h));
+        }
+        function showForm(prefill, msg) {
+            document.getElementById('loader').style.display = 'none';
+            var f = document.getElementById('form');
+            f.style.display = 'block';
+            var u = document.getElementById('url');
+            u.value = prefill || localStorage.getItem(KEY) || '';
+            document.getElementById('err').textContent = msg || '';
+            var hc = document.getElementById('history');
+            hc.innerHTML = '';
+            history().forEach(function (item) {
+                var c = document.createElement('span');
+                c.className = 'chip';
+                c.textContent = item;
+                c.onclick = function () { u.value = item; };
+                hc.appendChild(c);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // chips default
+            document.querySelectorAll('.chip[data-url]').forEach(function (c) {
+                c.onclick = function () { document.getElementById('url').value = c.getAttribute('data-url'); };
+            });
+            var btn = document.getElementById('connect');
+            btn.onclick = function () {
+                var val = (document.getElementById('url').value || '').trim().replace(/\/+$/, '');
+                if (!val) { document.getElementById('err').textContent = 'Masukkan alamat server dulu.'; return; }
+                if (!/^https?:\/\//i.test(val)) { val = 'http://' + val; }
+                document.getElementById('err').textContent = 'Mengecek koneksi...';
+                btn.disabled = true;
+                var ctrl = new AbortController();
+                var t = setTimeout(function () { ctrl.abort(); }, 4000);
+                fetch(val + '/up', { mode: 'no-cors', signal: ctrl.signal }).then(function () {
+                    clearTimeout(t);
+                    localStorage.setItem(KEY, val);
+                    saveHistory(val);
+                    window.location.replace(val);
+                }).catch(function () {
+                    clearTimeout(t);
+                    btn.disabled = false;
+                    document.getElementById('err').textContent = 'Tidak bisa terhubung. Periksa IP/Wi-Fi/server.';
+                });
+            };
+            document.getElementById('reset').onclick = function () {
+                localStorage.removeItem(KEY);
+                document.getElementById('url').value = '';
+                document.getElementById('err').textContent = 'Alamat direset.';
+            };
+        });
+
+        var saved = localStorage.getItem(KEY);
+        if (saved) {
+            var ctrl = new AbortController();
+            // shortcut: no LAN auto-discovery; user types the server IP, upgrade to mDNS/QR scan
+            var t = setTimeout(function () { ctrl.abort(); }, 4000);
+            fetch(saved + '/up', { mode: 'no-cors', signal: ctrl.signal }).then(function () {
+                clearTimeout(t);
+                window.location.replace(saved);
+            }).catch(function () {
+                clearTimeout(t);
+                showForm(saved, 'Server sebelumnya tidak terjangkau. Atur alamat baru.');
+            });
+        } else {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('form').style.display = 'block';
+        }
+    })();
     </script>
 </body>
 </html>

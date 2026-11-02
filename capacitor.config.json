@@ -3,8 +3,9 @@
   "appName": "GENTA Pangan Banten",
   "webDir": "public",
   "server": {
-    "url": "http://192.168.1.38:8000",
-    "cleartext": true
+    "cleartext": true,
+    "allowNavigation": ["*"],
+    "url": "http://192.168.101.6:8000"
   },
   "android": {
     "allowMixedContent": true,

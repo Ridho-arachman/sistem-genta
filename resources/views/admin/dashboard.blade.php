@@ -24,7 +24,7 @@
     <div class="stat">
         <div class="stat-top">
             <span>Total Dapur</span>
-            <span class="stat-icon" style="background:#22C55E15;color:#166534">⌂</span>
+            <span class="stat-icon bg-green-100 text-green-800">⌂</span>
         </div>
         <div class="stat-value">{{ $stats['total_dapur'] }}</div>
         <div class="stat-foot">Lokasi terdaftar dalam sistem</div>
@@ -34,9 +34,9 @@
     <div class="stat">
         <div class="stat-top">
             <span>Kamera Online</span>
-            <span class="stat-icon" style="background:#22C55E15;color:#166534">▣</span>
+            <span class="stat-icon bg-green-100 text-green-800">▣</span>
         </div>
-        <div class="stat-value" style="color:#166534">
+        <div class="stat-value text-green-800">
             {{ $stats['cctv_online'] }}/{{ $stats['total_cctv'] }}
         </div>
         <div class="stat-foot">
@@ -48,7 +48,7 @@
     <div class="stat">
         <div class="stat-top">
             <span>Laporan Hari Ini</span>
-            <span class="stat-icon" style="background:#3B82F615;color:#1E40AF">▤</span>
+            <span class="stat-icon bg-blue-100 text-blue-800">▤</span>
         </div>
         <div class="stat-value">{{ $stats['laporan_hari_ini'] }}</div>
         <div class="stat-foot">
@@ -60,9 +60,9 @@
     <div class="stat">
         <div class="stat-top">
             <span>Temuan Terbuka</span>
-            <span class="stat-icon" style="background:#EF444415;color:#991B1B">⚑</span>
+            <span class="stat-icon bg-red-100 text-red-800">⚑</span>
         </div>
-        <div class="stat-value" style="color:#991B1B">{{ $stats['anomaly_reports_open'] }}</div>
+        <div class="stat-value text-red-800">{{ $stats['anomaly_reports_open'] }}</div>
         <div class="stat-foot">Perlu ditinjau oleh admin</div>
     </div>
 
@@ -70,9 +70,9 @@
     <div class="stat">
         <div class="stat-top">
             <span>Pengawas Aktif</span>
-            <span class="stat-icon" style="background:#A855F715;color:#6B21A8">♙</span>
+            <span class="stat-icon bg-purple-100 text-purple-800">♙</span>
         </div>
-        <div class="stat-value" style="color:#6B21A8">{{ $stats['total_pengawas'] }}</div>
+        <div class="stat-value text-purple-800">{{ $stats['total_pengawas'] }}</div>
         <div class="stat-foot">
             {{ $stats['pengawas_without_dapur'] }} belum diassign dapur
         </div>
@@ -82,16 +82,16 @@
     <div class="stat">
         <div class="stat-top">
             <span>Kepala Dapur</span>
-            <span class="stat-icon" style="background:#3B82F615;color:#1E40AF">♚</span>
+            <span class="stat-icon bg-blue-100 text-blue-800">♚</span>
         </div>
-        <div class="stat-value" style="color:#1E40AF">{{ $stats['total_kepala_dapur'] }}</div>
+        <div class="stat-value text-blue-800">{{ $stats['total_kepala_dapur'] }}</div>
         <div class="stat-foot">
             {{ $stats['kepala_dapur_without_dapur'] }} belum diassign dapur
         </div>
     </div>
 </div>
 
-<div class="panel export-panel" style="margin-bottom: 16px;">
+<div class="panel export-panel mb-4">
     <div class="panel-head">
         <h2>Ekspor Data Absensi</h2>
         <small>Filter dengan range tanggal, pilih format</small>
@@ -196,7 +196,7 @@
         <div class="panel">
             <div class="panel-head">
                 <h2>Status Dapur</h2>
-                <input type="text" class="search" placeholder="Cari nama dapur…" oninput="filterKitchens(this.value)" id="kitchenSearch">
+                <x-kitchen-filter list-id="kitchenList" search-id="kitchenSearch" placeholder="Cari nama dapur…" />
             </div>
             <div id="kitchenList" class="kitchen-list">
                 @forelse ($dapurs as $dapur)
@@ -205,16 +205,14 @@
                             <div class="kitchen-name">{{ $dapur->nama }}</div>
                             <div class="kitchen-meta">{{ $dapur->lokasi ?? '-' }}</div>
                             <div class="progress-bar">
-                                <i class="progress-fill progress-{{ $dapur->status === 'operasional' ? 'ok' : ($dapur->status === 'perlu_perhatian' ? 'warn' : 'off') }}" style="width:{{ $dapur->progress ?? 0 }}%"></i>
+                                <i class="progress-fill progress-{{ $dapur->status === 'operasional' ? 'ok' : ($dapur->status === 'perlu_perhatian' ? 'warn' : 'off') }}" style="width: {{ $dapur->progress ?? 0 }}%"></i>
                             </div>
                             <div class="small-label">
                                 <span>{{ $dapur->cctvs_count ?? 0 }} kamera</span>
                                 <span>{{ $dapur->progress ?? 0 }}%</span>
                             </div>
                         </div>
-                        <span class="status-badge @if($dapur->status === 'operasional') status-ok @elseif($dapur->status === 'perlu_perhatian') status-warn @else status-off @endif">
-                            {{ ucfirst($dapur->status) }}
-                        </span>
+                        <x-status-badge :status="$dapur->status === 'operasional' ? 'ok' : ($dapur->status === 'perlu_perhatian' ? 'warn' : 'off')" :label="ucfirst($dapur->status)" />
                     </div>
                 @empty
                     <div class="text-center py-8 text-[var(--color-text-muted)]">
@@ -222,29 +220,33 @@
                     </div>
                 @endforelse
             </div>
-            <div style="margin-top:13px;text-align:right">
+            <div class="mt-4 text-right">
                 <a href="{{ route('admin.dapurs.index') }}" class="btn-light">Lihat semua dapur →</a>
             </div>
         </div>
 
         {{-- Pengawas Assignment Overview --}}
-        <div class="panel" style="margin-top:16px">
+        <div class="panel mt-4">
             <div class="panel-head">
                 <h2>Penugasan Pengawas</h2>
                 <small>{{ $pengawas->count() }} pengawas terdaftar</small>
             </div>
-            <div class="kitchen-list" style="gap:8px">
+            <div class="kitchen-list gap-2">
                 @forelse ($pengawas as $p)
-                    <div class="kitchen-card" style="align-items:center">
-                        <div class="kitchen-card-content" style="min-width:0">
+                    <div class="kitchen-card">
+                        <div class="kitchen-card-content">
                             <div class="kitchen-name">{{ $p['name'] }}</div>
                             <div class="kitchen-meta">{{ $p['email'] }}</div>
-                            <div class="small-label" style="margin-top:4px">
+                            <div class="small-label mt-1">
                                 <span class="badge badge-primary">{{ $p['dapur_count'] }} dapur</span>
                             </div>
                         </div>
-                        <div class="kitchen-meta" style="text-align:right;max-width:280px;white-space:normal">
-                            {{ $p['dapur_names'] ?: '<span class="text-[var(--color-text-muted)]">Belum diassign</span>' }}
+                        <div class="kitchen-meta text-right max-w-xs whitespace-normal">
+                            @if($p['dapur_names'])
+                                {{ $p['dapur_names'] }}
+                            @else
+                                <span class="text-[var(--color-text-muted)]">Belum diassign</span>
+                            @endif
                         </div>
                     </div>
                 @empty
@@ -257,7 +259,7 @@
     </div>
 
     {{-- Right Column: CCTV + Activity --}}
-    <div style="display:grid;gap:16px">
+    <div class="grid gap-4">
         {{-- Camera Panel --}}
         <div class="panel">
             <div class="panel-head">
@@ -265,30 +267,30 @@
                 <small>Status terkini perangkat</small>
             </div>
             <div class="camera">
-                <span class="cam-tag">
-                    <span class="live-dot"></span> LIVE
+                <span class="cam-tag inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    <span class="live-dot w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> LIVE
                 </span>
-                <div class="camera-art">
-                    <div>▥</div>
-                    <strong>Pratinjau Kamera Dapur</strong>
-                    <small>Stream CCTV akan tampil setelah integrasi perangkat</small>
+                <div class="camera-art bg-[#1a1a1a] rounded-lg p-6 text-center min-h-[160px] flex flex-col justify-center items-center gap-3">
+                    <div class="text-[48px] text-[#444]">▥</div>
+                    <strong class="text-white">Pratinjau Kamera Dapur</strong>
+                    <small class="text-[#888]">Stream CCTV akan tampil setelah integrasi perangkat</small>
                 </div>
                 <span class="cam-time">CAM-01 · {{ $dapurs->first()->nama ?? 'Dapur' }}</span>
             </div>
-            <div class="camera-list">
-                <div class="cam-row">
-                    <div class="cam-left">
-                        <div class="cam-mini ok">▣</div>
+            <div class="camera-list mt-4 space-y-2">
+                <div class="cam-row flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="cam-left flex items-center gap-3">
+                        <div class="cam-mini w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">▣</div>
                         <div><b>Area persiapan</b><div class="kitchen-meta">{{ $dapurs->first()->nama ?? 'Dapur' }}</div></div>
                     </div>
-                    <span class="status-badge status-ok">Online</span>
+                    <x-status-badge :status="'ok'" :label="'Online'" />
                 </div>
-                <div class="cam-row">
-                    <div class="cam-left">
-                        <div class="cam-mini warn">▣</div>
+                <div class="cam-row flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="cam-left flex items-center gap-3">
+                        <div class="cam-mini w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">▣</div>
                         <div><b>Area memasak</b><div class="kitchen-meta">{{ $dapurs->skip(1)->first()->nama ?? 'Dapur' }}</div></div>
                     </div>
-                    <span class="status-badge status-warn">Periksa</span>
+                    <x-status-badge :status="'warn'" :label="'Periksa'" />
                 </div>
             </div>
         </div>
@@ -299,26 +301,26 @@
                 <h2>Aktivitas Terbaru</h2>
                 <small>Hari ini</small>
             </div>
-            <div class="activity">
-                <div class="activity-row">
-                    <div class="activity-icon ok">✓</div>
-                    <div><strong>Absensi check-in baru</strong><p>{{ $recentAbsensi->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
-                    <time>{{ now()->format('H:i') }}</time>
+            <div class="activity space-y-4">
+                <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="activity-icon w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
+                    <div class="flex-1"><strong>Absensi check-in baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentAbsensi->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
+                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->format('H:i') }}</time>
                 </div>
-                <div class="activity-row">
-                    <div class="activity-icon warn">⚑</div>
-                    <div><strong>Temuan perlu tindak lanjut</strong><p>Area penyimpanan</p></div>
-                    <time>{{ now()->subMinutes(30)->format('H:i') }}</time>
+                <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="activity-icon w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600">⚑</div>
+                    <div class="flex-1"><strong>Temuan perlu tindak lanjut</strong><p class="text-sm text-[var(--color-text-muted)]">Area penyimpanan</p></div>
+                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subMinutes(30)->format('H:i') }}</time>
                 </div>
-                <div class="activity-row">
-                    <div class="activity-icon info">▣</div>
-                    <div><strong>Status kamera berubah</strong><p>Kamera CAM-03</p></div>
-                    <time>{{ now()->subHour()->format('H:i') }}</time>
+                <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="activity-icon w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">▣</div>
+                    <div class="flex-1"><strong>Status kamera berubah</strong><p class="text-sm text-[var(--color-text-muted)]">Kamera CAM-03</p></div>
+                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subHour()->format('H:i') }}</time>
                 </div>
-                <div class="activity-row">
-                    <div class="activity-icon purple">▤</div>
-                    <div><strong>Laporan inspeksi diperiksa</strong><p>Admin pusat</p></div>
-                    <time>{{ now()->subHours(2)->format('H:i') }}</time>
+                <div class="activity-row flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
+                    <div class="activity-icon w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">▤</div>
+                    <div class="flex-1"><strong>Laporan inspeksi diperiksa</strong><p class="text-sm text-[var(--color-text-muted)]">Admin pusat</p></div>
+                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subHours(2)->format('H:i') }}</time>
                 </div>
             </div>
         </div>

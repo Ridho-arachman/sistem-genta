@@ -1,4 +1,4 @@
-@extends('pengawas.layouts.app', ['pageTitle' => 'Absensi Saya'])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Inspeksi Pengawas'])
 
 @section('content')
 <div class="space-y-6">
@@ -6,12 +6,12 @@
     <div class="heading">
         <div>
             <div class="eyebrow">Genta · Pengawasan MBG</div>
-            <h1>Absensi Saya</h1>
-            <div class="muted">Riwayat kehadiran Anda</div>
+            <h1>Inspeksi Pengawas</h1>
+            <div class="muted">Daftar inspeksi yang telah Anda lakukan</div>
         </div>
-        <a href="{{ route('pengawas.absensi.create') }}" class="btn-primary">
+        <a href="{{ route('pengawas.laporan.create') }}" class="btn-primary">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Absensi Baru
+            Inspeksi Baru
         </a>
     </div>
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** @use HasFactory<LaporanFactory> */
 class Laporan extends Model
@@ -24,6 +25,11 @@ class Laporan extends Model
     public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(LaporanPhoto::class);
     }
 
     public function scopeByStatus($query, $status)
