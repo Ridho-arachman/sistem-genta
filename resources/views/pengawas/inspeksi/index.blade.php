@@ -7,7 +7,6 @@
         <h1>Form Inspeksi Dapur</h1>
         <div class="muted">Isi formulir pemeriksaan dapur (maksimal 6 foto, setiap foto dilengkapi peta + GPS)</div>
     </div>
-    <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">← Kembali ke Laporan</a>
 </div>
 
 <!-- Loading Overlay -->
