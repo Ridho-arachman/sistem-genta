@@ -10,6 +10,15 @@
     <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">← Kembali</a>
 </div>
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] hidden">
+    <div class="bg-[var(--color-surface)] p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-[var(--color-text)] font-medium">Memproses foto…</p>
+        <p class="text-xs text-[var(--color-text-muted)]">Harap tunggu, GPS dan peta sedang dimuat</p>
+    </div>
+</div>
+
 <div class="panel" style="max-width: 720px;">
     <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" class="space-y-6">
         @csrf
@@ -175,12 +184,61 @@ document.addEventListener('DOMContentLoaded', function() {
         return { x, y, z: zoom, fracX: xFloat - x, fracY: yFloat - y };
     }
 
+    // Compress image to maxSizeMB using canvas downscale + JPEG quality
+    async function compressImage(file, maxSizeMB = 5) {
+        if (file.size <= maxSizeMB * 1024 * 1024) {
+            return file;
+        }
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 1600;
+                    let { width, height } = img;
+                    if (width > height && width > maxDim) {
+                        height = (maxDim / width) * height;
+                        width = maxDim;
+                    } else if (height > maxDim) {
+                        width = (maxDim / height) * width;
+                        height = maxDim;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    let quality = 0.8;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    while (dataUrl.length * 0.75 > maxSizeMB * 1024 * 1024 && quality > 0.1) {
+                        quality -= 0.1;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    }
+                    resolve(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     // Update hidden inputs from photos array
     function updateHiddenInputs() {
         photoDataInput.value = photos.map(p => p.dataUrl).join('|');
         latInput.value = photos.map(p => p.lat || '').join(',');
         lngInput.value = photos.map(p => p.lng || '').join(',');
         addressInput.value = photos.map(p => (p.address || '').replace(/\|/g, ' ')).join('|');
+    }
+
+    // Show/hide loading overlay
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
     }
 
     // Render photo gallery - setiap foto sudah berisi peta + GPS di dalamnya (combined)
@@ -229,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Handle multiple photo selection from native camera/file input
-    window.handlePhotosSelected = function(input) {
+    window.handlePhotosSelected = async function(input) {
         const files = Array.from(input.files);
         if (!files.length) return;
 
@@ -240,43 +298,59 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        let processedCount = 0;
-        files.forEach(file => {
-            if (!file.type.startsWith('image/')) {
-                alert('File harus berupa gambar: ' + file.name);
-                processedCount++;
-                if (processedCount === files.length) input.value = '';
-                return;
+            // Filter valid images and compress if > 5MB
+            const validFiles = [];
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    alert('File harus berupa gambar: ' + file.name);
+                    continue;
+                }
+                validFiles.push(file);
             }
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Ukuran foto maksimal 5MB: ' + file.name);
-                processedCount++;
-                if (processedCount === files.length) input.value = '';
+
+            if (validFiles.length === 0) {
+                input.value = '';
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            // Compress oversized files
+            const processedFiles = await Promise.all(validFiles.map(async (file) => {
+                if (file.size > 5 * 1024 * 1024) {
+                    return await compressImage(file, 5);
+                }
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+            }));
+
+            // Add photos to gallery immediately (original for display, will be replaced with combined)
+            const newPhotos = processedFiles.map((dataUrl, i) => {
                 const photoId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                const photo = {
+                return {
                     id: photoId,
-                    dataUrl: e.target.result, // original photo for now
+                    dataUrl: dataUrl,
                     lat: '',
                     lng: '',
                     accuracy: '',
+                    address: '',
                     gpsStatus: 'loading'
                 };
-                photos.push(photo);
-                renderPhotoGallery();
+            });
 
-                // Get GPS for this photo, then create combined image
-                getCurrentLocationForPhoto(photoId, e.target.result);
-                processedCount++;
-                if (processedCount === files.length) input.value = '';
-            };
-            reader.readAsDataURL(file);
-        });
-    };
+            photos.push(...newPhotos);
+            renderPhotoGallery();
+            updateHiddenInputs();
+
+            // Reset input immediately so user can take next photo while processing continues
+            input.value = '';
+
+            // Process GPS + watermark in background (non-blocking, don't await)
+            newPhotos.forEach(photo =>
+                getCurrentLocationForPhoto(photo.id, photo.dataUrl)
+            );
+        };
 
     // Get GPS for a specific photo using Capacitor Geolocation, then create combined image
     async function getCurrentLocationForPhoto(photoId, originalDataUrl) {
@@ -307,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const lat = position.coords.latitude.toFixed(6);
             const lng = position.coords.longitude.toFixed(6);
 
-            // Get full address via reverse geocoding (Nominatim / OpenStreetMap)
+            // Get full address via reverse geocoding (Nominatim / OpenStreetMap) — blocking
             let address = '';
             try {
                 const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&accept-language=id`);
@@ -317,10 +391,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn('Reverse geocode error:', err);
             }
 
-            // Create combined image (photo + map + GPS text + address) via canvas
+            // Create combined image WITH address — photo + map + GPS + alamat
             const combinedDataUrl = await createCombinedImage(originalDataUrl, lat, lng, address);
 
-            // Update photo with combined image and GPS
+            // Update photo with complete data
             photos[photoIndex].dataUrl = combinedDataUrl;
             photos[photoIndex].lat = lat;
             photos[photoIndex].lng = lng;
@@ -631,6 +705,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (photos.length === 0) {
             e.preventDefault();
             alert('Ambil setidaknya 1 foto selfie!');
+            return false;
+        }
+
+        // Check if any photo still processing (no watermark yet)
+        const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
+        if (stillProcessing) {
+            e.preventDefault();
+            alert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
             return false;
         }
 
