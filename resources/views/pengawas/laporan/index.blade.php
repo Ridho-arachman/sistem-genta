@@ -7,7 +7,6 @@
         <h1>Laporan Pengawasan</h1>
         <div class="muted">Rekap inspeksi dan tindak lanjut</div>
     </div>
-    <a href="{{ route('pengawas.laporan.create') }}" class="btn-primary">＋ Buat Laporan</a>
 </div>
 
 <div class="panel">
