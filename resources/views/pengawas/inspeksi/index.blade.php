@@ -888,13 +888,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
 
-        // Konfirmasi sebelum kirim laporan inspeksi
+        // 1. Konfirmasi sebelum kirim laporan inspeksi
         const confirmed = window.confirm('Kirim laporan sekarang?');
         if (!confirmed) {
             return false;
         }
 
-        // Validate all 5 hasil select dropdowns have values
+        // 2. Validasi dapur harus dipilih dulu (urutan dari atas)
+        const dapurSelect = document.getElementById('dapur_id');
+        if (!dapurSelect.value) {
+            window.alert('Pilih dapur dulu');
+            dapurSelect.focus();
+            return false;
+        }
+
+        // 3. Validasi semua hasil select dropdown terisi
         const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
         const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
         let missingIndikator = null;
@@ -908,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // Check all 5 indikators + selfie have photos
+        // 4. Validasi semua foto indikator + selfie sudah diisi
         const indikatorPhotos = [];
         for (let i = 1; i <= 5; i++) {
             indikatorPhotos.push(photos.find(p => p.indikator == i));
@@ -921,7 +929,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // Check if any photo still processing (no watermark yet)
+        // 5. Validasi tidak ada foto yang masih memproses
         const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
         if (stillProcessing) {
             window.alert('Tunggu foto selesai diproses');
@@ -930,12 +938,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateHiddenInputs();
 
-        const hasGps = photos.some(p => p.lat && p.lng);
-        if (!hasGps) {
-            const gpsConfirmed = window.confirm('GPS tidak tersedia. Lanjutkan tanpa lokasi?');
-            if (!gpsConfirmed) {
-                return false;
-            }
+        // 6. Validasi GPS: setiap foto harus memiliki lokasi
+        const photosWithoutGps = photos.filter(p => !p.lat || !p.lng);
+        if (photosWithoutGps.length > 0) {
+            window.alert('Semua foto harus memiliki lokasi GPS');
+            return false;
         }
 
         // All validations passed - submit the form programmatically
