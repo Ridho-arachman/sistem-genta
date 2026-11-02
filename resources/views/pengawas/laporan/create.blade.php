@@ -200,7 +200,7 @@
         {{-- Submit --}}
         <div class="flex gap-3 justify-end pt-4 border-t border-[var(--color-border)]">
             <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Batal</a>
-            <button type="button" class="btn-primary" id="submitBtn">Kirim Laporan</button>
+            <button type="submit" class="btn-primary" id="submitBtn">Kirim Laporan</button>
         </div>
     </form>
 </div>
@@ -446,12 +446,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-            await showAlert('File harus berupa gambar: ' + file.name, 'error');
+            showToast('File harus berupa gambar: ' + file.name);
             input.value = '';
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            await showAlert('Ukuran foto maksimal 5MB: ' + file.name, 'error');
+            showToast('Ukuran foto maksimal 5MB: ' + file.name);
             input.value = '';
             return;
         }
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getCurrentLocationForPhoto(photoId, dataUrl);
         } catch (err) {
             console.error('Photo processing error:', err);
-            await showAlert('Gagal memproses foto: ' + err.message, 'error');
+            showToast('Gagal memproses foto: ' + err.message);
         } finally {
             showLoading(false);
         }
@@ -853,224 +853,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-// ========== CUSTOM ALERT/CONFIRM MODAL ==========
-const CustomDialog = {
-    modal: null,
-    init() {
-        if (!this.modal) {
-            this.modal = document.createElement('div');
-            this.modal.id = 'customDialog';
-            this.modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] hidden';
-            this.modal.innerHTML = `
-                <div class="bg-[var(--color-surface)] rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
-                    <div class="p-6">
-                        <div class="flex items-start gap-3">
-                            <div id="dialogIcon" class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 id="dialogTitle" class="text-lg font-semibold text-[var(--color-text)]"></h3>
-                                <p id="dialogMessage" class="mt-1 text-[var(--color-text-muted)] text-sm"></p>
-                            </div>
-                        </div>
-                        <div id="dialogActions" class="mt-6 flex justify-end gap-3">
-                            <button id="dialogCancel" type="button" class="btn-secondary px-4 py-2" style="display:none;">Batal</button>
-                            <button id="dialogConfirm" type="button" class="btn-primary px-4 py-2">OK</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(this.modal);
-            
-            this.iconEl = this.modal.querySelector('#dialogIcon');
-            this.titleEl = this.modal.querySelector('#dialogTitle');
-            this.messageEl = this.modal.querySelector('#dialogMessage');
-            this.cancelBtn = this.modal.querySelector('#dialogCancel');
-            this.confirmBtn = this.modal.querySelector('#dialogConfirm');
-            this.actionsEl = this.modal.querySelector('#dialogActions');
-            
-            this.cancelBtn.addEventListener('click', () => this.hide(false));
-            this.confirmBtn.addEventListener('click', () => this.hide(true));
-            this.modal.addEventListener('click', (e) => {
-                if (e.target === this.modal) this.hide(false);
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) this.hide(false);
-            });
-        }
-    },
-    showAlert(message, type = 'info') {
-        this.init();
-        const icons = {
-            info: { svg: '<svg class="w-6 h-6 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', title: 'Informasi', color: 'text-[var(--color-primary)]' },
-            warning: { svg: '<svg class="w-6 h-6 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Peringatan', color: 'text-[var(--color-warning)]' },
-            error: { svg: '<svg class="w-6 h-6 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', title: 'Error', color: 'text-[var(--color-error)]' },
-            success: { svg: '<svg class="w-6 h-6 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>', title: 'Berhasil', color: 'text-[var(--color-success)]' }
-        };
-        const icon = icons[type] || icons.info;
-        this.iconEl.innerHTML = icon.svg;
-        this.iconEl.className = 'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-surface)]/50 ' + icon.color;
-        this.titleEl.textContent = icon.title;
-        this.messageEl.textContent = message;
-        
-        this.cancelBtn.style.display = 'none';
-        this.confirmBtn.textContent = 'OK';
-        this.confirmBtn.onclick = () => this.hide(true);
-        
-        this.modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        
-        this.confirmBtn.focus();
-    },
-    showConfirm(message, onConfirm, type = 'warning') {
-        this.init();
-        const icons = {
-            warning: { svg: '<svg class="w-6 h-6 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Konfirmasi' },
-            danger: { svg: '<svg class="w-6 h-6 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>', title: 'Peringatan' }
-        };
-        const icon = icons[type] || icons.warning;
-        this.iconEl.innerHTML = icon.svg;
-        this.iconEl.className = 'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-surface)]/50 text-[var(--color-warning)]';
-        this.titleEl.textContent = icon.title;
-        this.messageEl.textContent = message;
-        
-        this.cancelBtn.style.display = 'inline-flex';
-        this.cancelBtn.textContent = 'Batal';
-        this.cancelBtn.onclick = () => this.hide(false);
-        
-        this.confirmBtn.textContent = type === 'danger' ? 'Ya, Hapus' : 'Ya, Lanjutkan';
-        this.confirmBtn.onclick = () => {
-            this.hide(true);
-            if (onConfirm) onConfirm();
-        };
-        
-        this.modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        
-        this.confirmBtn.focus();
-    },
-    hide(result) {
-        this.modal.classList.add('hidden');
-        document.body.style.overflow = '';
-        if (this._resolve) {
-            this._resolve(result);
-            this._resolve = null;
-        }
-    }
-};
-
-// Wrapper functions for backward compatibility
-function showAlert(message, type = 'info') {
-    return new Promise((resolve) => {
-        CustomDialog._resolve = resolve;
-        CustomDialog.showAlert(message, type);
-    });
-}
-
-function showConfirm(message, type = 'warning') {
-    return new Promise((resolve) => {
-        CustomDialog._resolve = resolve;
-        CustomDialog.showConfirm(message, null, type);
-    });
-}
-
-// Replace native alert/confirm
-window.alert = function(message) {
-    return showAlert(message, 'warning');
-};
-
-window.confirm = function(message) {
-    return showConfirm(message, 'warning');
-};
-
-// Handle submit button click - prevents form submission and handles validation
-    let isSubmitting = false; // Prevent double submission
-    submitBtn.addEventListener('click', async function(e) {
+    // Make submit handler async for native confirm
+    form.addEventListener('submit', async function(e) {
+        // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
-        e.stopPropagation();
 
-        // Prevent double submission
-        if (isSubmitting) {
+        // Konfirmasi sebelum kirim laporan inspeksi
+        const confirmed = window.confirm('⚠️ Konfirmasi Laporan Inspeksi\n\nApakah semua foto inspeksi (5 indikator + 1 selfie dapur) sudah lengkap dengan peta dan GPS?\n\nOK = Kirim Laporan\nBatal = Cek Lagi');
+        if (!confirmed) {
             return false;
         }
-        isSubmitting = true;
 
-        try {
-            // Konfirmasi sebelum kirim laporan inspeksi
-            const confirmed = await showConfirm('⚠️ Konfirmasi Laporan Inspeksi
-
-Apakah semua foto inspeksi (5 indikator + 1 selfie dapur) sudah lengkap dengan peta dan GPS?
-
-Ya = Kirim Laporan
-Tidak = Cek Lagi');
-            if (!confirmed) {
-                isSubmitting = false;
-                return false;
+        // Validate all 5 hasil select dropdowns have values
+        const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
+        const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
+        let missingIndikator = null;
+        hasilSelects.forEach((select, index) => {
+            if (!select.value) {
+                missingIndikator = indikatorNames[index];
             }
-
-            // Validate all 5 hasil select dropdowns have values
-            const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
-            const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
-            let missingIndikator = null;
-            hasilSelects.forEach((select, index) => {
-                if (!select.value) {
-                    missingIndikator = indikatorNames[index];
-                }
-            });
-            if (missingIndikator) {
-                await showAlert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator, 'warning');
-                isSubmitting = false;
-                return false;
-            }
-
-            // Check all 5 indikators + selfie have photos
-            const indikatorPhotos = [];
-            for (let i = 1; i <= 5; i++) {
-                indikatorPhotos.push(photos.find(p => p.indikator == i));
-            }
-            const selfiePhoto = photos.find(p => p.indikator === 'selfie');
-            const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
-
-            if (!allHavePhotos) {
-                await showAlert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.', 'warning');
-                isSubmitting = false;
-                return false;
-            }
-
-            // Check if any photo still processing (no watermark yet)
-            const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
-            if (stillProcessing) {
-                await showAlert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.', 'warning');
-                isSubmitting = false;
-                return false;
-            }
-
-            updateHiddenInputs();
-
-            const hasGps = photos.some(p => p.lat && p.lng);
-            if (!hasGps) {
-                const gpsConfirmed = await showConfirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?', 'warning');
-                if (!gpsConfirmed) {
-                    isSubmitting = false;
-                    return false;
-                }
-            }
-
-            // All validations passed - submit the form programmatically
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim...';
-            form.submit();
-        } catch (err) {
-            console.error('Submit error:', err);
-            await showAlert('Terjadi kesalahan saat memproses laporan: ' + err.message, 'error');
-            isSubmitting = false;
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Kirim Laporan';
+        });
+        if (missingIndikator) {
+            showToast('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator);
+            return false;
         }
+
+        // Check all 5 indikators + selfie have photos
+        const indikatorPhotos = [];
+        for (let i = 1; i <= 5; i++) {
+            indikatorPhotos.push(photos.find(p => p.indikator == i));
+        }
+        const selfiePhoto = photos.find(p => p.indikator === 'selfie');
+        const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
+
+        if (!allHavePhotos) {
+            showToast('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
+            return false;
+        }
+
+        // Check if any photo still processing (no watermark yet)
+        const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
+        if (stillProcessing) {
+            showToast('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
+            return false;
+        }
+
+        updateHiddenInputs();
+
+        const hasGps = photos.some(p => p.lat && p.lng);
+        if (!hasGps) {
+            const gpsConfirmed = window.confirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?');
+            if (!gpsConfirmed) {
+                return false;
+            }
+        }
+
+        // All validations passed - submit the form programmatically
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Mengirim...';
+        form.submit();
     });
-});;
 });
 </script>
 @endpush
