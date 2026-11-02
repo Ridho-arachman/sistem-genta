@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
+use App\Models\LaporanPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,9 +28,12 @@ class LaporanController extends Controller
             'kategori' => 'nullable|string',
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',
-            'selfie_photo' => 'required|string', // base64 data URL
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
+            'selfie_photo' => 'required|array|min:1|max:6',
+            'selfie_photo.*' => 'required|string',
+            'latitude' => 'required|array|min:1|max:6',
+            'latitude.*' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|array|min:1|max:6',
+            'longitude.*' => 'required|numeric|between:-180,180',
         ]);
 
         // Create laporan first (need ID for folder)
@@ -37,21 +41,27 @@ class LaporanController extends Controller
             'dapur_id' => $validated['dapur_id'],
             'status' => $validated['status'],
             'catatan' => $validated['catatan'] ?? null,
-            'latitude' => $validated['latitude'],
-            'longitude' => $validated['longitude'],
         ]);
 
-        // Store selfie photo
-        $laporan->selfie_photo = $this->storeSelfie($validated['selfie_photo'], $laporan->id);
-        $laporan->save();
+        // Store each photo with its GPS coordinates
+        $photos = [];
+        foreach ($validated['selfie_photo'] as $index => $dataUrl) {
+            $photoPath = $this->storeSelfie($dataUrl, $laporan->id);
+            $photos[] = LaporanPhoto::create([
+                'laporan_id' => $laporan->id,
+                'photo_path' => $photoPath,
+                'latitude' => $validated['latitude'][$index] ?? null,
+                'longitude' => $validated['longitude'][$index] ?? null,
+            ]);
+        }
 
         return redirect()->route('pengawas.laporan.index')
-            ->with('success', 'Laporan berhasil dikirim.');
+            ->with('success', 'Laporan berhasil dikirim ('.count($photos).' foto).');
     }
 
     public function show(Laporan $laporan)
     {
-        $laporan->load('dapur');
+        $laporan->load(['dapur', 'photos']);
 
         return view('admin.laporan.show', compact('laporan'));
     }
@@ -61,22 +71,10 @@ class LaporanController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',
-            'selfie_photo' => 'nullable|string', // base64 data URL
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $laporan->status = $validated['status'];
         $laporan->catatan = $validated['catatan'] ?? null;
-        $laporan->latitude = $validated['latitude'];
-        $laporan->longitude = $validated['longitude'];
-
-        // Handle selfie photo upload (base64 -> file)
-        if (! empty($validated['selfie_photo'])) {
-            $path = $this->storeSelfie($validated['selfie_photo'], $laporan->id);
-            $laporan->selfie_photo = $path;
-        }
-
         $laporan->save();
 
         return redirect()->route('admin.laporan.show', $laporan->id)
@@ -89,8 +87,8 @@ class LaporanController extends Controller
         $ext = str_replace('data:image/', '', $parts[0]);
         $data = base64_decode($parts[1]);
 
-        $folder = 'laporans/'.$laporanId;
-        $filename = 'selfie-'.now()->format('YmdHis').'.'.$ext;
+        $folder = 'laporans/'.$laporanId.'/photos';
+        $filename = 'photo-'.now()->format('YmdHis').'-'.str()->random(6).'.'.$ext;
 
         Storage::disk('public')->makeDirectory($folder);
         Storage::disk('public')->put($folder.'/'.$filename, $data);

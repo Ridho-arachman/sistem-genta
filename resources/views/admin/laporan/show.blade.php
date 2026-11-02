@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app', ['pageTitle' => 'Detail Laporan'])
+@extends('admin.layouts.app', ['pageTitle' => 'Detail Laporan'])
 
 @section('content')
 <div class="heading mb-8">
@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class="panel" id="laporanDetail" data-current-status="{{ $laporan->status }}" data-has-coords="{{ $laporan->latitude && $laporan->longitude ? '1' : '0' }}" data-default-lat="{{ $laporan->latitude ?? '' }}" data-default-lng="{{ $laporan->longitude ?? '' }}">
+<div class="panel" id="laporanDetail" data-current-status="{{ $laporan->status }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
@@ -53,24 +53,43 @@
         </div>
     </div>
 
-    <!-- Foto Selfie (READ-ONLY, diambil pengawas di HP) -->
+    <!-- Foto Selfie (READ-ONLY, setiap foto sudah dilengkapi peta + GPS) -->
     <div class="mt-6">
-        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Selfie Pengawas</p>
-        @if ($laporan->selfie_photo)
-            <img src="{{ asset('storage/' . $laporan->selfie_photo) }}" alt="Selfie pengawas" class="max-w-xs max-h-48 rounded-lg border object-cover">
-            <div class="text-xs text-[var(--color-text-muted)] mt-1">Koordinat: {{ $laporan->latitude }}, {{ $laporan->longitude }}</div>
+        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Selfie Pengawas (dengan Peta & GPS)</p>
+        @if ($laporan->photos->count() > 0)
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                @foreach ($laporan->photos as $photo)
+                    <?php
+                        $lat = (float) $photo->latitude;
+                    $lng = (float) $photo->longitude;
+                    $zoom = 16;
+                    $n = pow(2, $zoom);
+                    $tileX = floor(($lng + 180) / 360 * $n);
+                    $tileY = floor((1 - log(tan(deg2rad($lat)) + 1 / cos(deg2rad($lat))) / M_PI) / 2 * $n);
+                    ?>
+                    <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                        <div class="relative">
+                            <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Foto pengawas" class="w-full h-48 object-cover rounded-md">
+                            @if ($photo->latitude && $photo->longitude)
+                            <div class="absolute bottom-2 left-2 w-32 h-24 border border-[var(--color-border)] bg-white overflow-hidden rounded-sm shadow-sm z-10">
+                                <img src="https://tile.openstreetmap.org/{{ $zoom }}/{{ $tileX }}/{{ $tileY }}.png" class="w-full h-full object-cover" alt="Map">
+                                <div class="absolute bottom-0 left-0 w-full bg-black/50 text-white text-[9px] text-center px-1 py-0.5">
+                                    {{ $photo->latitude }}, {{ $photo->longitude }}
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
+                            <span class="text-[10px] font-medium text-[var(--color-primary)]">📍 {{ $photo->latitude }}, {{ $photo->longitude }}</span>
+                            <p class="text-[10px] text-[var(--color-text-muted)]">{{ $photo->accuracy ? '±' + $photo->accuracy + 'm' : 'GPS tersimpan' }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         @else
             <p class="text-sm text-[var(--color-text-muted)] italic">Foto belum diambil pengawas.</p>
         @endif
     </div>
-
-    <!-- Peta Statis (READ-ONLY, marker di lokasi foto) -->
-    @if ($laporan->latitude && $laporan->longitude)
-        <div class="mt-6">
-            <p class="text-sm text-[var(--color-text-muted)] mb-2">Lokasi Foto ({{ $laporan->latitude }}, {{ $laporan->longitude }})</p>
-            <div id="locationMap" class="w-full rounded-lg border" style="height: 256px;"></div>
-        </div>
-    @endif
 
     <!-- Catatan Admin (verification form) -->
     <div id="catatanSection" class="mt-6">
@@ -79,8 +98,6 @@
             @csrf
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" value="{{ old('status', $laporan->status) }}">
-            <input type="hidden" name="latitude" id="latitudeInput" value="{{ $laporan->latitude ?? -6.108900 }}">
-            <input type="hidden" name="longitude" id="longitudeInput" value="{{ $laporan->longitude ?? 106.145000 }}">
             <textarea id="catatan-admin" name="catatan" rows="6" class="input-field" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...">{{ old('catatan', $laporan->catatan) }}</textarea>
             <button type="submit" class="btn-action btn-action-primary mt-3" id="saveBtn">
                 Simpan Verifikasi
@@ -97,9 +114,7 @@
 
 @push('scripts')
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Quill Rich Text Editor
@@ -164,19 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set initial visibility and label
     updateCatatanVisibility();
-
-    // Render static map (from saved GPS coords)
-    @if ($laporan->latitude && $laporan->longitude)
-        const lat = {!! json_encode((float) ($laporan->latitude ?? -6.108900)) !!};
-        const lng = {!! json_encode((float) ($laporan->longitude ?? 106.145000)) !!};
-        const mapEl = document.getElementById('locationMap');
-        if (mapEl && typeof L !== 'undefined') {
-            const map = L.map(mapEl).setView([parseFloat(lat), parseFloat(lng)], 16);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            L.marker([parseFloat(lat), parseFloat(lng)]).addTo(map)
-                .bindPopup('Lokasi Foto (' + lat + ', ' + lng + ')').openPopup();
-        }
-    @endif
 
     // Listen for new status changes
     statusSelect.addEventListener('change', function() {
