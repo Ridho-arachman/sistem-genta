@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\MobileController;
 use App\Http\Controllers\Auth\AuthController;
@@ -91,12 +91,12 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
         Route::put('/laporan/{laporan}', [LaporanController::class, 'update'])->name('laporan.update');
 
-        // Absensi (monitor & export)
-        Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
-        Route::post('absensi', [AbsensiController::class, 'store'])->name('absensi.store');
-        Route::get('absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
-        Route::post('absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+        // Inspeksi (monitor & export)
+        Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
+        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
+        Route::get('inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
+        Route::post('inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
 
         // Settings
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
@@ -132,11 +132,11 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
         Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
 
-        // Data Dapur (alias absensi)
-        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
-        Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
-        Route::post('/absensi/{absensi}/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+        // Inspeksi
+        Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('/inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
+        Route::post('/inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
+        Route::post('/inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
 
         // Laporan Pengawasan
         Route::get('/laporan', function () {
@@ -229,11 +229,11 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/sp-warnings', [SpWarningController::class, 'index'])->name('sp-warnings.index');
         Route::get('/sp-warnings/{warning}', [SpWarningController::class, 'show'])->name('sp-warnings.show');
 
-        // Absensi (read + export)
-        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
-        Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
-        Route::get('/absensi/export', [AbsensiController::class, 'export'])->name('absensi.export');
+        // Inspeksi (read + export)
+        Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('/inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
+        Route::post('/inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
+        Route::get('/inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
 
         // Settings (read only)
         Route::get('/settings', function () {

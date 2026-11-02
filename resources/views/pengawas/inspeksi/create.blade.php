@@ -1,4 +1,4 @@
-@extends('pengawas.layouts.app', ['pageTitle' => 'Absensi Check-in'])
+@extends('pengawas.layouts.app', ['pageTitle' => 'Inspeksi Check-in'])
 
 @section('content')
 <div class="max-w-2xl mx-auto">
@@ -6,14 +6,14 @@
     <div class="heading">
         <div>
             <div class="eyebrow">Genta · Pengawasan MBG</div>
-            <h1>Absensi Check-in</h1>
+            <h1>Inspeksi Check-in</h1>
             <div class="muted">Ambil foto selfie dan pastikan GPS aktif untuk validasi lokasi</div>
         </div>
-        <a href="{{ route('pengawas.absensi.index') }}" class="btn-secondary">← Kembali</a>
+        <a href="{{ route('pengawas.inspeksi.index') }}" class="btn-secondary">← Kembali</a>
     </div>
 
     <div class="card p-8">
-        <form method="POST" action="{{ route('pengawas.absensi.store') }}" enctype="multipart/form-data" class="space-y-6" id="absensiForm">
+        <form method="POST" action="{{ route('pengawas.inspeksi.store') }}" enctype="multipart/form-data" class="space-y-6" id="inspeksiForm">
             @csrf
 
             <div>
@@ -94,7 +94,7 @@
                     <span id="btnText">Mengambil lokasi GPS...</span>
                     <svg id="btnSpinner" class="w-5 h-5 mr-2 inline animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </button>
-                <a href="{{ route('pengawas.absensi.index') }}" class="btn-secondary flex-1 text-center py-3">Batal</a>
+                <a href="{{ route('pengawas.inspeksi.index') }}" class="btn-secondary flex-1 text-center py-3">Batal</a>
             </div>
         </form>
     </div>
@@ -132,7 +132,7 @@
                 document.getElementById('latInput').value = position.coords.latitude;
                 document.getElementById('lngInput').value = position.coords.longitude;
                 
-                btnText.textContent = 'Lokasi ditemukan - Siap absensi';
+                btnText.textContent = 'Lokasi ditemukan - Siap inspeksi';
                 btnSpinner.classList.add('hidden');
                 submitBtn.disabled = false;
                 

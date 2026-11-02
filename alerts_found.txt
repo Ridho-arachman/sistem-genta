@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+    print(f'Line {line}: {snippet}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "encodings\cp1252.py", line 19, in encode
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 19-20: character maps to <undefined>

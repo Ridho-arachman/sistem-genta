@@ -91,7 +91,7 @@
         <svg class="p-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Beranda</span>
     </a>
-    <a href="{{ route('pengawas.absensi.index') }}" class="p-nav-item {{ request()->routeIs('pengawas.absensi*') ? 'active' : '' }}" data-page="inspection">
+    <a href="{{ route('pengawas.inspeksi.index') }}" class="p-nav-item {{ request()->routeIs('pengawas.inspeksi*') ? 'active' : '' }}" data-page="inspection">
         <svg class="p-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span>Inspeksi</span>
     </a>

@@ -10,7 +10,7 @@ use App\Services\GeolocationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
-class AbsensiController extends Controller
+class InspeksiController extends Controller
 {
     use AuthorizesRequests;
 
@@ -26,7 +26,7 @@ class AbsensiController extends Controller
 
         $user = auth()->user();
 
-        // Pengawas hanya lihat absensi sendiri
+        // Pengawas hanya lihat inspeksi sendiri
         if ($user->isPengawas()) {
             $query = Absensi::where('user_id', $user->id)->with('dapur');
         } else {
@@ -46,19 +46,19 @@ class AbsensiController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $absensis = $query->latest()->paginate(15)->withQueryString();
+        $inspeksis = $query->latest()->paginate(15)->withQueryString();
         $dapurs = Dapur::all();
 
         if ($user->isPengawas()) {
-            return view('pengawas.absensi.index', compact('absensis', 'dapurs'));
+            return view('pengawas.inspeksi.index', compact('inspeksis', 'dapurs'));
         }
 
         $prefix = $user->isAdmin() ? 'admin' : 'manajerial';
 
-        return view('absensis.index', compact('absensis', 'dapurs'))
-            ->with('indexRoute', "{$prefix}.absensi.index")
-            ->with('createRoute', "{$prefix}.absensi.create")
-            ->with('exportRoute', "{$prefix}.absensi.export");
+        return view('absensis.index', compact('inspeksis', 'dapurs'))
+            ->with('indexRoute', "{$prefix}.inspeksi.index")
+            ->with('createRoute', "{$prefix}.inspeksi.create")
+            ->with('exportRoute', "{$prefix}.inspeksi.export");
     }
 
     public function create()
@@ -66,7 +66,7 @@ class AbsensiController extends Controller
         $this->authorize('create', Absensi::class);
         $dapurs = Dapur::all();
 
-        return view('pengawas.absensi.create', compact('dapurs'));
+        return view('pengawas.inspeksi.create', compact('dapurs'));
     }
 
     public function store(Request $request)
@@ -88,7 +88,7 @@ class AbsensiController extends Controller
             $validated['selfie_path'] = $request->file('selfie_path')->store('selfies', 'public');
         }
 
-        // Allow admin to create absensi for specific pengawas
+        // Allow admin to create inspeksi for specific pengawas
         if ($isAdminCreatingForPengawas) {
             $validated['user_id'] = $request->user_id;
         } else {
@@ -105,12 +105,12 @@ class AbsensiController extends Controller
 
             if ($distance > ($dapur->geofence_radius ?? 100)) {
                 return back()->withErrors([
-                    'lokasi' => 'Anda berada di luar radius dapur (jarak: '.round($distance).'m, radius: '.($dapur->geofence_radius ?? 100).'m). Absensi dibatalkan.',
+                    'lokasi' => 'Anda berada di luar radius dapur (jarak: '.round($distance).'m, radius: '.($dapur->geofence_radius ?? 100).'m). Inspeksi dibatalkan.',
                 ])->withInput();
             }
         }
 
-        $absensi = Absensi::create($validated);
+        $inspeksi = Absensi::create($validated);
 
         AbsensiReminderJob::dispatch(
             $validated['user_id'],
@@ -119,16 +119,16 @@ class AbsensiController extends Controller
             '17:00'
         )->delay(now()->addHours(8));
 
-        $redirectRoute = $user->isPengawas() ? 'pengawas.absensi.index' : ($user->isAdmin() ? 'admin.absensi.index' : 'manajerial.absensi.index');
+        $redirectRoute = $user->isPengawas() ? 'pengawas.inspeksi.index' : ($user->isAdmin() ? 'admin.inspeksi.index' : 'manajerial.inspeksi.index');
 
-        return redirect()->route($redirectRoute)->with('status', 'Absensi check-in berhasil.');
+        return redirect()->route($redirectRoute)->with('status', 'Inspeksi check-in berhasil.');
     }
 
-    public function checkOut(Request $request, Absensi $absensi)
+    public function checkOut(Request $request, Absensi $inspeksi)
     {
-        $this->authorize('checkOut', $absensi);
+        $this->authorize('checkOut', $inspeksi);
 
-        $absensi->update(['check_out_at' => now()]);
+        $inspeksi->update(['check_out_at' => now()]);
 
         return back()->with('status', 'Check-out berhasil dicatat.');
     }
@@ -153,8 +153,8 @@ class AbsensiController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $absensis = $query->latest()->get();
-        $filename = 'laporan-absensi-'.now()->format('Ymd_His');
+        $inspeksis = $query->latest()->get();
+        $filename = 'laporan-inspeksi-'.now()->format('Ymd_His');
 
         if ($format === 'xlsx') {
             $exporter = new AbsensiXlsxExport(
@@ -170,7 +170,7 @@ class AbsensiController extends Controller
 
         if ($format === 'pdf') {
             return view('absensis.print', [
-                'absensis' => $absensis,
+                'inspeksis' => $inspeksis,
                 'startDate' => $request->start_date,
                 'endDate' => $request->end_date,
                 'dapurId' => $request->dapur_id,
@@ -180,18 +180,18 @@ class AbsensiController extends Controller
 
         // Default: CSV
         $csv = "Tanggal,Pengawas,Dapur,Check-in,Check-out,Status,Lat,Lng,Foto\n";
-        foreach ($absensis as $a) {
+        foreach ($inspeksis as $i) {
             $csv .= sprintf(
                 "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                $a->created_at->format('Y-m-d H:i:s'),
-                $a->user->name,
-                $a->dapur->nama,
-                $a->check_in_at?->format('Y-m-d H:i:s') ?? '-',
-                $a->check_out_at?->format('Y-m-d H:i:s') ?? '-',
-                $a->status,
-                $a->lat ?? '-',
-                $a->lng ?? '-',
-                $a->selfie_path ? asset('storage/'.$a->selfie_path) : '-'
+                $i->created_at->format('Y-m-d H:i:s'),
+                $i->user->name,
+                $i->dapur->nama,
+                $i->check_in_at?->format('Y-m-d H:i:s') ?? '-',
+                $i->check_out_at?->format('Y-m-d H:i:s') ?? '-',
+                $i->status,
+                $i->lat ?? '-',
+                $i->lng ?? '-',
+                $i->selfie_path ? asset('storage/'.$i->selfie_path) : '-'
             );
         }
 
