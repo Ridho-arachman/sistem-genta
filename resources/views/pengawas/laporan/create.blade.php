@@ -446,12 +446,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-            window.alert('File harus berupa gambar: ' + file.name);
+            window.alert('Bukan file gambar');
             input.value = '';
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            window.alert('Ukuran foto maksimal 5MB: ' + file.name);
+            window.alert('Foto terlalu besar (maks 5MB)');
             input.value = '';
             return;
         }
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getCurrentLocationForPhoto(photoId, dataUrl);
         } catch (err) {
             console.error('Photo processing error:', err);
-            window.alert('Gagal memproses foto: ' + err.message);
+            window.alert('Gagal memproses foto');
         } finally {
             showLoading(false);
         }
@@ -859,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         // Konfirmasi sebelum kirim laporan inspeksi
-        const confirmed = window.confirm('⚠️ Konfirmasi Laporan Inspeksi\n\nApakah semua foto inspeksi (5 indikator + 1 selfie dapur) sudah lengkap dengan peta dan GPS?\n\nOK = Kirim Laporan\nBatal = Cek Lagi');
+        const confirmed = window.confirm('Kirim laporan sekarang?');
         if (!confirmed) {
             return false;
         }
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         if (missingIndikator) {
-            window.alert('Silakan pilih hasil pemeriksaan untuk indikator: ' + missingIndikator);
+            window.alert('Pilih hasil: ' + missingIndikator);
             return false;
         }
 
@@ -887,14 +887,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
 
         if (!allHavePhotos) {
-            window.alert('Harap lengkapi semua foto (5 indikator + 1 selfie dapur) sebelum mengirim.');
+            window.alert('Lengkapi semua foto dulu');
             return false;
         }
 
         // Check if any photo still processing (no watermark yet)
         const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
         if (stillProcessing) {
-            window.alert('Tunggu sampai semua foto selesai diproses (peta + GPS muncul) sebelum mengirim laporan.');
+            window.alert('Tunggu foto selesai diproses');
             return false;
         }
 
@@ -902,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const hasGps = photos.some(p => p.lat && p.lng);
         if (!hasGps) {
-            const gpsConfirmed = window.confirm('GPS tidak tersedia untuk semua foto. Lanjutkan kirim laporan tanpa lokasi?');
+            const gpsConfirmed = window.confirm('GPS tidak tersedia. Lanjutkan tanpa lokasi?');
             if (!gpsConfirmed) {
                 return false;
             }
