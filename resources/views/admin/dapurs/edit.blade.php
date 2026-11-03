@@ -36,6 +36,12 @@
                 <label class="form-label" for="alamat">Alamat Lengkap</label>
                 <textarea id="alamat" name="alamat" rows="3" class="input-field" placeholder="Alamat lengkap dapur">{{ old('alamat', $dapur->alamat) }}</textarea>
             </div>
+
+            <div class="form-field">
+                <label class="form-label" for="map_embed_url">Embed Google Maps</label>
+                <textarea id="map_embed_url" name="map_embed_url" rows="4" class="input-field" placeholder="Tempelkan src URL iframe Google Maps…">{{ old('map_embed_url', $dapur->map_embed_url) }}</textarea>
+                <p class="text-[11px] text-[var(--color-text-muted)] mt-1">Contoh: https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.12…</p>
+            </div>
         </div>
 
         {{-- Row 2: Wilayah --}}

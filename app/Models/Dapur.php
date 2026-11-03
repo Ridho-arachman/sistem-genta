@@ -16,14 +16,10 @@ class Dapur extends Model
     /** @use HasFactory<DapurFactory> */
     use HasFactory;
 
-    #[Fillable(['nama', 'lokasi', 'alamat', 'kecamatan', 'kabupaten_kota', 'provinsi', 'latitude', 'longitude', 'geofence_radius'])]
-    protected $fillable = ['nama', 'lokasi', 'alamat', 'kecamatan', 'kabupaten_kota', 'provinsi', 'latitude', 'longitude', 'geofence_radius'];
+    #[Fillable(['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'])]
+    protected $fillable = ['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
 
-    protected $casts = [
-        'latitude' => 'decimal:7',
-        'longitude' => 'decimal:7',
-        'geofence_radius' => 'integer',
-    ];
+    protected $casts = [];
 
     public function cctvs(): HasMany
     {

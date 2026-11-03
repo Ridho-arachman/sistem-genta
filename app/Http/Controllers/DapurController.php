@@ -207,6 +207,7 @@ class DapurController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
+            'map_embed_url' => ['nullable', 'url', 'max:2000'],
             'kecamatan' => ['required', 'string', 'max:100'],
             'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
@@ -277,6 +278,7 @@ class DapurController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'alamat' => ['nullable', 'string'],
+            'map_embed_url' => ['nullable', 'url', 'max:2000'],
             'kecamatan' => ['required', 'string', 'max:100'],
             'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
