@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Laporan;
 use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
@@ -27,7 +26,7 @@ class LaporanController extends Controller
 
         // Validasi dapur harus milik pengawas yang login
         $dapurRule = $user->isPengawas()
-            ? 'required|exists:dapurs,id|in:' . implode(',', $user->getAccessibleDapurIds())
+            ? 'required|exists:dapurs,id|in:'.implode(',', $user->getAccessibleDapurIds())
             : 'required|exists:dapurs,id';
 
         $validated = $request->validate([
@@ -82,7 +81,18 @@ class LaporanController extends Controller
 
     public function show(Laporan $laporan)
     {
-        $laporan->load(['dapur']);
+        $user = auth()->user();
+
+        // Pengawas hanya boleh lihat laporan buatan sendiri
+        if ($user->isPengawas() && $laporan->created_by !== $user->id) {
+            abort(403);
+        }
+
+        $laporan->load(['dapur', 'createdBy', 'hasil']);
+
+        if ($user->isPengawas()) {
+            return view('pengawas.laporan.show', compact('laporan'));
+        }
 
         return view('admin.laporan.show', compact('laporan'));
     }

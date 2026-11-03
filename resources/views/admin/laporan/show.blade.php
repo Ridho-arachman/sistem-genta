@@ -32,7 +32,7 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status Saat Ini</p>
-                <span class="badge badge-{{ $laporan->status === 'temuan' ? 'danger' : ($laporan->status === 'selesai' ? 'success' : 'secondary') }}">{{ ucfirst($laporan->status) }}</span>
+                <span class="badge badge-{{ match($laporan->status) { 'diperiksa' => 'success', 'temuan' => 'danger', 'tindak lanjut' => 'warning', 'selesai' => 'success', default => 'secondary' } }}">{{ ucfirst($laporan->status) }}</span>
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)] mb-2">Status Baru</p>
@@ -56,9 +56,23 @@
     <!-- Foto Laporan (READ-ONLY, sudah dilengkapi peta + GPS) -->
     <div class="mt-6">
         <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Pemeriksaan (dengan Peta & GPS)</p>
-        @if ($laporan->selfie_photo)
-            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-                <img src="{{ asset('storage/' . $laporan->selfie_photo) }}" alt="Foto laporan" class="w-full h-96 object-cover rounded-md">
+        @php
+            $photo = $laporan->selfie_photo;
+            $photoUrl = null;
+            if ($photo) {
+                if (str_starts_with($photo, 'data:')) {
+                    $photoUrl = $photo; // base64 data URL
+                } elseif (str_starts_with($photo, 'storage/')) {
+                    $photoUrl = asset($photo);
+                } else {
+                    $photoUrl = asset('storage/' . $photo); // path file di storage
+                }
+            }
+        @endphp
+        @if ($photoUrl)
+            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 cursor-pointer" onclick="openLaporanPhotoPreview('{{ $photoUrl }}')">
+                <img src="{{ $photoUrl }}" alt="Foto laporan" class="w-full h-96 object-cover rounded-md">
+                <p class="text-[10px] text-[var(--color-text-muted)] mt-1 text-center">Klik untuk memperbesar</p>
             </div>
         @else
             <p class="text-sm text-[var(--color-text-muted)] italic">Foto belum diambil pengawas.</p>
@@ -84,6 +98,28 @@
     </div>
 </div>
 
+    <!-- Foto Preview Modal (full screen) -->
+    <div id="laporanPhotoPreviewModal" class="fixed inset-0 bg-black flex items-center justify-center z-[1000] hidden" onclick="closeLaporanPhotoPreview()">
+        <button type="button" onclick="event.stopPropagation(); closeLaporanPhotoPreview()" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <span class="sr-only">Tutup preview</span>
+        </button>
+        <div class="relative max-w-full max-h-full flex items-center justify-center">
+            <img id="laporanPreviewImage" src="" alt="Preview foto laporan" class="w-full h-full max-w-full max-h-full object-contain bg-black">
+        </div>
+    </div>
+
+    <script>
+        window.openLaporanPhotoPreview = function(src) {
+            document.getElementById('laporanPreviewImage').src = src;
+            document.getElementById('laporanPhotoPreviewModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeLaporanPhotoPreview = function() {
+            document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+    </script>
 @endsection
 
 @push('scripts')

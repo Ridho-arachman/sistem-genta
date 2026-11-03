@@ -182,10 +182,6 @@ class DapurController extends Controller
             return view('manajerial.dapurs.index', compact('dapurs'));
         }
 
-        if ($user->isPengawas()) {
-            return view('pengawas.dapurs.index', compact('dapurs'));
-        }
-
         if ($user->isKepalaDapur()) {
             return view('kepala-dapur.dapurs.index', compact('dapurs'));
         }

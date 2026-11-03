@@ -9,7 +9,7 @@
             <h1>{{ $dapur->nama }}</h1>
             <div class="muted">{{ $dapur->lokasi ?? 'Lokasi tidak diset' }}</div>
         </div>
-        <a href="{{ route('pengawas.dapurs.index') }}" class="btn-secondary">Kembali</a>
+        <a href="{{ route('pengawas.dashboard') }}" class="btn-secondary">Kembali ke Beranda</a>
     </div>
 
     <div class="card p-8">

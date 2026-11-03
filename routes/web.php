@@ -1,16 +1,15 @@
 <?php
 
-use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\MobileController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CctvAnomalyReportController;
 use App\Http\Controllers\CctvController;
 use App\Http\Controllers\DapurController;
+use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SpWarningController;
-use App\Models\Absensi;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
@@ -117,15 +116,14 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
                 'total_dapur' => $dapurs->count(),
                 'total_cctv' => $dapurs->sum('cctvs_count'),
                 'cctv_online' => $dapurs->sum(fn ($d) => $d->cctvs->where('status', 'online')->count()),
-                'laporan_hari_ini' => \App\Models\Laporan::where('created_by', $user->id)->whereDate('created_at', today())->count(),
+                'laporan_hari_ini' => Laporan::where('created_by', $user->id)->whereDate('created_at', today())->count(),
                 'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
             ];
 
             return view('pengawas.dashboard', compact('dapurs', 'stats'));
         })->name('dashboard');
 
-        // Dapur (read only)
-        Route::get('/dapurs', [DapurController::class, 'index'])->name('dapurs.index');
+        // Dapur (detail only)
         Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
         // CCTV (read only)
@@ -140,9 +138,11 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 
         // Laporan Pengawasan
         Route::get('/laporan', function () {
-            $laporans = \App\Models\Laporan::with('dapur', 'createdBy')->latest()->paginate(15);
+            $laporans = Laporan::with('dapur', 'createdBy')->latest()->paginate(15);
+
             return view('pengawas.laporan.index', compact('laporans'));
         })->name('laporan.index');
+        Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
         Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
 
         // Manajemen Pengguna (read only for pengawas)
@@ -201,13 +201,13 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
                 'cctv_online' => Cctv::where('status', 'online')->count(),
                 'cctv_offline' => Cctv::where('status', 'offline')->count(),
                 'cctv_maintenance' => Cctv::where('status', 'maintenance')->count(),
-                'laporan_hari_ini' => \App\Models\Laporan::whereDate('created_at', today())->count(),
+                'laporan_hari_ini' => Laporan::whereDate('created_at', today())->count(),
                 'sp_warnings_aktif' => SpWarning::where('status', 'aktif')->count(),
                 'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
             ];
 
             $dapurs = Dapur::with('cctvs')->get();
-            $recentLaporans = \App\Models\Laporan::with('user', 'dapur')->latest()->limit(10)->get();
+            $recentLaporans = Laporan::with('user', 'dapur')->latest()->limit(10)->get();
 
             return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentLaporans'));
         })->name('dashboard');
