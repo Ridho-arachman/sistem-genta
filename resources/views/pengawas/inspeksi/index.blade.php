@@ -22,6 +22,18 @@
     <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" class="space-y-6">
         @csrf
 
+        {{-- Error alert untuk validasi server --}}
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <h3 class="text-red-800 font-medium text-sm mb-2">Validasi gagal</h3>
+                <ul class="text-red-700 text-sm list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- Status laporan (default diperiksa) --}}
         <input type="hidden" name="status" value="diperiksa">
 
@@ -119,6 +131,9 @@
                         <option value="temuan_sedang">Perlu perbaikan</option>
                         <option value="temuan_kritis">Temuan kritis</option>
                     </select>
+                    @error('hasil')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -147,6 +162,20 @@
         <input type="hidden" name="latitude" id="latitudeInput" value="">
         <input type="hidden" name="longitude" id="longitudeInput" value="">
         <input type="hidden" name="address" id="addressInput" value="">
+
+        {{-- Error untuk foto dan GPS (validasi server) --}}
+        @error('selfie_photo')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+        @error('latitude')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+        @error('longitude')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+        @error('address')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
 
         {{-- Catatan Pengawas --}}
         <div>
