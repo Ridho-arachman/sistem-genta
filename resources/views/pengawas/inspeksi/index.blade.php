@@ -261,14 +261,24 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const gpsHtml = photo.lat && photo.lng
-            ? `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
-                <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 ${photo.lat}, ${photo.lng}</span>
-                <p class="text-[9px] text-[var(--color-text-muted)]">${photo.address ? photo.address : 'GPS tersimpan'}</p>
-               </div>`
-            : `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
-                <p class="text-[9px] text-[var(--color-text-muted)]">Memproses GPS...</p>
+        let gpsStatusHtml;
+        if (photo.gpsStatus === 'loading') {
+            gpsStatusHtml = `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
+                <span class="text-[9px] font-medium text-[var(--color-secondary)]">⏳ GPS memproses…</span>
+                <p class="text-[9px] text-[var(--color-text-muted)]">Tunggu hingga selesai sebelum kirim laporan</p>
                </div>`;
+        } else if (photo.lat && photo.lng) {
+            gpsStatusHtml = `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
+                <span class="text-[9px] font-medium text-[var(--color-primary)]">✅ GPS tersimpan</span>
+                <p class="text-[9px] text-[var(--color-text-muted)]">${photo.lat}, ${photo.lng}</p>
+                <p class="text-[9px] text-[var(--color-text-muted)]">${photo.address ? photo.address : 'GPS tersimpan'}</p>
+               </div>`;
+        } else {
+            gpsStatusHtml = `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
+                <span class="text-[9px] font-medium text-red-600">❌ GPS gagal</span>
+                <p class="text-[9px] text-[var(--color-text-muted)]">Lokasi tidak tersedia. Coba ambil foto ulang.</p>
+               </div>`;
+        }
 
         el.innerHTML = `
             <div class="relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
@@ -276,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="button" onclick="removePhoto()" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-2 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
-                ${gpsHtml}
+                ${gpsStatusHtml}
             </div>
         `;
         el.classList.remove('hidden');
@@ -712,6 +722,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
 
+        // Debug: cek semua hidden input sebelum submit
+        console.log('[Laporan Submit Debug] photo_data:', document.getElementById('photo_data').value ? 'TERISI' : 'KOSONG');
+        console.log('[Laporan Submit Debug] latitude:', document.getElementById('latitudeInput').value);
+        console.log('[Laporan Submit Debug] longitude:', document.getElementById('longitudeInput').value);
+        console.log('[Laporan Submit Debug] address:', document.getElementById('addressInput').value);
+        console.log('[Laporan Submit Debug] photo object:', photo);
+
         // 1. Validasi dapur harus dipilih dulu
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
@@ -733,32 +750,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 3. Foto dapur
         if (!photo || !photo.dataUrl) {
-            window.alert('Foto dapur belum diisi');
+            window.alert('Foto dapur belum diisi. Klik area foto untuk mengambil gambar.');
             document.getElementById('card_photo').focus();
             return false;
         }
 
         // 4. Validasi tidak ada foto yang masih memproses
         if (photo.gpsStatus === 'loading') {
-            window.alert('Tunggu foto selesai diproses');
+            window.alert('Tunggu foto selesai diproses (GPS masih loading).');
+            return false;
+        }
+
+        // 5. Validasi GPS: foto harus memiliki lokasi (WAJIB)
+        if (!photo.lat || !photo.lng) {
+            window.alert('GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan. Coba ambil foto ulang.');
             return false;
         }
 
         updateHiddenInputs();
 
-        // 5. Validasi GPS: foto harus memiliki lokasi
-        if (!photo.lat || !photo.lng) {
-            window.alert('Foto harus memiliki lokasi GPS');
-            return false;
-        }
-
         // 6. Konfirmasi sebelum kirim (di akhir setelah semua validasi lolos)
-        const confirmed = window.confirm('Kirim laporan sekarang?');
+        const confirmed = window.confirm('Kirim laporan sekarang?\n\nData yang akan dikirim:\n- Dapur: ' + dapurSelect.options[dapurSelect.selectedIndex].text + '\n- Foto: tersedia\n- GPS: ' + photo.lat + ', ' + photo.lng);
         if (!confirmed) {
             return false;
         }
 
         // All validations passed - submit the form programmatically
+        console.log('[Laporan Submit Debug] Semua validasi lolos, memanggil form.submit()');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Mengirim...';
         form.submit();
