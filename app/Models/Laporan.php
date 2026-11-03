@@ -16,8 +16,8 @@ class Laporan extends Model
 {
     use Factories\HasFactory;
 
-    #[Fillable(['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address'])]
-    protected $fillable = ['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address'];
+    #[Fillable(['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address', 'created_by', 'updated_by'])]
+    protected $fillable = ['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address', 'created_by', 'updated_by'];
 
     protected $casts = [
         'latitude' => 'decimal:8',

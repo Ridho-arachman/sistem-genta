@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LaporanPhoto extends Model
 {
-    protected $fillable = ['laporan_id', 'photo_path', 'indikator'];
+    protected $fillable = ['laporan_id', 'photo_path', 'indikator', 'created_by', 'updated_by'];
 
     public function laporan(): BelongsTo
     {

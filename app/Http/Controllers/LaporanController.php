@@ -48,9 +48,6 @@ class LaporanController extends Controller
             'longitude' => 'required|array|min:6|max:6',
             'longitude.*' => 'required|numeric|between:-180,180',
             'address' => 'required|array|min:6|max:6',
-            // 5 hasil pemeriksaan indikator (wajib dipilih)
-            'hasil' => 'required|array|size:5',
-            'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
         // Create laporan first (need ID for folder)
@@ -61,6 +58,8 @@ class LaporanController extends Controller
             'latitude' => $validated['latitude'][0] ?? null,
             'longitude' => $validated['longitude'][0] ?? null,
             'address' => $validated['address'][0] ?? null,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
         ]);
 
         // Store each photo with its GPS coordinates and indikator
@@ -81,17 +80,21 @@ class LaporanController extends Controller
                 'laporan_id' => $laporan->id,
                 'photo_path' => $photoPath,
                 'indikator' => $indikatorName,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
             ]);
-            
+
             // Store hasil pemeriksaan per indikator (hanya 5 indikator pertama, tidak termasuk selfie)
             if ($index < 5) {
                 LaporanHasil::create([
                     'laporan_id' => $laporan->id,
                     'indikator' => $indikatorName,
-                    'hasil' => $validated['hasil'][$index] ?? null,
+                    'hasil' => $validated['hasil'][$index] ?? 'diperiksa',
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
                 ]);
             }
-            
+
             $index++;
         }
 
@@ -115,6 +118,7 @@ class LaporanController extends Controller
 
         $laporan->status = $validated['status'];
         $laporan->catatan = $validated['catatan'] ?? null;
+        $laporan->updated_by = $request->user()->id;
         $laporan->save();
 
         return redirect()->route('admin.laporan.show', $laporan->id)

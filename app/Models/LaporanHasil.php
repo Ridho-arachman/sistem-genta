@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LaporanHasil extends Model
 {
     protected $table = 'laporan_hasil';
-    protected $fillable = ['laporan_id', 'indikator', 'hasil'];
+    protected $fillable = ['laporan_id', 'indikator', 'hasil', 'created_by', 'updated_by'];
 
     public function laporan(): BelongsTo
     {
