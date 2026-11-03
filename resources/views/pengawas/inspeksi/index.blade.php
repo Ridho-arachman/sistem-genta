@@ -24,7 +24,7 @@
 
         {{-- Pilih Dapur --}}
         <div>
-            <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur</label>
+            <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur <span class="text-red-500">*</span></label>
             <select id="dapur_id" name="dapur_id" class="input-field">
                 <option value="">-- Pilih Dapur --</option>
                 @foreach (auth()->user()->dapurs as $dapur)
@@ -38,7 +38,7 @@
 
         {{-- Indikator 1: Kebersihan dan sanitasi --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi <span class="text-red-500">*</span></h3>
             <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
             
             {{-- Foto --}}
@@ -47,7 +47,7 @@
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Foto Kebersihan dan sanitasi</span>
+                            <span>Foto Kebersihan dan sanitasi <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
@@ -58,7 +58,7 @@
             
             {{-- Select Hasil --}}
             <div>
-                <select name="hasil[]" class="input-field w-full">
+                <select name="hasil[]" class="input-field w-full" required>
                     <option value="">-- Pilih Hasil --</option>
                     <option value="diperiksa">Sesuai standar</option>
                     <option value="temuan_sedang">Perlu perbaikan</option>
@@ -69,7 +69,7 @@
 
         {{-- Indikator 2: Penyimpanan bahan --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan <span class="text-red-500">*</span></h3>
             <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
             
             {{-- Foto --}}
@@ -78,7 +78,7 @@
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            <span>Foto Penyimpanan bahan</span>
+                            <span>Foto Penyimpanan bahan <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
@@ -89,7 +89,7 @@
             
             {{-- Select Hasil --}}
             <div>
-                <select name="hasil[]" class="input-field w-full">
+                <select name="hasil[]" class="input-field w-full" required>
                     <option value="">-- Pilih Hasil --</option>
                     <option value="diperiksa">Sesuai standar</option>
                     <option value="temuan_sedang">Perlu perbaikan</option>
@@ -100,7 +100,7 @@
 
         {{-- Indikator 3: Proses pengolahan --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan <span class="text-red-500">*</span></h3>
             <input type="hidden" name="kategori[]" value="Proses pengolahan">
             
             {{-- Foto --}}
@@ -109,7 +109,7 @@
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Foto Proses pengolahan</span>
+                            <span>Foto Proses pengolahan <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
@@ -120,7 +120,7 @@
             
             {{-- Select Hasil --}}
             <div>
-                <select name="hasil[]" class="input-field w-full">
+                <select name="hasil[]" class="input-field w-full" required>
                     <option value="">-- Pilih Hasil --</option>
                     <option value="diperiksa">Sesuai standar</option>
                     <option value="temuan_sedang">Perlu perbaikan</option>
@@ -131,7 +131,7 @@
 
         {{-- Indikator 4: Distribusi makanan --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan <span class="text-red-500">*</span></h3>
             <input type="hidden" name="kategori[]" value="Distribusi makanan">
             
             {{-- Foto --}}
@@ -140,7 +140,7 @@
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
-                            <span>Foto Distribusi makanan</span>
+                            <span>Foto Distribusi makanan <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
@@ -151,7 +151,7 @@
             
             {{-- Select Hasil --}}
             <div>
-                <select name="hasil[]" class="input-field w-full">
+                <select name="hasil[]" class="input-field w-full" required>
                     <option value="">-- Pilih Hasil --</option>
                     <option value="diperiksa">Sesuai standar</option>
                     <option value="temuan_sedang">Perlu perbaikan</option>
@@ -162,7 +162,7 @@
 
         {{-- Indikator 5: Peralatan dan fasilitas --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas <span class="text-red-500">*</span></h3>
             <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
             
             {{-- Foto --}}
@@ -171,7 +171,7 @@
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Foto Peralatan dan fasilitas</span>
+                            <span>Foto Peralatan dan fasilitas <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
@@ -182,7 +182,7 @@
             
             {{-- Select Hasil --}}
             <div>
-                <select name="hasil[]" class="input-field w-full">
+                <select name="hasil[]" class="input-field w-full" required>
                     <option value="">-- Pilih Hasil --</option>
                     <option value="diperiksa">Sesuai standar</option>
                     <option value="temuan_sedang">Perlu perbaikan</option>
@@ -193,13 +193,13 @@
 
         {{-- Foto Selfie di Depan Dapur (di akhir sebelum catatan) --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-3">
-            <h3 class="font-medium text-[var(--color-secondary)]">Foto Selfie di Depan Dapur</h3>
+            <h3 class="font-medium text-[var(--color-secondary)]">Foto Selfie di Depan Dapur <span class="text-red-500">*</span></h3>
             <div class="space-y-3">
                 <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
                             <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            <span>Selfie di depan dapur</span>
+                            <span>Selfie di depan dapur <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
