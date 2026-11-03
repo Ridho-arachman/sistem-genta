@@ -78,7 +78,7 @@ class LaporanXlsxExport
         foreach ($laporans as $l) {
             $rows[] = $this->row([
                 ["A{$rowIndex}", $l->created_at->format('Y-m-d H:i:s'), 'str'],
-                ["B{$rowIndex}", $l->user->name ?? '-', 'str'],
+                ["B{$rowIndex}", $l->createdBy->name ?? '-', 'str'],
                 ["C{$rowIndex}", $l->dapur->nama ?? '-', 'str'],
                 ["D{$rowIndex}", $l->status, 'str'],
                 ["E{$rowIndex}", $l->catatan ?? '-', 'str'],

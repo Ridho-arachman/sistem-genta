@@ -317,7 +317,7 @@ class AdminController extends Controller
                 ];
             });
 
-        $recentLaporans = Laporan::with('user', 'dapur')
+        $recentLaporans = Laporan::with('createdBy', 'dapur')
             ->latest()
             ->limit(10)
             ->get();

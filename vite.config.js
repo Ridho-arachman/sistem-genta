@@ -10,7 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
             ],
-            refresh: false,
+            refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
@@ -19,4 +19,12 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        origin: 'http://192.168.101.6:5173',
+        watch: {
+            usePolling: true,
+        },
+    },
 });

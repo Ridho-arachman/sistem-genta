@@ -30,6 +30,11 @@ class Laporan extends Model
         return $this->belongsTo(Dapur::class);
     }
 
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function photos(): HasMany
     {
         return $this->hasMany(LaporanPhoto::class);

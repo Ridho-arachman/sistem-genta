@@ -21,14 +21,31 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-[var(--color-border)]">
-                <tr>
-                    <td class="table-td">{{ now()->format('d M Y') }}</td>
-                    <td class="table-td">{{ auth()->user()->dapur->nama ?? 'Dapur' }}</td>
-                    <td class="table-td">{{ auth()->user()->name }}</td>
-                    <td class="table-td"><span class="badge badge-success">Selesai</span></td>
-                </tr>
+                @if ($laporans->isNotEmpty())
+                    @foreach ($laporans as $laporan)
+                        <tr>
+                            <td class="table-td">{{ $laporan->created_at->format('d M Y') }}</td>
+                            <td class="table-td">{{ $laporan->dapur->nama ?? 'Dapur' }}</td>
+                            <td class="table-td">{{ $laporan->createdBy?->name ?? '-' }}</td>
+                            <td class="table-td">
+                                <span class="badge badge-{{ $laporan->status === 'selesai' ? 'success' : ($laporan->status === 'temuan' ? 'warning' : 'info') }}">{{ ucfirst($laporan->status) }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td class="table-td text-center" colspan="4">Belum ada laporan</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
+
+    {{-- Pagination --}}
+    @if ($laporans->hasPages())
+        <div class="mt-4 flex justify-center">
+            {{ $laporans->links() }}
+        </div>
+    @endif
 </div>
 @endsection

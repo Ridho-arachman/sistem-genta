@@ -54,6 +54,16 @@
                     <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
                 </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
+                </div>
+            </div>
             </div>
             
         </div>
@@ -68,13 +78,22 @@
                 <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
                     <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
                         <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v16H3zM14 1h-8l4 4zm0 6l-4 4h8l-4-4z" /></svg>
                             <span>Foto Penyimpanan bahan <span class="text-red-500">*</span></span>
                         </span>
                         
                     </div>
                     <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
+                </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
             
@@ -98,6 +117,15 @@
                     <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
                 </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
+                </div>
             </div>
             
         </div>
@@ -120,9 +148,17 @@
                     <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
                 </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
+                </div>
             </div>
             
-        </div>
 
         {{-- Indikator 5: Peralatan dan fasilitas --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
@@ -141,6 +177,15 @@
                     </div>
                     <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
                     <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
+                </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
             

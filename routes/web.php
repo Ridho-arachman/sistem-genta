@@ -117,7 +117,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
                 'total_dapur' => $dapurs->count(),
                 'total_cctv' => $dapurs->sum('cctvs_count'),
                 'cctv_online' => $dapurs->sum(fn ($d) => $d->cctvs->where('status', 'online')->count()),
-                'laporan_hari_ini' => \App\Models\Laporan::where('user_id', $user->id)->whereDate('created_at', today())->count(),
+                'laporan_hari_ini' => \App\Models\Laporan::where('created_by', $user->id)->whereDate('created_at', today())->count(),
                 'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
             ];
 
@@ -140,7 +140,8 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 
         // Laporan Pengawasan
         Route::get('/laporan', function () {
-            return view('pengawas.laporan.index');
+            $laporans = \App\Models\Laporan::with('dapur', 'createdBy')->latest()->paginate(15);
+            return view('pengawas.laporan.index', compact('laporans'));
         })->name('laporan.index');
         Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
 

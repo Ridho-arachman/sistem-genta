@@ -25,10 +25,10 @@ class InspeksiController extends Controller
 
         // Pengawas hanya lihat laporan inspeksi sendiri
         if ($user->isPengawas()) {
-            $query = Laporan::where('user_id', $user->id)->with('dapur');
+            $query = Laporan::where('created_by', $user->id)->with('dapur');
         } else {
             // Admin & Manajerial lihat semua
-            $query = Laporan::with('user', 'dapur');
+            $query = Laporan::with('createdBy', 'dapur');
         }
 
         if ($request->filled('dapur_id')) {
@@ -98,10 +98,10 @@ class InspeksiController extends Controller
     {
         $user = auth()->user();
 
-        $query = Laporan::with('user', 'dapur');
+        $query = Laporan::with('createdBy', 'dapur');
 
         if ($user->isPengawas()) {
-            $query->where('user_id', $user->id);
+            $query->where('created_by', $user->id);
         }
 
         if ($request->filled('dapur_id')) {
@@ -137,7 +137,7 @@ class InspeksiController extends Controller
             $csv .= sprintf(
                 "%s,%s,%s,%s,%s,%s,%s\n",
                 $l->created_at->format('Y-m-d H:i:s'),
-                $l->user->name ?? '-',
+                $l->createdBy->name ?? '-',
                 $l->dapur->nama ?? '-',
                 $l->status,
                 $l->catatan ?? '-',

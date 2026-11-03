@@ -130,14 +130,14 @@ class MobileController extends Controller
 
         if ($validated['trigger'] === 'entry') {
             // Check if already has laporan today for this dapur
-            $existing = Laporan::where('user_id', Auth::id())
+            $existing = Laporan::where('created_by', Auth::id())
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
                 ->lockForUpdate()->first();
 
             if (! $existing) {
                 $laporan = Laporan::create([
-                    'user_id' => Auth::id(),
+                    'created_by' => Auth::id(),
                     'dapur_id' => $dapur->id,
                     'lat' => $validated['lat'],
                     'lng' => $validated['lng'],
@@ -155,7 +155,7 @@ class MobileController extends Controller
 
         if ($validated['trigger'] === 'exit') {
             // Auto check-out on exit - update status to selesai
-            $laporan = Laporan::where('user_id', Auth::id())
+            $laporan = Laporan::where('created_by', Auth::id())
                 ->where('dapur_id', $dapur->id)
                 ->whereDate('created_at', today())
                 ->where('status', '!=', 'selesai')
