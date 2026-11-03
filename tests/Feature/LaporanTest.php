@@ -70,9 +70,8 @@ test('pengawas cannot create laporan without photos', function () {
             'latitude' => [],
             'longitude' => [],
             'address' => [],
-            'hasil' => ['', '', '', '', ''],
         ])
-        ->assertSessionHasErrors(['photo_indikator_1', 'photo_selfie', 'latitude', 'longitude', 'address', 'hasil.0', 'hasil.1', 'hasil.2', 'hasil.3', 'hasil.4']);
+        ->assertSessionHasErrors(['photo_indikator_1', 'photo_selfie', 'latitude', 'longitude', 'address']);
 });
 
 test('pengawas cannot create laporan with incomplete photos', function () {

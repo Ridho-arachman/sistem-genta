@@ -47,9 +47,6 @@ class LaporanController extends Controller
             'longitude' => 'required|array|min:6|max:6',
             'longitude.*' => 'required|numeric|between:-180,180',
             'address' => 'required|array|min:6|max:6',
-            // 5 hasil pemeriksaan indikator (wajib dipilih)
-            'hasil' => 'required|array|size:5',
-            'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
         // Create laporan first (need ID for folder)
@@ -57,7 +54,6 @@ class LaporanController extends Controller
             'dapur_id' => $validated['dapur_id'],
             'status' => $validated['status'],
             'catatan' => $validated['catatan'] ?? null,
-            'hasil' => $validated['hasil'],
             'latitude' => $validated['latitude'][0] ?? null,
             'longitude' => $validated['longitude'][0] ?? null,
             'address' => $validated['address'][0] ?? null,

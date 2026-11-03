@@ -56,15 +56,6 @@
                 </div>
             </div>
             
-            {{-- Select Hasil --}}
-            <div>
-                <select name="hasil[]" class="input-field w-full" required>
-                    <option value="">-- Pilih Hasil --</option>
-                    <option value="diperiksa">Sesuai standar</option>
-                    <option value="temuan_sedang">Perlu perbaikan</option>
-                    <option value="temuan_kritis">Temuan kritis</option>
-                </select>
-            </div>
         </div>
 
         {{-- Indikator 2: Penyimpanan bahan --}}
@@ -87,15 +78,6 @@
                 </div>
             </div>
             
-            {{-- Select Hasil --}}
-            <div>
-                <select name="hasil[]" class="input-field w-full" required>
-                    <option value="">-- Pilih Hasil --</option>
-                    <option value="diperiksa">Sesuai standar</option>
-                    <option value="temuan_sedang">Perlu perbaikan</option>
-                    <option value="temuan_kritis">Temuan kritis</option>
-                </select>
-            </div>
         </div>
 
         {{-- Indikator 3: Proses pengolahan --}}
@@ -118,15 +100,6 @@
                 </div>
             </div>
             
-            {{-- Select Hasil --}}
-            <div>
-                <select name="hasil[]" class="input-field w-full" required>
-                    <option value="">-- Pilih Hasil --</option>
-                    <option value="diperiksa">Sesuai standar</option>
-                    <option value="temuan_sedang">Perlu perbaikan</option>
-                    <option value="temuan_kritis">Temuan kritis</option>
-                </select>
-            </div>
         </div>
 
         {{-- Indikator 4: Distribusi makanan --}}
@@ -149,15 +122,6 @@
                 </div>
             </div>
             
-            {{-- Select Hasil --}}
-            <div>
-                <select name="hasil[]" class="input-field w-full" required>
-                    <option value="">-- Pilih Hasil --</option>
-                    <option value="diperiksa">Sesuai standar</option>
-                    <option value="temuan_sedang">Perlu perbaikan</option>
-                    <option value="temuan_kritis">Temuan kritis</option>
-                </select>
-            </div>
         </div>
 
         {{-- Indikator 5: Peralatan dan fasilitas --}}
@@ -180,15 +144,6 @@
                 </div>
             </div>
             
-            {{-- Select Hasil --}}
-            <div>
-                <select name="hasil[]" class="input-field w-full" required>
-                    <option value="">-- Pilih Hasil --</option>
-                    <option value="diperiksa">Sesuai standar</option>
-                    <option value="temuan_sedang">Perlu perbaikan</option>
-                    <option value="temuan_kritis">Temuan kritis</option>
-                </select>
-            </div>
         </div>
 
         {{-- Foto Selfie di Depan Dapur (di akhir sebelum catatan) --}}
