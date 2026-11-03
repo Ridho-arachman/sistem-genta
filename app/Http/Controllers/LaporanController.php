@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
-use App\Models\LaporanPhoto;
 use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -36,18 +35,14 @@ class LaporanController extends Controller
             'kategori' => 'nullable|string',
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',
-            // 5 indikator photos + 1 selfie dapur
-            'photo_indikator_1' => 'required|string',
-            'photo_indikator_2' => 'required|string',
-            'photo_indikator_3' => 'required|string',
-            'photo_indikator_4' => 'required|string',
-            'photo_indikator_5' => 'required|string',
-            'photo_selfie' => 'required|string',
-            'latitude' => 'required|array|min:6|max:6',
-            'latitude.*' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|array|min:6|max:6',
-            'longitude.*' => 'required|numeric|between:-180,180',
-            'address' => 'required|array|min:6|max:6',
+            // Satu foto tunggal (selfie/foto utama)
+            'selfie_photo' => 'required|string',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'address' => 'required|string',
+            // 5 hasil indikator (wajib diisi semua)
+            'hasil' => 'required|array|size:5',
+            'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
         // Create laporan first (need ID for folder)
@@ -55,56 +50,40 @@ class LaporanController extends Controller
             'dapur_id' => $validated['dapur_id'],
             'status' => $validated['status'],
             'catatan' => $validated['catatan'] ?? null,
-            'latitude' => $validated['latitude'][0] ?? null,
-            'longitude' => $validated['longitude'][0] ?? null,
-            'address' => $validated['address'][0] ?? null,
+            'selfie_photo' => $validated['selfie_photo'],
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'address' => $validated['address'],
             'created_by' => $user->id,
             'updated_by' => $user->id,
         ]);
 
-        // Store each photo with its GPS coordinates and indikator
-        $photoFields = [
-            'photo_indikator_1' => 'Kebersihan dan sanitasi',
-            'photo_indikator_2' => 'Penyimpanan bahan',
-            'photo_indikator_3' => 'Proses pengolahan',
-            'photo_indikator_4' => 'Distribusi makanan',
-            'photo_indikator_5' => 'Peralatan dan fasilitas',
-            'photo_selfie' => 'Selfie di depan dapur',
+        // Store hasil pemeriksaan per indikator (5 indikator tetap)
+        $indikators = [
+            'Kebersihan dan sanitasi',
+            'Penyimpanan bahan',
+            'Proses pengolahan',
+            'Distribusi makanan',
+            'Peralatan dan fasilitas',
         ];
 
-        $photos = [];
-        $index = 0;
-        foreach ($photoFields as $fieldName => $indikatorName) {
-            $photoPath = $this->storeSelfie($validated[$fieldName], $laporan->id);
-            $photos[] = LaporanPhoto::create([
+        foreach ($indikators as $index => $indikatorName) {
+            LaporanHasil::create([
                 'laporan_id' => $laporan->id,
-                'photo_path' => $photoPath,
                 'indikator' => $indikatorName,
+                'hasil' => $validated['hasil'][$index] ?? 'diperiksa',
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
             ]);
-
-            // Store hasil pemeriksaan per indikator (hanya 5 indikator pertama, tidak termasuk selfie)
-            if ($index < 5) {
-                LaporanHasil::create([
-                    'laporan_id' => $laporan->id,
-                    'indikator' => $indikatorName,
-                    'hasil' => $validated['hasil'][$index] ?? 'diperiksa',
-                    'created_by' => $user->id,
-                    'updated_by' => $user->id,
-                ]);
-            }
-
-            $index++;
         }
 
         return redirect()->route('pengawas.laporan.index')
-            ->with('success', 'Laporan berhasil dikirim ('.count($photos).' foto).');
+            ->with('success', 'Laporan berhasil dikirim.');
     }
 
     public function show(Laporan $laporan)
     {
-        $laporan->load(['dapur', 'photos']);
+        $laporan->load(['dapur']);
 
         return view('admin.laporan.show', compact('laporan'));
     }
@@ -123,20 +102,5 @@ class LaporanController extends Controller
 
         return redirect()->route('admin.laporan.show', $laporan->id)
             ->with('success', 'Laporan berhasil diperbarui.');
-    }
-
-    private function storeSelfie(string $dataUrl, int $laporanId): string
-    {
-        $parts = explode(';base64,', $dataUrl);
-        $ext = str_replace('data:image/', '', $parts[0]);
-        $data = base64_decode($parts[1]);
-
-        $folder = 'laporans/'.$laporanId.'/photos';
-        $filename = 'photo-'.now()->format('YmdHis').'-'.str()->random(6).'.'.$ext;
-
-        Storage::disk('public')->makeDirectory($folder);
-        Storage::disk('public')->put($folder.'/'.$filename, $data);
-
-        return $folder.'/'.$filename;
     }
 }

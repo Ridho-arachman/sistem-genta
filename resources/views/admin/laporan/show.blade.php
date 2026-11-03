@@ -53,31 +53,12 @@
         </div>
     </div>
 
-    <!-- Foto per Indikator + Selfie (READ-ONLY, setiap foto sudah dilengkapi peta + GPS) -->
+    <!-- Foto Laporan (READ-ONLY, sudah dilengkapi peta + GPS) -->
     <div class="mt-6">
-        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Pemeriksaan per Indikator (dengan Peta & GPS)</p>
-        @if ($laporan->photos->count() > 0)
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                @foreach ($laporan->photos as $photo)
-                    <?php
-                        $lat = (float) $photo->latitude;
-                        $lng = (float) $photo->longitude;
-                        $zoom = 16;
-                        $n = pow(2, $zoom);
-                        $tileX = floor(($lng + 180) / 360 * $n);
-                        $tileY = floor((1 - log(tan(deg2rad($lat)) + 1 / cos(deg2rad($lat))) / M_PI) / 2 * $n);
-                    ?>
-                    <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-                        <div class="flex items-start justify-between mb-1">
-                            <span class="text-[9px] font-medium text-[var(--color-primary)] uppercase tracking-tighter">{{ $photo->indikator }}</span>
-                        </div>
-                        <div class="relative">
-                            <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Foto pengawas" class="w-full h-48 object-cover rounded-md">
-                        </div>
-                        <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
-                        </div>
-                    </div>
-                @endforeach
+        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Pemeriksaan (dengan Peta & GPS)</p>
+        @if ($laporan->selfie_photo)
+            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                <img src="{{ asset('storage/' . $laporan->selfie_photo) }}" alt="Foto laporan" class="w-full h-96 object-cover rounded-md">
             </div>
         @else
             <p class="text-sm text-[var(--color-text-muted)] italic">Foto belum diambil pengawas.</p>

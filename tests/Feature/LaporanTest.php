@@ -3,7 +3,6 @@
 use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Models\LaporanHasil;
-use App\Models\LaporanPhoto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -14,7 +13,7 @@ beforeEach(function () {
     $this->pengawas = User::factory()->create(['role' => 'pengawas']);
 });
 
-test('pengawas can create laporan with 6 photos and GPS via mobile app', function () {
+test('pengawas can create laporan with single photo and GPS via mobile app', function () {
     $dapur = Dapur::factory()->create();
 
     // Assign dapur to pengawas via dapur_user pivot
@@ -29,15 +28,10 @@ test('pengawas can create laporan with 6 photos and GPS via mobile app', functio
             'kategori' => 'Kebersihan dan sanitasi',
             'status' => 'diperiksa',
             'catatan' => 'Kondisi dapur baik.',
-            'photo_indikator_1' => $photoBase64,
-            'photo_indikator_2' => $photoBase64,
-            'photo_indikator_3' => $photoBase64,
-            'photo_indikator_4' => $photoBase64,
-            'photo_indikator_5' => $photoBase64,
-            'photo_selfie' => $photoBase64,
-            'latitude' => [-6.208800, -6.208900, -6.209000, -6.209100, -6.209200, -6.209300],
-            'longitude' => [106.845600, 106.845700, 106.845800, 106.845900, 106.846000, 106.846100],
-            'address' => ['Jl. A', 'Jl. B', 'Jl. C', 'Jl. D', 'Jl. E', 'Jl. F'],
+            'selfie_photo' => $photoBase64,
+            'latitude' => -6.208800,
+            'longitude' => 106.845600,
+            'address' => 'Jl. A',
             'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
         ])
         ->assertRedirect(route('pengawas.laporan.index'))
@@ -49,37 +43,36 @@ test('pengawas can create laporan with 6 photos and GPS via mobile app', functio
     $this->assertEquals(-6.208800, $laporan->latitude);
     $this->assertEquals(106.845600, $laporan->longitude);
     $this->assertEquals('Jl. A', $laporan->address);
-    $this->assertEquals(6, $laporan->photos->count());
+    $this->assertNotNull($laporan->selfie_photo);
     $this->assertEquals(5, $laporan->hasil->count());
-    $this->assertNotNull($laporan->photos->first()->photo_path);
-    $this->assertNotNull($laporan->photos->first()->indikator);
     // Verify each indikator has a hasil record with 'diperiksa' value
     $this->assertEquals('diperiksa', $laporan->hasil->first()->hasil);
 });
 
-test('pengawas cannot create laporan without photos', function () {
+test('pengawas cannot create laporan without photo', function () {
     $dapur = Dapur::factory()->create();
+
+    // Assign dapur to pengawas via dapur_user pivot
+    $this->pengawas->dapurs()->attach($dapur->id);
 
     $this->actingAs($this->pengawas)
         ->withCookie('capacitor_app', '1')
         ->post(route('pengawas.laporan.store'), [
             'dapur_id' => $dapur->id,
             'status' => 'diperiksa',
-            'photo_indikator_1' => '',
-            'photo_indikator_2' => '',
-            'photo_indikator_3' => '',
-            'photo_indikator_4' => '',
-            'photo_indikator_5' => '',
-            'photo_selfie' => '',
-            'latitude' => [],
-            'longitude' => [],
-            'address' => [],
+            'selfie_photo' => '',
+            'latitude' => '',
+            'longitude' => '',
+            'address' => '',
         ])
-        ->assertSessionHasErrors(['photo_indikator_1', 'photo_selfie', 'latitude', 'longitude', 'address']);
+        ->assertSessionHasErrors(['selfie_photo', 'latitude', 'longitude', 'address']);
 });
 
-test('pengawas cannot create laporan with incomplete photos', function () {
+test('pengawas cannot create laporan with incomplete hasil', function () {
     $dapur = Dapur::factory()->create();
+
+    // Assign dapur to pengawas via dapur_user pivot
+    $this->pengawas->dapurs()->attach($dapur->id);
 
     $photoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
@@ -88,21 +81,16 @@ test('pengawas cannot create laporan with incomplete photos', function () {
         ->post(route('pengawas.laporan.store'), [
             'dapur_id' => $dapur->id,
             'status' => 'diperiksa',
-            'photo_indikator_1' => $photoBase64,
-            'photo_indikator_2' => $photoBase64,
-            'photo_indikator_3' => $photoBase64,
-            'photo_indikator_4' => $photoBase64,
-            'photo_indikator_5' => '',
-            'photo_selfie' => $photoBase64,
-            'latitude' => [-6.208800, -6.208900, -6.209000, -6.209100, -6.209200, -6.209300],
-            'longitude' => [106.845600, 106.845700, 106.845800, 106.845900, 106.846000, 106.846100],
-            'address' => ['Jl. A', 'Jl. B', 'Jl. C', 'Jl. D', 'Jl. E', 'Jl. F'],
-            'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
+            'selfie_photo' => $photoBase64,
+            'latitude' => -6.208800,
+            'longitude' => 106.845600,
+            'address' => 'Jl. A',
+            'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'], // only 4, missing 1
         ])
-        ->assertSessionHasErrors(['photo_indikator_5']);
+        ->assertSessionHasErrors(['hasil']);
 });
 
-test('admin can view laporan show with multiple photos', function () {
+test('admin can view laporan show with single photo', function () {
     $dapur = Dapur::factory()->create();
     $laporan = Laporan::factory()->create([
         'dapur_id' => $dapur->id,
@@ -111,33 +99,30 @@ test('admin can view laporan show with multiple photos', function () {
         'latitude' => -6.208800,
         'longitude' => 106.845600,
         'address' => 'Jl. A',
+        'selfie_photo' => 'laporans/1/photos/photo-1.jpg',
     ]);
-    LaporanPhoto::create([
-        'laporan_id' => $laporan->id,
-        'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-1.jpg',
-        'indikator' => 'Kebersihan dan sanitasi',
-    ]);
-    LaporanPhoto::create([
-        'laporan_id' => $laporan->id,
-        'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-2.jpg',
-        'indikator' => 'Selfie di depan dapur',
-    ]);
-    LaporanHasil::create([
-        'laporan_id' => $laporan->id,
-        'indikator' => 'Kebersihan dan sanitasi',
-        'hasil' => 'diperiksa',
-    ]);
-    LaporanHasil::create([
-        'laporan_id' => $laporan->id,
-        'indikator' => 'Selfie di depan dapur',
-        'hasil' => 'diperiksa',
-    ]);
+    
+    $indikators = [
+        'Kebersihan dan sanitasi',
+        'Penyimpanan bahan',
+        'Proses pengolahan',
+        'Distribusi makanan',
+        'Peralatan dan fasilitas',
+    ];
+    
+    foreach ($indikators as $indikator) {
+        LaporanHasil::create([
+            'laporan_id' => $laporan->id,
+            'indikator' => $indikator,
+            'hasil' => 'diperiksa',
+        ]);
+    }
 
     $response = $this->actingAs($this->admin)
         ->get(route('admin.laporan.show', $laporan->id))
         ->assertOk();
 
-    $response->assertSee($laporan->photos->first()->photo_path);
+    $response->assertSee($laporan->selfie_photo);
     $this->assertEquals(-6.2088, $laporan->latitude);
     $this->assertEquals(106.8456, $laporan->longitude);
 });

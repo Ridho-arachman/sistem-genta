@@ -5,7 +5,7 @@
     <div>
         <div class="eyebrow">Genta · Pengawasan MBG</div>
         <h1>Form Inspeksi Dapur</h1>
-        <div class="muted">Isi formulir pemeriksaan dapur (maksimal 6 foto, setiap foto dilengkapi peta + GPS)</div>
+        <div class="muted">Isi formulir pemeriksaan dapur (1 foto dilengkapi peta + GPS)</div>
     </div>
 </div>
 
@@ -22,6 +22,9 @@
     <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" class="space-y-6">
         @csrf
 
+        {{-- Status laporan (default diperiksa) --}}
+        <input type="hidden" name="status" value="diperiksa">
+
         {{-- Pilih Dapur --}}
         <div>
             <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur <span class="text-red-500">*</span></label>
@@ -36,7 +39,7 @@
             @enderror
         </div>
 
-        {{-- Satu card untuk semua indikator + selfie --}}
+        {{-- Satu card untuk semua indikator (hasil dropdown saja, foto di bawah) --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-6">
 
             {{-- Indikator 1: Kebersihan dan sanitasi --}}
@@ -44,28 +47,14 @@
                 <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi <span class="text-red-500">*</span></h3>
                 <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
                 
-                {{-- Foto --}}
-                <div class="space-y-3">
-                    <div id="card_indikator_1" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(1)" data-indikator="1">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                <span>Foto Kebersihan dan sanitasi <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
-                    </div>
-                    {{-- Select Hasil --}}
-                    <div class="mt-3">
-                        <select name="hasil[]" class="input-field w-full">
-                            <option value="">-- Pilih Hasil --</option>
-                            <option value="diperiksa">Sesuai standar</option>
-                            <option value="temuan_sedang">Perlu perbaikan</option>
-                            <option value="temuan_kritis">Temuan kritis</option>
-                        </select>
-                    </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
 
@@ -74,28 +63,14 @@
                 <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan <span class="text-red-500">*</span></h3>
                 <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
                 
-                {{-- Foto --}}
-                <div class="space-y-3">
-                    <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v16H3zM14 1h-8l4 4zm0 6l-4 4h8l-4-4z" /></svg>
-                                <span>Foto Penyimpanan bahan <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
-                    </div>
-                    {{-- Select Hasil --}}
-                    <div class="mt-3">
-                        <select name="hasil[]" class="input-field w-full">
-                            <option value="">-- Pilih Hasil --</option>
-                            <option value="diperiksa">Sesuai standar</option>
-                            <option value="temuan_sedang">Perlu perbaikan</option>
-                            <option value="temuan_kritis">Temuan kritis</option>
-                        </select>
-                    </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
 
@@ -104,28 +79,14 @@
                 <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan <span class="text-red-500">*</span></h3>
                 <input type="hidden" name="kategori[]" value="Proses pengolahan">
                 
-                {{-- Foto --}}
-                <div class="space-y-3">
-                    <div id="card_indikator_3" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(3)" data-indikator="3">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg>
-                                <span>Foto Proses pengolahan <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
-                    </div>
-                    {{-- Select Hasil --}}
-                    <div class="mt-3">
-                        <select name="hasil[]" class="input-field w-full">
-                            <option value="">-- Pilih Hasil --</option>
-                            <option value="diperiksa">Sesuai standar</option>
-                            <option value="temuan_sedang">Perlu perbaikan</option>
-                            <option value="temuan_kritis">Temuan kritis</option>
-                        </select>
-                    </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
 
@@ -134,28 +95,14 @@
                 <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan <span class="text-red-500">*</span></h3>
                 <input type="hidden" name="kategori[]" value="Distribusi makanan">
                 
-                {{-- Foto --}}
-                <div class="space-y-3">
-                    <div id="card_indikator_4" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(4)" data-indikator="4">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
-                                <span>Foto Distribusi makanan <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
-                    </div>
-                    {{-- Select Hasil --}}
-                    <div class="mt-3">
-                        <select name="hasil[]" class="input-field w-full">
-                            <option value="">-- Pilih Hasil --</option>
-                            <option value="diperiksa">Sesuai standar</option>
-                            <option value="temuan_sedang">Perlu perbaikan</option>
-                            <option value="temuan_kritis">Temuan kritis</option>
-                        </select>
-                    </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
 
@@ -164,61 +111,42 @@
                 <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas <span class="text-red-500">*</span></h3>
                 <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
                 
-                {{-- Foto --}}
-                <div class="space-y-3">
-                    <div id="card_indikator_5" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(5)" data-indikator="5">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
-                                <span>Foto Peralatan dan fasilitas <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
-                    </div>
-                    {{-- Select Hasil --}}
-                    <div class="mt-3">
-                        <select name="hasil[]" class="input-field w-full">
-                            <option value="">-- Pilih Hasil --</option>
-                            <option value="diperiksa">Sesuai standar</option>
-                            <option value="temuan_sedang">Perlu perbaikan</option>
-                            <option value="temuan_kritis">Temuan kritis</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Foto Selfie di Depan Dapur (di akhir sebelum catatan) --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Foto Selfie di Depan Dapur <span class="text-red-500">*</span></h3>
-                <div class="space-y-3">
-                    <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
-                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                <span>Selfie di depan dapur <span class="text-red-500">*</span></span>
-                            </span>
-                            
-                        </div>
-                        <input type="file" id="photo_selfie" name="photo_selfie" accept="image/*" capture="environment" class="hidden" data-indikator="selfie" onchange="handleIndicatorPhotoSelected(this)">
-                        <div id="photo_selfie_preview" class="mt-2 hidden"></div>
-                    </div>
+                {{-- Select Hasil --}}
+                <div class="mt-3">
+                    <select name="hasil[]" class="input-field w-full">
+                        <option value="">-- Pilih Hasil --</option>
+                        <option value="diperiksa">Sesuai standar</option>
+                        <option value="temuan_sedang">Perlu perbaikan</option>
+                        <option value="temuan_kritis">Temuan kritis</option>
+                    </select>
                 </div>
             </div>
 
         </div>
 
-        {{-- Hidden inputs for photo data (base64) and GPS arrays --}}
-        <input type="hidden" name="photo_indikator_1" id="photo_indikator_1_data" value="">
-        <input type="hidden" name="photo_indikator_2" id="photo_indikator_2_data" value="">
-        <input type="hidden" name="photo_indikator_3" id="photo_indikator_3_data" value="">
-        <input type="hidden" name="photo_indikator_4" id="photo_indikator_4_data" value="">
-        <input type="hidden" name="photo_indikator_5" id="photo_indikator_5_data" value="">
-        <input type="hidden" name="photo_selfie" id="photo_selfie_data" value="">
-        <input type="hidden" name="latitude[]" id="latitudeInput" value="">
-        <input type="hidden" name="longitude[]" id="longitudeInput" value="">
-        <input type="hidden" name="address[]" id="addressInput" value="">
+        {{-- Foto tunggal (Selfie/Foto Utama) --}}
+        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-3">
+            <h3 class="font-medium text-[var(--color-secondary)]">Foto Dapur <span class="text-red-500">*</span></h3>
+            <div class="space-y-3">
+                <div id="card_photo" class="relative group cursor-pointer" onclick="toggleCamera()">
+                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>Ambil foto dapur <span class="text-red-500">*</span></span>
+                        </span>
+                        
+                    </div>
+                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelected(this)">
+                    <div id="photo_preview" class="mt-2 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Hidden inputs for photo data (base64) and GPS --}}
+        <input type="hidden" name="selfie_photo" id="photo_data" value="">
+        <input type="hidden" name="latitude" id="latitudeInput" value="">
+        <input type="hidden" name="longitude" id="longitudeInput" value="">
+        <input type="hidden" name="address" id="addressInput" value="">
 
         {{-- Catatan Pengawas --}}
         <div>
@@ -254,14 +182,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('laporanForm');
     const submitBtn = document.getElementById('submitBtn');
-    const photoInput = document.getElementById('selfie_photo');
-    const photoGallery = document.getElementById('photoGallery');
-    const photoDataInput = document.getElementById('photoDataInput');
-    const latInput = document.getElementById('latitudeInput');
-    const lngInput = document.getElementById('longitudeInput');
-
-    const MAX_PHOTOS = 6;
-    let photos = []; // Array of {id, dataUrl, lat, lng, accuracy, address}
+    
+    let photo = null; // {dataUrl, lat, lng, accuracy, address, gpsStatus}
 
     // Convert lat/lng to OSM tile x,y at given zoom
     function latLngToTile(lat, lng, zoom) {
@@ -312,39 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Update hidden inputs per-indikator
+    // Update hidden inputs
     function updateHiddenInputs() {
-        // Reset all
-        for (let i = 1; i <= 5; i++) {
-            document.getElementById('photo_indikator_' + i + '_data').value = '';
-        }
-        document.getElementById('photo_selfie_data').value = '';
-        document.getElementById('latitudeInput').value = '';
-        document.getElementById('longitudeInput').value = '';
-        document.getElementById('addressInput').value = '';
-
-        photos.forEach((p) => {
-            if (p.indikator === 'selfie') {
-                document.getElementById('photo_selfie_data').value = p.dataUrl;
-            } else {
-                document.getElementById('photo_indikator_' + p.indikator + '_data').value = p.dataUrl;
-            }
-        });
-        // lat/lng/address arrays (first 5 = indikators, last = selfie)
-        const lats = [], lngs = [], addrs = [];
-        for (let i = 1; i <= 5; i++) {
-            const p = photos.find(x => x.indikator == i);
-            lats.push(p && p.lat ? p.lat : '');
-            lngs.push(p && p.lng ? p.lng : '');
-            addrs.push(p && p.address ? p.address : '');
-        }
-        const selfie = photos.find(x => x.indikator === 'selfie');
-        lats.push(selfie && selfie.lat ? selfie.lat : '');
-        lngs.push(selfie && selfie.lng ? selfie.lng : '');
-        addrs.push(selfie && selfie.address ? selfie.address : '');
-        document.getElementById('latitudeInput').value = lats.join(',');
-        document.getElementById('longitudeInput').value = lngs.join(',');
-        document.getElementById('addressInput').value = addrs.join(',');
+        document.getElementById('photo_data').value = photo?.dataUrl || '';
+        document.getElementById('latitudeInput').value = photo?.lat || '';
+        document.getElementById('longitudeInput').value = photo?.lng || '';
+        document.getElementById('addressInput').value = photo?.address || '';
     }
 
     // Show/hide loading overlay
@@ -357,99 +252,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Render per-indikator photo preview
-    function renderIndicatorPreview(indikator) {
-        const p = photos.find(x => x.indikator == indikator);
-        const el = document.getElementById('photo_indikator_' + indikator + '_preview');
-        const selfieEl = document.getElementById('photo_selfie_preview');
-        const targetEl = indikator === 'selfie' ? selfieEl : el;
-
-        if (!p || !p.dataUrl) {
-            targetEl.innerHTML = '';
-            targetEl.classList.add('hidden');
+    // Render photo preview
+    function renderPreview() {
+        const el = document.getElementById('photo_preview');
+        if (!photo || !photo.dataUrl) {
+            el.innerHTML = '';
+            el.classList.add('hidden');
             return;
         }
 
-        const gpsHtml = p.lat && p.lng
+        const gpsHtml = photo.lat && photo.lng
             ? `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
-                <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 ${p.lat}, ${p.lng}</span>
-                <p class="text-[9px] text-[var(--color-text-muted)]">${p.address ? p.address : 'GPS tersimpan'}</p>
+                <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 ${photo.lat}, ${photo.lng}</span>
+                <p class="text-[9px] text-[var(--color-text-muted)]">${photo.address ? photo.address : 'GPS tersimpan'}</p>
                </div>`
             : `<div class="mt-1 pt-1 border-t border-[var(--color-border)]">
                 <p class="text-[9px] text-[var(--color-text-muted)]">Memproses GPS...</p>
                </div>`;
 
-        targetEl.innerHTML = `
+        el.innerHTML = `
             <div class="relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-                <img src="${p.dataUrl}" alt="Foto ${indikator}" class="w-full h-32 object-cover rounded-md cursor-pointer" onclick="openIndicatorPhotoPreview('${indikator}')">
-                <button type="button" onclick="removeIndicatorPhoto('${indikator}')" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-2 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
+                <img src="${photo.dataUrl}" alt="Foto dapur" class="w-full h-48 object-cover rounded-md cursor-pointer" onclick="openPhotoPreview()">
+                <button type="button" onclick="removePhoto()" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-2 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
                 ${gpsHtml}
             </div>
         `;
-        targetEl.classList.remove('hidden');
+        el.classList.remove('hidden');
     }
 
-    // Open photo preview modal for indicator photo
-    window.openIndicatorPhotoPreview = function(indikator) {
-        const p = photos.find(x => x.indikator == indikator);
-        if (!p || !p.dataUrl) return;
+    // Open photo preview modal
+    window.openPhotoPreview = function() {
+        if (!photo || !photo.dataUrl) return;
 
         const previewImg = document.getElementById('previewImage');
         const previewGps = document.getElementById('previewGps');
         const modal = document.getElementById('photoPreviewModal');
 
-        previewImg.src = p.dataUrl;
+        previewImg.src = photo.dataUrl;
 
-        if (p.lat && p.lng) {
-            previewGps.innerHTML = '📍 ' + p.lat + ', ' + p.lng + (p.accuracy ? '  (±' + Math.round(p.accuracy) + 'm)' : '') +
-                (p.address ? '<br><span style="font-size: 0.85em;">' + p.address + '</span>' : '');
+        if (photo.lat && photo.lng) {
+            previewGps.innerHTML = '📍 ' + photo.lat + ', ' + photo.lng + (photo.accuracy ? '  (±' + Math.round(photo.accuracy) + 'm)' : '') +
+                (photo.address ? '<br><span style="font-size: 0.85em;">' + photo.address + '</span>' : '');
         } else {
             previewGps.textContent = 'GPS tidak tersedia';
         }
-
-        hideAllTrashButtons();
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     };
 
-    // Update card button muted state based on whether photo exists
-    function updateCardButtonStates() {
-        for (let i = 1; i <= 5; i++) {
-            const card = document.getElementById('card_indikator_' + i);
-            const p = photos.find(x => x.indikator == i);
-            if (p && p.dataUrl) {
-                card.onclick = null;
-            } else {
-                card.onclick = function() { toggleIndicatorCamera(i); };
-            }
-        }
-        const selfieCard = document.getElementById('card_indikator_selfie');
-        const selfieP = photos.find(x => x.indikator === 'selfie');
-        if (selfieP && selfieP.dataUrl) {
-            selfieCard.onclick = null;
-        } else {
-            selfieCard.onclick = function() { toggleIndicatorCamera('selfie'); };
-        }
-    }
-
-    // Hide/show all trash buttons to prevent z-index overlap with preview modal
-    function hideAllTrashButtons() {
-        document.querySelectorAll('.delete-photo-btn').forEach(btn => {
-            btn.style.display = 'none';
-        });
-    }
-
-    function showAllTrashButtons() {
-        document.querySelectorAll('.delete-photo-btn').forEach(btn => {
-            btn.style.display = '';
-        });
-    }
+    // Close photo preview modal
+    window.closePhotoPreview = function() {
+        const modal = document.getElementById('photoPreviewModal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    };
 
     // Toggle camera or open preview based on whether photo exists
-    window.toggleIndicatorCamera = function(indikator) {
+    window.toggleCamera = function() {
         // Validasi dapur harus dipilih dulu
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
@@ -458,25 +320,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const p = photos.find(x => x.indikator == indikator);
-        if (p && p.dataUrl) {
-            openIndicatorPhotoPreview(indikator);
+        if (photo && photo.dataUrl) {
+            openPhotoPreview();
         } else {
-            const inputId = indikator === 'selfie' ? 'photo_selfie' : 'photo_indikator_' + indikator;
-            document.getElementById(inputId).click();
+            document.getElementById('photo_input').click();
         }
     };
 
-    // Remove an indicator photo
-    window.removeIndicatorPhoto = function(indikator) {
-        photos = photos.filter(p => p.indikator != indikator);
-        renderIndicatorPreview(indikator);
-        updateCardButtonStates();
+    // Remove photo
+    window.removePhoto = function() {
+        photo = null;
+        renderPreview();
         updateHiddenInputs();
     };
 
-    // Handle indicator photo selection from native camera/file input
-    window.handleIndicatorPhotoSelected = async function(input) {
+    // Handle photo selection from native camera/file input
+    window.handlePhotoSelected = async function(input) {
         const files = Array.from(input.files);
         if (!files.length) return;
 
@@ -492,8 +351,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const indikator = input.getAttribute('data-indikator');
-
         // Show loading
         showLoading(true);
 
@@ -505,24 +362,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsDataURL(file);
             });
 
-            // Remove existing photo for this indikator if any
-            photos = photos.filter(p => p.indikator != indikator);
-
             const photoId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const photo = {
+            photo = {
                 id: photoId,
                 dataUrl: dataUrl,
-                indikator: indikator,
                 lat: '',
                 lng: '',
                 accuracy: '',
                 address: '',
                 gpsStatus: 'loading'
             };
-            photos.push(photo);
 
-            renderIndicatorPreview(indikator);
-            updateCardButtonStates();
+            renderPreview();
             updateHiddenInputs();
 
             // Reset input
@@ -540,8 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Get GPS for a specific photo using Capacitor Geolocation, then create combined image
     async function getCurrentLocationForPhoto(photoId, originalDataUrl) {
-        const photoIndex = photos.findIndex(p => p.id === photoId);
-        if (photoIndex === -1) return;
+        if (!photo || photo.id !== photoId) return;
 
         try {
             let position;
@@ -581,22 +431,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const combinedDataUrl = await createCombinedImage(originalDataUrl, lat, lng, address);
 
             // Update photo with complete data
-            photos[photoIndex].dataUrl = combinedDataUrl;
-            photos[photoIndex].lat = lat;
-            photos[photoIndex].lng = lng;
-            photos[photoIndex].accuracy = accuracy;
-            photos[photoIndex].address = address;
-            photos[photoIndex].gpsStatus = 'success';
+            photo.dataUrl = combinedDataUrl;
+            photo.lat = lat;
+            photo.lng = lng;
+            photo.accuracy = accuracy;
+            photo.address = address;
+            photo.gpsStatus = 'success';
 
-            renderIndicatorPreview(photos[photoIndex].indikator);
-            updateCardButtonStates();
+            renderPreview();
             updateHiddenInputs();
         } catch (err) {
-            photos[photoIndex].lat = '';
-            photos[photoIndex].lng = '';
-            photos[photoIndex].accuracy = '';
-            photos[photoIndex].address = '';
-            photos[photoIndex].gpsStatus = 'error';
+            photo.lat = '';
+            photo.lng = '';
+            photo.accuracy = '';
+            photo.address = '';
+            photo.gpsStatus = 'error';
             
             let msg = 'GPS tidak tersedia';
             if (err.code === 1 || err.message?.includes('denied')) {
@@ -606,14 +455,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (err.code === 3 || err.message?.includes('timeout')) {
                 msg += ' (timeout)';
             }
-            console.warn('GPS error for photo ' + (photoIndex + 1) + ':', err);
+            console.warn('GPS error:', err);
             
             // Even without GPS, create combined image (just photo, no map overlay)
             const combinedDataUrl = await createCombinedImage(originalDataUrl, '', '', '');
-            photos[photoIndex].dataUrl = combinedDataUrl;
+            photo.dataUrl = combinedDataUrl;
             
-            renderIndicatorPreview(photos[photoIndex].indikator);
-            updateCardButtonStates();
+            renderPreview();
             updateHiddenInputs();
         }
     }
@@ -845,36 +693,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Open photo preview modal
-    window.openPhotoPreview = function(photoId) {
-        const photo = photos.find(p => p.id === photoId);
-        if (!photo || !photo.dataUrl) return;
-        
-        const previewImg = document.getElementById('previewImage');
-        const previewGps = document.getElementById('previewGps');
-        const modal = document.getElementById('photoPreviewModal');
-        
-        previewImg.src = photo.dataUrl;
-        
-        if (photo.lat && photo.lng) {
-            previewGps.innerHTML = '📍 ' + photo.lat + ', ' + photo.lng + (photo.accuracy ? '  (±' + Math.round(photo.accuracy) + 'm)' : '') 
-                + (photo.address ? '<br><span style="font-size: 0.85em;">' + photo.address + '</span>' : '');
-        } else {
-            previewGps.textContent = 'GPS tidak tersedia';
-        }
-        
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
-
-    // Close photo preview modal
-    window.closePhotoPreview = function() {
-        const modal = document.getElementById('photoPreviewModal');
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-        showAllTrashButtons();
-    };
-
     // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -894,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
 
-        // 1. Validasi dapur harus dipilih dulu (urutan dari atas)
+        // 1. Validasi dapur harus dipilih dulu
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
             window.alert('Pilih dapur dulu');
@@ -902,57 +720,35 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // 2. Validasi berurutan: setiap indikator (foto lalu hasil) dari atas ke bawah
-        const indikators = [
-            { num: 1, name: 'Kebersihan dan sanitasi', photoKey: 1, selectIndex: 0 },
-            { num: 2, name: 'Penyimpanan bahan', photoKey: 2, selectIndex: 1 },
-            { num: 3, name: 'Proses pengolahan', photoKey: 3, selectIndex: 2 },
-            { num: 4, name: 'Distribusi makanan', photoKey: 4, selectIndex: 3 },
-            { num: 5, name: 'Peralatan dan fasilitas', photoKey: 5, selectIndex: 4 },
-        ];
-
+        // 2. Validasi 5 dropdown hasil (urutan dari atas)
         const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
-
-        for (const ind of indikators) {
-            // Cek foto
-            const photo = photos.find(p => p.indikator == ind.photoKey);
-            if (!photo || !photo.dataUrl) {
-                window.alert('Foto ' + ind.name + ' belum diisi');
-                // Focus ke tombol foto
-                const btn = document.getElementById('card_indikator_' + ind.num);
-                if (btn) btn.focus();
-                return false;
-            }
-            // Cek dropdown hasil
-            if (!hasilSelects[ind.selectIndex].value) {
-                window.alert('Pilih hasil: ' + ind.name);
-                hasilSelects[ind.selectIndex].focus();
+        const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
+        for (let i = 0; i < 5; i++) {
+            if (!hasilSelects[i].value) {
+                window.alert('Pilih hasil: ' + indikatorNames[i]);
+                hasilSelects[i].focus();
                 return false;
             }
         }
 
-        // 3. Selfie di depan dapur
-        const selfiePhoto = photos.find(p => p.indikator === 'selfie');
-        if (!selfiePhoto || !selfiePhoto.dataUrl) {
-            window.alert('Foto Selfie di depan dapur belum diisi');
-            const selfieBtn = document.getElementById('card_indikator_selfie');
-            if (selfieBtn) selfieBtn.focus();
+        // 3. Foto dapur
+        if (!photo || !photo.dataUrl) {
+            window.alert('Foto dapur belum diisi');
+            document.getElementById('card_photo').focus();
             return false;
         }
 
         // 4. Validasi tidak ada foto yang masih memproses
-        const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
-        if (stillProcessing) {
+        if (photo.gpsStatus === 'loading') {
             window.alert('Tunggu foto selesai diproses');
             return false;
         }
 
         updateHiddenInputs();
 
-        // 5. Validasi GPS: setiap foto harus memiliki lokasi
-        const photosWithoutGps = photos.filter(p => !p.lat || !p.lng);
-        if (photosWithoutGps.length > 0) {
-            window.alert('Semua foto harus memiliki lokasi GPS');
+        // 5. Validasi GPS: foto harus memiliki lokasi
+        if (!photo.lat || !photo.lng) {
+            window.alert('Foto harus memiliki lokasi GPS');
             return false;
         }
 

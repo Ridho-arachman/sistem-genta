@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Dapur;
 use App\Models\FcmToken;
 use App\Models\Laporan;
-use App\Models\LaporanPhoto;
 use App\Models\User;
 use App\Services\GeolocationService;
 use Illuminate\Http\Request;
