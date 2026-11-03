@@ -62,31 +62,26 @@
                 <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->alamat ?? '-' }}</p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Koordinat</p>
-                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm">
-                    @if ($dapur->latitude && $dapur->longitude)
-                        {{ $dapur->latitude }}, {{ $dapur->longitude }}
-                    @else
-                        Belum diset
-                    @endif
-                </p>
-            </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Radius Geofence</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->geofence_radius ?? 100 }} meter</p>
-            </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">Jumlah CCTV</p>
                 <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->cctvs->count() }}</p>
             </div>
         </div>
 
-        {{-- Map Preview --}}
-        @if ($dapur->latitude && $dapur->longitude)
+        {{-- Map Embed --}}
+        @if ($dapur->map_embed_url)
         <div class="border-t border-[var(--color-border)] pt-6 mb-6">
             <h3 class="text-lg font-semibold mb-4">Lokasi di Peta</h3>
             <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden relative">
-                <iframe width="100%" height="100%" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=&q={{ $dapur->latitude }},{{ $dapur->longitude }}&zoom=16" allowfullscreen></iframe>
+                <iframe
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                    style="border:0"
+                    src="{{ $dapur->map_embed_url }}"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
         @endif
@@ -115,7 +110,10 @@
                             <td class="table-td">{{ $cctv->camera_number ?? '-' }}</td>
                             <td class="table-td text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
                             <td class="table-td">
-                                <span class="badge @if($cctv->status === 'online') badge-success @elseif($cctv->status === 'offline') badge-danger @else badge-warning @endif">
+                                <span class="badge 
+                                    @if($cctv->status === 'online') badge-success
+                                    @elseif($cctv->status === 'offline') badge-danger
+                                    @else badge-warning @endif">
                                     {{ ucfirst($cctv->status) }}
                                 </span>
                             </td>

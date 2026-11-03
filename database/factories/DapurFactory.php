@@ -28,9 +28,7 @@ class DapurFactory extends Factory
             'kecamatan' => $kecamatan,
             'kabupaten_kota' => $kabupatenKota,
             'provinsi' => DapurController::BANTEN_PROVINSI,
-            'latitude' => -6.2088 + (fake()->randomFloat(6, -0.5, 0.5)),
-            'longitude' => 106.8456 + (fake()->randomFloat(6, -0.5, 0.5)),
-            'geofence_radius' => fake()->randomElement([100, 150, 200, 500, 1000]),
+            'map_embed_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.12016280941!2d106.09306857440856!3d-6.114521559962048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e418bb3a534efd3%3A0xe0bd65ad1c85f7c1!2sTaktakan%2C%20Kec.%20Taktakan%2C%20Kota%20Serang%2C%20Banten%2042162!5e0!3m2!1sid!2sid!4v1793725171124!5m2!1sid!2sid',
         ];
     }
 }

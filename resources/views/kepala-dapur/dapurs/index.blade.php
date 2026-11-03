@@ -22,8 +22,6 @@
                         <th class="table-th">Nama Dapur</th>
                         <th class="table-th">Lokasi</th>
                         <th class="table-th">Alamat</th>
-                        <th class="table-th">Koordinat</th>
-                        <th class="table-th">Radius Geofence</th>
                         <th class="table-th">Jumlah CCTV</th>
                     </tr>
                 </thead>
@@ -33,14 +31,6 @@
                         <td class="table-td font-semibold text-[var(--color-secondary)]">{{ $dapur->nama }}</td>
                         <td class="table-td">{{ $dapur->lokasi ?? '-' }}</td>
                         <td class="table-td max-w-xs truncate text-[var(--color-text-muted)]">{{ $dapur->alamat ?? '-' }}</td>
-                        <td class="table-td text-[var(--color-text-muted)] font-mono text-xs">
-                            @if ($dapur->latitude && $dapur->longitude)
-                                {{ $dapur->latitude }}, {{ $dapur->longitude }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="table-td">{{ $dapur->geofence_radius ?? 100 }} meter</td>
                         <td class="table-td">
                             <span class="badge badge-primary">{{ $dapur->cctvs_count ?? 0 }} kamera</span>
                         </td>

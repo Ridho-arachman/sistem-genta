@@ -18,8 +18,6 @@
                             <th class="table-th min-w-[150px] hidden lg:table-cell">Pengawas</th>
                             <th class="table-th min-w-[150px] hidden lg:table-cell">Kepala Dapur</th>
                             <th class="table-th min-w-[120px]">Alamat</th>
-                            <th class="table-th min-w-[120px] hidden lg:table-cell">Koordinat</th>
-                            <th class="table-th min-w-[100px]">Radius Geofence</th>
                             <th class="table-th min-w-[100px] text-center">Jumlah CCTV</th>
                             <th class="table-th min-w-[80px] text-center">Aksi</th>
                         </tr>
@@ -60,14 +58,6 @@
                                 @endif
                             </td>
                             <td class="table-td max-w-xs truncate min-w-0">{{ $dapur->alamat ?? '-' }}</td>
-                            <td class="table-td text-[var(--color-text-muted)] font-mono text-sm hidden lg:table-cell min-w-0">
-                                @if ($dapur->latitude && $dapur->longitude)
-                                    {{ $dapur->latitude }}, {{ $dapur->longitude }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td class="table-td min-w-0">{{ $dapur->geofence_radius ?? 100 }} meter</td>
                             <td class="table-td text-center min-w-0">{{ $dapur->cctvs_count ?? 0 }}</td>
                             <td class="table-td text-center min-w-0">
                                 <a href="{{ route('manajerial.dapurs.show', $dapur) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
