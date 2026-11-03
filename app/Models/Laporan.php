@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Database\Factories\LaporanFactory;
+use App\Models\LaporanPhoto;
+use App\Models\LaporanHasil;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +33,11 @@ class Laporan extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(LaporanPhoto::class);
+    }
+
+    public function hasil(): HasMany
+    {
+        return $this->hasMany(LaporanHasil::class);
     }
 
     public function scopeByStatus($query, $status)

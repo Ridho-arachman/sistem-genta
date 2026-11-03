@@ -2,6 +2,7 @@
 
 use App\Models\Dapur;
 use App\Models\Laporan;
+use App\Models\LaporanHasil;
 use App\Models\LaporanPhoto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -49,8 +50,11 @@ test('pengawas can create laporan with 6 photos and GPS via mobile app', functio
     $this->assertEquals(106.845600, $laporan->longitude);
     $this->assertEquals('Jl. A', $laporan->address);
     $this->assertEquals(6, $laporan->photos->count());
+    $this->assertEquals(5, $laporan->hasil->count());
     $this->assertNotNull($laporan->photos->first()->photo_path);
     $this->assertNotNull($laporan->photos->first()->indikator);
+    // Verify each indikator has a hasil record with 'diperiksa' value
+    $this->assertEquals('diperiksa', $laporan->hasil->first()->hasil);
 });
 
 test('pengawas cannot create laporan without photos', function () {
@@ -117,6 +121,16 @@ test('admin can view laporan show with multiple photos', function () {
         'laporan_id' => $laporan->id,
         'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-2.jpg',
         'indikator' => 'Selfie di depan dapur',
+    ]);
+    LaporanHasil::create([
+        'laporan_id' => $laporan->id,
+        'indikator' => 'Kebersihan dan sanitasi',
+        'hasil' => 'diperiksa',
+    ]);
+    LaporanHasil::create([
+        'laporan_id' => $laporan->id,
+        'indikator' => 'Selfie di depan dapur',
+        'hasil' => 'diperiksa',
     ]);
 
     $response = $this->actingAs($this->admin)

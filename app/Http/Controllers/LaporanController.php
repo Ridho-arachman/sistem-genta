@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Laporan;
 use App\Models\LaporanPhoto;
+use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,6 +48,9 @@ class LaporanController extends Controller
             'longitude' => 'required|array|min:6|max:6',
             'longitude.*' => 'required|numeric|between:-180,180',
             'address' => 'required|array|min:6|max:6',
+            // 5 hasil pemeriksaan indikator (wajib dipilih)
+            'hasil' => 'required|array|size:5',
+            'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
         // Create laporan first (need ID for folder)
@@ -78,6 +82,16 @@ class LaporanController extends Controller
                 'photo_path' => $photoPath,
                 'indikator' => $indikatorName,
             ]);
+            
+            // Store hasil pemeriksaan per indikator (hanya 5 indikator pertama, tidak termasuk selfie)
+            if ($index < 5) {
+                LaporanHasil::create([
+                    'laporan_id' => $laporan->id,
+                    'indikator' => $indikatorName,
+                    'hasil' => $validated['hasil'][$index] ?? null,
+                ]);
+            }
+            
             $index++;
         }
 
