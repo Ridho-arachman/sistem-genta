@@ -56,10 +56,13 @@
                     <label class="form-label" for="kabupaten_kota">
                         Kabupaten / Kota <span class="required">*</span>
                     </label>
-                    <select id="kabupaten_kota" name="kabupaten_kota" class="input-field" required>
+                    <select id="kabupaten_kota" name="kabupaten_kota"
+                            class="input-field" required
+                            x-model="form.kabupaten_kota"
+                            x-on:change="onKabupatenChange($event.target.value)">
                         <option value="">-- Pilih Kabupaten/Kota --</option>
                         @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
-                            <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) == $kab ? 'selected' : '' }}>{{ $kab }}</option>
+                            <option value="{{ $kab }}">{{ $kab }}</option>
                         @endforeach
                     </select>
                     @error('kabupaten_kota')
@@ -71,14 +74,11 @@
                     <label class="form-label" for="kecamatan">
                         Kecamatan <span class="required">*</span>
                     </label>
-                    <select id="kecamatan" name="kecamatan" class="input-field" required>
-                        <option value="">-- Pilih Kecamatan --</option>
-                        @php
-                            $kecList = (new \App\Http\Controllers\DapurController)->getKnownKecamatan(old('kabupaten_kota', $dapur->kabupaten_kota));
-                        @endphp
-                        @foreach($kecList as $kec)
-                            <option value="{{ $kec }}" {{ old('kecamatan', $dapur->kecamatan) == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                        @endforeach
+                    <select id="kecamatan" name="kecamatan"
+                            class="input-field" required
+                            x-model="form.kecamatan"
+                            :disabled="kecamatanOptions.length === 0"
+                            x-html="getKecamatanOptionsHtml()">
                     </select>
                     @error('kecamatan')
                         <p class="form-error">{{ $message }}</p>
