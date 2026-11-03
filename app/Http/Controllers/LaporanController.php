@@ -32,7 +32,6 @@ class LaporanController extends Controller
 
         $validated = $request->validate([
             'dapur_id' => $dapurRule,
-            'kategori' => 'nullable|string',
             'status' => 'required|in:diperiksa,temuan,tindak lanjut,selesai',
             'catatan' => 'nullable|string',
             // Satu foto tunggal (selfie/foto utama)
