@@ -14,12 +14,14 @@ class Laporan extends Model
 {
     use Factories\HasFactory;
 
-    #[Fillable(['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude'])]
-    protected $fillable = ['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude'];
+    #[Fillable(['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'hasil', 'address'])]
+    protected $fillable = ['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'hasil', 'address'];
 
     protected $casts = [
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
+        'hasil' => 'array',
+        'address' => 'string',
     ];
 
     public function dapur(): BelongsTo

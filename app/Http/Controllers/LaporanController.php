@@ -57,6 +57,10 @@ class LaporanController extends Controller
             'dapur_id' => $validated['dapur_id'],
             'status' => $validated['status'],
             'catatan' => $validated['catatan'] ?? null,
+            'hasil' => $validated['hasil'],
+            'latitude' => $validated['latitude'][0] ?? null,
+            'longitude' => $validated['longitude'][0] ?? null,
+            'address' => $validated['address'][0] ?? null,
         ]);
 
         // Store each photo with its GPS coordinates and indikator
@@ -77,9 +81,6 @@ class LaporanController extends Controller
                 'laporan_id' => $laporan->id,
                 'photo_path' => $photoPath,
                 'indikator' => $indikatorName,
-                'latitude' => $validated['latitude'][$index] ?? null,
-                'longitude' => $validated['longitude'][$index] ?? null,
-                'address' => $validated['address'][$index] ?? null,
             ]);
             $index++;
         }

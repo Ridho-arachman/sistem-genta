@@ -45,10 +45,10 @@ test('pengawas can create laporan with 6 photos and GPS via mobile app', functio
     $laporan = Laporan::latest()->first();
     $this->assertNotNull($laporan);
     $this->assertEquals($dapur->id, $laporan->dapur_id);
+    $this->assertEquals(-6.208800, $laporan->latitude);
+    $this->assertEquals(106.845600, $laporan->longitude);
+    $this->assertEquals('Jl. A', $laporan->address);
     $this->assertEquals(6, $laporan->photos->count());
-    $this->assertEquals(-6.208800, $laporan->photos->first()->latitude);
-    $this->assertEquals(106.845600, $laporan->photos->first()->longitude);
-    $this->assertEquals('Jl. A', $laporan->photos->first()->address);
     $this->assertNotNull($laporan->photos->first()->photo_path);
     $this->assertNotNull($laporan->photos->first()->indikator);
 });
@@ -105,22 +105,19 @@ test('admin can view laporan show with multiple photos', function () {
         'dapur_id' => $dapur->id,
         'status' => 'diperiksa',
         'catatan' => 'Kondisi baik.',
-    ]);
-    LaporanPhoto::create([
-        'laporan_id' => $laporan->id,
-        'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-1.jpg',
-        'indikator' => 'Kebersihan dan sanitasi',
         'latitude' => -6.208800,
         'longitude' => 106.845600,
         'address' => 'Jl. A',
     ]);
     LaporanPhoto::create([
         'laporan_id' => $laporan->id,
+        'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-1.jpg',
+        'indikator' => 'Kebersihan dan sanitasi',
+    ]);
+    LaporanPhoto::create([
+        'laporan_id' => $laporan->id,
         'photo_path' => 'laporans/'.$laporan->id.'/photos/photo-2.jpg',
         'indikator' => 'Selfie di depan dapur',
-        'latitude' => -6.208900,
-        'longitude' => 106.845700,
-        'address' => 'Jl. B',
     ]);
 
     $response = $this->actingAs($this->admin)
@@ -128,7 +125,6 @@ test('admin can view laporan show with multiple photos', function () {
         ->assertOk();
 
     $response->assertSee($laporan->photos->first()->photo_path);
-    $response->assertSee(-6.208800);
-    $response->assertSee(106.845600);
-    $response->assertSee('Jl. A');
+    $this->assertEquals(-6.2088, $laporan->latitude);
+    $this->assertEquals(106.8456, $laporan->longitude);
 });

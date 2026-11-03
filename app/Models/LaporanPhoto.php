@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LaporanPhoto extends Model
 {
-    protected $fillable = ['laporan_id', 'photo_path', 'indikator', 'latitude', 'longitude', 'address'];
-
-    protected $casts = [
-        'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8',
-    ];
+    protected $fillable = ['laporan_id', 'photo_path', 'indikator'];
 
     public function laporan(): BelongsTo
     {

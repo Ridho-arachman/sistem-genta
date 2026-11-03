@@ -73,18 +73,8 @@
                         </div>
                         <div class="relative">
                             <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Foto pengawas" class="w-full h-48 object-cover rounded-md">
-                            @if ($photo->latitude && $photo->longitude)
-                            <div class="absolute bottom-2 left-2 w-32 h-24 border border-[var(--color-border)] bg-white overflow-hidden rounded-sm shadow-sm z-10">
-                                <img src="https://tile.openstreetmap.org/{{ $zoom }}/{{ $tileX }}/{{ $tileY }}.png" class="w-full h-full object-cover" alt="Map">
-                                <div class="absolute bottom-0 left-0 w-full bg-black/50 text-white text-[9px] text-center px-1 py-0.5">
-                                    {{ $photo->latitude }}, {{ $photo->longitude }}
-                                </div>
-                            </div>
-                            @endif
                         </div>
                         <div class="mt-2 pt-1 border-t border-[var(--color-border)]">
-                            <span class="text-[9px] font-medium text-[var(--color-primary)]">📍 {{ $photo->latitude }}, {{ $photo->longitude }}</span>
-                            <p class="text-[9px] text-[var(--color-text-muted)]">{{ $photo->address ? $photo->address : 'GPS tersimpan' }}</p>
                         </div>
                     </div>
                 @endforeach
