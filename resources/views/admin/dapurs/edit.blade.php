@@ -62,7 +62,7 @@
                             x-on:change="onKabupatenChange($event.target.value)">
                         <option value="">-- Pilih Kabupaten/Kota --</option>
                         @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
-                            <option value="{{ $kab }}">{{ $kab }}</option>
+                            <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) == $kab ? 'selected' : '' }}>{{ $kab }}</option>
                         @endforeach
                     </select>
                     @error('kabupaten_kota')
@@ -77,8 +77,14 @@
                     <select id="kecamatan" name="kecamatan"
                             class="input-field" required
                             x-model="form.kecamatan"
-                            :disabled="kecamatanOptions.length === 0"
-                            x-html="getKecamatanOptionsHtml()">
+                            :disabled="kecamatanOptions.length === 0">
+                        <option value="">-- Pilih Kecamatan --</option>
+                        @php
+                            $kecList = (new \App\Http\Controllers\DapurController)->getKnownKecamatan(old('kecamatan', $dapur->kecamatan) ? old('kabupaten_kota', $dapur->kabupaten_kota) : $dapur->kabupaten_kota);
+                        @endphp
+                        @foreach($kecList as $kec)
+                            <option value="{{ $kec }}" {{ old('kecamatan', $dapur->kecamatan) == $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                        @endforeach
                     </select>
                     @error('kecamatan')
                         <p class="form-error">{{ $message }}</p>
