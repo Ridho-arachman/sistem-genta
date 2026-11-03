@@ -43,7 +43,7 @@
             <select id="dapur_id" name="dapur_id" class="input-field">
                 <option value="">-- Pilih Dapur --</option>
                 @foreach (auth()->user()->dapurs as $dapur)
-                    <option value="{{ $dapur->id }}">{{ $dapur->nama }}</option>
+                    <option value="{{ $dapur->id }}" {{ $selectedDapurId == $dapur->id ? 'selected' : '' }}>{{ $dapur->nama }}</option>
                 @endforeach
             </select>
             @error('dapur_id')

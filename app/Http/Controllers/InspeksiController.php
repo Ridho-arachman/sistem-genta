@@ -52,8 +52,11 @@ class InspeksiController extends Controller
             $dapurs = Dapur::all();
         }
 
+        // Dapur yang dipilih dari parameter URL (untuk preselect di form inspeksi)
+        $selectedDapurId = $request->query('dapur');
+
         if ($user->isPengawas()) {
-            return view('pengawas.inspeksi.index', compact('laporans', 'dapurs'));
+            return view('pengawas.inspeksi.index', compact('laporans', 'dapurs', 'selectedDapurId'));
         }
 
         $prefix = $user->isAdmin() ? 'admin' : 'manajerial';
