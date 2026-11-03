@@ -36,177 +36,177 @@
             @enderror
         </div>
 
-        {{-- Indikator 1: Kebersihan dan sanitasi --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi <span class="text-red-500">*</span></h3>
-            <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
-            
-            {{-- Foto --}}
-            <div class="space-y-3">
-                <div id="card_indikator_1" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(1)" data-indikator="1">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Foto Kebersihan dan sanitasi <span class="text-red-500">*</span></span>
-                        </span>
-                        
-                    </div>
-                    <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
-                </div>
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                </div>
-            </div>
-            </div>
-            
-        </div>
+        {{-- Satu card untuk semua indikator + selfie --}}
+        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-6">
 
-        {{-- Indikator 2: Penyimpanan bahan --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan <span class="text-red-500">*</span></h3>
-            <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
-            
-            {{-- Foto --}}
-            <div class="space-y-3">
-                <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v16H3zM14 1h-8l4 4zm0 6l-4 4h8l-4-4z" /></svg>
-                            <span>Foto Penyimpanan bahan <span class="text-red-500">*</span></span>
-                        </span>
-                        
+            {{-- Indikator 1: Kebersihan dan sanitasi --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi <span class="text-red-500">*</span></h3>
+                <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
+                
+                {{-- Foto --}}
+                <div class="space-y-3">
+                    <div id="card_indikator_1" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(1)" data-indikator="1">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span>Foto Kebersihan dan sanitasi <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_indikator_1" name="photo_indikator_1" accept="image/*" capture="environment" class="hidden" data-indikator="1" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_indikator_1_preview" class="mt-2 hidden"></div>
                     </div>
-                    <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
-                </div>
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
+                    {{-- Select Hasil --}}
+                    <div class="mt-3">
+                        <select name="hasil[]" class="input-field w-full">
+                            <option value="">-- Pilih Hasil --</option>
+                            <option value="diperiksa">Sesuai standar</option>
+                            <option value="temuan_sedang">Perlu perbaikan</option>
+                            <option value="temuan_kritis">Temuan kritis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            
-        </div>
 
-        {{-- Indikator 3: Proses pengolahan --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan <span class="text-red-500">*</span></h3>
-            <input type="hidden" name="kategori[]" value="Proses pengolahan">
-            
-            {{-- Foto --}}
-            <div class="space-y-3">
-                <div id="card_indikator_3" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(3)" data-indikator="3">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg>
-                            <span>Foto Proses pengolahan <span class="text-red-500">*</span></span>
-                        </span>
-                        
+            {{-- Indikator 2: Penyimpanan bahan --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan <span class="text-red-500">*</span></h3>
+                <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
+                
+                {{-- Foto --}}
+                <div class="space-y-3">
+                    <div id="card_indikator_2" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(2)" data-indikator="2">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v16H3zM14 1h-8l4 4zm0 6l-4 4h8l-4-4z" /></svg>
+                                <span>Foto Penyimpanan bahan <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_indikator_2" name="photo_indikator_2" accept="image/*" capture="environment" class="hidden" data-indikator="2" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_indikator_2_preview" class="mt-2 hidden"></div>
                     </div>
-                    <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
-                </div>
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
+                    {{-- Select Hasil --}}
+                    <div class="mt-3">
+                        <select name="hasil[]" class="input-field w-full">
+                            <option value="">-- Pilih Hasil --</option>
+                            <option value="diperiksa">Sesuai standar</option>
+                            <option value="temuan_sedang">Perlu perbaikan</option>
+                            <option value="temuan_kritis">Temuan kritis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            
-        </div>
 
-        {{-- Indikator 4: Distribusi makanan --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan <span class="text-red-500">*</span></h3>
-            <input type="hidden" name="kategori[]" value="Distribusi makanan">
-            
-            {{-- Foto --}}
-            <div class="space-y-3">
-                <div id="card_indikator_4" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(4)" data-indikator="4">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
-                            <span>Foto Distribusi makanan <span class="text-red-500">*</span></span>
-                        </span>
-                        
+            {{-- Indikator 3: Proses pengolahan --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan <span class="text-red-500">*</span></h3>
+                <input type="hidden" name="kategori[]" value="Proses pengolahan">
+                
+                {{-- Foto --}}
+                <div class="space-y-3">
+                    <div id="card_indikator_3" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(3)" data-indikator="3">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg>
+                                <span>Foto Proses pengolahan <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_indikator_3" name="photo_indikator_3" accept="image/*" capture="environment" class="hidden" data-indikator="3" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_indikator_3_preview" class="mt-2 hidden"></div>
                     </div>
-                    <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
-                </div>
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
+                    {{-- Select Hasil --}}
+                    <div class="mt-3">
+                        <select name="hasil[]" class="input-field w-full">
+                            <option value="">-- Pilih Hasil --</option>
+                            <option value="diperiksa">Sesuai standar</option>
+                            <option value="temuan_sedang">Perlu perbaikan</option>
+                            <option value="temuan_kritis">Temuan kritis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            
 
-        {{-- Indikator 5: Peralatan dan fasilitas --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-4">
-            <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas <span class="text-red-500">*</span></h3>
-            <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
-            
-            {{-- Foto --}}
-            <div class="space-y-3">
-                <div id="card_indikator_5" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(5)" data-indikator="5">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
-                            <span>Foto Peralatan dan fasilitas <span class="text-red-500">*</span></span>
-                        </span>
-                        
+            {{-- Indikator 4: Distribusi makanan --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan <span class="text-red-500">*</span></h3>
+                <input type="hidden" name="kategori[]" value="Distribusi makanan">
+                
+                {{-- Foto --}}
+                <div class="space-y-3">
+                    <div id="card_indikator_4" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(4)" data-indikator="4">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-7m-7 0h-3m11 0h-4m4 0h-1m-1 0v-3m0 0v-3m0 0v-3m0-3v-6m0 4V5m0 3l-3-3m-3 3l3 3"></path></svg>
+                                <span>Foto Distribusi makanan <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_indikator_4" name="photo_indikator_4" accept="image/*" capture="environment" class="hidden" data-indikator="4" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_indikator_4_preview" class="mt-2 hidden"></div>
                     </div>
-                    <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
-                </div>
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
+                    {{-- Select Hasil --}}
+                    <div class="mt-3">
+                        <select name="hasil[]" class="input-field w-full">
+                            <option value="">-- Pilih Hasil --</option>
+                            <option value="diperiksa">Sesuai standar</option>
+                            <option value="temuan_sedang">Perlu perbaikan</option>
+                            <option value="temuan_kritis">Temuan kritis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            
-        </div>
 
-        {{-- Foto Selfie di Depan Dapur (di akhir sebelum catatan) --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-3">
-            <h3 class="font-medium text-[var(--color-secondary)]">Foto Selfie di Depan Dapur <span class="text-red-500">*</span></h3>
-            <div class="space-y-3">
-                <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            <span>Selfie di depan dapur <span class="text-red-500">*</span></span>
-                        </span>
-                        
+            {{-- Indikator 5: Peralatan dan fasilitas --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas <span class="text-red-500">*</span></h3>
+                <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
+                
+                {{-- Foto --}}
+                <div class="space-y-3">
+                    <div id="card_indikator_5" class="relative group cursor-pointer" onclick="toggleIndicatorCamera(5)" data-indikator="5">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                                <span>Foto Peralatan dan fasilitas <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_indikator_5" name="photo_indikator_5" accept="image/*" capture="environment" class="hidden" data-indikator="5" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_indikator_5_preview" class="mt-2 hidden"></div>
                     </div>
-                    <input type="file" id="photo_selfie" name="photo_selfie" accept="image/*" capture="environment" class="hidden" data-indikator="selfie" onchange="handleIndicatorPhotoSelected(this)">
-                    <div id="photo_selfie_preview" class="mt-2 hidden"></div>
+                    {{-- Select Hasil --}}
+                    <div class="mt-3">
+                        <select name="hasil[]" class="input-field w-full">
+                            <option value="">-- Pilih Hasil --</option>
+                            <option value="diperiksa">Sesuai standar</option>
+                            <option value="temuan_sedang">Perlu perbaikan</option>
+                            <option value="temuan_kritis">Temuan kritis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
+
+            {{-- Foto Selfie di Depan Dapur (di akhir sebelum catatan) --}}
+            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
+                <h3 class="font-medium text-[var(--color-secondary)]">Foto Selfie di Depan Dapur <span class="text-red-500">*</span></h3>
+                <div class="space-y-3">
+                    <div id="card_indikator_selfie" class="relative group cursor-pointer" onclick="toggleIndicatorCamera('selfie')" data-indikator="selfie">
+                        <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
+                            <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <span>Selfie di depan dapur <span class="text-red-500">*</span></span>
+                            </span>
+                            
+                        </div>
+                        <input type="file" id="photo_selfie" name="photo_selfie" accept="image/*" capture="environment" class="hidden" data-indikator="selfie" onchange="handleIndicatorPhotoSelected(this)">
+                        <div id="photo_selfie_preview" class="mt-2 hidden"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         {{-- Hidden inputs for photo data (base64) and GPS arrays --}}
@@ -894,13 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
 
-        // 1. Konfirmasi sebelum kirim laporan inspeksi
-        const confirmed = window.confirm('Kirim laporan sekarang?');
-        if (!confirmed) {
-            return false;
-        }
-
-        // 2. Validasi dapur harus dipilih dulu (urutan dari atas)
+        // 1. Validasi dapur harus dipilih dulu (urutan dari atas)
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
             window.alert('Pilih dapur dulu');
@@ -908,34 +902,45 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // 3. Validasi semua hasil select dropdown terisi
+        // 2. Validasi berurutan: setiap indikator (foto lalu hasil) dari atas ke bawah
+        const indikators = [
+            { num: 1, name: 'Kebersihan dan sanitasi', photoKey: 1, selectIndex: 0 },
+            { num: 2, name: 'Penyimpanan bahan', photoKey: 2, selectIndex: 1 },
+            { num: 3, name: 'Proses pengolahan', photoKey: 3, selectIndex: 2 },
+            { num: 4, name: 'Distribusi makanan', photoKey: 4, selectIndex: 3 },
+            { num: 5, name: 'Peralatan dan fasilitas', photoKey: 5, selectIndex: 4 },
+        ];
+
         const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
-        const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
-        let missingIndikator = null;
-        hasilSelects.forEach((select, index) => {
-            if (!select.value) {
-                missingIndikator = indikatorNames[index];
+
+        for (const ind of indikators) {
+            // Cek foto
+            const photo = photos.find(p => p.indikator == ind.photoKey);
+            if (!photo || !photo.dataUrl) {
+                window.alert('Foto ' + ind.name + ' belum diisi');
+                // Focus ke tombol foto
+                const btn = document.getElementById('card_indikator_' + ind.num);
+                if (btn) btn.focus();
+                return false;
             }
-        });
-        if (missingIndikator) {
-            window.alert('Pilih hasil: ' + missingIndikator);
-            return false;
+            // Cek dropdown hasil
+            if (!hasilSelects[ind.selectIndex].value) {
+                window.alert('Pilih hasil: ' + ind.name);
+                hasilSelects[ind.selectIndex].focus();
+                return false;
+            }
         }
 
-        // 4. Validasi semua foto indikator + selfie sudah diisi
-        const indikatorPhotos = [];
-        for (let i = 1; i <= 5; i++) {
-            indikatorPhotos.push(photos.find(p => p.indikator == i));
-        }
+        // 3. Selfie di depan dapur
         const selfiePhoto = photos.find(p => p.indikator === 'selfie');
-        const allHavePhotos = indikatorPhotos.every(p => p) && selfiePhoto;
-
-        if (!allHavePhotos) {
-            window.alert('Lengkapi semua foto dulu');
+        if (!selfiePhoto || !selfiePhoto.dataUrl) {
+            window.alert('Foto Selfie di depan dapur belum diisi');
+            const selfieBtn = document.getElementById('card_indikator_selfie');
+            if (selfieBtn) selfieBtn.focus();
             return false;
         }
 
-        // 5. Validasi tidak ada foto yang masih memproses
+        // 4. Validasi tidak ada foto yang masih memproses
         const stillProcessing = photos.some(p => p.gpsStatus === 'loading');
         if (stillProcessing) {
             window.alert('Tunggu foto selesai diproses');
@@ -944,10 +949,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateHiddenInputs();
 
-        // 6. Validasi GPS: setiap foto harus memiliki lokasi
+        // 5. Validasi GPS: setiap foto harus memiliki lokasi
         const photosWithoutGps = photos.filter(p => !p.lat || !p.lng);
         if (photosWithoutGps.length > 0) {
             window.alert('Semua foto harus memiliki lokasi GPS');
+            return false;
+        }
+
+        // 6. Konfirmasi sebelum kirim (di akhir setelah semua validasi lolos)
+        const confirmed = window.confirm('Kirim laporan sekarang?');
+        if (!confirmed) {
             return false;
         }
 
