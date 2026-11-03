@@ -60,7 +60,7 @@
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
                 @if ($lat && $lng)
-                <a href="geo:{{ $lat }},{{ $lng }}?z=16"
+                <a href="geo:0,0?q={{ $lat }},{{ $lng }}"
                    class="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded text-sm font-medium shadow-md hover:bg-gray-100 transition-colors">
                     Buka di Google Maps
                 </a>
