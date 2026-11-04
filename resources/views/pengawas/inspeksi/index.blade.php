@@ -835,6 +835,9 @@ document.addEventListener('DOMContentLoaded', function() {
             closePhotoPreview();
         }
     });
+
+    // Close photo preview modal button
+    document.getElementById('photoPreviewModal').querySelector('[data-action="close-photo-preview"]').addEventListener('click', closePhotoPreview);
 });
 </script>
 @endpush
