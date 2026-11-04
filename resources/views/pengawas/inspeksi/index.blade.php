@@ -88,7 +88,13 @@
 
         {{-- Submit --}}
         <div class="flex gap-3 justify-end pt-4 border-t border-[var(--color-border)]">
-            <button type="submit" class="btn-primary" id="submitBtn">Kirim Laporan</button>
+            <button type="submit" class="btn-primary" id="submitBtn">
+                <span id="btn-text">Kirim Laporan</span>
+                <span id="btn-spinner" class="hidden flex items-center gap-2">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Memproses…
+                </span>
+            </button>
         </div>
     </form>
 </div>
@@ -198,6 +204,25 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             overlay.classList.add('hidden');
         }
+    }
+
+    // Show/hide submit button spinner
+    function showSpinner() {
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const btn = document.getElementById('submitBtn');
+        if (btnText) btnText.classList.add('hidden');
+        if (btnSpinner) btnSpinner.classList.remove('hidden');
+        if (btn) btn.disabled = true;
+    }
+
+    function hideSpinner() {
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const btn = document.getElementById('submitBtn');
+        if (btnText) btnText.classList.remove('hidden');
+        if (btnSpinner) btnSpinner.classList.add('hidden');
+        if (btn) btn.disabled = false;
     }
 
     // Render photo preview
@@ -638,11 +663,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make submit handler async for native confirm
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        showSpinner();
 
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
             showError('error-dapur', 'Pilih dapur dulu');
             dapurSelect.focus();
+            hideSpinner();
             return false;
         }
         hideError('error-dapur');
@@ -660,23 +687,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         if (hasilError) {
+            hideSpinner();
             return false;
         }
 
         if (!photo || !photo.dataUrl) {
             showError('error-foto', 'Foto dapur belum diisi. Klik area foto untuk mengambil gambar.');
             document.getElementById('card_photo').focus();
+            hideSpinner();
             return false;
         }
         hideError('error-foto');
 
         if (photo.gpsStatus === 'loading') {
             showError('error-gps', 'Tunggu foto selesai diproses (GPS masih loading).');
+            hideSpinner();
             return false;
         }
 
         if (!photo.lat || !photo.lng) {
             showError('error-gps', 'GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan. Coba ambil foto ulang.');
+            hideSpinner();
             return false;
         }
         hideError('error-gps');
@@ -685,11 +716,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const confirmed = window.confirm('Kirim laporan sekarang?\n\nData yang akan dikirim:\n- Dapur: ' + dapurSelect.options[dapurSelect.selectedIndex].text + '\n- Foto: tersedia\n- GPS: ' + photo.lat + ', ' + photo.lng);
         if (!confirmed) {
+            hideSpinner();
             return false;
         }
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Mengirim...';
         form.submit();
     });
 
