@@ -126,10 +126,6 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // Dapur (detail only)
         Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
-        // CCTV (read only)
-        Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
-        Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
-
         // Inspeksi
         Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
         Route::get('/inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
