@@ -22,140 +22,37 @@
     <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" class="space-y-6">
         @csrf
 
-        {{-- Error alert untuk validasi server --}}
-        @if ($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                <h3 class="text-red-800 font-medium text-sm mb-2">Validasi gagal</h3>
-                <ul class="text-red-700 text-sm list-disc list-inside space-y-1">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         {{-- Status laporan (default diperiksa) --}}
         <input type="hidden" name="status" value="diperiksa">
 
         {{-- Pilih Dapur --}}
-        <div>
-            <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur <span class="text-red-500">*</span></label>
-            <select id="dapur_id" name="dapur_id" class="input-field">
-                <option value="">-- Pilih Dapur --</option>
-                @foreach (auth()->user()->dapurs as $dapur)
-                    <option value="{{ $dapur->id }}" {{ $selectedDapurId == $dapur->id ? 'selected' : '' }}>{{ $dapur->nama }}</option>
-                @endforeach
-            </select>
-            @error('dapur_id')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
+        <x-pengawas.components.dapur-select />
 
         {{-- Satu card untuk semua indikator (hasil dropdown saja, foto di bawah) --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-6">
 
             {{-- Indikator 1: Kebersihan dan sanitasi --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Kebersihan dan sanitasi <span class="text-red-500">*</span></h3>
-                <input type="hidden" name="kategori[]" value="Kebersihan dan sanitasi">
-                
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                </div>
-            </div>
+            <x-pengawas.components.hasil-indikator namaIndikator="Kebersihan dan sanitasi" />
 
             {{-- Indikator 2: Penyimpanan bahan --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Penyimpanan bahan <span class="text-red-500">*</span></h3>
-                <input type="hidden" name="kategori[]" value="Penyimpanan bahan">
-                
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                </div>
-            </div>
+            <x-pengawas.components.hasil-indikator namaIndikator="Penyimpanan bahan" />
 
             {{-- Indikator 3: Proses pengolahan --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Proses pengolahan <span class="text-red-500">*</span></h3>
-                <input type="hidden" name="kategori[]" value="Proses pengolahan">
-                
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                </div>
-            </div>
+            <x-pengawas.components.hasil-indikator namaIndikator="Proses pengolahan" />
 
             {{-- Indikator 4: Distribusi makanan --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Distribusi makanan <span class="text-red-500">*</span></h3>
-                <input type="hidden" name="kategori[]" value="Distribusi makanan">
-                
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                </div>
-            </div>
+            <x-pengawas.components.hasil-indikator namaIndikator="Distribusi makanan" />
 
             {{-- Indikator 5: Peralatan dan fasilitas --}}
-            <div class="space-y-3 pt-2 border-t border-[var(--color-border)]">
-                <h3 class="font-medium text-[var(--color-secondary)]">Peralatan dan fasilitas <span class="text-red-500">*</span></h3>
-                <input type="hidden" name="kategori[]" value="Peralatan dan fasilitas">
-                
-                {{-- Select Hasil --}}
-                <div class="mt-3">
-                    <select name="hasil[]" class="input-field w-full">
-                        <option value="">-- Pilih Hasil --</option>
-                        <option value="diperiksa">Sesuai standar</option>
-                        <option value="temuan_sedang">Perlu perbaikan</option>
-                        <option value="temuan_kritis">Temuan kritis</option>
-                    </select>
-                    @error('hasil')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
+            <x-pengawas.components.hasil-indikator namaIndikator="Peralatan dan fasilitas">
+                @error('hasil')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </x-pengawas.components.hasil-indikator>
         </div>
 
         {{-- Foto tunggal (Selfie/Foto Utama) --}}
-        <div class="card p-4 bg-[var(--color-surface)]/50 space-y-3">
-            <h3 class="font-medium text-[var(--color-secondary)]">Foto Dapur <span class="text-red-500">*</span></h3>
-            <div class="space-y-3">
-                <div id="card_photo" class="relative group cursor-pointer" data-action="toggle-camera">
-                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)]/50 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] transition-colors">
-                        <span class="text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                            <svg class="w-5 h-5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Ambil foto dapur <span class="text-red-500">*</span></span>
-                        </span>
-                        
-                    </div>
-                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="opacity-0 absolute inset-0 w-0 h-0" data-action="handle-photo-selected">
-                    <div id="photo_preview" class="mt-2 hidden"></div>
-                </div>
-            </div>
-        </div>
+        <x-pengawas.components.foto-upload />
 
         {{-- Hidden inputs for photo data (base64) and GPS --}}
         <input type="hidden" name="selfie_photo" id="photo_data" value="">
@@ -178,10 +75,7 @@
         @enderror
 
         {{-- Catatan Pengawas --}}
-        <div>
-            <label for="catatan" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Catatan Pengawas <span class="text-[var(--color-text-muted)]">(opsional)</span></label>
-            <textarea id="catatan" name="catatan" rows="4" class="input-field" placeholder="Tuliskan kondisi yang ditemukan…"></textarea>
-        </div>
+        <x-pengawas.components.catatan-input />
 
         {{-- Submit --}}
         <div class="flex gap-3 justify-end pt-4 border-t border-[var(--color-border)]">
@@ -312,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el.innerHTML = `
             <div class="relative group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
                 <img src="${photo.dataUrl}" alt="Foto dapur" class="w-full h-48 object-cover rounded-md cursor-pointer" data-action="open-photo-preview">
-                <button type="button" data-action="remove-photo" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-3 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
+                <button type="button" data-action="remove-photo" class="delete-photo-btn absolute top-2 right-4 z-50 bg-white bg-opacity-100 p-2 rounded-full text-red-600 hover:text-red-800 shadow-lg" aria-label="Hapus foto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
                 ${gpsStatusHtml}
@@ -501,13 +395,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => {
-                // Canvas size matches photo
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
 
-                // Draw photo
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 if (lat && lng) {
@@ -523,12 +415,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         resolve(canvas.toDataURL('image/jpeg', 0.85));
                     };
                     mapImg.onerror = () => {
-                        // If map fails, just draw GPS text
                         drawGPSOnly(ctx, canvas, lat, lng, address);
                         resolve(canvas.toDataURL('image/jpeg', 0.85));
                     };
                 } else {
-                    // No GPS, just return photo
                     resolve(canvas.toDataURL('image/jpeg', 0.85));
                 }
             };
@@ -537,7 +427,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function drawMapAndGPS(ctx, canvas, mapImg, lat, lng, address, fracX = 0.5, fracY = 0.5) {
-        // Map (left) + GPS text (right) with margins
         const marginLeft = 3;
         const marginRight = 30;
         const gap = 60;
@@ -550,32 +439,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const mapY = canvas.height - mapH - marginLeft;
         const textX = mapX + mapW + gap;
 
-        // Draw map tile
         ctx.drawImage(mapImg, mapX, mapY, mapW, mapH);
 
-        // Marker: pin-style map pin di posisi GPS AKTUAL dalam tile
         const pinX = mapX + fracX * mapW;
         const pinY = mapY + fracY * mapH;
         const pinSize = 40;
-        
-        // Pin tip (ujung tajam) berada di koordinat GPS, bukan center
         const pinTipY = pinSize * 1.2;
         
         ctx.save();
         ctx.translate(pinX, pinY - pinTipY);
         
-        // Pin body (teardrop shape)
         ctx.fillStyle = '#E50000';
         ctx.beginPath();
-        // Top circle
         ctx.arc(0, -pinSize * 0.3, pinSize * 0.55, Math.PI, 0);
-        // Right curve down
         ctx.bezierCurveTo(
             pinSize * 0.55, -pinSize * 0.3,
             pinSize * 0.55, pinSize * 0.3,
             0, pinSize * 1.2
         );
-        // Left curve up
         ctx.bezierCurveTo(
             -pinSize * 0.55, pinSize * 0.3,
             -pinSize * 0.55, -pinSize * 0.3,
@@ -584,7 +465,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.closePath();
         ctx.fill();
         
-        // Pin shadow/depth
         ctx.fillStyle = '#AA0000';
         ctx.beginPath();
         ctx.arc(0, -pinSize * 0.3, pinSize * 0.45, Math.PI, 0);
@@ -600,13 +480,11 @@ document.addEventListener('DOMContentLoaded', function() {
         );
         ctx.fill();
         
-        // White inner circle (hole/center)
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
         ctx.arc(0, -pinSize * 0.3, pinSize * 0.22, 0, Math.PI * 2);
         ctx.fill();
         
-        // White stroke outline
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -625,11 +503,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         ctx.restore();
 
-        // GPS text di sebelah kanan peta
         const textY = mapY;
         const textH = mapH;
         
-        // Background gelap di belakang teks GPS
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(textX - 18, textY, textW + 30, textH);
         
@@ -641,9 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.font = '64px system-ui, sans-serif';
         ctx.fillText('GPS: ' + lat + ', ' + lng, textX, textY + 220);
         
-        // Full address
         if (address) {
-            // Split address into multiple lines if too long
             const maxWidth = textW + 30;
             const words = address.split(' ');
             let lines = [];
@@ -670,7 +544,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function drawGPSOnly(ctx, canvas, lat, lng, address) {
-        // Map (left) + GPS text (right) with margins
         const marginLeft = 3;
         const marginRight = 30;
         const gap = 60;
@@ -686,7 +559,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const textY = mapY;
         const textH = mapH;
         
-        // Dark background for text
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(textX - 18, textY, textW + 30, textH);
         
@@ -698,7 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.font = '64px system-ui, sans-serif';
         ctx.fillText('Peta tidak tersedia', textX, textY + 220);
         
-        // Full address
         if (address) {
             const maxWidth = textW + 30;
             const words = address.split(' ');
@@ -741,17 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make submit handler async for native confirm
     form.addEventListener('submit', async function(e) {
-        // ALWAYS prevent default first - we'll submit manually if all validations pass
         e.preventDefault();
 
-        // Debug: cek semua hidden input sebelum submit
-        console.log('[Laporan Submit Debug] photo_data:', document.getElementById('photo_data').value ? 'TERISI' : 'KOSONG');
-        console.log('[Laporan Submit Debug] latitude:', document.getElementById('latitudeInput').value);
-        console.log('[Laporan Submit Debug] longitude:', document.getElementById('longitudeInput').value);
-        console.log('[Laporan Submit Debug] address:', document.getElementById('addressInput').value);
-        console.log('[Laporan Submit Debug] photo object:', photo);
-
-        // 1. Validasi dapur harus dipilih dulu
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
             window.alert('Pilih dapur dulu');
@@ -759,7 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // 2. Validasi 5 dropdown hasil (urutan dari atas)
         const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
         const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
         for (let i = 0; i < 5; i++) {
@@ -770,20 +631,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 3. Foto dapur
         if (!photo || !photo.dataUrl) {
             window.alert('Foto dapur belum diisi. Klik area foto untuk mengambil gambar.');
             document.getElementById('card_photo').focus();
             return false;
         }
 
-        // 4. Validasi tidak ada foto yang masih memproses
         if (photo.gpsStatus === 'loading') {
             window.alert('Tunggu foto selesai diproses (GPS masih loading).');
             return false;
         }
 
-        // 5. Validasi GPS: foto harus memiliki lokasi (WAJIB)
         if (!photo.lat || !photo.lng) {
             window.alert('GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan. Coba ambil foto ulang.');
             return false;
@@ -791,14 +649,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateHiddenInputs();
 
-        // 6. Konfirmasi sebelum kirim (di akhir setelah semua validasi lolos)
         const confirmed = window.confirm('Kirim laporan sekarang?\n\nData yang akan dikirim:\n- Dapur: ' + dapurSelect.options[dapurSelect.selectedIndex].text + '\n- Foto: tersedia\n- GPS: ' + photo.lat + ', ' + photo.lng);
         if (!confirmed) {
             return false;
         }
 
-        // All validations passed - submit the form programmatically
-        console.log('[Laporan Submit Debug] Semua validasi lolos, memanggil form.submit()');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Mengirim...';
         form.submit();
@@ -809,8 +664,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle photo selection
     document.getElementById('photo_input').addEventListener('change', function(e) {
-    handlePhotoSelected(e.target);
-});
+        handlePhotoSelected(e.target);
+    });
 
     // Remove photo
     document.getElementById('photo_preview').addEventListener('click', function(e) {
@@ -833,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Close photo preview modal button
+    // Close photo preview button
     document.getElementById('photoPreviewModal').querySelector('[data-action="close-photo-preview"]').addEventListener('click', closePhotoPreview);
 });
 </script>

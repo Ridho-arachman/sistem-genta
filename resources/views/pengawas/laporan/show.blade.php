@@ -32,7 +32,7 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status</p>
-                <span class="badge badge-{{ match($laporan->status) { 'diperiksa' => 'success', 'temuan' => 'danger', 'tindak lanjut' => 'warning', 'selesai' => 'success', default => 'info' } }}">{{ ucfirst($laporan->status) }}</span>
+                <x-pengawas.components.status-badge status="{{ $laporan->status }}" />
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">GPS</p>
@@ -54,12 +54,6 @@
                 'temuan_sedang' => 'Perlu perbaikan',
                 'temuan_kritis' => 'Temuan kritis',
             ];
-            $hasilBadge = [
-                'diperiksa' => 'info',
-                'temuan_sedang' => 'warning',
-                'temuan_kritis' => 'danger',
-                'selesai' => 'success',
-            ];
         @endphp
         @if ($laporan->hasil->isNotEmpty())
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -78,34 +72,12 @@
     </div>
 
     <!-- Foto Laporan -->
-    <div class="mt-6 border-t border-[var(--color-border)] pt-6">
-        <p class="text-sm text-[var(--color-text-muted)] mb-2">Foto Pemeriksaan</p>
-        @php
-            $photo = $laporan->selfie_photo;
-            $photoUrl = null;
-            if ($photo) {
-                if (str_starts_with($photo, 'data:')) {
-                    $photoUrl = $photo; // base64 data URL
-                } elseif (str_starts_with($photo, 'storage/')) {
-                    $photoUrl = asset($photo);
-                } else {
-                    $photoUrl = asset('storage/' . $photo); // path file di storage
-                }
-            }
-        @endphp
-        @if ($photoUrl)
-            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 cursor-pointer" data-action="open-photo-preview" data-photo-url="{{ $photoUrl }}">
-                <img src="{{ $photoUrl }}" alt="Foto laporan" class="w-full h-80 object-cover rounded-md">
-                <p class="text-[10px] text-[var(--color-text-muted)] mt-1 text-center">Klik untuk memperbesar</p>
-            </div>
-        @else
-            <p class="text-sm text-[var(--color-text-muted)] italic">Foto belum diambil pengawas.</p>
-        @endif
-    </div>
+    <x-pengawas.components.foto-preview photo-url="{{ $photoUrl }}" />
 
     <div class="mt-6 flex items-center justify-end gap-2">
         <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Kembali</a>
     </div>
+
     <!-- Foto Preview Modal (full screen) -->
     <div id="laporanPhotoPreviewModal" class="fixed inset-0 bg-black flex items-center justify-center z-[1000] hidden" data-action="close-photo-preview">
         <button type="button" data-action="close-photo-preview" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
@@ -118,41 +90,40 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Foto preview modal
-            const modal = document.getElementById('laporanPhotoPreviewModal');
-            const previewImage = document.getElementById('laporanPreviewImage');
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('laporanPhotoPreviewModal');
+        const previewImage = document.getElementById('laporanPreviewImage');
 
-            // Open photo preview
-            document.querySelectorAll('[data-action="open-photo-preview"]').forEach(el => {
-                el.addEventListener('click', function() {
-                    const src = this.dataset.photoUrl;
-                    document.getElementById('laporanPreviewImage').src = src;
-                    document.getElementById('laporanPhotoPreviewModal').classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                });
-            });
-
-            // Close photo preview
-            function closeLaporanPhotoPreview() {
-                document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            // Close on modal backdrop click
-            document.getElementById('laporanPhotoPreviewModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeLaporanPhotoPreview();
-                }
-            });
-
-            // Close button
-            document.querySelectorAll('[data-action="close-photo-preview"]').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    closeLaporanPhotoPreview();
-                });
+        // Open photo preview
+        document.querySelectorAll('[data-action="open-photo-preview"]').forEach(el => {
+            el.addEventListener('click', function() {
+                const src = this.dataset.photoUrl;
+                previewImage.src = src;
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             });
         });
-    </script>
+
+        // Close photo preview
+        function closeLaporanPhotoPreview() {
+            document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close on modal backdrop click
+        document.getElementById('laporanPhotoPreviewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLaporanPhotoPreview();
+            }
+        });
+
+        // Close button
+        document.querySelectorAll('[data-action="close-photo-preview"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeLaporanPhotoPreview();
+            });
+        });
+    });
+</script>
 @endsection
