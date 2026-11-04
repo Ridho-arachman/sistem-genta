@@ -151,7 +151,7 @@
                         </span>
                         
                     </div>
-                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="hidden" @change="handlePhotoSelected(this)">
+                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="hidden" data-action="handle-photo-selected">
                     <div id="photo_preview" class="mt-2 hidden"></div>
                 </div>
             </div>
@@ -805,6 +805,33 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Mengirim...';
         form.submit();
+    });
+
+    // Toggle camera / open photo preview
+    document.getElementById('card_photo').addEventListener('click', toggleCamera);
+
+    // Handle photo selection
+    document.getElementById('photo_input').addEventListener('change', handlePhotoSelected);
+
+    // Remove photo
+    document.getElementById('photo_preview').addEventListener('click', function(e) {
+        if (e.target.dataset.action === 'remove-photo') {
+            removePhoto();
+        }
+    });
+
+    // Open photo preview modal
+    document.getElementById('photo_preview').addEventListener('click', function(e) {
+        if (e.target.dataset.action === 'open-photo-preview') {
+            openPhotoPreview();
+        }
+    });
+
+    // Close modal on backdrop click
+    document.getElementById('photoPreviewModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePhotoPreview();
+        }
     });
 });
 </script>
