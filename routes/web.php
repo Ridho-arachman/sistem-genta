@@ -141,11 +141,6 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
         Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
 
-        // Manajemen Pengguna (read only for pengawas)
-        Route::get('/users', function () {
-            return view('pengawas.users.index');
-        })->name('users.index');
-
         // Pengaturan
         Route::get('/settings', function () {
             return view('pengawas.settings');
