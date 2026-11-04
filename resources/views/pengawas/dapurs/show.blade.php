@@ -35,7 +35,7 @@
         </div>
 
         {{-- Map Embed --}}
-        <x-pengawas.components.peta-embed dapur="$dapur" />
+        @include('pengawas.components.peta-embed', ['dapur' => $dapur])
 
         {{-- CCTV List --}}
         @if ($dapur->cctvs->count() > 0)
@@ -60,7 +60,7 @@
                             <td class="table-td">{{ $cctv->camera_number ?? '-' }}</td>
                             <td class="table-td text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
                             <td class="table-td">
-                                <x-pengawas.components.status-badge status="{{ $cctv->status }}" />
+                                @include('pengawas.components.status-badge', ['status' => $cctv->status])
                             </td>
                         </tr>
                         @endforeach

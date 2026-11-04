@@ -32,7 +32,7 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status</p>
-                <x-pengawas.components.status-badge status="{{ $laporan->status }}" />
+                @include('pengawas.components.status-badge', ['status' => $laporan->status])
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">GPS</p>
@@ -54,6 +54,11 @@
                 'temuan_sedang' => 'Perlu perbaikan',
                 'temuan_kritis' => 'Temuan kritis',
             ];
+            $hasilBadge = [
+                'diperiksa' => 'success',
+                'temuan_sedang' => 'warning',
+                'temuan_kritis' => 'danger',
+            ];
         @endphp
         @if ($laporan->hasil->isNotEmpty())
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -72,7 +77,7 @@
     </div>
 
     <!-- Foto Laporan -->
-    <x-pengawas.components.foto-preview photo-url="{{ $photoUrl }}" />
+    @include('pengawas.components.foto-preview', ['photoUrl' => $laporan->selfie_photo])
 
     <div class="mt-6 flex items-center justify-end gap-2">
         <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Kembali</a>

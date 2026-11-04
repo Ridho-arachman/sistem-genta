@@ -26,33 +26,32 @@
         <input type="hidden" name="status" value="diperiksa">
 
         {{-- Pilih Dapur --}}
-        <x-pengawas.components.dapur-select />
+        @include('pengawas.components.dapur-select', ['dapurs' => $dapurs ?? collect()])
 
         {{-- Satu card untuk semua indikator (hasil dropdown saja, foto di bawah) --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-6">
 
             {{-- Indikator 1: Kebersihan dan sanitasi --}}
-            <x-pengawas.components.hasil-indikator namaIndikator="Kebersihan dan sanitasi" />
+            @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Kebersihan dan sanitasi'])
 
             {{-- Indikator 2: Penyimpanan bahan --}}
-            <x-pengawas.components.hasil-indikator namaIndikator="Penyimpanan bahan" />
+            @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Penyimpanan bahan'])
 
             {{-- Indikator 3: Proses pengolahan --}}
-            <x-pengawas.components.hasil-indikator namaIndikator="Proses pengolahan" />
+            @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Proses pengolahan'])
 
             {{-- Indikator 4: Distribusi makanan --}}
-            <x-pengawas.components.hasil-indikator namaIndikator="Distribusi makanan" />
+            @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Distribusi makanan'])
 
             {{-- Indikator 5: Peralatan dan fasilitas --}}
-            <x-pengawas.components.hasil-indikator namaIndikator="Peralatan dan fasilitas">
-                @error('hasil')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </x-pengawas.components.hasil-indikator>
+            @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Peralatan dan fasilitas'])
+            @error('hasil')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Foto tunggal (Selfie/Foto Utama) --}}
-        <x-pengawas.components.foto-upload />
+        @include('pengawas.components.foto-upload')
 
         {{-- Hidden inputs for photo data (base64) and GPS --}}
         <input type="hidden" name="selfie_photo" id="photo_data" value="">
@@ -75,7 +74,7 @@
         @enderror
 
         {{-- Catatan Pengawas --}}
-        <x-pengawas.components.catatan-input />
+        @include('pengawas.components.catatan-input')
 
         {{-- Submit --}}
         <div class="flex gap-3 justify-end pt-4 border-t border-[var(--color-border)]">

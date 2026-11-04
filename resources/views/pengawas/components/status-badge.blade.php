@@ -1,6 +1,6 @@
 @php
     $badgeColors = [
-        'diperiksa' => 'success',
+        'diperiksa' => 'info',
         'temuan' => 'danger',
         'tindak lanjut' => 'warning',
         'selesai' => 'success',

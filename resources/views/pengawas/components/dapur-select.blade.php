@@ -1,3 +1,5 @@
+@props(['dapurs'])
+
 <div class="space-y-3">
     <label for="dapur_id" class="block text-sm font-medium text-[var(--color-secondary)] mb-1.5">Pilih Dapur <span class="text-red-500">*</span></label>
     <select id="dapur_id" name="dapur_id" class="input-field" required>
