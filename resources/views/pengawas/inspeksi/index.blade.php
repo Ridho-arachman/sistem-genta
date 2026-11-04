@@ -811,7 +811,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('card_photo').addEventListener('click', toggleCamera);
 
     // Handle photo selection
-    document.getElementById('photo_input').addEventListener('change', handlePhotoSelected);
+    document.getElementById('photo_input').addEventListener('change', function(e) {
+    handlePhotoSelected(e.target);
+});
 
     // Remove photo
     document.getElementById('photo_preview').addEventListener('click', function(e) {
