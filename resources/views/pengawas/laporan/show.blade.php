@@ -94,7 +94,7 @@
             }
         @endphp
         @if ($photoUrl)
-            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 cursor-pointer" onclick="openLaporanPhotoPreview('{{ $photoUrl }}')">
+            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 cursor-pointer" data-action="open-photo-preview" data-photo-url="{{ $photoUrl }}">
                 <img src="{{ $photoUrl }}" alt="Foto laporan" class="w-full h-80 object-cover rounded-md">
                 <p class="text-[10px] text-[var(--color-text-muted)] mt-1 text-center">Klik untuk memperbesar</p>
             </div>
@@ -107,8 +107,8 @@
         <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Kembali</a>
     </div>
     <!-- Foto Preview Modal (full screen) -->
-    <div id="laporanPhotoPreviewModal" class="fixed inset-0 bg-black flex items-center justify-center z-[1000] hidden" onclick="closeLaporanPhotoPreview()">
-        <button type="button" onclick="event.stopPropagation(); closeLaporanPhotoPreview()" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
+    <div id="laporanPhotoPreviewModal" class="fixed inset-0 bg-black flex items-center justify-center z-[1000] hidden" data-action="close-photo-preview">
+        <button type="button" data-action="close-photo-preview" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             <span class="sr-only">Tutup preview</span>
         </button>
@@ -118,14 +118,41 @@
     </div>
 
     <script>
-        window.openLaporanPhotoPreview = function(src) {
-            document.getElementById('laporanPreviewImage').src = src;
-            document.getElementById('laporanPhotoPreviewModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        };
-        window.closeLaporanPhotoPreview = function() {
-            document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
-            document.body.style.overflow = '';
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            // Foto preview modal
+            const modal = document.getElementById('laporanPhotoPreviewModal');
+            const previewImage = document.getElementById('laporanPreviewImage');
+
+            // Open photo preview
+            document.querySelectorAll('[data-action="open-photo-preview"]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const src = this.dataset.photoUrl;
+                    document.getElementById('laporanPreviewImage').src = src;
+                    document.getElementById('laporanPhotoPreviewModal').classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Close photo preview
+            function closeLaporanPhotoPreview() {
+                document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            // Close on modal backdrop click
+            document.getElementById('laporanPhotoPreviewModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeLaporanPhotoPreview();
+                }
+            });
+
+            // Close button
+            document.querySelectorAll('[data-action="close-photo-preview"]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeLaporanPhotoPreview();
+                });
+            });
+        });
     </script>
 @endsection
