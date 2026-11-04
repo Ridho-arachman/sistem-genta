@@ -65,12 +65,12 @@
     }
 @endphp
 
-<div x-data="{ open: false }" class="relative">
-    <button @click="open = !open" class="flex items-center gap-2" aria-expanded="open" aria-label="Profile menu">
+<div id="profile-menu" class="relative">
+    <button data-action="toggle-profile" class="flex items-center gap-2" aria-expanded="false" aria-label="Profile menu">
         <span class="demo-pill hidden sm:inline-block text-xs font-extrabold tracking-wide border border-white/30 rounded-full px-3 py-1">{{ auth()->user()->name }}</span>
-        <div class="avatar w-9 h-9 rounded-full bg-red-100 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm" x-text="'{{ $_initials }}'"></div>
+        <div class="avatar w-9 h-9 rounded-full bg-red-100 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm">{{ $_initials }}</div>
     </button>
-    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:leave="transition ease-in duration-75" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
+    <div id="profile-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
         <a href="{{ route('pengawas.settings') }}" class="block px-4 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]">Pengaturan</a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
@@ -86,7 +86,7 @@
 </main>
 
 <!-- Bottom Navigation (mobile only) -->
-<nav class="p-bottom-nav fixed bottom-0 left-0 right-0 sm:hidden bg-white border-t border-[var(--color-border)] flex justify-around py-2 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]" x-data="{ active: 'home' }">
+<nav class="p-bottom-nav fixed bottom-0 left-0 right-0 sm:hidden bg-white border-t border-[var(--color-border)] flex justify-around py-2 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
     <a href="{{ route('pengawas.dashboard') }}" class="p-nav-item {{ request()->routeIs(['pengawas.dashboard', 'pengawas.dapurs.show']) ? 'active' : '' }}" data-page="home">
         <svg class="p-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Beranda</span>
@@ -104,4 +104,26 @@
         <span>Profil</span>
     </a>
 </nav>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profileMenu = document.getElementById('profile-menu');
+    const profileBtn = document.querySelector('[data-action="toggle-profile"]');
+    const profileDropdown = document.getElementById('profile-menu-dropdown');
+
+    if (!profileMenu || !profileBtn || !profileDropdown) return;
+
+    // Toggle profile menu
+    profileBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('hidden');
+    });
+
+    // Close on backdrop click
+    document.addEventListener('click', function(e) {
+        if (!profileMenu.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+        }
+    });
+});
+</script>
 @endsection
