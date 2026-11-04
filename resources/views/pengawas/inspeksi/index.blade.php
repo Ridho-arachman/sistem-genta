@@ -350,13 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Toggle camera or open preview based on whether photo exists
     function toggleCamera() {
-        const dapurSelect = document.getElementById('dapur_id');
-        if (!dapurSelect.value) {
-            window.alert('Pilih dapur terlebih dahulu');
-            dapurSelect.focus();
-            return;
-        }
-        
         if (photo && photo.dataUrl) {
             openPhotoPreview();
         } else {
