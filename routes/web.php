@@ -143,12 +143,12 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 
         // Pengaturan
         Route::get('/settings', function () {
-            return view('pengawas.settings');
+            return view('pengawas.settings.index');
         })->name('settings');
 
         // Profil Pengawas (nama readonly, email & password editable)
         Route::get('/profile', function () {
-            return view('pengawas.settings');
+            return view('pengawas.settings.index');
         })->name('profile');
         Route::put('/profile', function (Request $request) {
             $user = $request->user();
