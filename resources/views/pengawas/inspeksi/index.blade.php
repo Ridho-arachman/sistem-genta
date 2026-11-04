@@ -151,7 +151,7 @@
                         </span>
                         
                     </div>
-                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="hidden" data-action="handle-photo-selected">
+                    <input type="file" id="photo_input" accept="image/*" capture="environment" class="opacity-0 absolute inset-0 w-0 h-0" data-action="handle-photo-selected">
                     <div id="photo_preview" class="mt-2 hidden"></div>
                 </div>
             </div>
