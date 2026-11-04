@@ -629,6 +629,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const textY = mapY;
         const textH = mapH;
         
+        // Background gelap di belakang teks GPS
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(textX - 18, textY, textW + 30, textH);
+        
         ctx.fillStyle = '#FFFFFF';
         ctx.font = 'bold 84px system-ui, sans-serif';
         ctx.fillText(lat + ', ' + lng, textX, textY + 120);
