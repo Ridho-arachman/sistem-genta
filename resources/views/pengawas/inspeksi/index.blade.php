@@ -18,7 +18,7 @@
     </div>
 </div>
 
-<div class="panel" style="max-width: 720px;">
+<div class="panel max-w-[720px]">
     <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" class="space-y-6">
         @csrf
 
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (photo.lat && photo.lng) {
             previewGps.innerHTML = '📍 ' + photo.lat + ', ' + photo.lng + (photo.accuracy ? '  (±' + Math.round(photo.accuracy) + 'm)' : '') +
-                (photo.address ? '<br><span style="font-size: 0.85em;">' + photo.address + '</span>' : '');
+                (photo.address ? '<br><span class="text-[0.7rem]">' + photo.address + '</span>' : '');
         } else {
             previewGps.textContent = 'GPS tidak tersedia';
         }
