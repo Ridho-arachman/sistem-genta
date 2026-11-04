@@ -16,8 +16,6 @@ use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Models\SpWarning;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules\Password;
 
@@ -145,39 +143,6 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/settings', function () {
             return view('pengawas.settings.index');
         })->name('settings');
-
-        // Profil Pengawas (nama readonly, email & password editable)
-        Route::get('/profile', function () {
-            return view('pengawas.settings.index');
-        })->name('profile');
-        Route::put('/profile', function (Request $request) {
-            $user = $request->user();
-
-            $validated = $request->validate([
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
-                'current_password' => ['required', 'string'],
-                'password' => ['nullable', 'confirmed', Password::defaults()],
-            ]);
-
-            // Verify current password
-            if (! Hash::check($validated['current_password'], $user->password)) {
-                return back()->withErrors([
-                    'current_password' => 'Password saat ini tidak sesuai.',
-                ]);
-            }
-
-            // Update email
-            $user->email = $validated['email'];
-
-            // Update password if provided
-            if ($validated['password']) {
-                $user->password = Hash::make($validated['password']);
-            }
-
-            $user->save();
-
-            return redirect()->route('pengawas.profile')->with('status', 'Profil berhasil diperbarui.');
-        })->name('profile.update');
     });
 
     // ==================== MANAJERIAL ROUTES (READ ONLY) ====================
