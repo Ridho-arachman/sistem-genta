@@ -27,24 +27,30 @@
 
         {{-- Pilih Dapur --}}
         @include('pengawas.components.dapur-select', ['dapurs' => $dapurs ?? collect()])
+        <span id="error-dapur" class="text-red-600 text-sm mt-1 hidden">Pilih dapur dulu</span>
 
         {{-- Satu card untuk semua indikator (hasil dropdown saja, foto di bawah) --}}
         <div class="card p-4 bg-[var(--color-surface)]/50 space-y-6">
 
             {{-- Indikator 1: Kebersihan dan sanitasi --}}
             @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Kebersihan dan sanitasi'])
+            <span id="error-hasil-1" class="text-red-600 text-sm mt-1 hidden">Pilih hasil: Kebersihan dan sanitasi</span>
 
             {{-- Indikator 2: Penyimpanan bahan --}}
             @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Penyimpanan bahan'])
+            <span id="error-hasil-2" class="text-red-600 text-sm mt-1 hidden">Pilih hasil: Penyimpanan bahan</span>
 
             {{-- Indikator 3: Proses pengolahan --}}
             @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Proses pengolahan'])
+            <span id="error-hasil-3" class="text-red-600 text-sm mt-1 hidden">Pilih hasil: Proses pengolahan</span>
 
             {{-- Indikator 4: Distribusi makanan --}}
             @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Distribusi makanan'])
+            <span id="error-hasil-4" class="text-red-600 text-sm mt-1 hidden">Pilih hasil: Distribusi makanan</span>
 
             {{-- Indikator 5: Peralatan dan fasilitas --}}
             @include('pengawas.components.hasil-indikator', ['namaIndikator' => 'Peralatan dan fasilitas'])
+            <span id="error-hasil-5" class="text-red-600 text-sm mt-1 hidden">Pilih hasil: Peralatan dan fasilitas</span>
             @error('hasil')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -52,6 +58,10 @@
 
         {{-- Foto tunggal (Selfie/Foto Utama) --}}
         @include('pengawas.components.foto-upload')
+        <span id="error-foto" class="text-red-600 text-sm mt-1 hidden">Foto dapur belum diisi</span>
+
+        {{-- Error GPS --}}
+        <span id="error-gps" class="text-red-600 text-sm mt-1 hidden">GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan.</span>
 
         {{-- Hidden inputs for photo data (base64) and GPS --}}
         <input type="hidden" name="selfie_photo" id="photo_data" value="">
@@ -106,7 +116,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitBtn');
     
     let photo = null; // {dataUrl, lat, lng, accuracy, address, gpsStatus}
-    
+
+    // Show/hide inline error message below an input
+    function showError(id, message) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = message;
+            el.classList.remove('hidden');
+        }
+    }
+
+    function hideError(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('hidden');
+        }
+    }
+
     // Convert lat/lng to OSM tile x,y at given zoom
     function latLngToTile(lat, lng, zoom) {
         const n = Math.pow(2, zoom);
@@ -264,12 +290,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-            window.alert('Bukan file gambar');
+            showError('error-foto', 'Bukan file gambar');
             input.value = '';
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            window.alert('Foto terlalu besar (maks 5MB)');
+            showError('error-foto', 'Foto terlalu besar (maks 5MB)');
             input.value = '';
             return;
         }
@@ -306,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getCurrentLocationForPhoto(photoId, dataUrl);
         } catch (err) {
             console.error('Photo processing error:', err);
-            window.alert('Gagal memproses foto');
+            showError('error-foto', 'Gagal memproses foto');
         } finally {
             showLoading(false);
         }
@@ -615,36 +641,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const dapurSelect = document.getElementById('dapur_id');
         if (!dapurSelect.value) {
-            window.alert('Pilih dapur dulu');
+            showError('error-dapur', 'Pilih dapur dulu');
             dapurSelect.focus();
             return false;
         }
+        hideError('error-dapur');
 
         const hasilSelects = document.querySelectorAll('select[name="hasil[]"]');
         const indikatorNames = ['Kebersihan dan sanitasi', 'Penyimpanan bahan', 'Proses pengolahan', 'Distribusi makanan', 'Peralatan dan fasilitas'];
+        let hasilError = false;
         for (let i = 0; i < 5; i++) {
             if (!hasilSelects[i].value) {
-                window.alert('Pilih hasil: ' + indikatorNames[i]);
+                showError('error-hasil-' + (i + 1), 'Pilih hasil: ' + indikatorNames[i]);
                 hasilSelects[i].focus();
-                return false;
+                hasilError = true;
+            } else {
+                hideError('error-hasil-' + (i + 1));
             }
         }
-
-        if (!photo || !photo.dataUrl) {
-            window.alert('Foto dapur belum diisi. Klik area foto untuk mengambil gambar.');
-            document.getElementById('card_photo').focus();
+        if (hasilError) {
             return false;
         }
 
+        if (!photo || !photo.dataUrl) {
+            showError('error-foto', 'Foto dapur belum diisi. Klik area foto untuk mengambil gambar.');
+            document.getElementById('card_photo').focus();
+            return false;
+        }
+        hideError('error-foto');
+
         if (photo.gpsStatus === 'loading') {
-            window.alert('Tunggu foto selesai diproses (GPS masih loading).');
+            showError('error-gps', 'Tunggu foto selesai diproses (GPS masih loading).');
             return false;
         }
 
         if (!photo.lat || !photo.lng) {
-            window.alert('GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan. Coba ambil foto ulang.');
+            showError('error-gps', 'GPS gagal didapatkan. Lokasi wajib terisi sebelum kirim laporan. Coba ambil foto ulang.');
             return false;
         }
+        hideError('error-gps');
 
         updateHiddenInputs();
 
@@ -659,11 +694,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Toggle camera / open photo preview
-    document.getElementById('card_photo').addEventListener('click', toggleCamera);
+    document.getElementById('card_photo').addEventListener('click', function() {
+        toggleCamera();
+        hideError('error-foto');
+    });
 
     // Handle photo selection
     document.getElementById('photo_input').addEventListener('change', function(e) {
         handlePhotoSelected(e.target);
+        hideError('error-foto');
+    });
+
+    // Clear hasil error when user selects a value
+    document.querySelectorAll('select[name="hasil[]"]').forEach(function(select, index) {
+        select.addEventListener('change', function() {
+            hideError('error-hasil-' + (index + 1));
+        });
     });
 
     // Remove photo
