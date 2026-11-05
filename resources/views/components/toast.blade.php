@@ -8,17 +8,17 @@
         'error' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
     ];
     $colors = [
-        'success' => 'bg-green-600 border-green-500 text-green-50',
-        'info' => 'bg-blue-600 border-blue-500 text-blue-50',
-        'warning' => 'bg-amber-600 border-amber-500 text-amber-50',
-        'error' => 'bg-red-600 border-red-500 text-red-50',
+        'success' => 'bg-green-600!important border-green-500 text-green-50',
+        'info' => 'bg-blue-600!important border-blue-500 text-blue-50',
+        'warning' => 'bg-amber-600!important border-amber-500 text-amber-50',
+        'error' => 'bg-red-600!important border-red-500 text-red-50',
     ];
     $color = $colors[$type] ?? $colors['info'];
     $icon = $icons[$type] ?? $icons['info'];
 @endphp
 
 @if ($message)
-<div id="toast" class="toast fixed bottom-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3 hidden">
+<div id="toast" class="toast fixed bottom-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
@@ -27,15 +27,15 @@
     </div>
     <button type="button"
             class="ml-auto flex-shrink-0 opacity-70 hover:opacity-100 focus:outline-none"
-            onclick="document.getElementById('toast').classList.add('hidden')"
+            onclick="document.getElementById('toast').classList.remove('show')"
             aria-label="Close toast">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
 </div>
 <script>
-    document.getElementById('toast').classList.remove('hidden');
+    document.getElementById('toast').classList.add('show');
     setTimeout(function() {
-        document.getElementById('toast').classList.add('hidden');
+        document.getElementById('toast').classList.remove('show');
     }, 4000);
 </script>
 @endif
