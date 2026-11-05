@@ -22,7 +22,7 @@
 @endphp
 
 @if ($message)
-<div id="toast" class="hidden toast fixed top-6 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3 opacity-100" style="opacity: 1 !important; background-color: {{ $bgColor }} !important;">
+<div id="toast" class="hidden toast fixed top-10 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3 opacity-100" style="opacity: 1 !important; background-color: {{ $bgColor }} !important;">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
