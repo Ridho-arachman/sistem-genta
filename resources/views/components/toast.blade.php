@@ -18,7 +18,7 @@
 @endphp
 
 @if ($message)
-<div id="toast" class="toast fixed top-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3">
+<div id="toast" class="hidden toast fixed top-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
@@ -27,15 +27,15 @@
     </div>
     <button type="button"
             class="ml-auto flex-shrink-0 opacity-70 hover:opacity-100 focus:outline-none"
-            onclick="document.getElementById('toast').classList.remove('show')"
+            onclick="document.getElementById('toast').classList.add('hidden')"
             aria-label="Close toast">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
 </div>
 <script>
-    document.getElementById('toast').classList.add('show');
+    document.getElementById('toast').classList.remove('hidden');
     setTimeout(function() {
-        document.getElementById('toast').classList.remove('show');
+        document.getElementById('toast').classList.add('hidden');
     }, 4000);
 </script>
 @endif
