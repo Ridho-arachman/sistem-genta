@@ -18,11 +18,7 @@
 @endphp
 
 @if ($message)
-<div {{ $attributes->merge(['class' => 'toast fixed bottom-6 right-6 ' . $color . ' border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3']) }}
-     x-show="toast.show"
-     x-transition:enter="opacity-0 transform translate-y-2"
-     x-transition:leave="opacity-0 transform translate-y-2"
-     x-cloak>
+<div id="toast" class="toast fixed bottom-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3 hidden">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
@@ -31,9 +27,15 @@
     </div>
     <button type="button"
             class="ml-auto flex-shrink-0 opacity-70 hover:opacity-100 focus:outline-none"
-            @click="toast.show = false"
+            onclick="document.getElementById('toast').classList.add('hidden')"
             aria-label="Close toast">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
 </div>
+<script>
+    document.getElementById('toast').classList.remove('hidden');
+    setTimeout(function() {
+        document.getElementById('toast').classList.add('hidden');
+    }, 4000);
+</script>
 @endif
