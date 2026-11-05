@@ -1,5 +1,5 @@
 @php
-    $type = session('toast_type', session('status') ? 'success' : (session('error') ? 'error' : 'info'));
+    $type = session('toast_type', session('success') ? 'success' : (session('error') ? 'error' : (session('status') ? 'success' : 'info')));
     $message = session('status', session('success', session('error', '')));
     $icons = [
         'success' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
@@ -8,17 +8,21 @@
         'error' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
     ];
     $colors = [
-        'success' => 'bg-green-600!important border-green-500 text-green-50',
-        'info' => 'bg-blue-600!important border-blue-500 text-blue-50',
-        'warning' => 'bg-amber-600!important border-amber-500 text-amber-50',
-        'error' => 'bg-red-600!important border-red-500 text-red-50',
+        'success' => ['bg' => 'bg-green-600!important', 'border' => 'border-green-500', 'text' => 'text-green-50', 'color' => '#15803d'],
+        'info' => ['bg' => 'bg-blue-600!important', 'border' => 'border-blue-500', 'text' => 'text-blue-50', 'color' => '#1d4ed8'],
+        'warning' => ['bg' => 'bg-amber-600!important', 'border' => 'border-amber-500', 'text' => 'text-amber-50', 'color' => '#ca8a04'],
+        'error' => ['bg' => 'bg-red-600!important', 'border' => 'border-red-500', 'text' => 'text-red-50', 'color' => '#b91c1c'],
     ];
     $color = $colors[$type] ?? $colors['info'];
+    $bgColor = $color['color'];
+    $bgClass = $color['bg'];
+    $borderClass = $color['border'];
+    $textClass = $color['text'];
     $icon = $icons[$type] ?? $icons['info'];
 @endphp
 
 @if ($message)
-<div id="toast" class="hidden toast fixed top-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3 opacity-100">
+<div id="toast" class="hidden toast fixed top-6 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3 opacity-100" style="opacity: 1 !important; background-color: {{ $bgColor }} !important;">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
