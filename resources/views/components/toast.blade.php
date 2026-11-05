@@ -18,7 +18,7 @@
 @endphp
 
 @if ($message)
-<div id="toast" class="toast fixed bottom-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3">
+<div id="toast" class="toast fixed top-6 right-6 {{ $color }} border px-4 py-3 rounded-lg shadow-lg z-[9999] transition-opacity duration-300 flex items-center gap-3">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>
