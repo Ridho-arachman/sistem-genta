@@ -1,53 +1,5 @@
 @extends('layouts.base', ['pageTitle' => $pageTitle ?? 'Pengawas Dashboard', 'bodyClass' => 'bg-[var(--color-background)] text-[var(--color-text)]'])
 
-@stack('styles')
-<style>
-    /* Bottom Navigation - fixed at bottom (mobile only) */
-    .p-bottom-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        border-top: 1px solid var(--color-border, #eee);
-        display: flex;
-        justify-content: space-around;
-        padding: 0.5rem 0;
-        z-index: 40;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-
-    .p-nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.25rem;
-        color: var(--color-text-muted, #888);
-        text-decoration: none;
-        font-size: 0.6875rem;
-        font-weight: 500;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.15s ease;
-    }
-
-    .p-nav-item.active {
-        color: var(--color-primary, #E50000);
-    }
-
-    .p-nav-icon {
-        width: 20px;
-        height: 20px;
-    }
-
-    /* Desktop adjustments */
-    @media (min-width: 768px) {
-        .p-bottom-nav {
-            display: none;
-        }
-    }
-</style>
-
 @section('header')
 <header class="topbar h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
     <div class="brand flex items-center gap-3 font-extrabold tracking-tight">
@@ -104,26 +56,5 @@
         <span>Profil</span>
     </a>
 </nav>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const profileMenu = document.getElementById('profile-menu');
-    const profileBtn = document.querySelector('[data-action="toggle-profile"]');
-    const profileDropdown = document.getElementById('profile-menu-dropdown');
-
-    if (!profileMenu || !profileBtn || !profileDropdown) return;
-
-    // Toggle profile menu
-    profileBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        profileDropdown.classList.toggle('hidden');
-    });
-
-    // Close on backdrop click
-    document.addEventListener('click', function(e) {
-        if (!profileMenu.contains(e.target)) {
-            profileDropdown.classList.add('hidden');
-        }
-    });
-});
-</script>
+<script src="{{ asset('js/pengawas-layout.js') }}"></script>
 @endsection

@@ -94,41 +94,5 @@
         </div>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('laporanPhotoPreviewModal');
-        const previewImage = document.getElementById('laporanPreviewImage');
-
-        // Open photo preview
-        document.querySelectorAll('[data-action="open-photo-preview"]').forEach(el => {
-            el.addEventListener('click', function() {
-                const src = this.dataset.photoUrl;
-                previewImage.src = src;
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
-        // Close photo preview
-        function closeLaporanPhotoPreview() {
-            document.getElementById('laporanPhotoPreviewModal').classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-
-        // Close on modal backdrop click
-        document.getElementById('laporanPhotoPreviewModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLaporanPhotoPreview();
-            }
-        });
-
-        // Close button
-        document.querySelectorAll('[data-action="close-photo-preview"]').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                closeLaporanPhotoPreview();
-            });
-        });
-    });
-</script>
+    <script src="{{ asset('js/pengawas-common.js') }}"></script>
 @endsection

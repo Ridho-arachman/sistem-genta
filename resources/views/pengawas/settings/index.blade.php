@@ -110,26 +110,5 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle password visibility
-    document.querySelectorAll('[data-action="toggle-password"]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.dataset.target;
-            const input = document.getElementById(targetId);
-            if (!input) return;
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.querySelector('svg:not(.hidden)').classList.add('hidden');
-                this.querySelector('svg.hidden').classList.remove('hidden');
-            } else {
-                input.type = 'password';
-                this.querySelector('svg:not(.hidden)').classList.add('hidden');
-                this.querySelector('svg.hidden').classList.remove('hidden');
-            }
-        });
-    });
-});
-</script>
+<script src="{{ asset('js/pengawas-common.js') }}"></script>
 @endpush

@@ -22,7 +22,7 @@
             <tbody class="divide-y divide-[var(--color-border)]">
                 @if ($laporans->isNotEmpty())
                     @foreach ($laporans as $laporan)
-                        <tr class="cursor-pointer hover:bg-[var(--color-surface)]/50 transition-colors" data-action="navigate-to-report" data-report-id="{{ $laporan->id }}">
+                        <tr class="cursor-pointer hover:bg-[var(--color-surface)]/50 transition-colors" data-action="navigate-to-report" data-href="{{ route('pengawas.laporan.show', $laporan->id) }}">
                             <td class="table-td">{{ $laporan->created_at->format('d M Y') }}</td>
                             <td class="table-td">{{ $laporan->dapur->nama ?? 'Dapur' }}</td>
                             <td class="table-td">
@@ -47,17 +47,5 @@
     @endif
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle table row click for navigation
-    document.querySelectorAll('[data-action="navigate-to-report"]').forEach(row => {
-        row.addEventListener('click', function() {
-            const reportId = this.dataset.reportId;
-            if (reportId) {
-                window.location.href = '{{ route("pengawas.laporan.show", ":id") }}'.replace(':id', reportId);
-            }
-        });
-    });
-});
-</script>
+<script src="{{ asset('js/pengawas-common.js') }}"></script>
 @endsection
