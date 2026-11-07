@@ -16,8 +16,8 @@ use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Models\SpWarning;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\Rules\Password;
 
 Route::get('/', [LandingController::class, 'home'])->name('home');
 
