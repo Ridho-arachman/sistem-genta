@@ -28,10 +28,6 @@
                     <span class="text-[var(--color-text-muted)] text-sm">-</span>
                 @endif
             </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">Jumlah CCTV</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->cctvs->count() }}</p>
-            </div>
         </div>
 
         {{-- Map Embed --}}
@@ -44,39 +40,6 @@
                class="flex-1 px-6 py-3 text-center bg-[var(--color-primary)] text-white rounded-xl text-lg font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg">
                 🗺️ Buka di Google Maps
             </a>
-        </div>
-        @endif
-
-        {{-- CCTV List --}}
-        @if ($dapur->cctvs->count() > 0)
-        <div class="border-t border-[var(--color-border)] pt-6">
-            <h3 class="text-lg font-semibold mb-4">Daftar CCTV</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--color-surface)]">
-                        <tr>
-                            <th class="table-th">Nama</th>
-                            <th class="table-th">Area</th>
-                            <th class="table-th">Cam #</th>
-                            <th class="table-th">IP Address</th>
-                            <th class="table-th">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--color-border)]">
-                        @foreach ($dapur->cctvs as $cctv)
-                        <tr class="hover:bg-[var(--color-surface)]">
-                            <td class="table-td font-medium">{{ $cctv->nama }}</td>
-                            <td class="table-td">{{ $cctv->section ?? '-' }}</td>
-                            <td class="table-td">{{ $cctv->camera_number ?? '-' }}</td>
-                            <td class="table-td text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
-                            <td class="table-td">
-                                @include('pengawas.components.status-badge', ['status' => $cctv->status])
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
         </div>
         @endif
     </div>
