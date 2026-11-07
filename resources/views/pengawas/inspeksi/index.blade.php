@@ -26,7 +26,7 @@
         <input type="hidden" name="status" value="diperiksa">
 
         {{-- Pilih Dapur --}}
-        @include('pengawas.components.dapur-select', ['dapurs' => $dapurs ?? collect()])
+        @include('pengawas.components.dapur-select', ['dapurs' => $dapurs ?? collect(), 'selectedDapurId' => $selectedDapurId ?? null])
         <span id="error-dapur" class="text-red-600 text-sm mt-1 hidden">Pilih dapur dulu</span>
 
         {{-- Satu card untuk semua indikator (hasil dropdown saja, foto di bawah) --}}
@@ -116,4 +116,3 @@
 @endsection
 
 <script src="{{ asset('js/pengawas-inspeksi.js') }}"></script>
-@endpush

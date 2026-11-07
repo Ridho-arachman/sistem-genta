@@ -67,7 +67,7 @@ class InspeksiController extends Controller
             ->with('exportRoute', "{$prefix}.inspeksi.export");
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('create', Laporan::class);
 
@@ -78,7 +78,10 @@ class InspeksiController extends Controller
             ? Dapur::forUser($user)->get()
             : Dapur::all();
 
-        return view('pengawas.inspeksi.index', compact('dapurs'));
+        // Dapur yang dipilih dari parameter URL (untuk preselect di form inspeksi)
+        $selectedDapurId = $request->query('dapur');
+
+        return view('pengawas.inspeksi.index', compact('dapurs', 'selectedDapurId'));
     }
 
     public function store(Request $request)

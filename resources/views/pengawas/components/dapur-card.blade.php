@@ -10,6 +10,6 @@
     </div>
     <div class="flex gap-4 mt-4 sm:mt-0">
         <a href="{{ route('pengawas.dapurs.show', $dapur->id) }}" class="flex-1 px-4 py-2.5 text-center border border-[var(--color-primary)] text-[var(--color-primary)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary)]/5 transition-colors">Lihat Lokasi</a>
-        <a href="{{ route('pengawas.inspeksi.index', ['dapur' => $dapur->id]) }}" class="flex-1 px-4 py-2.5 text-center bg-[var(--color-primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--color-primary-dark)] transition-colors">Mulai Inspeksi</a>
+        <a href="{{ route('pengawas.inspeksi.create', ['dapur' => $dapur->id]) }}" class="flex-1 px-4 py-2.5 text-center bg-[var(--color-primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--color-primary-dark)] transition-colors">Mulai Inspeksi</a>
     </div>
 </div>
