@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Tanggal dan jam
             const dtStr = getDateTimeString();
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = '48px system-ui, sans-serif';
+            ctx.font = '72px system-ui, sans-serif';
             ctx.fillText(dtStr, textX, textY + 320 + lines.length * 75 + 75);
         }
     }
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Tanggal dan jam
             const dtStr = getDateTimeString();
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = '48px system-ui, sans-serif';
+            ctx.font = '72px system-ui, sans-serif';
             ctx.fillText(dtStr, textX, textY + 320 + lines.length * 75 + 75);
         }
     }
