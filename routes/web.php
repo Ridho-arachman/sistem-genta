@@ -163,6 +163,24 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/settings', function () {
             return view('pengawas.settings.index');
         })->name('settings');
+
+        Route::put('/settings/profile', function (Request $request) {
+            $user = $request->user();
+
+            $request->validate([
+                'current_password' => 'required',
+                'password' => 'required|min:8|confirmed',
+            ]);
+
+            if (! password_verify($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
+            }
+
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            return back()->with('status', 'Password berhasil diperbarui.');
+        })->name('settings.profile.update');
     });
 
     // ==================== MANAJERIAL ROUTES (READ ONLY) ====================

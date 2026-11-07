@@ -28,13 +28,11 @@
             <p class="mt-1 text-xs text-[var(--color-text-muted)]">Nama digunakan untuk identitas di laporan pengawasan. Hubungi admin jika perlu perubahan.</p>
         </div>
 
-        {{-- Email --}}
+        {{-- Email (Readonly) --}}
         <div>
-            <label for="email" class="block text-sm font-medium text-[var(--color-text)] mb-1">Email <span class="text-red-500">*</span></label>
-            <input type="email" id="email" name="email" value="{{ old('email', auth()->user()->email) }}" required class="input-field" autocomplete="email" autofocus>
-            @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <label for="email" class="block text-sm font-medium text-[var(--color-text)] mb-1">Email <span class="text-[var(--color-text-muted)] font-normal">(tidak bisa diubah)</span></label>
+            <input type="email" id="email" name="email" value="{{ auth()->user()->email }}" readonly class="input-field" autocomplete="email">
+            <p class="mt-1 text-xs text-[var(--color-text-muted)]">Email digunakan untuk identitas dan login. Hubungi admin jika perlu perubahan.</p>
         </div>
 
         {{-- Current Password --}}
