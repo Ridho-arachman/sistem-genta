@@ -37,6 +37,16 @@
         {{-- Map Embed --}}
         @include('pengawas.components.peta-embed', ['dapur' => $dapur])
 
+        {{-- Tombol Buka di Google Maps --}}
+        @if ($dapur->map_embed_url)
+        <div class="mt-6 flex items-center justify-center">
+            <a href="{{ 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->lokasi) }}"
+               class="flex-1 px-6 py-3 text-center bg-[var(--color-primary)] text-white rounded-xl text-lg font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg">
+                🗺️ Buka di Google Maps
+            </a>
+        </div>
+        @endif
+
         {{-- CCTV List --}}
         @if ($dapur->cctvs->count() > 0)
         <div class="border-t border-[var(--color-border)] pt-6">

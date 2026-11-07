@@ -22,19 +22,9 @@
             src="{{ $dapur->map_embed_url }}"
             allowfullscreen
             loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
+            referrerpolicy="no-referrer-when-downgrade"
+            style="pointer-events: none;">
         </iframe>
-        @if ($lat && $lng)
-        <a href="geo:0,0?q={{ $lat }},{{ $lng }}"
-           class="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded text-sm font-medium shadow-md hover:bg-gray-100 transition-colors">
-            Buka di Google Maps
-        </a>
-        @if ($laporanStatus ?? null)
-        <div class="absolute top-2 right-10 bg-green-100 text-green-700 px-3 py-1 rounded text-sm font-medium shadow-sm">
-            ✅ GPS tersimpan: {{ $lat }}, {{ $lng }}
-        </div>
-        @endif
-        @endif
     </div>
 </div>
 @endif
