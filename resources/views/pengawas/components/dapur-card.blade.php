@@ -1,3 +1,5 @@
+@props(['dapur'])
+
 <div class="flex flex-col sm:flex-row gap-4 p-4 border-b border-[var(--color-border)] last:border-0">
     <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3">

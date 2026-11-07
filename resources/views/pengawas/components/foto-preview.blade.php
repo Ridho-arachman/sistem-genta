@@ -1,3 +1,5 @@
+@props(['photoUrl'])
+
 @if ($photoUrl)
 <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 cursor-pointer" data-action="open-photo-preview" data-photo-url="{{ $photoUrl }}">
     <img src="{{ $photoUrl }}" alt="Foto Laporan" class="w-full h-80 object-cover rounded-md">

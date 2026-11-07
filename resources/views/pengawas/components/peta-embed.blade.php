@@ -1,3 +1,5 @@
+@props(['dapur', 'laporanStatus' => null])
+
 @if ($dapur->map_embed_url)
 @php
     $lat = null;
