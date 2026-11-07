@@ -606,9 +606,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Toggle camera / open photo preview
-    document.getElementById('card_photo').addEventListener('click', function() {
-        toggleCamera();
+    document.getElementById('card_photo').addEventListener('click', async function() {
         hideError('error-foto');
+        hideError('error-gps');
+
+        // Cek GPS sebelum membuka kamera
+        try {
+            await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve(pos),
+                    (err) => reject(err),
+                    { enableHighAccuracy: false, timeout: 5000 }
+                );
+            });
+            toggleCamera();
+        } catch (err) {
+            let msg = 'GPS tidak aktif. ';
+            if (err.code === 1) msg += 'Izin lokasi ditolak. ';
+            else if (err.code === 2) msg += 'Lokasi tidak tersedia. ';
+            else if (err.code === 3) msg += 'Timeout. ';
+            msg += 'Aktifkan GPS sebelum ambil foto.';
+            showError('error-gps', msg);
+        }
     });
 
     // Handle photo selection
