@@ -20,6 +20,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Format tanggal dan jam untuk watermark foto
+    function getDateTimeString() {
+        const now = new Date();
+        const tanggal = now.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+        const jam = now.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        return tanggal + ' ' + jam;
+    }
+
     // Convert lat/lng to OSM tile x,y at given zoom
     function latLngToTile(lat, lng, zoom) {
         const n = Math.pow(2, zoom);
@@ -471,6 +487,12 @@ document.addEventListener('DOMContentLoaded', function() {
             lines.forEach((line, i) => {
                 ctx.fillText(line, textX, textY + 320 + i * 75);
             });
+            
+            // Tanggal dan jam
+            const dtStr = getDateTimeString();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '48px system-ui, sans-serif';
+            ctx.fillText(dtStr, textX, textY + 320 + lines.length * 75 + 75);
         }
     }
 
@@ -524,6 +546,12 @@ document.addEventListener('DOMContentLoaded', function() {
             lines.forEach((line, i) => {
                 ctx.fillText(line, textX, textY + 320 + i * 75);
             });
+            
+            // Tanggal dan jam
+            const dtStr = getDateTimeString();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '48px system-ui, sans-serif';
+            ctx.fillText(dtStr, textX, textY + 320 + lines.length * 75 + 75);
         }
     }
 
