@@ -612,13 +612,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Cek GPS sebelum membuka kamera
         try {
-            await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => resolve(pos),
-                    (err) => reject(err),
-                    { enableHighAccuracy: false, timeout: 5000 }
-                );
-            });
+            let position;
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geolocation) {
+                position = await window.Capacitor.Plugins.Geolocation.getCurrentPosition({
+                    enableHighAccuracy: false,
+                    timeout: 5000
+                });
+            } else {
+                await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => resolve(pos),
+                        (err) => reject(err),
+                        { enableHighAccuracy: false, timeout: 5000 }
+                    );
+                });
+            }
             toggleCamera();
         } catch (err) {
             let msg = 'GPS tidak aktif. ';

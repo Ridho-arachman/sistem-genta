@@ -9,6 +9,7 @@ public class MainActivity extends BridgeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         WebSettings webSettings = getBridge().getWebView().getSettings();
+        webSettings.setGeolocationEnabled(true);
         webSettings.setUserAgentString(webSettings.getUserAgentString() + " GentaCapacitor/1.0");
     }
 }
