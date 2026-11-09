@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail CCTV: ' . $cctv->display_name])
 
-@section('content')
+@section('page_content')
 
 <div class="heading mb-8">
     <div>

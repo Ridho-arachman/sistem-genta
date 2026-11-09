@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Buat Surat Peringatan'])
 
-@section('content')
+@section('page_content')
 <div class="max-w-2xl mx-auto">
     <div class="heading mb-8">
         <div>

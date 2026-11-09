@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Buat Laporan Anomali CCTV'])
 
-@section('content')
+@section('page_content')
 
 <div class="heading mb-8">
     <div>

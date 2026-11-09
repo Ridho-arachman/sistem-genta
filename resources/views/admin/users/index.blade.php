@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Manajemen User'])
 
-@section('content')
+@section('page_content')
 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
     <div>
         <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>

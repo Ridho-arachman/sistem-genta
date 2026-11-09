@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Cetak Laporan Anomali'])
 
-@section('content')
+@section('page_content')
 <!DOCTYPE html>
 <html lang="id">
 <head>

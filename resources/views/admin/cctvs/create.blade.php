@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Tambah CCTV'])
 
-@section('content')
+@section('page_content')
 
     <div class="heading mb-8">
         <div>

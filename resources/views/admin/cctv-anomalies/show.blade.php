@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail Anomali: ' . $anomaly->cctv->display_name])
 
-@section('content')
+@section('page_content')
 <div class="max-w-3xl mx-auto">
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">

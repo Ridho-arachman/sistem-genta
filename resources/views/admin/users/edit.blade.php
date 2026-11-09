@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Edit User: ' . $user->name])
 
-@section('content')
+@section('page_content')
 <div class="max-w-5xl mx-auto">
     <div class="heading mb-8">
         <div>

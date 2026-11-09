@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Monitoring CCTV'])
 
-@section('content')
+@section('page_content')
 <div class="space-y-6">
     <!-- Header -->
     <div class="heading">

@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Edit Dapur: ' . $dapur->nama])
 
-@section('content')
+@section('page_content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="heading mb-8">
         <div>

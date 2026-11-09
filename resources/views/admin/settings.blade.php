@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Pengaturan Admin'])
 
-@section('content')
+@section('page_content')
 <div class="mb-8">
     <div>
         <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">{{ settings('app_name_desktop') ?? 'GENTA Pangan Banten' }} &middot; Admin Panel</div>

@@ -36,7 +36,10 @@
         </div>
     </div>
 </header>
+@endsection
 
+@section('content')
+<div x-data="{ sidebarOpen: false }">
 <div class="shell overflow-y-hidden items-start">
     <aside 
         id="sidebar" 
@@ -49,31 +52,31 @@
         
         <a href="{{ route('admin.dashboard') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs('admin.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs('admin.dashboard') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">▦</span> Dashboard
         </a>
 
         <a href="{{ route('admin.dapurs.index') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs('admin.dapurs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs('admin.dapurs*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">⌂</span> Data Dapur
         </a>
 
         <a href="{{ route('admin.cctvs.index') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs(['admin.cctvs.index', 'admin.cctv-anomalies.*']) ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs(['admin.cctvs.index', 'admin.cctv-anomalies.*']) ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">▣</span> Monitoring CCTV
         </a>
 
         <a href="{{ route('admin.laporan.index') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs('admin.laporan*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs('admin.laporan*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">▤</span> Laporan Pengawasan
         </a>
 
         <a href="{{ route('admin.users') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs('admin.users*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs('admin.users*') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">♙</span> Manajemen Pengguna
         </a>
 
@@ -81,7 +84,7 @@
 
         <a href="{{ route('admin.settings') }}" 
            class="sidebar-nav flex items-center gap-3 px-3 py-3 rounded-[11px] text-sm text-[var(--color-text-muted)] transition-colors
-                {{ request()->routeIs('admin.settings') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
+                   {{ request()->routeIs('admin.settings') ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]' }}">
             <span class="sidebar-icon w-[22px] text-center text-[16px]">⚙</span> Pengaturan
         </a>
 
@@ -91,7 +94,7 @@
     </aside>
 
     <main class="main-content flex-1 min-w-0 pt-[96px] px-[28px] pb-0 lg:ml-[230px]" id="view">
-        @yield('content')
+        @yield('page_content')
     </main>
 </div>
 </div>

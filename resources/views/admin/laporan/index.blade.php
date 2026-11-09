@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Laporan Pengawasan'])
 
-@section('content')
+@section('page_content')
 <div class="heading">
     <div>
         <div class="eyebrow">Genta · Admin Panel</div>

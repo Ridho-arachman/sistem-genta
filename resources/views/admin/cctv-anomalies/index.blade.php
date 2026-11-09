@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Anomali CCTV'])
 
-@section('content')
+@section('page_content')
 <div class="space-y-6">
     <div class="heading flex items-center justify-between gap-6">
         <div>

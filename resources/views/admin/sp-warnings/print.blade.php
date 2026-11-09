@@ -1,6 +1,6 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Cetak Laporan SP'])
 
-@section('content')
+@section('page_content')
 <div class="max-w-4xl mx-auto p-6">
     {{-- Print Header --}}
     <div class="text-center mb-8 pb-6 border-b-2 border-[var(--color-border)]">
