@@ -160,19 +160,19 @@ document.addEventListener('alpine:init', () => {
         
         // Data dari server (di-inject via Blade)
         allRows: @json($laporans->map(function ($l) {
+            $badgeMap = [
+                'diperiksa' => 'badge-success',
+                'temuan' => 'badge-danger',
+                'tindak lanjut' => 'badge-warning',
+                'selesai' => 'badge-success',
+            ];
             return [
                 'id' => $l->id,
                 'tanggal' => $l->created_at->format('d M Y'),
                 'lokasi' => $l->dapur->nama ?? '-',
                 'pengawas' => $l->user->name ?? '-',
                 'status' => ucfirst(str_replace('_', ' ', $l->status)),
-                'badgeClass' => match($l->status) {
-                    'diperiksa' => 'badge-success',
-                    'temuan' => 'badge-danger',
-                    'tindak lanjut' => 'badge-warning',
-                    'selesai' => 'badge-success',
-                    default => 'badge-gray',
-                },
+                'badgeClass' => $badgeMap[$l->status] ?? 'badge-gray',
                 'date' => $l->created_at->format('Y-m-d'),
             ];
         })),
