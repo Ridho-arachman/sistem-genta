@@ -1,6 +1,6 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Detail Dapur: ' . $dapur->nama])
 
-@section('content')
+@section('page_content')
 <div class="max-w-3xl mx-auto">
     {{-- Standard Header --}}
     <div class="heading">

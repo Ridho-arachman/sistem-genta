@@ -1,6 +1,6 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Profil Pengawas'])
 
-@section('content')
+@section('page_content')
 <div class="max-w-xl mx-auto">
     {{-- Standard Header --}}
     <div class="heading">

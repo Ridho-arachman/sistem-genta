@@ -32,9 +32,11 @@
 </div>
     </div>
 </header>
+@endsection
 
+@section('content')
 <main class="flex-1 pt-24 sm:pt-28 pb-20 sm:pb-0 px-4 sm:px-6 lg:px-8 min-w-0">
-    @yield('content')
+    @yield('page_content')
 </main>
 
 <!-- Bottom Navigation (mobile only) -->

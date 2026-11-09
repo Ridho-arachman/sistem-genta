@@ -1,6 +1,6 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Detail Laporan'])
 
-@section('content')
+@section('page_content')
 <div class="heading mb-8">
     <div>
         <div class="eyebrow">Genta · Pengawasan MBG</div>

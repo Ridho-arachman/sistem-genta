@@ -46,6 +46,7 @@
     @yield('header')
 
     {{-- Content diatur oleh role layout masing-masing (admin, pengawas, dll.) --}}
+    @yield('content')
 
     {{-- Footer slot (override di tiap role layout) --}}
     @yield('footer')

@@ -1,6 +1,6 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Dashboard Pengawas'])
 
-@section('content')
+@section('page_content')
 <div class="min-h-screen bg-[var(--color-background)]">
     {{-- Standard Header --}}
     <div class="heading">
