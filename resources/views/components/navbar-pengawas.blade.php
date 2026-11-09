@@ -14,12 +14,12 @@
     }
 @endphp
 
-<div id="profile-menu" class="relative">
-    <button data-action="toggle-profile" class="flex items-center gap-2" aria-expanded="false" aria-label="Profile menu">
+<div id="profileMenu" class="relative">
+    <button id="profileBtn" class="flex items-center gap-2" aria-expanded="false" aria-label="Profile menu">
         <span class="demo-pill hidden sm:inline-block text-xs font-extrabold tracking-wide border border-white/30 rounded-full px-3 py-1">{{ auth()->user()->name }}</span>
         <div class="avatar w-9 h-9 rounded-full bg-red-100 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm">{{ $_initials }}</div>
     </button>
-    <div id="profile-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
+    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1">
         <a href="{{ route('pengawas.settings') }}" class="block px-4 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]">Pengaturan</a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
@@ -28,4 +28,23 @@
     </div>
 </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('profileBtn');
+            const dropdown = document.getElementById('profileDropdown');
+            if (btn && dropdown) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                    btn.setAttribute('aria-expanded', !dropdown.classList.contains('hidden'));
+                });
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.classList.contains('hidden') && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                        btn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+    </script>
 </header>
