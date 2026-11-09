@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('laporans', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('dapur_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('dapur_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['diperiksa', 'temuan', 'tindak lanjut', 'selesai'])->default('diperiksa');
             $table->text('catatan')->nullable();
             $table->string('selfie_photo')->nullable();

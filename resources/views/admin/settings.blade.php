@@ -103,12 +103,12 @@
 
             {{-- Address --}}
             <div class="form-field lg:col-span-2">
-                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="office_address">Alamat Lengkap Kantor</label>
+                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="office_address">Alamat Lengkap Kantor <span class="text-[var(--color-primary)] text-xs">(Otomatis)</span></label>
                 <div class="input-with-icon relative">
                     <svg class="input-icon-inner absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <textarea id="office_address" name="office_address" x-model="form.office_address" class="input-field w-full pl-10 min-h-[100px] resize-y" placeholder="Alamat lengkap kantor pusat"></textarea>
+                    <textarea id="office_address" name="office_address" x-model="form.office_address" class="input-field w-full pl-10 min-h-[100px] resize-y bg-[var(--color-surface)]" placeholder="Alamat lengkap kantor pusat (akan terisi otomatis dari peta)" readonly></textarea>
                 </div>
-                <p class="mt-1 text-xs text-[var(--color-text-muted)]">Alamat yang tampil di halaman kontak dan informasi publik</p>
+                <p class="mt-1 text-xs text-[var(--color-text-muted)]">Alamat yang tampil di halaman kontak dan informasi publik — diisi otomatis saat memilih lokasi di peta</p>
             </div>
         </div>
     </div>
@@ -179,6 +179,37 @@ document.addEventListener('alpine:init', () => {
             await this.initMap();
         },
 
+        async reverseGeocode(lat, lng) {
+            try {
+                // Nominatim requires a User-Agent header
+                const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&accept-language=id`, {
+                    headers: {
+                        'User-Agent': 'Genta-Admin-Panel/1.0'
+                    }
+                });
+                const data = await resp.json();
+                if (data.display_name) {
+                    this.form.office_address = data.display_name;
+                } else if (data.address) {
+                    // Build address from components if display_name not available
+                    const parts = [];
+                    if (data.address.road) parts.push(data.address.road);
+                    if (data.address.neighbourhood) parts.push(data.address.neighbourhood);
+                    if (data.address.suburb) parts.push(data.address.suburb);
+                    if (data.address.city) parts.push(data.address.city);
+                    if (data.address.state) parts.push(data.address.state);
+                    if (data.address.country) parts.push(data.address.country);
+                    if (parts.length) {
+                        this.form.office_address = parts.join(', ');
+                    }
+                }
+            } catch (err) {
+                console.warn('Reverse geocode error:', err);
+                // Fallback: show coordinates as address
+                this.form.office_address = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)} (Geocoding gagal)`;
+            }
+        },
+
         async initMap() {
             // Load Leaflet CSS/JS if not present
             if (typeof L === 'undefined') {
@@ -220,12 +251,14 @@ document.addEventListener('alpine:init', () => {
                 const pos = e.target.getLatLng();
                 this.form.office_lat = pos.lat;
                 this.form.office_lng = pos.lng;
+                this.reverseGeocode(pos.lat, pos.lng);
             });
 
             this.map.on('click', (e) => {
                 this.marker.setLatLng(e.latlng);
                 this.form.office_lat = e.latlng.lat;
                 this.form.office_lng = e.latlng.lng;
+                this.reverseGeocode(e.latlng.lat, e.latlng.lng);
             });
         },
 
@@ -271,6 +304,7 @@ document.addEventListener('alpine:init', () => {
                     this.form.office_lat = lat;
                     this.form.office_lng = lng;
                     this.updateMapPosition(lat, lng);
+                    this.reverseGeocode(lat, lng);
                     this.showToast('Lokasi Anda digunakan');
                 },
                 (err) => {
@@ -284,6 +318,7 @@ document.addEventListener('alpine:init', () => {
             this.form.office_lat = this.defaultLat;
             this.form.office_lng = this.defaultLng;
             this.updateMapPosition(this.defaultLat, this.defaultLng);
+            this.reverseGeocode(this.defaultLat, this.defaultLng);
             this.showToast('Direset ke lokasi default');
         },
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Cctv extends Model
 {
@@ -17,9 +18,22 @@ class Cctv extends Model
     #[Fillable(['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number'])]
     protected $fillable = ['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number'];
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $casts = [
         'camera_number' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $cctv) {
+            if (empty($cctv->id)) {
+                $cctv->id = Str::ulid();
+            }
+        });
+    }
 
     public function dapur(): BelongsTo
     {

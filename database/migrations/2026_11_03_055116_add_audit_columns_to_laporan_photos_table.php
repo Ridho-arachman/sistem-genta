@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('laporan_photos', function (Blueprint $table) {
-            $table->foreignId('created_by')->nullable()->constrained('users')->after('photo_path');
-            $table->foreignId('updated_by')->nullable()->constrained('users')->after('updated_at');
+            $table->foreignUlid('created_by')->nullable()->constrained('users')->after('photo_path');
+            $table->foreignUlid('updated_by')->nullable()->constrained('users')->after('updated_at');
         });
     }
 

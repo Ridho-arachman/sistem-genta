@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -22,16 +23,61 @@ class User extends Authenticatable
     #[Hidden(['password', 'remember_token'])]
     protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'created_by', 'updated_by', 'deleted_by'];
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_at' => 'datetime',
-            'created_by' => 'integer',
-            'updated_by' => 'integer',
-            'deleted_by' => 'integer',
+            'created_by' => 'string',
+            'updated_by' => 'string',
+            'deleted_by' => 'string',
+            'registered_by' => 'string',
+            'dapur_id' => 'string',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $user) {
+            if (empty($user->id)) {
+                $user->id = Str::ulid();
+            }
+            if (auth()->check()) {
+                $user->created_by = auth()->id();
+                $user->updated_by = auth()->id();
+                // registered_by is set in controller for consistency
+                if (! $user->registered_by) {
+                    $user->registered_by = auth()->id();
+                }
+            }
+        });
+
+        static::updating(function (self $user) {
+            if (auth()->check()) {
+                $user->updated_by = auth()->id();
+            }
+        });
+
+        static::deleting(function (self $user) {
+            // Prevent hard delete of admin users via force delete
+            if ($user->isForceDeleting() && $user->isAdmin()) {
+                return false;
+            }
+            // Set deleted_by on soft delete
+            if (! $user->isForceDeleting() && auth()->check()) {
+                $user->deleted_by = auth()->id();
+                $user->saveQuietly();
+            }
+            // Detach dapur_user pivot on soft delete
+            if (! $user->isForceDeleting()) {
+                $user->dapurs()->detach();
+            }
+        });
     }
 
     public function absensis(): HasMany
@@ -181,41 +227,6 @@ class User extends Authenticatable
     public function scopeActive($query)
     {
         return $query->whereNull('deleted_at');
-    }
-
-    /**
-     * Model Events
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (self $user) {
-            $user->created_by = auth()->id();
-            $user->updated_by = auth()->id();
-            // registered_by is set in controller for consistency
-            if (! $user->registered_by && auth()->check()) {
-                $user->registered_by = auth()->id();
-            }
-        });
-
-        static::updating(function (self $user) {
-            $user->updated_by = auth()->id();
-        });
-
-        static::deleting(function (self $user) {
-            // Prevent hard delete of admin users via force delete
-            if ($user->isForceDeleting() && $user->isAdmin()) {
-                return false;
-            }
-            // Set deleted_by on soft delete
-            if (! $user->isForceDeleting() && auth()->check()) {
-                $user->deleted_by = auth()->id();
-                $user->saveQuietly();
-            }
-            // Detach dapur_user pivot on soft delete
-            if (! $user->isForceDeleting()) {
-                $user->dapurs()->detach();
-            }
-        });
     }
 
     public function getStatusAttribute(): string

@@ -7,7 +7,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class RoleSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -16,16 +16,13 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@test.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'email_verified_at' => now(),
-                'registered_by' => null,
-            ]
-        );
+        $admin = User::factory()->admin()->create([
+            'email' => 'admin@test.com',
+            'name' => 'Admin User',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'registered_by' => null,
+        ]);
 
         $otherRoles = [
             [
@@ -46,19 +43,19 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($otherRoles as $role) {
-            User::updateOrCreate(
-                ['email' => $role['email']],
-                [
-                    'name' => $role['name'],
-                    'password' => Hash::make('password'),
-                    'role' => $role['role'],
-                    'email_verified_at' => now(),
-                    'registered_by' => $admin->id,
-                ]
-            );
+            User::factory()->create([
+                'email' => $role['email'],
+                'name' => $role['name'],
+                'password' => Hash::make('password'),
+                'role' => $role['role'],
+                'email_verified_at' => now(),
+                'created_by' => $admin->id,
+                'updated_by' => $admin->id,
+                'registered_by' => $admin->id,
+            ]);
         }
 
-        $this->command->info('Role users created successfully!');
+        $this->command->info('Users seeded successfully!');
         $this->command->table(
             ['Role', 'Email', 'Password'],
             [

@@ -334,9 +334,13 @@ class AdminController extends Controller
     public function settings()
     {
         $settings = Settings::allKeyed();
-        $branding = Settings::group('branding');
-        $map = Settings::group('map');
         $general = Settings::group('general');
+
+        // Filter office settings from general group
+        $map = collect($general)->only(['office_lat', 'office_lng', 'office_address'])->toArray();
+
+        // Filter branding settings from general group (they're stored in 'general' group in DB)
+        $branding = collect($general)->only(['app_name_desktop', 'app_name_web', 'app_tagline'])->toArray();
 
         return view('admin.settings', compact('settings', 'branding', 'map', 'general'));
     }
@@ -385,7 +389,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
-            'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
         $user->update(array_filter([

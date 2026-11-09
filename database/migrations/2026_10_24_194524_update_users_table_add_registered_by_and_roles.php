@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Add registered_by first
-            $table->foreignId('registered_by')->nullable()->constrained('users')->onDelete('set null')->after('email');
+            $table->foreignUlid('registered_by')->nullable()->constrained('users')->onDelete('set null')->after('email');
         });
 
         // For SQLite (testing), we need to recreate the column

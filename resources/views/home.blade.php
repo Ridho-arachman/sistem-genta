@@ -106,24 +106,6 @@
         }
 
         /* Navigation */
-        .landing-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--color-border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
-            transition: box-shadow 0.3s ease, background 0.3s ease;
-        }
-
-        .landing-nav.scrolled {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
-            background: rgba(255, 255, 255, 0.99);
-        }
-
         .nav-link {
             @apply relative text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors duration-200 py-2 px-1;
         }
@@ -143,32 +125,6 @@
         .nav-link.active::after {
             width: 100%;
             left: 0;
-        }
-
-        .btn-primary {
-            @apply bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            @apply bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border border-[var(--color-border)] px-6 py-2.5 rounded-lg font-medium transition-all duration-200;
-        }
-
-        .btn-icon {
-            @apply flex items-center justify-center w-12 h-12 rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-primary)] hover:text-white border border-[var(--color-border)] text-[var(--color-text-muted)] transition-all duration-200;
-        }
-
-        .btn-icon:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(229, 0, 0, 0.2);
-        }
-
-        .btn-icon:focus-visible {
-            outline: 2px solid var(--color-primary);
-            outline-offset: 2px;
         }
 
         /* Logo hover */
@@ -232,13 +188,6 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
         }
 
         /* Section Styles */
@@ -704,28 +653,25 @@
 <body class="font-sans antialiased">
     
     {{-- Navigation --}}
-    <nav class="landing-nav" id="landing-nav">
+    <nav class="border-b border-[var(--color-border)] bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+                <div class="flex items-center gap-2">
                     <a href="{{ route('home') }}" class="nav-logo" aria-label="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }} - Beranda">
                         <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="w-8 h-8 object-contain">
                         <span class="font-semibold text-xl tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}</span>
                     </a>
                 </div>
-                <div class="flex items-center gap-3 flex-wrap">
+                <div class="hidden md:flex items-center gap-6">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="nav-link">Dashboard</a>
-                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                           class="nav-link text-red-600 hover:text-red-700">Keluar</a>
+                        <a href="{{ route('dashboard') }}" class="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('admin.dashboard') ? 'text-[var(--color-primary)]' : '' }}">Dashboard</a>
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="btn-primary">
-                            <x-heroicon name="user" class="w-5 h-5 mr-2 inline" />
-                            Masuk
-                        </a>
+                        <a href="{{ route('home') }}" class="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('home') ? 'text-[var(--color-primary)]' : '' }}">Beranda</a>
+                        <a href="{{ route('login') }}" class="btn-primary inline-flex items-center justify-center px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-lg font-medium transition-colors">Masuk</a>
                     @endauth
                 </div>
             </div>
@@ -741,22 +687,26 @@
                 <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="hero-logo animate-fade-in-up">
                 
                 <h1 class="hero-title animate-fade-in-up delay-1">
-                    {{ str_replace('Pangan Banten', '<span class="highlight">Pangan Banten</span>', settings('app_name_web') ?? 'GENTA Pangan Banten') }}
+                    {!! str_replace('Pangan Banten', '<span class="highlight">Pangan Banten</span>', e(settings('app_name_web') ?? 'GENTA Pangan Banten')) !!}
                 </h1>
                 
                 <p class="hero-tagline animate-fade-in-up delay-2">
                     {{ settings('app_tagline') ?? 'Gerakan Nasional Tani untuk Kemandirian Pangan , ketahanan pangan melalui pertanian, peternakan, perikanan, dan UMKM' }}
                 </p>
                 
-                <div class="hero-buttons animate-fade-in-up delay-3">
+                <div class="hero-buttons animate-fade-in-up delay-3 flex flex-col sm:flex-row gap-4 justify-center">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn-primary">
-                            <x-heroicon name="home" class="w-5 h-5 mr-2 inline" />
+                        <a href="{{ route('dashboard') }}" class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-[34px] py-[16px] rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2 min-w-[200px] justify-center shadow-lg hover:shadow-2xl active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 ring-1 ring-[var(--color-primary)]/20">
+                            <x-heroicon name="home" class="w-5 h-5" />
                             Buka Dashboard
                         </a>
                     @else
-                        <a href="#kontak" class="btn-primary">
-                            <x-heroicon name="mail" class="w-5 h-5 mr-2 inline" />
+                        <a href="{{ route('login') }}" class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-[34px] py-[16px] rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2 min-w-[200px] justify-center shadow-lg hover:shadow-2xl active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 ring-1 ring-[var(--color-primary)]/20">
+                            <x-heroicon name="user" class="w-5 h-5" />
+                            Masuk
+                        </a>
+                        <a href="#kontak" class="bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border-2 border-[var(--color-border)] hover:border-[var(--color-primary)]/50 px-[34px] py-[16px] rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2 min-w-[200px] justify-center shadow-sm hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30">
+                            <x-heroicon name="mail" class="w-5 h-5" />
                             Hubungi Kami
                         </a>
                     @endauth
@@ -1050,19 +1000,6 @@
     {{-- Navbar Scroll Effect & Scroll Reveal --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ===== NAVBAR SCROLL EFFECT =====
-            const nav = document.getElementById('landing-nav');
-            
-            window.addEventListener('scroll', function() {
-                const currentScrollY = window.scrollY;
-                
-                if (currentScrollY > 20) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
-                }
-            }, { passive: true });
-
             // ===== SCROLL REVEAL FOR SECTIONS (skip hero) =====
             const revealObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {

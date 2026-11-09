@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cctvs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('dapur_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('dapur_id')->constrained()->onDelete('cascade');
             $table->string('nama');
             $table->string('ip_address')->nullable();
             $table->string('rtsp_url')->nullable();

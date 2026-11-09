@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class SpWarning extends Model
 {
@@ -15,6 +16,19 @@ class SpWarning extends Model
 
     #[Fillable(['user_id', 'admin_id', 'level', 'reason', 'status'])]
     protected $fillable = ['user_id', 'admin_id', 'level', 'reason', 'status'];
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $warning) {
+            if (empty($warning->id)) {
+                $warning->id = Str::ulid();
+            }
+        });
+    }
 
     protected $casts = [
         'level' => 'integer',

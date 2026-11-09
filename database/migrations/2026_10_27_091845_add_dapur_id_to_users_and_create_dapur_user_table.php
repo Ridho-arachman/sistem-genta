@@ -15,17 +15,17 @@ return new class extends Migration
         // Add dapur_id to users (for kepala_dapur single dapur)
         Schema::table('users', function (Blueprint $table) {
             if (DB::getDriverName() === 'sqlite') {
-                $table->unsignedBigInteger('dapur_id')->nullable()->after('role');
+                $table->string('dapur_id')->nullable()->after('role');
             } else {
-                $table->foreignId('dapur_id')->nullable()->constrained('dapurs')->onDelete('set null')->after('role');
+                $table->foreignUlid('dapur_id')->nullable()->constrained('dapurs')->onDelete('set null')->after('role');
             }
         });
 
         // Pivot table for pengawas multi-dapur
         Schema::create('dapur_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('dapur_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('dapur_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->unique(['dapur_id', 'user_id']);
         });

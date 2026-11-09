@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('laporan_hasil', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('laporan_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('laporan_id')->constrained()->onDelete('cascade');
             $table->string('indikator'); // nama indikator: Kebersihan, Penyimpanan, dll
             $table->enum('hasil', ['diperiksa', 'temuan_sedang', 'temuan_kritis']);
             $table->timestamps();

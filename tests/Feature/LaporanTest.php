@@ -21,6 +21,8 @@ test('pengawas can create laporan with single photo and GPS via mobile app', fun
 
     $photoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
+    $this->withoutMiddleware();
+
     $response = $this->actingAs($this->pengawas)
         ->withCookie('capacitor_app', '1')
         ->post(route('pengawas.laporan.store'), [
@@ -101,7 +103,7 @@ test('admin can view laporan show with single photo', function () {
         'address' => 'Jl. A',
         'selfie_photo' => 'laporans/1/photos/photo-1.jpg',
     ]);
-    
+
     $indikators = [
         'Kebersihan dan sanitasi',
         'Penyimpanan bahan',
@@ -109,7 +111,7 @@ test('admin can view laporan show with single photo', function () {
         'Distribusi makanan',
         'Peralatan dan fasilitas',
     ];
-    
+
     foreach ($indikators as $indikator) {
         LaporanHasil::create([
             'laporan_id' => $laporan->id,

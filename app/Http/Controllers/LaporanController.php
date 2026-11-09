@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Laporan;
 use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
@@ -12,7 +13,26 @@ class LaporanController extends Controller
     {
         $laporans = Laporan::with('dapur')->latest()->paginate(15);
 
-        return view('admin.laporan.index', compact('laporans'));
+        $badgeMap = [
+            'diperiksa' => 'badge-success',
+            'temuan' => 'badge-danger',
+            'tindak lanjut' => 'badge-warning',
+            'selesai' => 'badge-success',
+        ];
+
+        $laporanRows = $laporans->map(function ($l) use ($badgeMap) {
+            return [
+                'id' => $l->id,
+                'tanggal' => $l->created_at->format('d M Y'),
+                'lokasi' => $l->dapur->nama ?? '-',
+                'pengawas' => $l->user->name ?? '-',
+                'status' => ucfirst(str_replace('_', ' ', $l->status)),
+                'badgeClass' => $badgeMap[$l->status] ?? 'badge-gray',
+                'date' => $l->created_at->format('Y-m-d'),
+            ];
+        })->toArray();
+
+        return view('admin.laporan.index', compact('laporans', 'laporanRows'));
     }
 
     public function create()
@@ -43,12 +63,28 @@ class LaporanController extends Controller
             'hasil.*' => 'required|in:diperiksa,temuan_sedang,temuan_kritis',
         ]);
 
+        // Simpan foto selfie sebagai file di storage (bukan base64 di DB)
+        $selfiePhoto = $validated['selfie_photo'];
+        $photoPath = null;
+        if (str_starts_with($selfiePhoto, 'data:')) {
+            [$type, $data] = explode(';', $selfiePhoto, 2);
+            [, $data] = explode(',', $data, 2);
+            $data = base64_decode($data);
+            $extension = 'jpg';
+            if (preg_match('/image\/(\w+)/', $type ?? '', $m)) {
+                $extension = $m[1];
+            }
+            $filename = 'laporan-selfies/'.uniqid('lpr_', true).'.'.$extension;
+            Storage::disk('public')->put($filename, $data);
+            $photoPath = $filename;
+        }
+
         // Create laporan first (need ID for folder)
         $laporan = Laporan::create([
             'dapur_id' => $validated['dapur_id'],
             'status' => $validated['status'],
             'catatan' => $validated['catatan'] ?? null,
-            'selfie_photo' => $validated['selfie_photo'],
+            'selfie_photo' => $photoPath,
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
             'address' => $validated['address'],

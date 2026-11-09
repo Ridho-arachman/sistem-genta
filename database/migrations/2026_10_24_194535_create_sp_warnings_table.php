@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sp_warnings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Pengawas yang kena SP
-            $table->foreignId('admin_id')->constrained('users')->onDelete('cascade'); // Admin yg buat SP
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained()->onDelete('cascade'); // Pengawas yang kena SP
+            $table->foreignUlid('admin_id')->constrained('users')->onDelete('cascade'); // Admin yg buat SP
             $table->unsignedTinyInteger('level'); // 1, 2, 3
             $table->text('reason');
             $table->enum('status', ['aktif', 'dicabut', 'selesai'])->default('aktif');

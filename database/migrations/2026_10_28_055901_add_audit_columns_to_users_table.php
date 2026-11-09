@@ -13,9 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('created_by')->nullable()->after('id');
-            $table->unsignedBigInteger('updated_by')->nullable()->after('created_by');
-            $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+            $table->ulid('created_by')->nullable()->after('id');
+            $table->ulid('updated_by')->nullable()->after('created_by');
+            $table->ulid('deleted_by')->nullable()->after('deleted_at');
         });
 
         // Skip foreign keys for SQLite (testing) - self-referencing FKs not supported in SQLite in-memory

@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cctv_anomaly_reports', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('cctv_id')->constrained()->onDelete('cascade');
-            $table->foreignId('admin_id')->constrained('users')->onDelete('cascade'); // Admin yg lapor
+            $table->ulid('id')->primary();
+            $table->foreignUlid('cctv_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('admin_id')->constrained('users')->onDelete('cascade'); // Admin yg lapor
             $table->text('description');
             $table->enum('severity', ['rendah', 'sedang', 'tinggi'])->default('sedang');
             $table->enum('status', ['baru', 'diproses', 'selesai'])->default('baru');

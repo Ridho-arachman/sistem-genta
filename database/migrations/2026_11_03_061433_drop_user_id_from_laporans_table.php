@@ -20,7 +20,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('laporans', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained('users')->after('dapur_id');
+            $table->foreignUlid('user_id')->nullable()->constrained('users')->after('dapur_id');
         });
     }
 };

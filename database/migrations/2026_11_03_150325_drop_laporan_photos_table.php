@@ -20,15 +20,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::create('laporan_photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('laporan_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->foreignUlid('laporan_id')->constrained()->onDelete('cascade');
             $table->string('photo_path');
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->text('address')->nullable();
             $table->string('indikator')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->foreignUlid('created_by')->nullable()->constrained('users');
+            $table->foreignUlid('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

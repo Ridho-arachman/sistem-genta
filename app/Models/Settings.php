@@ -3,10 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Settings extends Model
 {
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $fillable = ['key', 'value', 'type', 'group', 'label', 'description'];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $setting) {
+            if (empty($setting->id)) {
+                $setting->id = Str::ulid();
+            }
+        });
+    }
 
     protected $casts = [
         'value' => 'string',

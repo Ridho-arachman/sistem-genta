@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Dapur extends Model
 {
@@ -19,7 +20,20 @@ class Dapur extends Model
     #[Fillable(['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'])]
     protected $fillable = ['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $casts = [];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $dapur) {
+            if (empty($dapur->id)) {
+                $dapur->id = Str::ulid();
+            }
+        });
+    }
 
     public function cctvs(): HasMany
     {
