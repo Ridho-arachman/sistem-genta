@@ -160,6 +160,37 @@ composer run dev
 
 Perintah ini menjalankan server Laravel, Vite, antrean, dan log secara bersamaan.
 
+**Konfigurasi IP Dev Server (wajib):**
+
+Sebelum menjalankan `composer run dev`, sesuaikan IP di file berikut ke IP Wi-Fi laptop kamu saat ini (contoh: `192.168.101.6`):
+
+1. **`.env`** — ubah `APP_URL`:
+   ```env
+   APP_URL=http://192.168.101.6:8000
+   ```
+
+2. **`vite.config.js`** — ubah `server.origin`:
+   ```js
+   server: {
+       host: '0.0.0.0',
+       port: 5173,
+       origin: 'http://192.168.101.6:5173',  // sesuaikan IP
+       watch: { usePolling: true },
+   }
+   ```
+
+3. **`public/hot`** — isi manual (file ini di-`.gitignore`, tiap developer punya sendiri):
+   ```
+   http://192.168.101.6:5173
+   ```
+
+Akses aplikasi:
+
+- **Dari PC (browser):** `http://192.168.101.6:8000`
+- **Dari Android (browser / WebView Capacitor):** `http://192.168.101.6:8000` — harus satu jaringan Wi-Fi dengan PC.
+
+> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di ketiga file di atas dan restart `composer run dev`.
+
 ## Konfigurasi
 
 Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
