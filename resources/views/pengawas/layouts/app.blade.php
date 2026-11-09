@@ -1,7 +1,26 @@
 @extends('layouts.base', ['pageTitle' => $pageTitle ?? 'Pengawas Dashboard', 'bodyClass' => 'bg-[var(--color-background)] text-[var(--color-text)]'])
 
 @section('header')
-@include('components.navbar-pengawas')
+@if (request()->cookie('capacitor_app'))
+    @include('components.navbar-app', [
+        'profileRoute' => 'pengawas.settings',
+        'brandLogo' => 'icons/icon-512.png',
+        'brandAlt' => 'Genta Logo',
+        'brandText' => 'GENTA',
+        'brandSubText' => 'PENGAWASAN DAPUR MBG',
+    ])
+@else
+    @include('components.navbar-web', [
+        'profileRoute' => 'pengawas.settings',
+        'showHamburger' => false,
+        'showModeBadge' => true,
+        'topbarClass' => 'h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4',
+        'brandLogo' => 'icons/icon-512.png',
+        'brandAlt' => 'Genta Logo',
+        'brandText' => 'GENTA',
+        'brandSubText' => 'PENGAWASAN DAPUR MBG',
+    ])
+@endif
 @endsection
 
 @section('content')

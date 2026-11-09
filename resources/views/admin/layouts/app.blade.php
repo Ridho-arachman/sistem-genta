@@ -2,7 +2,27 @@
 
 @section('header')
 <div x-data="{ sidebarOpen: false }">
-@include('components.navbar-admin')
+    @if (request()->cookie('capacitor_app'))
+        @include('components.navbar-web', [
+            'profileRoute' => 'admin.settings.profile',
+            'showHamburger' => true,
+            'showModeBadge' => false,
+            'brandLogo' => 'logo.png',
+            'brandAlt' => settings('app_name_desktop') ?? 'GENTA Pangan Banten',
+            'brandText' => strtoupper(settings('app_name_desktop') ?? 'GENTA'),
+            'brandSubText' => 'ADMIN PANEL',
+        ])
+    @else
+        @include('components.navbar-web', [
+            'profileRoute' => 'admin.settings.profile',
+            'showHamburger' => true,
+            'showModeBadge' => false,
+            'brandLogo' => 'logo.png',
+            'brandAlt' => settings('app_name_desktop') ?? 'GENTA Pangan Banten',
+            'brandText' => strtoupper(settings('app_name_desktop') ?? 'GENTA'),
+            'brandSubText' => 'ADMIN PANEL',
+        ])
+    @endif
 @endsection
 
 @section('content')
