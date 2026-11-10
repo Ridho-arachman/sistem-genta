@@ -11,7 +11,7 @@ class LaporanController extends Controller
 {
     public function index()
     {
-        $laporans = Laporan::with('dapur')->latest()->paginate(15);
+        $laporans = Laporan::with(['dapur', 'createdBy'])->latest()->paginate(15);
 
         $badgeMap = [
             'diperiksa' => 'badge-success',
@@ -25,7 +25,7 @@ class LaporanController extends Controller
                 'id' => $l->id,
                 'tanggal' => $l->created_at->format('d M Y'),
                 'lokasi' => $l->dapur->nama ?? '-',
-                'pengawas' => $l->user->name ?? '-',
+                'pengawas' => $l->createdBy->name ?? '-',
                 'status' => ucfirst(str_replace('_', ' ', $l->status)),
                 'badgeClass' => $badgeMap[$l->status] ?? 'badge-gray',
                 'date' => $l->created_at->format('Y-m-d'),
