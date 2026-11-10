@@ -295,6 +295,173 @@ php artisan view:cache
 
 Dokumentasi teknis per modul tersedia di direktori [`docs/`](docs/), dimulai dari [Project Overview](docs/01-project-overview.md).
 
+## Dokumentasi Komponen CSS (`resources/css/app.css`)
+
+Komponen CSS di `resources/css/app.css` menggunakan Tailwind CSS v4 dengan `@layer components`. Komponen-komponen berikut tersedia untuk digunakan di semua panel (admin, manajerial, pengawas, kepala dapur) agar tampilan konsisten tanpa perlu membuat class baru dari nol.
+
+### Warna (CSS Custom Properties)
+
+Semua warna didefinisikan sebagai CSS variable dan dapat digunakan langsung di class atau inline style:
+
+| Variabel | Nilai | Keterangan |
+|----------|-------|------------|
+| `--color-primary` | `#E50000` | Warna utama merah |
+| `--color-primary-dark` | `#B20000` | Hover state |
+| `--color-primary-light` | `#FF3333` | |
+| `--color-secondary` | `#000000` | Judul teks |
+| `--color-background` | `#FFFFFF` | Background halaman |
+| `--color-surface` | `#F5F5F5` | Background card/panel |
+| `--color-border` | `#E0E0E0` | Border |
+| `--color-text` | `#000000` | Teks utama |
+| `--color-text-muted` | `#666666` | Teks sekunder |
+
+### Tombol (Buttons)
+
+| Class | Keterangan | Contoh |
+|-------|------------|--------|
+| `.btn-primary` | Tombol utama warna merah | `<button class="btn-primary">Simpan</button>` |
+| `.btn-secondary` | Tombol abu-abu dengan border | `<button class="btn-secondary">Batal</button>` |
+| `.btn-danger` | Tombol merah untuk aksi menghapus | |
+| `.btn-outline-primary` | Outline merah | |
+| `.btn-light` | Putih dengan border | |
+| `.btn-action` | Tombol aksi pada halaman (lebih lebar) | `.btn-action.btn-action-primary` |
+| `.btn-action-primary` | Tombol aksi warna utama | |
+| `.btn-action-secondary` | Tombol aksi warna abu-abu | |
+| `.btn-action-ghost` | Tombol aksi tanpa background | |
+
+### Form Input
+
+| Class | Keterangan | Contoh |
+|-------|------------|--------|
+| `.input-field` | Input standar (rounded-xl, focus:ring-primary) | `<input class="input-field">` |
+| `.input-field.select-enhanced` | Select dengan ikon panah di kanan | |
+| `.input-with-icon` | Wrapper input dengan ikon di kiri | |
+| `.input-icon-inner` | Ikon di dalam input | |
+| `.form-field` | Wrapper label + input (flex column) | `<div class="form-field">...</div>` |
+| `.form-label` | Label form | |
+| `.form-label .required` | Bintang merah untuk field wajib | |
+| `.form-hint` | Teks petunjuk kecil di bawah input | |
+| `.form-error` | Pesan error | |
+| `.input-field-error` | State input error (border merah) | |
+
+### Card & Section
+
+| Class | Keterangan | Contoh |
+|-------|------------|--------|
+| `.card` | Card standar (putih, border, rounded-xl, shadow-sm) | `<div class="card">...</div>` |
+| `.panel` | Sama seperti card | |
+| `.form-section` | Section form dengan padding 24px | |
+| `.form-section-title` | Judul section form | |
+| `.section-icon` | Ikon kecil di judul section | |
+
+### Tabel
+
+| Class | Keterangan |
+|-------|------------|
+| `.table-th` | Header tabel (text-xs, uppercase, bg-surface) |
+| `.table-td` | Sel data tabel (text-sm) |
+
+### Badge & Status
+
+| Class | Keterangan | Contoh |
+|-------|------------|--------|
+| `.badge` | Badge dasar (rounded-full, text-xs) | `<span class="badge badge-primary">...</span>` |
+| `.badge-primary` | Badge warna utama | |
+| `.badge-success` | Badge warna hijau | |
+| `.badge-warning` | Badge warna kuning | |
+| `.badge-danger` | Badge warna merah tua | |
+| `.badge-gray` | Badge warna abu-abu | |
+| `.status-ok` | Status aktif (hijau muda) | |
+| `.status-warn` | Status peringatan (kuning muda) | |
+| `.status-off` | Status tidak aktif (merah muda) | |
+
+### Layout Shell
+
+| Class | Keterangan |
+|-------|------------|
+| `.shell` | Wrapper layout utama (flex, min-height layar penuh) |
+| `.topbar` | Atas halaman (72px, warna utama merah) |
+| `.aside` | Sidebar kiri (230px, posisi fixed) |
+| `.main` | Konten utama (margin-left: 230px untuk ruang sidebar) |
+| `.heading` | Header halaman dengan judul dan tombol aksi |
+| `.eyebrow` | Teks kecil di atas judul utama |
+| `.main h1` | Judul halaman utama (font Space Grotesk) |
+| `.muted` | Teks abu-abu untuk keterangan |
+
+### Statistik
+
+| Class | Keterangan |
+|-------|------------|
+| `.stats` | Grid statistik (responsif: 4 kolom desktop, 2 tablet, 1 mobile) |
+| `.stat` | Satu kartu statistik |
+| `.stat-value` | Angka besar (font Space Grotesk) |
+| `.stat-icon` | Ikon di dalam kartu statistik |
+| `.stat-foot` | Keterangan kecil di bawah angka |
+
+### Komponen Lainnya
+
+| Class | Keterangan |
+|-------|------------|
+| `.search` | Input pencarian (max-width 280px, focus:ring-primary) |
+| `.kitchen-card` | Kartu dapur dengan flex layout |
+| `.progress-bar` / `.progress-fill` | Progress bar |
+| `.progress-ok` / `.progress-warn` / `.progress-off` | Warna progres |
+| `.activity` / `.activity-row` | Feed aktivitas |
+| `.camera` / `.camera-art` | Panel kamera |
+| `.footer` | Footer halaman (padding 16px, border atas) |
+
+### Transisi & Animasi
+
+| Class | Keterangan |
+|-------|------------|
+| `.transition-scale` | Transisi transform + opacity |
+| `.transition-slide` | Transisi transform |
+| `.animate-scale-in` | Animasi skala masuk |
+| `.spinner` | Ikon loading berputar |
+
+### Contoh Penggunaan Lengkap
+
+```blade
+@extends('admin.layouts.app', ['pageTitle' => 'Halaman Baru'])
+
+@section('page_content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="heading">
+        <div>
+            <div class="eyebrow">Genta · Panel Baru</div>
+            <h1>Judul Halaman</h1>
+            <div class="muted">Keterangan halaman</div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-title">
+            <span class="section-icon">⌂</span>
+            Judul Section
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+                <label class="form-label" for="nama">Nama <span class="required">*</span></label>
+                <input type="text" id="nama" name="nama" class="input-field" required>
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="status">Status</label>
+                <select id="status" name="status" class="input-field select-enhanced">
+                    <option value="aktif">Aktif</option>
+                    <option value="nonaktif">Nonaktif</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions flex justify-end gap-3 mt-4">
+        <a href="{{ route('admin.index') }}" class="btn-action btn-action-secondary">Batal</a>
+        <button type="submit" class="btn-action btn-action-primary">Simpan</button>
+    </div>
+</div>
+@endsection
+```
+
 ## Lisensi
 
 Aplikasi internal GENTA Pangan Banten. Seluruh hak penggunaan diatur oleh organisasi pengelola.
