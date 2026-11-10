@@ -35,8 +35,18 @@
 
         {{-- Tombol Buka di Google Maps --}}
         @if ($dapur->map_embed_url)
+        @php
+            $geoLat = null;
+            $geoLng = null;
+            if (preg_match('/!3d([-0-9.]+)/', $dapur->map_embed_url, $m)) {
+                $geoLat = $m[1];
+            }
+            if (preg_match('/!2d([-0-9.]+)/', $dapur->map_embed_url, $m)) {
+                $geoLng = $m[1];
+            }
+        @endphp
         <div class="mt-6 flex items-center justify-center">
-            <a href="{{ 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->lokasi) }}"
+            <a href="{{ $geoLat && $geoLng ? 'geo:' . $geoLat . ',' . $geoLng . '?q=' . urlencode($geoLat . ',' . $geoLng . ' ' . $dapur->nama) : 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->lokasi) }}"
                class="flex-1 px-6 py-3 text-center bg-[var(--color-primary)] text-white rounded-xl text-lg font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg">
                 🗺️ Buka di Google Maps
             </a>
