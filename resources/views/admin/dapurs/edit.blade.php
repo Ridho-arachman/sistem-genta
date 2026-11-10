@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.dapurs.update', $dapur) }}" class="space-y-6" x-data="dapurForm()">
+    <form method="POST" action="{{ route('admin.dapurs.update', $dapur) }}" class="space-y-6" id="dapur-form">
         @csrf
         @method('PUT')
 
@@ -57,12 +57,10 @@
                         Kabupaten / Kota <span class="required">*</span>
                     </label>
                     <select id="kabupaten_kota" name="kabupaten_kota"
-                            class="input-field" required
-                            x-model="form.kabupaten_kota"
-                            x-on:change="onKabupatenChange($event.target.value)">
+                            class="input-field" required>
                         <option value="">-- Pilih Kabupaten/Kota --</option>
                         @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
-                            <option value="{{ $kab }}">{{ $kab }}</option>
+                            <option value="{{ $kab }}" {{ old('kabupaten_kota', $dapur->kabupaten_kota) === $kab ? 'selected' : '' }}>{{ $kab }}</option>
                         @endforeach
                     </select>
                     @error('kabupaten_kota')
@@ -76,9 +74,17 @@
                     </label>
                     <select id="kecamatan" name="kecamatan"
                             class="input-field" required
-                            x-model="form.kecamatan"
-                            :disabled="kecamatanOptions.length === 0"
-                            x-html="getKecamatanOptionsHtml()">
+                            id="kecamatan-select">
+                        <option value="">-- Pilih Kecamatan --</option>
+                        @php
+                            $controller = app(\App\Http\Controllers\DapurController::class);
+                            $selectedKab = old('kabupaten_kota', $dapur->kabupaten_kota);
+                            $selectedKec = old('kecamatan', $dapur->kecamatan);
+                            $kecsForSelectedKab = $controller->getKnownKecamatan($selectedKab) ?? [];
+                        @endphp
+                        @foreach($kecsForSelectedKab as $kec)
+                            <option value="{{ $kec }}" {{ $selectedKec === $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                        @endforeach
                     </select>
                     @error('kecamatan')
                         <p class="form-error">{{ $message }}</p>
@@ -119,47 +125,53 @@ foreach (\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab) {
 
 @push('scripts')
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('dapurForm', () => ({
-        form: {
-            kabupaten_kota: '@js(old("kabupaten_kota", $dapur->kabupaten_kota))',
-            kecamatan: '@js(old("kecamatan", $dapur->kecamatan))',
-        },
-        kecamatanOptions: [],
-        allKecamatan: @json($kecamatanMapping),
+document.addEventListener('DOMContentLoaded', function () {
+    const kabupatenSelect = document.getElementById('kabupaten_kota');
+    const kecamatanSelect = document.getElementById('kecamatan-select');
+    const allKecamatan = @json($kecamatanMapping);
 
-        onKabupatenChange(kabupaten) {
-            if (!kabupaten) {
-                this.kecamatanOptions = [];
-                this.form.kecamatan = '';
-                return;
-            }
+    function updateKecamatanOptions(kabupaten) {
+        const currentValue = kecamatanSelect.value;
+        kecamatanSelect.innerHTML = '';
 
-            this.kecamatanOptions = this.allKecamatan[kabupaten] || [];
-
-            // Reset kecamatan if not in new options
-            if (!this.kecamatanOptions.includes(this.form.kecamatan)) {
-                this.form.kecamatan = '';
-            }
-        },
-
-        getKecamatanOptionsHtml() {
-            if (this.kecamatanOptions.length === 0) {
-                return '<option value="">-- Pilih Kabupaten/Kota dulu --</option>';
-            }
-            return '<option value="">-- Pilih Kecamatan --</option>' +
-                this.kecamatanOptions.map(kec =>
-                    `<option value="${kec}"${kec === this.form.kecamatan ? ' selected' : ''}>${kec}</option>`
-                ).join('');
-        },
-
-        init() {
-            // Initialize kecamatan options if kabupaten already selected (e.g. after validation error)
-            if (this.form.kabupaten_kota) {
-                this.onKabupatenChange(this.form.kabupaten_kota);
-            }
+        if (!kabupaten) {
+            const emptyOpt = document.createElement('option');
+            emptyOpt.value = '';
+            emptyOpt.textContent = '-- Pilih Kabupaten/Kota dulu --';
+            kecamatanSelect.appendChild(emptyOpt);
+            kecamatanSelect.disabled = true;
+            return;
         }
-    }));
+
+        const options = allKecamatan[kabupaten] || [];
+        kecamatanSelect.disabled = false;
+
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '-- Pilih Kecamatan --';
+        kecamatanSelect.appendChild(defaultOpt);
+
+        let found = false;
+        options.forEach(function (kec) {
+            const opt = document.createElement('option');
+            opt.value = kec;
+            opt.textContent = kec;
+            if (kec === currentValue) {
+                opt.selected = true;
+                found = true;
+            }
+            kecamatanSelect.appendChild(opt);
+        });
+
+        // If current value not in new options, reset to empty
+        if (!found && currentValue) {
+            kecamatanSelect.value = '';
+        }
+    }
+
+    kabupatenSelect.addEventListener('change', function () {
+        updateKecamatanOptions(this.value);
+    });
 });
 </script>
 @endpush

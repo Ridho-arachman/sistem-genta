@@ -155,7 +155,7 @@ class User extends Authenticatable
     }
 
     // Check if user can access specific dapur
-    public function canAccessDapur(int $dapurId): bool
+    public function canAccessDapur(string $dapurId): bool
     {
         if ($this->isAdmin() || $this->isManajerial()) {
             return true;
@@ -260,7 +260,9 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'Semua data',
-            'pengawas' => $this->dapurs->count() > 0 ? 'Dapur yang diamati' : '-',
+            'pengawas' => $this->dapurs->count() > 0
+                ? $this->dapurs->pluck('nama')->implode(', ')
+                : '-',
             'kepala_dapur' => $this->dapur_id ? 'Dapur sendiri' : '-',
             'manajerial' => 'Dashboard & laporan',
             default => '-',
