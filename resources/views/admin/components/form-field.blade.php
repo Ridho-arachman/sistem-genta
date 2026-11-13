@@ -13,7 +13,7 @@
     </x-admin-form-field>
 --}}
 <div class="flex flex-col gap-1.5">
-    <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" @if ($name) for="{{ $name }}" @endif>
+    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" @if ($name) for="{{ $name }}" @endif>
         {{ $label }}@if ($required) <span class="text-xs text-[var(--color-primary)]">*</span>@endif
     </label>
     {{ $slot }}

@@ -2,57 +2,34 @@
 
 @section('page_content')
 <div class="max-w-2xl mx-auto">
-    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
-        <div>
-            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Buat Surat Peringatan Baru</h1>
-            <div class="text-[var(--color-text-muted)] text-sm">SP akan dikirim ke pengawas dan disalin ke manajerial via notifikasi</div>
-        </div>
-    </div>
+    <x-admin::page-heading title="Buat Surat Peringatan Baru" subtitle="SP akan dikirim ke pengawas dan disalin ke manajerial via notifikasi" />
 
     <form method="POST" action="{{ route('admin.sp-warnings.store') }}" class="space-y-6">
         @csrf
 
-        <div class="card card-bordered">
-            <div class="card-body">
-                <div class="card-title">
-                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">⚠</span>
-                    Data Surat Peringatan
-                </div>
+        <x-admin::panel title="Data Surat Peringatan" iconSvg="⚠">
 
-            <div class="flex flex-col gap-1.5">
-                <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="user_id">Pengawas <span class="text-xs text-[var(--color-primary)]">*</span></label>
+            <x-admin::form-field label="Pengawas" name="user_id" required>
                 <select id="user_id" name="user_id" required class="input input-bordered">
                     <option value="">Pilih pengawas</option>
                     @foreach ($pengawas as $p)
                         <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->email }})</option>
                     @endforeach
                 </select>
-                @error('user_id')
-                    <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            </x-admin::form-field>
 
-            <div class="flex flex-col gap-1.5">
-                <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="level">Level SP <span class="text-xs text-[var(--color-primary)]">*</span></label>
+            <x-admin::form-field label="Level SP" name="level" required>
                 <select id="level" name="level" required class="input input-bordered">
                     <option value="">Pilih level</option>
                     <option value="1">SP-1 (Peringatan Pertama)</option>
                     <option value="2">SP-2 (Peringatan Kedua)</option>
                     <option value="3">SP-3 (Peringatan Terakhir / PHK)</option>
                 </select>
-                @error('level')
-                    <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            </x-admin::form-field>
 
-            <div class="flex flex-col gap-1.5">
-                <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="reason">Alasan <span class="text-xs text-[var(--color-primary)]">*</span></label>
+            <x-admin::form-field label="Alasan" name="reason" required>
                 <textarea id="reason" name="reason" required rows="4" class="input input-bordered" placeholder="Jelaskan alasan pemberian SP..."></textarea>
-                @error('reason')
-                    <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            </x-admin::form-field>
 
             <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
                 <h4 class="font-medium text-yellow-800 mb-2 flex items-center gap-2">
@@ -66,7 +43,7 @@
                     <li>• Notifikasi otomatis terkirim ke pengawas & manajerial</li>
                 </ul>
             </div>
-        </div>
+        </x-admin::panel>
 
         <div class="flex flex-wrap gap-3 mt-2 border-t border-[var(--color-border)] pt-4">
             <button type="submit" class="btn btn-primary">

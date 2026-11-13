@@ -195,7 +195,9 @@ class DapurController extends Controller
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        return view('admin.dapurs.create');
+        $kecamatanMapping = $this->kecamatanMapping();
+
+        return view('admin.dapurs.create', compact('kecamatanMapping'));
     }
 
     public function store(Request $request)
@@ -266,7 +268,24 @@ class DapurController extends Controller
             abort(403);
         }
 
-        return view('admin.dapurs.edit', compact('dapur'));
+        $kecamatanMapping = $this->kecamatanMapping();
+
+        return view('admin.dapurs.edit', compact('dapur', 'kecamatanMapping'));
+    }
+
+    /**
+     * Peta kabupaten/kota Banten ke daftar kecamatan untuk form create/edit.
+     *
+     * @return array<string, array<int, string>>
+     */
+    private function kecamatanMapping(): array
+    {
+        $mapping = [];
+        foreach (self::BANTEN_KABUPATEN_KOTA as $kab) {
+            $mapping[$kab] = $this->getKnownKecamatan($kab);
+        }
+
+        return $mapping;
     }
 
     public function update(Request $request, Dapur $dapur)

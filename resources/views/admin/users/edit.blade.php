@@ -2,65 +2,43 @@
 
 @section('page_content')
 <div class="max-w-5xl mx-auto">
-    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
-        <div>
-            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Edit User: {{ $user->name }}</h1>
-            <div class="text-[var(--color-text-muted)] text-sm">Perbarui data pengguna</div>
-        </div>
-    </div>
+    <x-admin::page-heading title="Edit User: {{ $user->name }}" subtitle="Perbarui data pengguna" />
 
     <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" id="user-form" x-data="userFormEdit()">
         @csrf
         @method('PUT')
 
         {{-- Data Pengguna --}}
-        <div class="card card-bordered">
-            <div class="card-body">
-                <div class="card-title">
-                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">♙</span>
-                    Data Pengguna
-                </div>
-
+        <x-admin::panel title="Data Pengguna">
+            <x-slot:iconSvg>♙</x-slot:iconSvg>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Nama Lengkap --}}
-                <div class="flex flex-col gap-1.5 lg:col-span-1">
-                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="name">Nama Lengkap <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                {{-- Nama Lengkap --}}
+                <x-admin::form-field label="Nama Lengkap" name="name" required class="lg:col-span-1">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name" 
+                        <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name"
                                class="input input-bordered" placeholder="Masukkan nama lengkap">
                     </div>
-                    @error('name')
-                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                </x-admin::form-field>
 
                 {{-- Email --}}
-                <div class="flex flex-col gap-1.5 lg:col-span-1">
-                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="email">Email <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                <x-admin::form-field label="Email" name="email" required class="lg:col-span-1">
                     <div class="relative">
-                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email" 
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email"
                                class="input input-bordered" placeholder="Masukkan email">
                     </div>
-                    @error('email')
-                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                </x-admin::form-field>
 
                 {{-- Role --}}
-                <div class="flex flex-col gap-1.5 lg:col-span-1">
-                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="role">Role <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                <x-admin::form-field label="Role" name="role" required class="lg:col-span-1">
                     <select id="role" name="role" required class="input input-bordered" x-model="selectedRole" @change="handleRoleChange()">
                         <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
                         <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
                     </select>
-                    @error('role')
-                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                </x-admin::form-field>
 
                 {{-- Dapur Assignment (full width) --}}
                 <div class="flex flex-col gap-1.5 lg:col-span-2">
@@ -222,42 +200,28 @@
                 </div>
 
                 {{-- Password Baru --}}
-                <div class="flex flex-col gap-1.5 lg:col-span-1">
-                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password">Password Baru <span class="text-[var(--color-text-muted)]">(kosongkan jika tidak diubah)</span></label>
+                <x-admin::form-field label="Password Baru" name="password" hint="Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter." class="lg:col-span-1">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        <input id="password" type="password" name="password" autocomplete="new-password" 
+                        <input id="password" type="password" name="password" autocomplete="new-password"
                                class="input input-bordered" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
                     </div>
-                    <p class="text-[11px] text-[var(--color-text-muted)] mt-0.5">Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter.</p>
-                    @error('password')
-                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                </x-admin::form-field>
 
                 {{-- Konfirmasi Password Baru --}}
-                <div class="flex flex-col gap-1.5 lg:col-span-1">
-                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password_confirmation">Konfirmasi Password Baru</label>
+                <x-admin::form-field label="Konfirmasi Password Baru" name="password_confirmation" class="lg:col-span-1">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" 
+                        <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password"
                                class="input input-bordered" placeholder="Ulangi password baru">
                     </div>
-                    @error('password_confirmation')
-                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                </x-admin::form-field>
             </div>
-        </div>
-    </div>
+        </x-admin::panel>
 
         {{-- Informasi Audit (Read Only) --}}
-        <div class="card card-bordered">
-            <div class="card-body">
-                <div class="card-title">
-                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">⚙</span>
-                    Informasi Audit
-                </div>
+        <x-admin::panel title="Informasi Audit">
+            <x-slot:iconSvg>⚙</x-slot:iconSvg>
 
             <div class="p-4 bg-[var(--color-surface)]/50 border border-[var(--color-border)] rounded-lg">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -306,9 +270,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
+        </x-admin::panel>
         {{-- Form Actions (full width) --}}
         <div class="lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
             <a href="{{ route('admin.users') }}" class="btn btn-secondary">

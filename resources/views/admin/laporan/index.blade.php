@@ -16,7 +16,7 @@
 
 <x-admin::panel x-data="laporanFilter()">
     <x-slot:head>
-        <div class="card-title flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-[var(--color-border)]">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-[var(--color-border)]">
             <h2 class="text-sm font-bold text-[var(--color-secondary)]">Daftar Laporan</h2>
         
         <div class="flex flex-wrap gap-3 w-full sm:w-auto">

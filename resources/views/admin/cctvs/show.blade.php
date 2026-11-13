@@ -2,13 +2,7 @@
 
 @section('page_content')
 
-<div class="flex flex-wrap items-start justify-between gap-4 mb-8">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Detail CCTV</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Informasi dan pratinjau kamera CCTV</div>
-    </div>
-</div>
+<x-admin::page-heading title="Detail CCTV" subtitle="Informasi dan pratinjau kamera CCTV" />
 
     <div class="card p-8">
         <div class="flex items-center justify-between mb-6">

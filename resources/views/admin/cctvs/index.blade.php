@@ -16,7 +16,7 @@
 
 <x-admin::panel>
     <x-slot:head>
-        <div class="card-title flex flex-wrap items-end gap-4">
+        <div class="flex flex-wrap items-end gap-4">
             <h2 class="text-lg font-semibold text-[var(--color-secondary)]">Daftar Monitor Kamera</h2>
             <span class="text-sm text-[var(--color-text-muted)]">{{ $cctvs->total() }} kamera terdaftar</span>
         </div>

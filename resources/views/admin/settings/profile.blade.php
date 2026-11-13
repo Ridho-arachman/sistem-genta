@@ -1,13 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Pengaturan Profil'])
 
 @section('page_content')
-<div class="flex flex-wrap items-start justify-between gap-4 mb-8">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Pengaturan Profil</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Kelola nama, email, dan password akun Anda</div>
-    </div>
-</div>
+<x-admin::page-heading title="Pengaturan Profil" subtitle="Kelola nama, email, dan password akun Anda" />
 
 <div class="card p-6 max-w-2xl">
     <form method="POST" action="{{ route('admin.settings.profile.update') }}">

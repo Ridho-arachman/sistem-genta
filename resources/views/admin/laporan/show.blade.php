@@ -1,22 +1,9 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail Laporan'])
 
 @section('page_content')
-<div class="flex flex-wrap items-start justify-between gap-4 mb-8">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Detail Laporan</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Verifikasi dan tindak lan-jut laporan penemuan</div>
-    </div>
-</div>
+<x-admin::page-heading title="Detail Laporan" subtitle="Verifikasi dan tindak lanjut laporan penemuan" />
 
-<div class="card card-bordered" id="laporanDetail" x-data="laporanDetail()" x-effect="document.body.style.overflow = photoPreview ? 'hidden' : ''">
-    <div class="card-body">
-        <div class="card-title flex items-center gap-2.5 mb-5 pb-4 border-b border-[var(--color-border)]">
-            <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </span>
-            <h2 class="text-sm font-bold text-[var(--color-secondary)]">Informasi Laporan</h2>
-        </div>
+<x-admin::panel id="laporanDetail" x-data="laporanDetail()" x-effect="document.body.style.overflow = photoPreview ? 'hidden' : ''" title="Informasi Laporan" icon="document">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -122,8 +109,7 @@
             <img id="laporanPreviewImage" :src="photoSrc" alt="Preview foto laporan" class="max-w-full max-h-full object-contain">
         </div>
     </div>
-    </div>
-</div>
+    </x-admin::panel>
 @endsection
 
 @push('scripts')
