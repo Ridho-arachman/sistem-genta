@@ -165,10 +165,10 @@
     </div>
     <div id="kitchenList" class="space-y-2 flex-1">
                 @forelse ($dapurs->take(5) as $dapur)
-                    <div class="kitchen-card flex items-center justify-between gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[12px] transition-shadow hover:shadow-sm">
+                    <div data-kitchen="card" class="flex items-center justify-between gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[12px] transition-shadow hover:shadow-sm">
                         <div class="flex-1 min-w-0">
-                            <div class="kitchen-name font-bold text-sm text-[var(--color-secondary)] truncate">{{ $dapur->nama }}</div>
-                            <div class="kitchen-meta text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{{ $dapur->lokasi ?? '-' }}</div>
+                            <div data-kitchen="name" class="font-bold text-sm text-[var(--color-secondary)] truncate">{{ $dapur->nama }}</div>
+                            <div data-kitchen="meta" class="text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{{ $dapur->lokasi ?? '-' }}</div>
                             <div class="h-[6px] bg-[var(--color-border)] rounded-[3px] overflow-hidden mt-2">
                                 <i class="h-full rounded-[3px] transition-all duration-300 {{ $dapur->status === 'operasional' ? 'bg-green-500' : ($dapur->status === 'perlu_perhatian' ? 'bg-yellow-500' : 'bg-red-500') }}" style="width: {{ $dapur->progress ?? 0 }}%"></i>
                             </div>
@@ -215,14 +215,14 @@
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="min-w-0 flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">▣</div>
-                        <div><b>Area persiapan</b><div class="kitchen-meta min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->first()->nama ?? 'Dapur' }}</div></div>
+                        <div><b>Area persiapan</b><div class="min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->first()->nama ?? 'Dapur' }}</div></div>
                     </div>
                     <x-status-badge :status="'ok'" :label="'Online'" />
                 </div>
                 <div class="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="min-w-0 flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">▣</div>
-                        <div><b>Area memasak</b><div class="kitchen-meta min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->skip(1)->first()->nama ?? 'Dapur' }}</div></div>
+                        <div><b>Area memasak</b><div class="min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->skip(1)->first()->nama ?? 'Dapur' }}</div></div>
                     </div>
                     <x-status-badge :status="'warn'" :label="'Periksa'" />
                 </div>
