@@ -3,13 +3,9 @@
 @section('page_content')
 <x-admin::page-heading title="Laporan Pengawasan" subtitle="Rekap inspeksi dan tindak lanjut">
     <x-slot:actions>
-        <a href="?format=xlsx" class="btn btn-primary">
+        <a href="{{ route('admin.inspeksi.export', ['format' => 'xlsx']) }}" class="btn btn-primary">
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             Excel
-        </a>
-        <a href="?format=pdf" class="btn btn-secondary">
-            <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
-            PDF
         </a>
     </x-slot:actions>
 </x-admin::page-heading>

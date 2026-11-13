@@ -2,14 +2,13 @@
 
 @section('page_content')
 <div class="max-w-3xl mx-auto">
-    <div class="card p-8">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Detail Anomali CCTV</h2>
-                <p class="text-[var(--color-text-muted)] mt-1">{{ $anomaly->cctv->display_name }} - {{ $anomaly->cctv->dapur->nama }}</p>
-            </div>
+    <x-admin::page-heading title="Detail Anomali CCTV" subtitle="{{ $anomaly->cctv->display_name }} - {{ $anomaly->cctv->dapur->nama }}">
+        <x-slot:actions>
             <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn btn-secondary">Kembali</a>
-        </div>
+        </x-slot:actions>
+    </x-admin::page-heading>
+
+    <x-admin::panel title="Informasi Anomali" icon="warning">
 
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,7 +27,7 @@
                 <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                     <p class="text-sm text-[var(--color-text-muted)]">Severity</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
-                        <span class="badge 
+                        <span class="badge
                             @if($anomaly->severity === 'tinggi') badge-error
                             @elseif($anomaly->severity === 'sedang') badge-warning
                             @else badge-secondary @endif">
@@ -39,7 +38,7 @@
                 <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                     <p class="text-sm text-[var(--color-text-muted)]">Status</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
-                        <span class="badge 
+                        <span class="badge
                             @if($anomaly->status === 'baru') badge-error
                             @elseif($anomaly->status === 'diproses') badge-warning
                             @else badge-success @endif">
@@ -78,6 +77,6 @@
                 </form>
             </div>
         </div>
-    </div>
+    </x-admin::panel>
 </div>
 @endsection

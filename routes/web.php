@@ -69,12 +69,15 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::delete('/users/{id}/force', [AdminController::class, 'forceDeleteUser'])->name('users.force');
 
         // SP Warnings
-        Route::resource('sp-warnings', SpWarningController::class)->names('sp-warnings');
+        // export WAJIB sebelum resource: rute {sp_warning} akan menelan '/export' kalau urutannya sesudah
         Route::get('sp-warnings/export', [SpWarningController::class, 'export'])->name('sp-warnings.export');
+        // edit tidak ada: controller hanya mengubah status lewat update
+        Route::resource('sp-warnings', SpWarningController::class)->names('sp-warnings')->except(['edit']);
 
         // CCTV Anomaly Reports
-        Route::resource('cctv-anomalies', CctvAnomalyReportController::class)->names('cctv-anomalies');
         Route::get('cctv-anomalies/export', [CctvAnomalyReportController::class, 'export'])->name('cctv-anomalies.export');
+        // edit & destroy tidak ada di controller
+        Route::resource('cctv-anomalies', CctvAnomalyReportController::class)->names('cctv-anomalies')->except(['edit', 'destroy']);
 
         // Dapur (full CRUD)
         Route::resource('dapurs', DapurController::class)->names('dapurs');
@@ -215,9 +218,10 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
 
         // CCTV Anomaly Reports (read + receive notifications)
+        // export WAJIB sebelum rute {anomaly} supaya '/export' tidak tertelan binding
+        Route::get('/cctv-anomalies/export', [CctvAnomalyReportController::class, 'export'])->name('cctv-anomalies.export');
         Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
         Route::get('/cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
-        Route::get('/cctv-anomalies/export', [CctvAnomalyReportController::class, 'export'])->name('cctv-anomalies.export');
 
         // SP Warnings (read - receive copy)
         Route::get('/sp-warnings', [SpWarningController::class, 'index'])->name('sp-warnings.index');

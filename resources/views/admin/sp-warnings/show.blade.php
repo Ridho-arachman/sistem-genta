@@ -2,14 +2,13 @@
 
 @section('page_content')
 <div class="max-w-3xl mx-auto">
-    <div class="card p-8">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Detail Surat Peringatan</h2>
-                <p class="text-[var(--color-text-muted)] mt-1">SP-{{ $spWarning->level }} untuk {{ $spWarning->user->name }}</p>
-            </div>
+    <x-admin::page-heading title="Detail Surat Peringatan" subtitle="SP-{{ $spWarning->level }} untuk {{ $spWarning->user->name }}">
+        <x-slot:actions>
             <a href="{{ route('admin.sp-warnings.index') }}" class="btn btn-secondary">Kembali</a>
-        </div>
+        </x-slot:actions>
+    </x-admin::page-heading>
+
+    <x-admin::panel title="Informasi Surat Peringatan" icon="warning">
 
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -24,7 +23,7 @@
                 <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                     <p class="text-sm text-[var(--color-text-muted)]">Level SP</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
-                        <span class="badge 
+                        <span class="badge
                             @if($spWarning->level == 1) badge-warning
                             @elseif($spWarning->level == 2) badge-error
                             @else bg-red-500/20 text-red-800 font-bold @endif">
@@ -35,7 +34,7 @@
                 <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                     <p class="text-sm text-[var(--color-text-muted)]">Status</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
-                        <span class="badge 
+                        <span class="badge
                             @if($spWarning->status === 'aktif') badge-error
                             @elseif($spWarning->status === 'dicabut') badge-secondary
                             @else badge-success @endif">
@@ -72,6 +71,6 @@
             </div>
             @endif
         </div>
-    </div>
+    </x-admin::panel>
 </div>
 @endsection

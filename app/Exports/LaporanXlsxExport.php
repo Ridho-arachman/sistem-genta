@@ -42,7 +42,7 @@ class LaporanXlsxExport
 
     protected function query()
     {
-        $query = Laporan::with('user', 'dapur');
+        $query = Laporan::with('createdBy', 'dapur');
 
         if ($this->dapurId) {
             $query->where('dapur_id', $this->dapurId);
