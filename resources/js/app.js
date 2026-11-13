@@ -5,6 +5,29 @@ import 'leaflet/dist/leaflet.css';
 window.Alpine = Alpine;
 window.L = L;
 
+// Bootstrap global: service worker PWA + penanda request dari WebView Capacitor
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+}
+if (window.Capacitor) {
+    document.cookie = 'capacitor_app=1; path=/; max-age=3600; SameSite=Lax';
+}
+
+// Scroll reveal landing: tandai [data-reveal] yang masuk viewport
+Alpine.data('revealSections', () => ({
+    init() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.setAttribute('data-visible', '');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+
+        this.$el.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+    },
+}));
+
 // Peta publik read-only (komponen x-google-map) — dipakai halaman landing
 Alpine.data('publicMap', (config) => ({
     init() {

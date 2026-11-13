@@ -48,6 +48,28 @@
     --color-border: #e0e0e0;
     --color-text: #000000;
     --color-text-muted: #666666;
+
+    /* Warna brand sektor (komoditas) — dipakai landing page */
+    --color-agri-green: #2e7d32;
+    --color-agri-light: #8fbc8f;
+    --color-agri-dark: #1b5e20;
+    --color-livestock: #6d4c41;
+    --color-fishery: #1976d2;
+    --color-umkm: #f57c00;
+
+    /* Animasi intro hero landing */
+    --animate-fade-up: fade-up 0.6s ease-out both;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -88,6 +110,13 @@
     h6 {
         font-family: "Space Grotesk", system-ui, sans-serif;
         color: var(--color-secondary);
+    }
+
+    /* Focus keyboard yang konsisten di semua halaman */
+    a:focus-visible,
+    button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
     }
 }
 

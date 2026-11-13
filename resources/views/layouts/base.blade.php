@@ -19,19 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="{{ settings('app_name_web') ?? config('app.name') }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
 
-    {{-- Service Worker Registration --}}
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
-        }
-    </script>
-
-    {{-- Tandai request dari mobile Capacitor WebView --}}
-    <script>
-        if (window.Capacitor) {
-            document.cookie = 'capacitor_app=1; path=/; max-age=3600; SameSite=Lax';
-        }
-    </script>
+    {{-- Service worker & penanda Capacitor didaftarkan sekali di resources/js/app.js --}}
 
     {{-- Optional extra head content (styles, etc.) --}}
     @stack('styles')
