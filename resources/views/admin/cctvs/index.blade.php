@@ -1,13 +1,8 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Monitoring CCTV'])
 
 @section('page_content')
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Monitoring CCTV</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Monitoring CCTV</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Status perangkat dan pratinjau feed kamera</div>
-    </div>
-    <div class="flex gap-2">
+<x-admin::page-heading eyebrow="Genta · Monitoring CCTV" title="Monitoring CCTV" subtitle="Status perangkat dan pratinjau feed kamera">
+    <x-slot:actions>
         <a href="{{ route('admin.cctvs.create') }}" class="btn btn-primary">
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Tambah CCTV</span>
@@ -16,15 +11,16 @@
             <span>!</span>
             <span>Laporan Anomali</span>
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin::page-heading>
 
-<div class="card card-bordered">
-    <div class="card-body">
+<x-admin::panel>
+    <x-slot:head>
         <div class="card-title flex flex-wrap items-end gap-4">
             <h2 class="text-lg font-semibold text-[var(--color-secondary)]">Daftar Monitor Kamera</h2>
             <span class="text-sm text-[var(--color-text-muted)]">{{ $cctvs->total() }} kamera terdaftar</span>
         </div>
+    </x-slot:head>
 
     <!-- Filter Lokasi -->
     <form method="GET" action="{{ route('admin.cctvs.index') }}" class="px-4 py-3 border-b border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3" x-data="{ filterOpen: false }">
@@ -112,25 +108,26 @@
             @endforeach
         </div>
     @else
-        <div class="p-12 text-center">
-            <div class="w-16 h-16 mx-auto rounded-full bg-[var(--color-surface)] flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        <x-admin::empty-state title="Belum Ada CCTV" message="Mulai dengan menambahkan CCTV pertama">
+            <x-slot:icon>
+                <div class="w-16 h-16 mx-auto rounded-full bg-[var(--color-surface)] flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 </div>
-            <h3 class="text-lg font-semibold text-[var(--color-secondary)] mb-1">Belum Ada CCTV</h3>
-            <p class="text-[var(--color-text-muted)] mb-4">Mulai dengan menambahkan CCTV pertama</p>
-            <a href="{{ route('admin.cctvs.create') }}" class="btn btn-primary inline-flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah CCTV
-            </a>
-        </div>
+            </x-slot:icon>
+            <x-slot:action>
+                <a href="{{ route('admin.cctvs.create') }}" class="btn btn-primary inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah CCTV
+                </a>
+            </x-slot:action>
+        </x-admin::empty-state>
     @endif
 
     <div class="px-4 py-4 border-t border-[var(--color-border)]">
         {{ $cctvs->links() }}
     </div>
-    </div>
-</div>
+</x-admin::panel>
 @endsection
 

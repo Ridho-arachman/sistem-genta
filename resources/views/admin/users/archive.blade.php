@@ -1,28 +1,18 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Arsip User'])
 
 @section('page_content')
-<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
-    <div>
-        <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-2xl font-extrabold text-[var(--color-secondary)] mt-1">Arsip User (Soft Deleted)</h1>
-        <div class="text-[var(--color-text-muted)] text-sm mt-1">Kelola user yang telah dihapus — bisa dipulihkan atau dihapus permanen</div>
-    </div>
-    <a href="{{ route('admin.users') }}" 
-       class="btn btn-secondary shrink-0 self-start lg:self-start">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        <span>Kembali ke Manajemen User</span>
-    </a>
-</div>
+<x-admin::page-heading title="Arsip User (Soft Deleted)" subtitle="Kelola user yang telah dihapus — bisa dipulihkan atau dihapus permanen" title-class="text-2xl font-extrabold text-[var(--color-secondary)]">
+    <x-slot:actions>
+        <a href="{{ route('admin.users') }}"
+           class="btn btn-secondary">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Manajemen User</span>
+        </a>
+    </x-slot:actions>
+</x-admin::page-heading>
 
-<div class="card card-bordered mb-6">
-    <div class="card-body">
-        <div class="card-title flex items-center gap-2.5 mb-5">
-            <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </span>
-            <h2 class="text-sm font-bold text-[var(--color-secondary)]">Filter & Pencarian</h2>
-        </div>
-        <form method="GET" class="space-y-4">
+<x-admin::panel class="mb-6" title="Filter & Pencarian" icon="search" :divider="false">
+    <form method="GET" class="space-y-4">
         <div class="flex gap-4 flex-wrap items-end">
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="search">Cari</label>
@@ -55,23 +45,19 @@
             </a>
         </div>
     </form>
-</div>
-</div>
+</x-admin::panel>
 
-<div class="card card-bordered overflow-hidden mb-6">
+<x-admin::panel class="overflow-hidden mb-6" flush>
     @if ($users->count() > 0)
         <div class="overflow-visible">
-            <table class="table w-full">
-                <thead>
-                    <tr>
-                        <th class="min-w-[180px] max-w-[300px]">NAMA</th>
-                        <th class="min-w-[100px] max-w-[140px]">PERAN</th>
-                        <th class="min-w-[160px] hidden lg:table-cell">AKSES</th>
-                        <th class="min-w-[120px]">DIHAPUS PADA</th>
-                        <th class="min-w-[100px] text-center">AKSI</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <x-admin::table>
+                <x-slot:head>
+                    <th class="min-w-[180px] max-w-[300px]">NAMA</th>
+                    <th class="min-w-[100px] max-w-[140px]">PERAN</th>
+                    <th class="min-w-[160px] hidden lg:table-cell">AKSES</th>
+                    <th class="min-w-[120px]">DIHAPUS PADA</th>
+                    <th class="min-w-[100px] text-center">AKSI</th>
+                </x-slot:head>
                     @foreach ($users as $user)
                     <tr>
                         <td class="min-w-0 max-w-[300px]">
@@ -115,20 +101,19 @@
                         </td>
                     </tr>
                     @endforeach
-                </tbody>
-            </table>
+            </x-admin::table>
         </div>
         <div class="px-4 py-4 border-t border-[var(--color-border)]">
             {{ $users->links() }}
         </div>
     @else
-        <div class="py-16 text-center">
-            <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Arsip Kosong</h3>
-            <p class="text-[var(--color-text-muted)] mt-1">Tidak ada user yang dihapus</p>
-        </div>
+        <x-admin::empty-state title="Arsip Kosong" message="Tidak ada user yang dihapus">
+            <x-slot:icon>
+                <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </x-slot:icon>
+        </x-admin::empty-state>
     @endif
-</div>
+</x-admin::panel>
 
 <!-- Alpine Restore Modal -->
 <div x-data="{ show: false, url: '', name: '' }" 

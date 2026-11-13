@@ -2,13 +2,8 @@
 
 @section('page_content')
 <div class="space-y-6">
-    <div class="flex items-center justify-between gap-6">
-        <div>
-            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Monitoring CCTV</div>
-            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Monitoring CCTV</h1>
-            <div class="text-[var(--color-text-muted)] text-sm">Status perangkat dan pratinjau feed kamera</div>
-        </div>
-        <div class="flex gap-2">
+    <x-admin::page-heading eyebrow="Genta · Monitoring CCTV" title="Monitoring CCTV" subtitle="Status perangkat dan pratinjau feed kamera">
+        <x-slot:actions>
             <a href="{{ route('admin.cctvs.index') }}" class="btn btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-5 7-5"></path></svg>
                 Kembali
@@ -25,8 +20,8 @@
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Buat Laporan
             </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-admin::page-heading>
 
     {{-- Filters --}}
     <div class="card p-4">
@@ -67,24 +62,21 @@
     </div>
 
     {{-- Anomalies Table --}}
-    <div class="card card-bordered overflow-hidden">
+    <x-admin::panel class="overflow-hidden" flush>
         @if ($anomalies->count() > 0)
             <div class="overflow-x-auto">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>CCTV</th>
-                            <th>Dapur</th>
-                            <th>Area/Kamera</th>
-                            <th>Deskripsi</th>
-                            <th>Severity</th>
-                            <th>Status</th>
-                            <th>Dilaporkan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <x-admin::table>
+                    <x-slot:head>
+                        <th>Tanggal</th>
+                        <th>CCTV</th>
+                        <th>Dapur</th>
+                        <th>Area/Kamera</th>
+                        <th>Deskripsi</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Dilaporkan</th>
+                        <th>Aksi</th>
+                    </x-slot:head>
                         @foreach ($anomalies as $anomaly)
                         <tr>
                             <td>{{ $anomaly->created_at->format('d/m/Y H:i') }}</td>
@@ -125,20 +117,21 @@
                             </td>
                         </tr>
                         @endforeach
-                    </tbody>
-                </table>
+            </x-admin::table>
             </div>
             <div class="px-6 py-4 border-t border-[var(--color-border)]">
                 {{ $anomalies->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Belum Ada Laporan Anomali</h3>
-                <p class="text-[var(--color-text-muted)] mt-1">Belum ada anomali CCTV yang dilaporkan</p>
-                <a href="{{ route('admin.cctv-anomalies.create') }}" class="btn btn-primary mt-4 inline-block">Buat Laporan Pertama</a>
-            </div>
+            <x-admin::empty-state title="Belum Ada Laporan Anomali" message="Belum ada anomali CCTV yang dilaporkan">
+                <x-slot:icon>
+                    <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </x-slot:icon>
+                <x-slot:action>
+                    <a href="{{ route('admin.cctv-anomalies.create') }}" class="btn btn-primary inline-block">Buat Laporan Pertama</a>
+                </x-slot:action>
+            </x-admin::empty-state>
         @endif
-    </div>
+    </x-admin::panel>
 </div>
 @endsection

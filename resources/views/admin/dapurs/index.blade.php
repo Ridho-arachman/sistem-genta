@@ -1,20 +1,17 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Data Dapur'])
 
 @section('page_content')
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Data Dapur</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Kelola dapur pangan dan geofence absensi</div>
-    </div>
-    <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary">
-        <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        <span>Tambah Dapur</span>
-    </a>
-</div>
+<x-admin::page-heading title="Data Dapur" subtitle="Kelola dapur pangan dan geofence absensi">
+    <x-slot:actions>
+        <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary">
+            <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>Tambah Dapur</span>
+        </a>
+    </x-slot:actions>
+</x-admin::page-heading>
 
-<div class="card card-bordered" x-data="dapurList()">
-    <div class="card-body">
+<x-admin::panel x-data="dapurList()">
+    <x-slot:head>
         {{-- Panel head: jumlah dapur + pencarian --}}
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
             <h2 class="text-sm font-bold text-[var(--color-secondary)]">{{ $dapurs->total() }} dapur terdaftar</h2>
@@ -26,6 +23,7 @@
                        @input="filterDapurs()">
             </div>
         </div>
+    </x-slot:head>
 
         {{-- Filter Wilayah --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-[var(--color-border)]">
@@ -98,22 +96,23 @@
         </div>
 
     @else
-        <div class="p-12 text-center">
-            <div class="w-16 h-16 mx-auto rounded-full bg-[var(--color-surface)] flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-[var(--color-secondary)] mb-1">Belum Ada Data Dapur</h3>
-            <p class="text-[var(--color-text-muted)] mb-4">Mulai dengan menambahkan dapur pertama</p>
-            <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary inline-flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Dapur
-            </a>
-        </div>
+        <x-admin::empty-state title="Belum Ada Data Dapur" message="Mulai dengan menambahkan dapur pertama">
+            <x-slot:icon>
+                <div class="w-16 h-16 mx-auto rounded-full bg-[var(--color-surface)] flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+            </x-slot:icon>
+            <x-slot:action>
+                <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Dapur
+                </a>
+            </x-slot:action>
+        </x-admin::empty-state>
     @endif
-    </div>
-</div>
+</x-admin::panel>
 @endsection
 
 @push('scripts')

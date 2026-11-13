@@ -3,13 +3,14 @@
     'icon' => null,
     'subtitle' => null,
     'divider' => true,
+    'flush' => false,
 ])
 
 {{--
     Pembungkus kartu standar halaman admin (card card-bordered + card-body).
 
     Pemakaian:
-    <x-admin-panel title="Data Dapur" icon="home" subtitle="Total 12 dapur">
+    <x-admin::panel title="Data Dapur" icon="home" subtitle="Total 12 dapur">
         <x-slot:actions>...</x-slot:actions>
         ...isi...
     </x-admin-panel>
@@ -20,6 +21,9 @@
     - head    : override penuh area head (mis. headline justify-between)
 --}}
 <div {{ $attributes->merge(['class' => 'card card-bordered']) }}>
+    @if ($flush)
+        {{ $slot }}
+    @else
     <div class="card-body">
         @isset($head)
             {{ $head }}
@@ -45,4 +49,5 @@
         @endif
         {{ $slot }}
     </div>
+    @endif
 </div>

@@ -3,12 +3,8 @@
 @section('page_content')
 <div class="space-y-6">
     {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-            <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Surat Peringatan (SP)</h2>
-            <p class="text-[var(--color-text-muted)]">Kelola SP 1/2/3 untuk pengawas</p>
-        </div>
-        <div class="flex gap-2">
+    <x-admin::page-heading eyebrow="" title="Surat Peringatan (SP)" subtitle="Kelola SP 1/2/3 untuk pengawas" title-class="text-2xl font-bold text-[var(--color-secondary)]">
+        <x-slot:actions>
             <a href="{{ route('admin.sp-warnings.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn btn-success">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Excel
@@ -21,8 +17,8 @@
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Buat SP Baru
             </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-admin::page-heading>
 
     {{-- Filters --}}
     <div class="card p-4">
@@ -63,22 +59,19 @@
     </div>
 
     {{-- SP Warnings Table --}}
-    <div class="card card-bordered overflow-hidden">
+    <x-admin::panel class="overflow-hidden" flush>
         @if ($warnings->count() > 0)
             <div class="overflow-x-auto">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Pengawas</th>
-                            <th>Level</th>
-                            <th>Alasan</th>
-                            <th>Status</th>
-                            <th>Diterbitkan Oleh</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <x-admin::table>
+                    <x-slot:head>
+                        <th>Tanggal</th>
+                        <th>Pengawas</th>
+                        <th>Level</th>
+                        <th>Alasan</th>
+                        <th>Status</th>
+                        <th>Diterbitkan Oleh</th>
+                        <th>Aksi</th>
+                    </x-slot:head>
                         @foreach ($warnings as $warning)
                         <tr>
                             <td>{{ $warning->issued_at->format('d/m/Y H:i') }}</td>
@@ -119,20 +112,21 @@
                             </td>
                         </tr>
                         @endforeach
-                    </tbody>
-                </table>
+            </x-admin::table>
             </div>
             <div class="px-6 py-4 border-t border-[var(--color-border)]">
                 {{ $warnings->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Belum Ada Surat Peringatan</h3>
-                <p class="text-[var(--color-text-muted)] mt-1">Belum ada SP yang diterbitkan</p>
-                <a href="{{ route('admin.sp-warnings.create') }}" class="btn btn-primary mt-4 inline-block">Buat SP Pertama</a>
-            </div>
+            <x-admin::empty-state title="Belum Ada Surat Peringatan" message="Belum ada SP yang diterbitkan">
+                <x-slot:icon>
+                    <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </x-slot:icon>
+                <x-slot:action>
+                    <a href="{{ route('admin.sp-warnings.create') }}" class="btn btn-primary inline-block">Buat SP Pertama</a>
+                </x-slot:action>
+            </x-admin::empty-state>
         @endif
-    </div>
+    </x-admin::panel>
 </div>
 @endsection

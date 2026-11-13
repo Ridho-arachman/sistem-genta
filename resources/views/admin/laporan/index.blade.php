@@ -1,13 +1,8 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Laporan Pengawasan'])
 
 @section('page_content')
-<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-    <div>
-        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Laporan Pengawasan</h1>
-        <div class="text-[var(--color-text-muted)] text-sm">Rekap inspeksi dan tindak lanjut</div>
-    </div>
-    <div class="flex gap-2">
+<x-admin::page-heading title="Laporan Pengawasan" subtitle="Rekap inspeksi dan tindak lanjut">
+    <x-slot:actions>
         <a href="?format=xlsx" class="btn btn-primary">
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             Excel
@@ -16,11 +11,11 @@
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
             PDF
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin::page-heading>
 
-<div class="card card-bordered" x-data="laporanFilter()">
-    <div class="card-body">
+<x-admin::panel x-data="laporanFilter()">
+    <x-slot:head>
         <div class="card-title flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-[var(--color-border)]">
             <h2 class="text-sm font-bold text-[var(--color-secondary)]">Daftar Laporan</h2>
         
@@ -112,20 +107,17 @@
                 Reset
             </button>
         </div>
-    </div>
+    </x-slot:head>
 
     <div class="overflow-x-auto">
-        <table class="table w-full">
-            <thead>
-                <tr>
-                    <th>TANGGAL</th>
-                    <th>LOKASI</th>
-                    <th>PENGAWAS</th>
-                    <th>STATUS</th>
-                    <th>AKSI</th>
-                </tr>
-            </thead>
-            <tbody>
+        <x-admin::table>
+            <x-slot:head>
+                <th>TANGGAL</th>
+                <th>LOKASI</th>
+                <th>PENGAWAS</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+            </x-slot:head>
                 <template x-for="row in filteredRows" :key="row.id">
                     <tr>
                         <td x-text="row.tanggal"></td>
@@ -144,16 +136,14 @@
                         Tidak ada data yang cocok
                     </td>
                 </tr>
-            </tbody>
-        </table>
+            </x-admin::table>
     </div>
 
     <!-- Results Info -->
     <div class="mt-3 text-sm text-[var(--color-text-muted)]" x-show="filteredRows.length !== allRows.length">
         Menampilkan <span x-text="filteredRows.length"></span> dari <span x-text="allRows.length"></span> laporan
     </div>
-    </div>
-</div>
+</x-admin::panel>
 @endsection
 
 @push('scripts')

@@ -1,34 +1,22 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Manajemen User'])
 
 @section('page_content')
-<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
-    <div>
-        <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-2xl font-extrabold text-[var(--color-secondary)] mt-1">Manajemen User</h1>
-        <div class="text-[var(--color-text-muted)] text-sm mt-1">Kelola user pengawas, manajerial, dan kepala dapur</div>
-    </div>
-    <div class="flex gap-3 shrink-0 self-start lg:self-start">
-        <a href="{{ route('admin.users.archive') }}" 
+<x-admin::page-heading title="Manajemen User" subtitle="Kelola user pengawas, manajerial, dan kepala dapur" title-class="text-2xl font-extrabold text-[var(--color-secondary)]">
+    <x-slot:actions>
+        <a href="{{ route('admin.users.archive') }}"
            class="btn btn-secondary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             <span>Arsip User</span>
         </a>
-        <a href="{{ route('admin.users.create') }}" 
+        <a href="{{ route('admin.users.create') }}"
            class="btn btn-primary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Tambah User</span>
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin::page-heading>
 
-<div class="card card-bordered mb-6">
-    <div class="card-body">
-        <div class="card-title flex items-center gap-2.5 mb-5">
-            <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </span>
-            <h2 class="text-sm font-bold text-[var(--color-secondary)]">Filter & Pencarian</h2>
-        </div>
+<x-admin::panel class="mb-6" title="Filter & Pencarian" icon="search" :divider="false">
     <form method="GET" class="space-y-4">
         <div class="flex gap-4 flex-wrap items-end">
             <div class="flex-1 min-w-[200px]">
@@ -73,22 +61,18 @@
             </a>
         </div>
     </form>
-</div>
-</div>
+</x-admin::panel>
 
-<div class="card card-bordered overflow-hidden mb-6">
+<x-admin::panel class="overflow-hidden mb-6" flush>
     @if ($users->count() > 0)
         <div class="overflow-visible">
-            <table class="table w-full">
-                <thead>
-                    <tr>
-                        <th class="min-w-[180px] max-w-[300px]">NAMA</th>
-                        <th class="min-w-[100px] max-w-[140px]">PERAN</th>
-                        <th class="min-w-[160px] hidden lg:table-cell">AKSES</th>
-                        <th class="min-w-[70px] text-center">AKSI</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <x-admin::table>
+                <x-slot:head>
+                    <th class="min-w-[180px] max-w-[300px]">NAMA</th>
+                    <th class="min-w-[100px] max-w-[140px]">PERAN</th>
+                    <th class="min-w-[160px] hidden lg:table-cell">AKSES</th>
+                    <th class="min-w-[70px] text-center">AKSI</th>
+                </x-slot:head>
                     @foreach ($users as $user)
                     <tr>
                         <td class="min-w-0 max-w-[300px]">
@@ -135,24 +119,25 @@
                         </td>
                     </tr>
                     @endforeach
-                </tbody>
-            </table>
+            </x-admin::table>
         </div>
         <div class="px-4 py-4 border-t border-[var(--color-border)]">
             {{ $users->links() }}
         </div>
     @else
-        <div class="py-16 text-center">
-            <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Tidak Ada User</h3>
-            <p class="text-[var(--color-text-muted)] mt-1">Belum ada user yang terdaftar</p>
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary mt-4">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                <span>Tambah User Pertama</span>
-            </a>
-        </div>
+        <x-admin::empty-state title="Tidak Ada User" message="Belum ada user yang terdaftar">
+            <x-slot:icon>
+                <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </x-slot:icon>
+            <x-slot:action>
+                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span>Tambah User Pertama</span>
+                </a>
+            </x-slot:action>
+        </x-admin::empty-state>
     @endif
-</div>
+</x-admin::panel>
 
 <!-- Alpine Delete Modal -->
 <div x-data="{ show: false, url: '', name: '' }" 
