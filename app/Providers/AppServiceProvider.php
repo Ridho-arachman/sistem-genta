@@ -12,6 +12,7 @@ use App\Policies\CctvAnomalyReportPolicy;
 use App\Policies\CctvPolicy;
 use App\Policies\DapurPolicy;
 use App\Policies\LaporanPolicy;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Komponen reusable khusus halaman admin: <x-admin-panel>, <x-admin-page-heading>, dst.
+        Blade::anonymousComponentPath(resource_path('views/admin/components'), 'admin');
     }
 }

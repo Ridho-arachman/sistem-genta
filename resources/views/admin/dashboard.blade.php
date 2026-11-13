@@ -1,13 +1,8 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Dashboard Admin'])
 
 @section('page_content')
-<div class="flex justify-between items-start gap-4 mb-6 flex-wrap">
-    <div>
-        <div class="text-[var(--color-primary)] text-xs font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
-        <h1 class="text-[28px] font-extrabold mt-1 mb-1 letter-spacing-[-0.5px]">Dashboard Admin</h1>
-        <div class="text-[var(--color-text-muted)] text-sm mt-1">Ringkasan kondisi sistem dan pengawasan</div>
-    </div>
-    <div class="flex gap-4 flex-wrap">
+<x-admin::page-heading title="Dashboard Admin" subtitle="Ringkasan kondisi sistem dan pengawasan">
+    <x-slot:actions>
         <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary">
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Tambah Dapur</span>
@@ -16,63 +11,19 @@
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
             <span>Tambah User</span>
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin-page-heading>
 
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-    {{-- Total Dapur --}}
-    <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-[18px]">
-        <div class="flex justify-between items-center mb-1.5">
-            <span>Total Dapur</span>
-            <span class="w-[28px] h-[28px] rounded-[9px] bg-green-100 text-green-800 flex items-center justify-center text-[14px]">⌂</span>
-        </div>
-        <div class="text-[32px] font-extrabold leading-[1.1] font-display text-[var(--color-secondary)]">{{ $stats['total_dapur'] }}</div>
-        <div class="text-[12px] text-[var(--color-text-muted)] mt-1.5">Lokasi terdaftar dalam sistem</div>
-    </div>
-
-    {{-- Kamera Online --}}
-    <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-[18px]">
-        <div class="flex justify-between items-center mb-1.5">
-            <span>Kamera Online</span>
-            <span class="w-[28px] h-[28px] rounded-[9px] bg-green-100 text-green-800 flex items-center justify-center text-[14px]">▣</span>
-        </div>
-        <div class="text-[32px] font-extrabold leading-[1.1] font-display text-green-800">
-            {{ $stats['cctv_online'] }}/{{ $stats['total_cctv'] }}
-        </div>
-        <div class="text-[12px] text-[var(--color-text-muted)] mt-1.5">
-            {{ $stats['total_cctv'] > 0 ? number_format($stats['cctv_online'] / $stats['total_cctv'] * 100, 1, ',', '.') : '0' }}% status konektivitas
-        </div>
-    </div>
-
-    {{-- Laporan Hari Ini --}}
-    <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-[18px]">
-        <div class="flex justify-between items-center mb-1.5">
-            <span>Laporan Hari Ini</span>
-            <span class="w-[28px] h-[28px] rounded-[9px] bg-blue-100 text-blue-800 flex items-center justify-center text-[14px]">▤</span>
-        </div>
-        <div class="text-[32px] font-extrabold leading-[1.1] font-display text-[var(--color-secondary)]">{{ $stats['laporan_hari_ini'] }}</div>
-        <div class="text-[12px] text-[var(--color-text-muted)] mt-1.5">
-            {{ $stats['laporan_hari_ini_selesai'] }} selesai · {{ $stats['laporan_hari_ini'] - $stats['laporan_hari_ini_selesai'] }} perlu tindak lanjut
-        </div>
-    </div>
-
-    {{-- Temuan Terbuka --}}
-    <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-[18px]">
-        <div class="flex justify-between items-center mb-1.5">
-            <span>Temuan Terbuka</span>
-            <span class="w-[28px] h-[28px] rounded-[9px] bg-red-100 text-red-800 flex items-center justify-center text-[14px]">⚑</span>
-        </div>
-        <div class="text-[32px] font-extrabold leading-[1.1] font-display text-red-800">{{ $stats['anomaly_reports_open'] }}</div>
-        <div class="text-[12px] text-[var(--color-text-muted)] mt-1.5">Perlu ditinjau oleh admin</div>
-    </div>
+    <x-admin::stat-card label="Total Dapur" :value="$stats['total_dapur']" note="Lokasi terdaftar dalam sistem" icon="⌂" />
+    <x-admin::stat-card label="Kamera Online" :value="$stats['cctv_online'] . '/' . $stats['total_cctv']" icon="▣" value-class="text-green-800"
+        :note="$stats['total_cctv'] > 0 ? number_format($stats['cctv_online'] / $stats['total_cctv'] * 100, 1, ',', '.') . '% status konektivitas' : '0% status konektivitas'" />
+    <x-admin::stat-card label="Laporan Hari Ini" :value="$stats['laporan_hari_ini']" icon="▤" icon-class="bg-blue-100 text-blue-800"
+        :note="$stats['laporan_hari_ini_selesai'] . ' selesai · ' . ($stats['laporan_hari_ini'] - $stats['laporan_hari_ini_selesai']) . ' perlu tindak lanjut'" />
+    <x-admin::stat-card label="Temuan Terbuka" :value="$stats['anomaly_reports_open']" note="Perlu ditinjau oleh admin" icon="⚑" value-class="text-red-800" icon-class="bg-red-100 text-red-800" />
 </div>
 
-<div class="bg-white border border-[var(--color-border)] border-l-3 border-l-[var(--color-primary)] rounded-[14px] mb-4 overflow-hidden">
-    <div class="p-6">
-        <div class="flex items-center gap-2.5 mb-5">
-            <h2 class="text-sm font-bold text-[var(--color-secondary)]">Ekspor Data Inspeksi</h2>
-            <small class="text-xs text-[var(--color-text-muted)]">Filter dengan range tanggal, pilih format</small>
-        </div>
+<x-admin::panel title="Ekspor Data Inspeksi" subtitle="Filter dengan range tanggal, pilih format" :divider="false" class="mb-4 border-l-3 border-l-[var(--color-primary)]">
     <form method="GET" action="{{ route('admin.inspeksi.export') }}" class="space-y-4" id="exportForm" x-data="exportForm()" @submit="if (dateError) { $event.preventDefault(); } else { loading = true; }">
         {{-- Date Presets --}}
         <div class="flex gap-2 flex-wrap mb-4 pb-4 border-b border-[var(--color-border)]" role="group" aria-label="Pilihan cepat rentang tanggal">
@@ -152,17 +103,18 @@
             </button>
         </div>
     </form>
-</div>
-</div>
+</x-admin-panel>
 
 <div class="grid gap-4 grid-cols-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,1fr)]">
     {{-- Left Column: Dapur Status + Pengawas Assignment --}}
     <div>
-        <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-6 h-full flex flex-col">
-    <div class="flex items-center justify-between gap-2.5 mb-5">
-        <h2 class="text-sm font-bold text-[var(--color-secondary)]">Status Dapur</h2>
-        <x-kitchen-filter list-id="kitchenList" search-id="kitchenSearch" placeholder="Cari nama dapur…" />
-    </div>
+        <x-admin::panel class="h-full flex flex-col">
+            <x-slot:head>
+                <div class="flex items-center justify-between gap-2.5 mb-5">
+                    <h2 class="text-sm font-bold text-[var(--color-secondary)]">Status Dapur</h2>
+                    <x-kitchen-filter list-id="kitchenList" search-id="kitchenSearch" placeholder="Cari nama dapur…" />
+                </div>
+            </x-slot:head>
     <div id="kitchenList" class="space-y-2 flex-1">
                 @forelse ($dapurs->take(5) as $dapur)
                     <div data-kitchen="card" class="flex items-center justify-between gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[12px] transition-shadow hover:shadow-sm">
@@ -188,18 +140,14 @@
             <div class="mt-4 text-right">
                 <a href="{{ route('admin.dapurs.index') }}" class="btn btn-ghost">Lihat semua dapur →</a>
             </div>
-        </div>
+        </x-admin-panel>
 
     </div>
 
     {{-- Right Column: CCTV + Activity --}}
     <div class="grid gap-4 max-w-full overflow-hidden">
         {{-- Camera Panel --}}
-        <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-6 max-w-full overflow-hidden">
-            <div class="flex items-center gap-2.5 mb-5">
-                <h2 class="text-sm font-bold text-[var(--color-secondary)]">Pratinjau CCTV</h2>
-                <small class="text-xs text-[var(--color-text-muted)]">Status terkini perangkat</small>
-            </div>
+        <x-admin::panel title="Pratinjau CCTV" subtitle="Status terkini perangkat" :divider="false" class="max-w-full overflow-hidden">
             <div class="flex flex-col gap-3">
                 <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> LIVE
@@ -227,14 +175,10 @@
                     <x-status-badge :status="'warn'" :label="'Periksa'" />
                 </div>
             </div>
-        </div>
+        </x-admin-panel>
 
         {{-- Activity Feed --}}
-        <div class="bg-white border border-[var(--color-border)] rounded-[14px] p-6 max-w-full overflow-hidden">
-            <div class="flex items-center gap-2.5 mb-5">
-                <h2 class="text-sm font-bold text-[var(--color-secondary)]">Aktivitas Terbaru</h2>
-                <small class="text-xs text-[var(--color-text-muted)]">Hari ini</small>
-            </div>
+        <x-admin::panel title="Aktivitas Terbaru" subtitle="Hari ini" :divider="false" class="max-w-full overflow-hidden">
             <div class="space-y-4">
                 <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
@@ -257,7 +201,7 @@
                     <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subHours(2)->format('H:i') }}</time>
                 </div>
             </div>
-        </div>
+        </x-admin-panel>
     </div>
 </div>
 @endsection
