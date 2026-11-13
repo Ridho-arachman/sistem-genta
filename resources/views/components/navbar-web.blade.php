@@ -7,7 +7,6 @@
     $brandAlt = $brandAlt ?? 'GENTA Pangan Banten';
     $brandText = $brandText ?? 'GENTA';
     $brandSubText = $brandSubText ?? 'ADMIN PANEL';
-    $topbarBg = $topbarBg ?? 'topbar';
 @endphp
 
 <header class="bg-[var(--color-primary)] text-white h-[72px] fixed top-0 left-0 right-0 z-1000 flex items-center justify-between px-4 sm:px-6 gap-4 shadow-[0_2px_8px_rgb(0_0_0_/_0.08)] {{ $topbarClass }}">

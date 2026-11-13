@@ -8,13 +8,12 @@
         'error' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
     ];
     $colors = [
-        'success' => ['bg' => 'bg-green-600!important', 'border' => 'border-green-500', 'text' => 'text-green-50', 'color' => '#15803d'],
-        'info' => ['bg' => 'bg-blue-600!important', 'border' => 'border-blue-500', 'text' => 'text-blue-50', 'color' => '#1d4ed8'],
-        'warning' => ['bg' => 'bg-amber-600!important', 'border' => 'border-amber-500', 'text' => 'text-amber-50', 'color' => '#ca8a04'],
-        'error' => ['bg' => 'bg-red-600!important', 'border' => 'border-red-500', 'text' => 'text-red-50', 'color' => '#b91c1c'],
+        'success' => ['bg' => 'bg-green-600', 'border' => 'border-green-500', 'text' => 'text-green-50'],
+        'info' => ['bg' => 'bg-blue-600', 'border' => 'border-blue-500', 'text' => 'text-blue-50'],
+        'warning' => ['bg' => 'bg-amber-600', 'border' => 'border-amber-500', 'text' => 'text-amber-50'],
+        'error' => ['bg' => 'bg-red-600', 'border' => 'border-red-500', 'text' => 'text-red-50'],
     ];
     $color = $colors[$type] ?? $colors['info'];
-    $bgColor = $color['color'];
     $bgClass = $color['bg'];
     $borderClass = $color['border'];
     $textClass = $color['text'];
@@ -22,7 +21,7 @@
 @endphp
 
 @if ($message)
-<div id="toast" x-data="{ show: true }" x-show="show" x-cloak x-init="setTimeout(() => show = false, 4000)" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="toast fixed top-10 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3 opacity-100" style="opacity: 1 !important; background-color: {{ $bgColor }} !important;">
+<div id="toast" x-data="{ show: true }" x-show="show" x-cloak x-init="setTimeout(() => show = false, 4000)" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="toast fixed top-10 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>

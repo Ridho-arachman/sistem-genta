@@ -39,8 +39,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body x-data="{ toast: { show: false, message: '' }, init() { window.showToast = (msg) => { this.toast.message = msg; this.toast.show = true; setTimeout(() => this.toast.show = false, 2800); }; } }" class="min-h-screen font-sans antialiased flex flex-col {{ $bodyClass ?? '' }}">
-    {{-- Flash messages --}}
-    <x-flash-message />
+    {{-- Notifikasi cukup satu jalur: <x-toast /> di bawah --}}
 
     {{-- Header / Nav slot (override di tiap role layout) --}}
     @yield('header')

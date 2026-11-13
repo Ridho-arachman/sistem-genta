@@ -10,12 +10,6 @@
                 <p class="text-[var(--color-text-muted)] mt-2">Masukkan email Anda untuk menerima tautan reset password</p>
             </div>
 
-            @if (session('status'))
-                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg text-sm mb-6" role="alert">
-                    {{ session('status') }}
-                </div>
-            @endif
-
             <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
                 @csrf
 

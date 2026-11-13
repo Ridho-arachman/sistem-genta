@@ -12,7 +12,7 @@
 
 /* Leaflet: samakan font dengan aplikasi */
 .leaflet-container {
-    font-family: inherit;
+    font-family: inherit !important;
 }
 
 .leaflet-popup-content-wrapper {
@@ -27,7 +27,7 @@
 }
 
 .leaflet-control-attribution {
-    font-size: 11px;
+    font-size: 10px !important;
 }
 
 /* Kontrol Leaflet harus di bawah topbar/sidebar admin */
@@ -39,4 +39,10 @@
 /* Peta tidak boleh menumpuk topbar */
 .leaflet-container {
     z-index: 0;
+}
+
+/* Marker pin custom (L.divIcon) — buang kotak putih bawaan Leaflet */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
 }
