@@ -76,6 +76,7 @@ $iconMap = [
     'calendar-days' => 'CalendarDaysIcon',
     'time' => 'ClockIcon',
     'chart-bar' => 'ChartBarIcon',
+    'squares-2x2' => 'Squares2X2Icon',
     'chart-line' => 'ChartBarIcon',
     'chart-pie' => 'ChartPieIcon',
     'trending-up' => 'TrendingUpIcon',

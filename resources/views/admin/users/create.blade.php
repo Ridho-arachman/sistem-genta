@@ -2,73 +2,74 @@
 
 @section('page_content')
 <div class="max-w-5xl mx-auto">
-    <div class="heading mb-8">
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
-            <div class="eyebrow">Genta · Admin Panel</div>
-            <h1>Tambah User Baru</h1>
-            <div class="muted">Hanya bisa mendaftarkan role: Pengawas, Manajerial, Kepala Dapur</div>
+            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
+            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Tambah User Baru</h1>
+            <div class="text-[var(--color-text-muted)] text-sm">Hanya bisa mendaftarkan role: Pengawas, Manajerial, Kepala Dapur</div>
         </div>
     </div>
 
     <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6" x-data="userForm()" x-cloak>
         @csrf
 
-        <div class="form-section">
-            <div class="form-section-title">
-                <span class="section-icon">♙</span>
-                Data Pengguna
-            </div>
+        <div class="card card-bordered">
+            <div class="card-body">
+                <div class="card-title">
+                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">♙</span>
+                    Data Pengguna
+                </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Nama Lengkap --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="name">Nama Lengkap <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="name">Nama Lengkap <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <input id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" 
-                               class="input-field select-enhanced" placeholder="Masukkan nama lengkap">
+                               class="input input-bordered" placeholder="Masukkan nama lengkap">
                     </div>
                     @error('name')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Email --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="email">Email <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="email">Email <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" 
-                               class="input-field select-enhanced" placeholder="Masukkan email">
+                               class="input input-bordered" placeholder="Masukkan email">
                     </div>
                     @error('email')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Role --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="role">Role <span class="required">*</span></label>
-                    <select id="role" name="role" required class="input-field select-enhanced" x-model="selectedRole" @change="handleRoleChange()">
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="role">Role <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <select id="role" name="role" required class="input input-bordered" x-model="selectedRole" @change="handleRoleChange()">
                         <option value="">Pilih role</option>
                         <option value="pengawas">Pengawas</option>
                         <option value="manajerial">Manajerial</option>
                         <option value="kepala_dapur">Kepala Dapur</option>
                     </select>
                     @error('role')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Dapur Assignment (full width) --}}
-                <div class="form-field lg:col-span-2">
+                <div class="flex flex-col gap-1.5 lg:col-span-2">
                     <!-- Kepala Dapur -->
                     <template x-if="selectedRole === 'kepala_dapur'">
                         <div x-transition x-data="dapurAutocomplete()">
-                            <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
+                            <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="dapur_id">Dapur <span class="text-xs text-[var(--color-primary)]">*</span></label>
                             <div class="relative">
-                                <div class="input-with-icon">
-                                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <div class="relative">
+                                    <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                     <input type="text" 
                                            id="dapur_search" 
                                            x-model="searchQuery" 
@@ -78,7 +79,7 @@
                                            @keydown.enter.prevent="selectHighlighted()"
                                            @keydown.escape="showDropdown = false"
                                            placeholder="Cari dapur..."
-                                           class="input-field select-enhanced"
+                                           class="input input-bordered"
                                            autocomplete="off">
                                 </div>
                                 <input type="hidden" id="dapur_id" name="dapur_id" :value="kepalaDapurId" required>
@@ -123,7 +124,7 @@
                                 <br><span class="font-medium">Menimpah akan mengubah assignment kepala dapur.</span>
                             </div>
                             @error('dapur_id')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </template>
@@ -131,15 +132,15 @@
                     <!-- Pengawas -->
                     <template x-if="selectedRole === 'pengawas'">
                         <div x-transition x-data="dapurMultiSelect()">
-                            <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
+                            <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="dapur_ids">Dapur yang Diawasi <span class="text-xs text-[var(--color-primary)]">*</span></label>
                             
                             <!-- Search input -->
-                            <div class="input-with-icon mb-2">
-                                <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <div class="relative mb-2">
+                                <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 <input type="text" 
                                        x-model="searchQuery" 
                                        placeholder="Cari dapur..."
-                                       class="input-field select-enhanced"
+                                       class="input input-bordered"
                                        autocomplete="off">
                             </div>
                             
@@ -184,9 +185,9 @@
                                 <input type="hidden" name="dapur_ids[]" :value="id">
                             </template>
 
-                            <p class="form-hint mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
+                            <p class="text-[11px] text-[var(--color-text-muted)] mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
                             @error('dapur_ids')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </template>
@@ -216,41 +217,42 @@
                 </div>
 
                 {{-- Password --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="password">Password <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password">Password <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password" type="password" name="password" required autocomplete="new-password" 
-                               class="input-field select-enhanced" placeholder="Minimal 8 karakter">
+                               class="input input-bordered" placeholder="Minimal 8 karakter">
                     </div>
-                    <p class="form-hint">Minimal 8 karakter, kombinasikan huruf & angka</p>
+                    <p class="text-[11px] text-[var(--color-text-muted)] mt-0.5">Minimal 8 karakter, kombinasikan huruf & angka</p>
                     @error('password')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Konfirmasi Password --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="password_confirmation">Konfirmasi Password <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password_confirmation">Konfirmasi Password <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" 
-                               class="input-field select-enhanced" placeholder="Ulangi password">
+                               class="input input-bordered" placeholder="Ulangi password">
                     </div>
                     @error('password_confirmation')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
         </div>
+    </div>
 
         {{-- Form Actions (full width) --}}
-        <div class="form-actions lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
-            <a href="{{ route('admin.users') }}" class="btn-action btn-action-secondary">
+        <div class="lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary">
                 <span>Batal</span>
             </a>
-            <button type="submit" class="btn-action btn-action-primary">
-                <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            <button type="submit" class="btn btn-primary">
+                <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                 <span>Simpan User</span>
             </button>
         </div>
@@ -261,74 +263,7 @@
 @push('scripts')
 <script>
 document.addEventListener('alpine:init', () => {
-    // Autocomplete component for Kepala Dapur
-    Alpine.data('dapurAutocomplete', () => ({
-        searchQuery: '',
-        showDropdown: false,
-        highlightedIndex: -1,
-        
-        get filteredDapurs() {
-            if (!this.searchQuery) return this.$root.dapurs || [];
-            const q = this.searchQuery.toLowerCase();
-            return (this.$root.dapurs || []).filter(d => 
-                d.nama.toLowerCase().includes(q) || 
-                d.lokasi.toLowerCase().includes(q)
-            );
-        },
-        
-        selectDapur(dapur) {
-            this.$root.kepalaDapurId = dapur.id;
-            this.searchQuery = dapur.nama;
-            this.showDropdown = false;
-            this.highlightedIndex = -1;
-        },
-        
-        focusFirstOption() {
-            if (this.filteredDapurs.length > 0) {
-                this.highlightedIndex = 0;
-            }
-        },
-        
-        focusLastOption() {
-            if (this.filteredDapurs.length > 0) {
-                this.highlightedIndex = this.filteredDapurs.length - 1;
-            }
-        },
-        
-        selectHighlighted() {
-            if (this.highlightedIndex >= 0 && this.highlightedIndex < this.filteredDapurs.length) {
-                this.selectDapur(this.filteredDapurs[this.highlightedIndex]);
-            }
-        }
-    }));
-
-    // Multi-select component for Pengawas
-    Alpine.data('dapurMultiSelect', () => ({
-        searchQuery: '',
-        
-        get filteredDapurs() {
-            if (!this.searchQuery) return this.$root.dapurs || [];
-            const q = this.searchQuery.toLowerCase();
-            return (this.$root.dapurs || []).filter(d => 
-                d.nama.toLowerCase().includes(q) || 
-                d.lokasi.toLowerCase().includes(q)
-            );
-        },
-        
-        toggleDapur(id) {
-            this.$root.toggleDapur(id);
-        },
-        
-        removeDapur(id) {
-            this.$root.removeDapur(id);
-        },
-        
-        getDapurName(id) {
-            return this.$root.getDapurName(id);
-        }
-    }));
-
-    // Main form component
+    // Main form component (create) — komponen dapurAutocomplete & dapurMultiSelect ada di app.js
     Alpine.data('userForm', () => ({
         selectedRole: '',
         selectedDapurIds: [],

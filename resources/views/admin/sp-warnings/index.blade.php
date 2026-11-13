@@ -9,15 +9,15 @@
             <p class="text-[var(--color-text-muted)]">Kelola SP 1/2/3 untuk pengawas</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('admin.sp-warnings.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn-success">
+            <a href="{{ route('admin.sp-warnings.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn btn-success">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Excel
             </a>
-            <a href="{{ route('admin.sp-warnings.export', array_merge(request()->query(), ['format' => 'csv'])) }}" class="btn-secondary">
+            <a href="{{ route('admin.sp-warnings.export', array_merge(request()->query(), ['format' => 'csv'])) }}" class="btn btn-secondary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 CSV
             </a>
-            <a href="{{ route('admin.sp-warnings.create') }}" class="btn-primary">
+            <a href="{{ route('admin.sp-warnings.create') }}" class="btn btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Buat SP Baru
             </a>
@@ -28,7 +28,7 @@
     <div class="card p-4">
         <form method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="md:w-64">
-                <select name="user_id" class="input-field">
+                <select name="user_id" class="input input-bordered">
                     <option value="">Semua Pengawas</option>
                     @foreach ($pengawas as $p)
                         <option value="{{ $p->id }}" {{ request('user_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -36,7 +36,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="level" class="input-field">
+                <select name="level" class="input input-bordered">
                     <option value="">Semua Level</option>
                     <option value="1" {{ request('level') == '1' ? 'selected' : '' }}>SP-1</option>
                     <option value="2" {{ request('level') == '2' ? 'selected' : '' }}>SP-2</option>
@@ -44,7 +44,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="status" class="input-field">
+                <select name="status" class="input input-bordered">
                     <option value="">Semua Status</option>
                     <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="dicabut" {{ request('status') === 'dicabut' ? 'selected' : '' }}>Dicabut</option>
@@ -52,63 +52,63 @@
                 </select>
             </div>
             <div class="md:w-48">
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="input-field" placeholder="Tanggal Mulai">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="input input-bordered" placeholder="Tanggal Mulai">
             </div>
             <div class="md:w-48">
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="input-field" placeholder="Tanggal Akhir">
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="input input-bordered" placeholder="Tanggal Akhir">
             </div>
-            <button type="submit" class="btn-secondary whitespace-nowrap">Filter</button>
-            <a href="{{ route('admin.sp-warnings.index') }}" class="btn-secondary whitespace-nowrap">Reset</a>
+            <button type="submit" class="btn btn-secondary whitespace-nowrap">Filter</button>
+            <a href="{{ route('admin.sp-warnings.index') }}" class="btn btn-secondary whitespace-nowrap">Reset</a>
         </form>
     </div>
 
     {{-- SP Warnings Table --}}
-    <div class="card overflow-hidden">
+    <div class="card card-bordered overflow-hidden">
         @if ($warnings->count() > 0)
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--color-surface)]">
+                <table class="table w-full">
+                    <thead>
                         <tr>
-                            <th class="table-th">Tanggal</th>
-                            <th class="table-th">Pengawas</th>
-                            <th class="table-th">Level</th>
-                            <th class="table-th">Alasan</th>
-                            <th class="table-th">Status</th>
-                            <th class="table-th">Diterbitkan Oleh</th>
-                            <th class="table-th">Aksi</th>
+                            <th>Tanggal</th>
+                            <th>Pengawas</th>
+                            <th>Level</th>
+                            <th>Alasan</th>
+                            <th>Status</th>
+                            <th>Diterbitkan Oleh</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[var(--color-border)]">
+                    <tbody>
                         @foreach ($warnings as $warning)
-                        <tr class="hover:bg-[var(--color-surface)]">
-                            <td class="table-td">{{ $warning->issued_at->format('d/m/Y H:i') }}</td>
-                            <td class="table-td font-medium">{{ $warning->user->name }}</td>
-                            <td class="table-td">
+                        <tr>
+                            <td>{{ $warning->issued_at->format('d/m/Y H:i') }}</td>
+                            <td class="font-medium">{{ $warning->user->name }}</td>
+                            <td>
                                 <span class="badge 
                                     @if($warning->level == 1) badge-warning
-                                    @elseif($warning->level == 2) badge-danger
+                                    @elseif($warning->level == 2) badge-error
                                     @else bg-red-500/20 text-red-800 font-bold @endif">
                                     SP-{{ $warning->level }}
                                 </span>
                             </td>
-                            <td class="table-td max-w-xs truncate">{{ $warning->reason }}</td>
-                            <td class="table-td">
+                            <td class="max-w-xs truncate">{{ $warning->reason }}</td>
+                            <td>
                                 <span class="badge 
-                                    @if($warning->status === 'aktif') badge-danger
-                                    @elseif($warning->status === 'dicabut') badge-gray
+                                    @if($warning->status === 'aktif') badge-error
+                                    @elseif($warning->status === 'dicabut') badge-secondary
                                     @else badge-success @endif">
                                     {{ ucfirst($warning->status) }}
                                 </span>
                             </td>
-                            <td class="table-td">{{ $warning->admin->name }}</td>
-                            <td class="table-td">
+                            <td>{{ $warning->admin->name }}</td>
+                            <td>
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.sp-warnings.show', $warning) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
                                     @if ($warning->status === 'aktif')
-                                    <form action="{{ route('admin.sp-warnings.update', $warning) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.sp-warnings.update', $warning) }}" method="POST" class="inline" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" onchange="this.form.submit()" class="input-field text-xs py-1">
+                                        <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered text-xs py-1">
                                             <option value="aktif" {{ $warning->status === 'aktif' ? 'selected' : '' }}>Aktif</option>
                                             <option value="dicabut" {{ $warning->status === 'dicabut' ? 'selected' : '' }}>Cabut</option>
                                             <option value="selesai" {{ $warning->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
@@ -130,7 +130,7 @@
                 <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Belum Ada Surat Peringatan</h3>
                 <p class="text-[var(--color-text-muted)] mt-1">Belum ada SP yang diterbitkan</p>
-                <a href="{{ route('admin.sp-warnings.create') }}" class="btn-primary mt-4 inline-block">Buat SP Pertama</a>
+                <a href="{{ route('admin.sp-warnings.create') }}" class="btn btn-primary mt-4 inline-block">Buat SP Pertama</a>
             </div>
         @endif
     </div>

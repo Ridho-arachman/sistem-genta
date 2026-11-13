@@ -8,7 +8,7 @@
                 <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Detail Anomali CCTV</h2>
                 <p class="text-[var(--color-text-muted)] mt-1">{{ $anomaly->cctv->display_name }} - {{ $anomaly->cctv->dapur->nama }}</p>
             </div>
-            <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn-secondary">Kembali</a>
+            <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn btn-secondary">Kembali</a>
         </div>
 
         <div class="space-y-6">
@@ -29,9 +29,9 @@
                     <p class="text-sm text-[var(--color-text-muted)]">Severity</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
                         <span class="badge 
-                            @if($anomaly->severity === 'tinggi') badge-danger
+                            @if($anomaly->severity === 'tinggi') badge-error
                             @elseif($anomaly->severity === 'sedang') badge-warning
-                            @else badge-gray @endif">
+                            @else badge-secondary @endif">
                             {{ ucfirst($anomaly->severity) }}
                         </span>
                     </p>
@@ -40,7 +40,7 @@
                     <p class="text-sm text-[var(--color-text-muted)]">Status</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
                         <span class="badge 
-                            @if($anomaly->status === 'baru') badge-danger
+                            @if($anomaly->status === 'baru') badge-error
                             @elseif($anomaly->status === 'diproses') badge-warning
                             @else badge-success @endif">
                             {{ ucfirst($anomaly->status) }}
@@ -67,10 +67,10 @@
             </div>
 
             <div class="border-t border-[var(--color-border)] pt-6">
-                <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="flex gap-4">
+                <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="flex gap-4" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
                     @csrf
                     @method('PUT')
-                    <select name="status" class="input-field flex-1" onchange="if(confirm('Yakin ubah status?')) this.form.submit();">
+                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered flex-1">
                         <option value="baru" {{ $anomaly->status === 'baru' ? 'selected' : '' }}>Baru</option>
                         <option value="diproses" {{ $anomaly->status === 'diproses' ? 'selected' : '' }}>Diproses</option>
                         <option value="selesai" {{ $anomaly->status === 'selesai' ? 'selected' : '' }}>Selesai</option>

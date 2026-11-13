@@ -2,134 +2,203 @@
 
 @section('page_content')
 <div class="max-w-5xl mx-auto">
-    <div class="heading mb-8">
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
-            <div class="eyebrow">Genta · Admin Panel</div>
-            <h1>Edit User: {{ $user->name }}</h1>
-            <div class="muted">Perbarui data pengguna</div>
+            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
+            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Edit User: {{ $user->name }}</h1>
+            <div class="text-[var(--color-text-muted)] text-sm">Perbarui data pengguna</div>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" id="user-form">
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" id="user-form" x-data="userFormEdit()">
         @csrf
         @method('PUT')
 
         {{-- Data Pengguna --}}
-        <div class="form-section">
-            <div class="form-section-title">
-                <span class="section-icon">♙</span>
-                Data Pengguna
-            </div>
+        <div class="card card-bordered">
+            <div class="card-body">
+                <div class="card-title">
+                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">♙</span>
+                    Data Pengguna
+                </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Nama Lengkap --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="name">Nama Lengkap <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="name">Nama Lengkap <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name" 
-                               class="input-field select-enhanced" placeholder="Masukkan nama lengkap">
+                               class="input input-bordered" placeholder="Masukkan nama lengkap">
                     </div>
                     @error('name')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Email --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="email">Email <span class="required">*</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="email">Email <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email" 
-                               class="input-field select-enhanced" placeholder="Masukkan email">
+                               class="input input-bordered" placeholder="Masukkan email">
                     </div>
                     @error('email')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Role --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="role">Role <span class="required">*</span></label>
-                    <select id="role" name="role" required class="input-field select-enhanced" onchange="showSection(this.value)">
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="role">Role <span class="text-xs text-[var(--color-primary)]">*</span></label>
+                    <select id="role" name="role" required class="input input-bordered" x-model="selectedRole" @change="handleRoleChange()">
                         <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
                         <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
                     </select>
                     @error('role')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Dapur Assignment (full width) --}}
-                <div class="form-field lg:col-span-2">
+                <div class="flex flex-col gap-1.5 lg:col-span-2">
                     <!-- Kepala Dapur -->
-                    <div id="dapur-section-kepala_dapur" class="dapur-section hidden" style="display: none;">
-                        <div>
-                            <label class="form-label" for="dapur_id">Dapur <span class="required">*</span></label>
+                    <template x-if="selectedRole === 'kepala_dapur'">
+                        <div x-transition x-data="dapurAutocomplete()">
+                            <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="dapur_id">Dapur <span class="text-xs text-[var(--color-primary)]">*</span></label>
                             <div class="relative">
-                                <div class="input-with-icon">
-                                    <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                    <input type="text" id="dapur_search" placeholder="Cari dapur..." class="input-field select-enhanced" autocomplete="off">
+                                <div class="relative">
+                                    <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    <input type="text"
+                                           id="dapur_search"
+                                           x-model="searchQuery"
+                                           @focus="showDropdown = true"
+                                           @keydown.down.prevent="focusFirstOption()"
+                                           @keydown.up.prevent="focusLastOption()"
+                                           @keydown.enter.prevent="selectHighlighted()"
+                                           @keydown.escape="showDropdown = false"
+                                           placeholder="Cari dapur..."
+                                           class="input input-bordered"
+                                           autocomplete="off">
                                 </div>
-                                <input type="hidden" id="dapur_id" name="dapur_id" required>
+                                <input type="hidden" id="dapur_id" name="dapur_id" :value="kepalaDapurId" required>
+
                                 <!-- Dropdown -->
-                                <div id="kepala-dropdown" class="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-[var(--color-border)] rounded-lg shadow-lg hidden">
+                                <div x-show="showDropdown && filteredDapurs.length > 0"
+                                     class="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-[var(--color-border)] rounded-lg shadow-lg"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-y-95"
+                                     x-transition:enter-end="transform opacity-100 scale-y-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-y-100"
+                                     x-transition:leave-end="transform opacity-0 scale-y-95"
+                                     @click.outside="showDropdown = false">
+                                    <template x-for="(dapur, index) in filteredDapurs" :key="dapur.id">
+                                        <button type="button"
+                                                @click="selectDapur(dapur)"
+                                                @mouseover="highlightedIndex = index"
+                                                :class="['flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-[var(--color-primary)]/10', highlightedIndex === index ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : '']">
+                                            <span class="font-medium" x-text="dapur.nama"></span>
+                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.lokasi"></span>
+                                            <template x-if="dapur.kepala_dapur_name">
+                                                <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">
+                                                    Kepala: <span x-text="dapur.kepala_dapur_name"></span>
+                                                </span>
+                                            </template>
+                                        </button>
+                                    </template>
+                                    <template x-if="filteredDapurs.length === 0">
+                                        <div class="px-4 py-3 text-center text-[var(--color-text-muted)] text-sm">
+                                            Tidak ada dapur yang cocok
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
+
+                            <!-- Warning if dapur already has kepala -->
+                            <div x-show="selectedKepalaDapur" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm" x-transition>
+                                <span class="font-medium">Perhatian: </span>
+                                <span x-text="'Dapur ini sudah memiliki Kepala Dapur: ' + selectedKepalaDapur"></span>
+                                <br><span class="font-medium">Menimpah akan mengubah assignment kepala dapur.</span>
+                            </div>
                             @error('dapur_id')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
+                    </template>
 
                     <!-- Pengawas -->
-                    <div id="dapur-section-pengawas" class="dapur-section hidden" style="display: none;">
-                        <label class="form-label" for="dapur_ids">Dapur yang Diawasi <span class="required">*</span></label>
+                    <template x-if="selectedRole === 'pengawas'">
+                        <div x-transition x-data="dapurMultiSelect()">
+                            <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="dapur_ids">Dapur yang Diawasi <span class="text-xs text-[var(--color-primary)]">*</span></label>
 
-                        <!-- Search input -->
-                        <div class="input-with-icon mb-2">
-                            <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <input type="text" id="dapur-search" placeholder="Cari dapur..." class="input-field select-enhanced" autocomplete="off">
-                        </div>
+                            <!-- Search input -->
+                            <div class="relative mb-2">
+                                <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <input type="text"
+                                       x-model="searchQuery"
+                                       placeholder="Cari dapur..."
+                                       class="input input-bordered"
+                                       autocomplete="off">
+                            </div>
 
-                        <!-- Selected chips -->
-                        <div id="dapur-chips" class="mt-2 flex flex-wrap gap-2 hidden"></div>
+                            <!-- Selected chips -->
+                            <div x-show="selectedDapurIds.length > 0" class="mt-2 flex flex-wrap gap-2" x-transition>
+                                <template x-for="id in selectedDapurIds" :key="id">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                        <span x-text="getDapurName(id)"></span>
+                                        <button type="button" @click="removeDapur(id)" class="hover:text-[var(--color-primary)]/70 focus:outline-none" aria-label="Hapus">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </span>
+                                </template>
+                            </div>
 
-                        <!-- Dapur list (card-based) -->
-                        <div id="dapur-list" class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg bg-white">
-                            @foreach ($dapurs as $dapur)
-                                <label class="dapur-card group relative cursor-pointer" data-id="{{ $dapur->id }}" data-nama="{{ $dapur->nama }}" data-lokasi="{{ $dapur->lokasi }}">
-                                    <input type="checkbox" name="dapur_ids[]" value="{{ $dapur->id }}" class="sr-only peer" {{ $user->dapurs->contains($dapur->id) ? 'checked' : '' }}>
-                                    <div class="dapur-card-body p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/50 transition-colors peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/5">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center gap-2 mb-1">
-                                                    <h3 class="text-sm font-semibold text-[var(--color-secondary)] line-clamp-2">{{ $dapur->nama }}</h3>
-                                                    <span class="dapur-badge inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">Dapur</span>
+                            <!-- Dapur list (card-based) -->
+                            <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg bg-white">
+                                <template x-for="dapur in filteredDapurs" :key="dapur.id">
+                                    <label class="dapur-card group relative cursor-pointer">
+                                        <input type="checkbox"
+                                               :value="dapur.id"
+                                               :checked="selectedDapurIds.includes(dapur.id)"
+                                               @change="toggleDapur(dapur.id)"
+                                               class="sr-only peer">
+                                        <div class="dapur-card-body p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/50 transition-colors peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/5">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="flex items-center gap-2 mb-1">
+                                                        <h3 class="text-sm font-semibold text-[var(--color-secondary)] line-clamp-2" x-text="dapur.nama"></h3>
+                                                        <span class="dapur-badge inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">Dapur</span>
+                                                    </div>
+                                                    <p class="text-xs text-[var(--color-text-muted)] truncate" x-text="dapur.lokasi"></p>
                                                 </div>
-                                                <p class="text-xs text-[var(--color-text-muted)] truncate">{{ $dapur->lokasi }}</p>
+                                                <div class="w-6 h-6 shrink-0"></div>
                                             </div>
-                                            <div class="w-6 h-6 shrink-0"></div>
                                         </div>
-                                    </div>
-                                    <div class="dapur-check absolute right-4 top-4 flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 peer-checked:bg-[var(--color-primary)] peer-checked:text-white">
-                                        <svg class="w-5 h-5 text-[var(--color-primary)] opacity-0 stroke-[2.5] transition-opacity duration-200 group-hover:opacity-20 peer-checked:opacity-100 peer-checked:group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                                    </div>
-                                </label>
-                            @endforeach
-                            <div id="dapur-empty" class="text-center text-[var(--color-text-muted)] text-sm py-8 hidden">Tidak ada dapur yang cocok</div>
-                            <div id="dapur-all-selected" class="text-center text-[var(--color-text-muted)] text-sm py-8 hidden">Semua dapur sudah dipilih</div>
-                        </div>
+                                        <div class="dapur-check absolute right-4 top-4 flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 peer-checked:bg-[var(--color-primary)] peer-checked:text-white">
+                                            <svg class="w-5 h-5 text-[var(--color-primary)] opacity-0 stroke-[2.5] transition-opacity duration-200 group-hover:opacity-20 peer-checked:opacity-100 peer-checked:group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    </label>
+                                </template>
+                                <div x-show="filteredDapurs.length === 0" class="text-center text-[var(--color-text-muted)] text-sm py-8">Tidak ada dapur yang cocok</div>
+                            </div>
 
-                        <p id="dapur-count" class="form-hint mt-2 hidden">Dipilih: <span id="dapur-count-num">0</span> dapur</p>
-                        @error('dapur_ids')
-                            <p class="form-error">{{ $message }}</p>
-                        @enderror
-                    </div>
+                            <!-- Hidden inputs for form submission -->
+                            <template x-for="id in selectedDapurIds" :key="id">
+                                <input type="hidden" name="dapur_ids[]" :value="id">
+                            </template>
+
+                            <p class="text-[11px] text-[var(--color-text-muted)] mt-2" x-text="'Dipilih: ' + selectedDapurIds.length + ' dapur'"></p>
+                            @error('dapur_ids')
+                                <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </template>
 
                     <!-- Manajerial - no dapur assignment -->
-                    <div id="dapur-section-manajerial" class="dapur-section hidden" style="display: none;">
+                    <template x-if="selectedRole === 'manajerial'">
                         <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -139,54 +208,56 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </template>
 
                     <!-- Default: select role first -->
-                    <div id="dapur-section-default" class="dapur-section hidden" style="display: none;">
+                    <template x-if="!selectedRole">
                         <div class="p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
                             <div class="flex items-center gap-3 text-[var(--color-text-muted)]">
                                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <span>Pilih role terlebih dahulu untuk melihat opsi assignment dapur</span>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
 
                 {{-- Password Baru --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="password">Password Baru <span class="text-muted">(kosongkan jika tidak diubah)</span></label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password">Password Baru <span class="text-[var(--color-text-muted)]">(kosongkan jika tidak diubah)</span></label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password" type="password" name="password" autocomplete="new-password" 
-                               class="input-field select-enhanced" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
+                               class="input input-bordered" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
                     </div>
-                    <p class="form-hint">Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter.</p>
+                    <p class="text-[11px] text-[var(--color-text-muted)] mt-0.5">Kosongkan jika tidak ingin mengubah password. Minimal 8 karakter.</p>
                     @error('password')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Konfirmasi Password Baru --}}
-                <div class="form-field lg:col-span-1">
-                    <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                    <div class="input-with-icon">
-                        <svg class="input-icon-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <div class="flex flex-col gap-1.5 lg:col-span-1">
+                    <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]" for="password_confirmation">Konfirmasi Password Baru</label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" 
-                               class="input-field select-enhanced" placeholder="Ulangi password baru">
+                               class="input input-bordered" placeholder="Ulangi password baru">
                     </div>
                     @error('password_confirmation')
-                        <p class="form-error">{{ $message }}</p>
+                        <p class="flex items-center gap-1 text-xs text-[#EF4444] mt-1">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
         </div>
+    </div>
 
         {{-- Informasi Audit (Read Only) --}}
-        <div class="form-section">
-            <div class="form-section-title">
-                <span class="section-icon">⚙</span>
-                Informasi Audit
-            </div>
+        <div class="card card-bordered">
+            <div class="card-body">
+                <div class="card-title">
+                    <span class="section-icon grid h-6 w-6 place-items-center rounded-lg bg-[var(--color-primary)]/10 text-xs text-[var(--color-primary)]">⚙</span>
+                    Informasi Audit
+                </div>
 
             <div class="p-4 bg-[var(--color-surface)]/50 border border-[var(--color-border)] rounded-lg">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -236,15 +307,16 @@
                 </div>
             </div>
         </div>
+    </div>
 
         {{-- Form Actions (full width) --}}
-        <div class="form-actions lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
-            <a href="{{ route('admin.users') }}" class="btn-action btn-action-secondary">
-                <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <div class="lg:col-span-2 flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary">
+                <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 <span>Batal</span>
             </a>
-            <button type="submit" class="btn-action btn-action-primary">
-                <svg class="btn-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            <button type="submit" class="btn btn-primary">
+                <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                 <span>Perbarui User</span>
             </button>
         </div>
@@ -254,141 +326,41 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var roleSelect = document.getElementById('role');
-    var sections = document.querySelectorAll('.dapur-section');
+document.addEventListener('alpine:init', () => {
+    Alpine.data('userFormEdit', () => ({
+        selectedRole: @js($user->role),
+        selectedDapurIds: @js($user->dapurs->pluck('id')->values()),
+        kepalaDapurId: @js($user->dapur_id),
+        dapurs: @json($dapurData),
 
-    function showSection(role) {
-        sections.forEach(function (el) { el.style.display = 'none'; });
-        var target = document.getElementById('dapur-section-' + role);
-        if (target) target.style.display = 'block';
-    }
+        get selectedKepalaDapur() {
+            const selected = this.dapurs.find(d => d.id == this.kepalaDapurId);
+            return selected?.kepala_dapur_name || '';
+        },
 
-    // Show correct section on load
-    var currentRole = roleSelect ? roleSelect.value : '';
-    showSection(currentRole);
+        handleRoleChange() {
+            this.selectedDapurIds = [];
+            this.kepalaDapurId = '';
+        },
 
-    // Show correct section on change
-    if (roleSelect) {
-        roleSelect.addEventListener('change', function () {
-            showSection(this.value);
-        });
-    }
+        toggleDapur(id) {
+            const idx = this.selectedDapurIds.indexOf(id);
+            if (idx === -1) {
+                this.selectedDapurIds.push(id);
+            } else {
+                this.selectedDapurIds.splice(idx, 1);
+            }
+        },
 
-    // === Pengawas multi-dapur (plain JS) ===
-    var searchInput = document.getElementById('dapur-search');
-    var listEl = document.getElementById('dapur-list');
-    var chipsEl = document.getElementById('dapur-chips');
-    var emptyEl = document.getElementById('dapur-empty');
-    var allSelectedEl = document.getElementById('dapur-all-selected');
-    var countEl = document.getElementById('dapur-count');
-    var countNumEl = document.getElementById('dapur-count-num');
-    var items = listEl ? listEl.querySelectorAll('.dapur-card') : [];
+        removeDapur(id) {
+            this.selectedDapurIds = this.selectedDapurIds.filter(d => d !== id);
+        },
 
-    if (items.length === 0) return;
-
-    var selectedIds = [];
-    var checkboxMap = {};
-
-    items.forEach(function (item) {
-        var cb = item.querySelector('input[type="checkbox"]');
-        if (!cb) return;
-        checkboxMap[cb.value] = { cb: cb, item: item };
-        if (cb.checked) selectedIds.push(cb.value);
-    });
-
-    function escapeHtml(text) {
-        var div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function renderChips() {
-        if (!chipsEl) return;
-        chipsEl.innerHTML = '';
-        selectedIds.forEach(function (id) {
-            var entry = checkboxMap[id];
-            var nama = entry ? entry.item.getAttribute('data-nama') : id;
-            var chip = document.createElement('span');
-            chip.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]';
-            chip.innerHTML =
-                '<span>' + escapeHtml(nama) + '</span>' +
-                '<button type="button" data-remove="' + escapeHtml(id) + '" class="hover:text-[var(--color-primary)]/70 focus:outline-none p-1" aria-label="Hapus">' +
-                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>' +
-                '</button>';
-            chipsEl.appendChild(chip);
-        });
-
-        chipsEl.querySelectorAll('button[data-remove]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                toggleDapur(this.getAttribute('data-remove'));
-            });
-        });
-    }
-
-    function toggleDapur(id) {
-        var idx = selectedIds.indexOf(id);
-        if (idx === -1) {
-            selectedIds.push(id);
-        } else {
-            selectedIds.splice(idx, 1);
+        getDapurName(id) {
+            const d = this.dapurs.find(d => d.id == id);
+            return d ? d.nama : id;
         }
-        var entry = checkboxMap[id];
-        if (entry && entry.cb) entry.cb.checked = selectedIds.includes(id);
-        updateUI();
-    }
-
-    function updateUI() {
-        items.forEach(function (item) {
-            var cb = item.querySelector('input[type="checkbox"]');
-            if (!cb) return;
-            cb.checked = selectedIds.includes(cb.value);
-        });
-
-        renderChips();
-
-        if (countEl) {
-            countEl.classList.toggle('hidden', selectedIds.length === 0);
-            if (countNumEl) countNumEl.textContent = selectedIds.length;
-        }
-
-        var total = items.length;
-        if (emptyEl) emptyEl.classList.toggle('hidden', selectedIds.length > 0 || total === 0);
-        if (allSelectedEl) allSelectedEl.classList.toggle('hidden', selectedIds.length !== total || total === 0);
-    }
-
-    function filterList() {
-        var q = (searchInput.value || '').toLowerCase();
-        var visible = 0;
-        items.forEach(function (item) {
-            var nama = (item.getAttribute('data-nama') || '').toLowerCase();
-            var lokasi = (item.getAttribute('data-lokasi') || '').toLowerCase();
-            var match = nama.includes(q) || lokasi.includes(q);
-            item.classList.toggle('hidden', !match);
-            if (match) visible++;
-        });
-        if (emptyEl) emptyEl.classList.toggle('hidden', visible > 0 || selectedIds.length > 0 || q === '');
-        if (allSelectedEl) allSelectedEl.classList.add('hidden');
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', filterList);
-    }
-
-    items.forEach(function (item) {
-        var cb = item.querySelector('input[type="checkbox"]');
-        if (!cb) return;
-        cb.addEventListener('change', function () {
-            toggleDapur(cb.value);
-        });
-        item.addEventListener('click', function (e) {
-            if (e.target.tagName === 'INPUT') return;
-            e.preventDefault();
-            cb.click();
-        });
-    });
-
-    updateUI();
+    }));
 });
 </script>
 @endpush

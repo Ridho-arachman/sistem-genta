@@ -3,11 +3,11 @@
 @section('page_content')
 <div class="space-y-6">
     <!-- Header -->
-    <div class="heading">
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <div class="eyebrow">Genta · Pengawasan MBG</div>
-            <h1>Monitoring CCTV</h1>
-            <div class="muted">Status perangkat dan pratinjau feed kamera</div>
+            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Pengawasan MBG</div>
+            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Monitoring CCTV</h1>
+            <div class="text-[var(--color-text-muted)] text-sm">Status perangkat dan pratinjau feed kamera</div>
         </div>
     </div>
 
@@ -17,13 +17,13 @@
         <div class="card overflow-hidden min-w-0 w-full max-w-[480px]">
             <div class="p-2 border-b border-[var(--color-border)]">
                 <div class="flex items-center justify-between mb-1 min-w-0">
-                    <span class="cam-tag bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0 truncate" style="font-family: monospace;">
+                    <span class="bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0 truncate">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
-                    <span class="status-badge shrink-0 truncate
-                        @if($cctv->status === 'online') ok
-                        @elseif($cctv->status === 'offline') off
-                        @else warn @endif">
+                    <span class="badge shrink-0 truncate
+                        @if($cctv->status === 'online') badge-success
+                        @elseif($cctv->status === 'offline') badge-error
+                        @else badge-warning @endif">
                         @if($cctv->status === 'online') Status simulasi online
                         @elseif($cctv->status === 'offline') Status offline
                         @else Status perlu dicek @endif
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Notice like demo -->
-    <div class="notice p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
+    <div class="p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
         <div class="flex items-start gap-3">
             <svg class="w-5 h-5 text-[var(--color-text-muted)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -69,38 +69,3 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-.cam-tag {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-weight: 500;
-}
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 9999px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-}
-.status-badge.ok {
-    background: #dcfce7;
-    color: #166534;
-}
-.status-badge.warn {
-    background: #fef3c7;
-    color: #92400e;
-}
-.status-badge.off {
-    background: #fee2e2;
-    color: #991b1b;
-}
-.notice {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-}
-</style>
-@endpush

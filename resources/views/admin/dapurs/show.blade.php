@@ -2,11 +2,11 @@
 
 @section('page_content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="heading mb-8">
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
-            <div class="eyebrow">Genta · Admin Panel</div>
-            <h1>Detail Dapur</h1>
-            <div class="muted">Informasi detail dapur</div>
+            <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
+            <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Detail Dapur</h1>
+            <div class="text-[var(--color-text-muted)] text-sm">Informasi detail dapur</div>
         </div>
     </div>
 
@@ -23,8 +23,8 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn-action btn-action-secondary">Edit</a>
-                <a href="{{ route('admin.dapurs.index') }}" class="btn-action btn-action-secondary">Kembali</a>
+                <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn btn-secondary">Edit</a>
+                <a href="{{ route('admin.dapurs.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
 
@@ -109,7 +109,7 @@
                     width="100%"
                     height="100%"
                     frameborder="0"
-                    style="border:0;"
+                    class="border-0"
                     src="{{ $dapur->map_embed_url }}"
                     allowfullscreen
                     loading="lazy"
@@ -124,33 +124,33 @@
         <div class="border-t border-[var(--color-border)] pt-6">
             <h3 class="text-lg font-semibold mb-4">Daftar CCTV</h3>
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-[var(--color-surface)]">
+                <table class="table w-full">
+                    <thead>
                         <tr>
-                            <th class="table-th">Nama</th>
-                            <th class="table-th">Area</th>
-                            <th class="table-th">Cam #</th>
-                            <th class="table-th">IP Address</th>
-                            <th class="table-th">Status</th>
-                            <th class="table-th">Aksi</th>
+                            <th>Nama</th>
+                            <th>Area</th>
+                            <th>Cam #</th>
+                            <th>IP Address</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[var(--color-border)]">
+                    <tbody>
                         @foreach ($dapur->cctvs as $cctv)
-                        <tr class="hover:bg-[var(--color-surface)]">
-                            <td class="table-td font-medium">{{ $cctv->nama }}</td>
-                            <td class="table-td">{{ $cctv->section ?? '-' }}</td>
-                            <td class="table-td">{{ $cctv->camera_number ?? '-' }}</td>
-                            <td class="table-td text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
-                            <td class="table-td">
+                        <tr>
+                            <td class="font-medium">{{ $cctv->nama }}</td>
+                            <td>{{ $cctv->section ?? '-' }}</td>
+                            <td>{{ $cctv->camera_number ?? '-' }}</td>
+                            <td class="text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
+                            <td>
                                 <span class="badge 
                                     @if($cctv->status === 'online') badge-success
-                                    @elseif($cctv->status === 'offline') badge-danger
+                                    @elseif($cctv->status === 'offline') badge-error
                                     @else badge-warning @endif">
                                     {{ ucfirst($cctv->status) }}
                                 </span>
                             </td>
-                            <td class="table-td">
+                            <td>
                                 <a href="{{ route('admin.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
                             </td>
                         </tr>

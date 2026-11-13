@@ -86,7 +86,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" :disabled="loading" class="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <button type="submit" :disabled="loading" class="btn btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                     <span x-show="!loading">Reset Password</span>
                     <span x-show="loading" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">

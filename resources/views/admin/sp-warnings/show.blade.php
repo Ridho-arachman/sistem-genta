@@ -8,7 +8,7 @@
                 <h2 class="text-2xl font-bold text-[var(--color-secondary)]">Detail Surat Peringatan</h2>
                 <p class="text-[var(--color-text-muted)] mt-1">SP-{{ $spWarning->level }} untuk {{ $spWarning->user->name }}</p>
             </div>
-            <a href="{{ route('admin.sp-warnings.index') }}" class="btn-secondary">Kembali</a>
+            <a href="{{ route('admin.sp-warnings.index') }}" class="btn btn-secondary">Kembali</a>
         </div>
 
         <div class="space-y-6">
@@ -26,7 +26,7 @@
                     <p class="font-semibold text-[var(--color-secondary)]">
                         <span class="badge 
                             @if($spWarning->level == 1) badge-warning
-                            @elseif($spWarning->level == 2) badge-danger
+                            @elseif($spWarning->level == 2) badge-error
                             @else bg-red-500/20 text-red-800 font-bold @endif">
                             SP-{{ $spWarning->level }}
                         </span>
@@ -36,8 +36,8 @@
                     <p class="text-sm text-[var(--color-text-muted)]">Status</p>
                     <p class="font-semibold text-[var(--color-secondary)]">
                         <span class="badge 
-                            @if($spWarning->status === 'aktif') badge-danger
-                            @elseif($spWarning->status === 'dicabut') badge-gray
+                            @if($spWarning->status === 'aktif') badge-error
+                            @elseif($spWarning->status === 'dicabut') badge-secondary
                             @else badge-success @endif">
                             {{ ucfirst($spWarning->status) }}
                         </span>
@@ -60,10 +60,10 @@
 
             @if ($spWarning->status === 'aktif')
             <div class="border-t border-[var(--color-border)] pt-6">
-                <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4">
+                <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
                     @csrf
                     @method('PUT')
-                    <select name="status" class="input-field flex-1" onchange="if(confirm('Yakin ubah status?')) this.form.submit();">
+                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered flex-1">
                         <option value="aktif" selected>Aktif</option>
                         <option value="dicabut">Cabut SP</option>
                         <option value="selesai">Tandai Selesai</option>

@@ -2,11 +2,11 @@
 
 @section('page_content')
 
-<div class="heading mb-8">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-8">
     <div>
-        <div class="eyebrow">Genta · Admin Panel</div>
-        <h1>Detail CCTV</h1>
-        <div class="muted">Informasi dan pratinjau kamera CCTV</div>
+        <div class="text-[var(--color-primary)] text-[11px] font-extrabold uppercase tracking-[1.4px]">Genta · Admin Panel</div>
+        <h1 class="text-[28px] font-extrabold tracking-[-0.5px] mt-1 mb-1">Detail CCTV</h1>
+        <div class="text-[var(--color-text-muted)] text-sm">Informasi dan pratinjau kamera CCTV</div>
     </div>
 </div>
 
@@ -17,12 +17,12 @@
                 <p class="text-[var(--color-text-muted)] mt-1">{{ $cctv->dapur->nama }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="btn-secondary">Edit</a>
-                <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="btn-secondary flex items-center gap-2">
+                <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="btn btn-secondary">Edit</a>
+                <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="btn btn-secondary flex items-center gap-2">
                     <span>!</span>
                     <span>Laporkan Anomali</span>
                 </a>
-                <a href="{{ route('admin.cctvs.index') }}" class="btn-secondary">Kembali</a>
+                <a href="{{ route('admin.cctvs.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
 
@@ -48,7 +48,7 @@
                 <p class="font-semibold text-[var(--color-secondary)]">
                     <span class="badge 
                         @if($cctv->status === 'online') badge-success
-                        @elseif($cctv->status === 'offline') badge-danger
+                        @elseif($cctv->status === 'offline') badge-error
                         @else badge-warning @endif">
                         {{ ucfirst($cctv->status) }}
                     </span>
@@ -72,8 +72,8 @@
         @if ($cctv->hls_url)
         <div class="border-t border-[var(--color-border)] pt-6">
             <h3 class="text-lg font-semibold mb-4">Preview Streaming (HLS)</h3>
-            <div class="aspect-video bg-black rounded-lg overflow-hidden">
-                <video id="hlsPlayer" controls class="w-full h-full" crossorigin="anonymous"></video>
+            <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="hlsPlayer(@js($cctv->hls_url), true)">
+                <video controls class="block h-full w-full object-cover" crossorigin="anonymous"></video>
             </div>
         </div>
         @endif
@@ -83,38 +83,38 @@
         <div class="border-t border-[var(--color-border)] pt-6 mt-6">
             <h3 class="text-lg font-semibold mb-4">Riwayat Anomali</h3>
             <div class="overflow-x-auto">
-                <table class="w-full">
+                <table class="table w-full">
                     <thead>
-                        <tr class="bg-[var(--color-surface)]">
-                            <th class="table-th">Tanggal</th>
-                            <th class="table-th">Deskripsi</th>
-                            <th class="table-th">Severity</th>
-                            <th class="table-th">Status</th>
-                            <th class="table-th">Dilaporkan</th>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Deskripsi</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Dilaporkan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[var(--color-border)]">
+                    <tbody>
                         @foreach ($cctv->anomalyReports as $anomaly)
-                        <tr class="hover:bg-[var(--color-surface)]">
-                            <td class="table-td">{{ $anomaly->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="table-td max-w-xs truncate">{{ $anomaly->description }}</td>
-                            <td class="table-td">
+                        <tr>
+                            <td>{{ $anomaly->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="max-w-xs truncate">{{ $anomaly->description }}</td>
+                            <td>
                                 <span class="badge 
-                                    @if($anomaly->severity === 'tinggi') badge-danger
+                                    @if($anomaly->severity === 'tinggi') badge-error
                                     @elseif($anomaly->severity === 'sedang') badge-warning
-                                    @else badge-gray @endif">
+                                    @else badge-secondary @endif">
                                     {{ ucfirst($anomaly->severity) }}
                                 </span>
                             </td>
-                            <td class="table-td">
+                            <td>
                                 <span class="badge 
-                                    @if($anomaly->status === 'baru') badge-danger
+                                    @if($anomaly->status === 'baru') badge-error
                                     @elseif($anomaly->status === 'diproses') badge-warning
                                     @else badge-success @endif">
                                     {{ ucfirst($anomaly->status) }}
                                 </span>
                             </td>
-                            <td class="table-td">{{ $anomaly->admin->name }}</td>
+                            <td>{{ $anomaly->admin->name }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -127,28 +127,6 @@
 @if ($cctv->hls_url)
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var video = document.getElementById('hlsPlayer');
-        var videoSrc = '{{ $cctv->hls_url }}';
-        
-        if (Hls.isSupported()) {
-            var hls = new Hls();
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play().catch(function() {
-                    // Autoplay blocked, user needs to click play
-                });
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-            video.addEventListener('loadedmetadata', function() {
-                video.play().catch(function() {});
-            });
-        }
-    });
-</script>
 @endpush
 @endif
 

@@ -9,38 +9,39 @@
     </div>
     <div class="flex gap-3 shrink-0 self-start lg:self-start">
         <a href="{{ route('admin.users.archive') }}" 
-           class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold hover:bg-[var(--color-surface-hover)] transition">
+           class="btn btn-secondary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             <span>Arsip User</span>
         </a>
         <a href="{{ route('admin.users.create') }}" 
-           class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
+           class="btn btn-primary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Tambah User</span>
         </a>
     </div>
 </div>
 
-<div class="form-section mb-6">
-    <div class="form-section-title flex items-center gap-2.5 mb-5 pb-4 border-b border-[var(--color-border)]">
-        <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        </span>
-        <h2 class="text-sm font-bold text-[var(--color-secondary)]">Filter & Pencarian</h2>
-    </div>
+<div class="card card-bordered mb-6">
+    <div class="card-body">
+        <div class="card-title flex items-center gap-2.5 mb-5">
+            <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </span>
+            <h2 class="text-sm font-bold text-[var(--color-secondary)]">Filter & Pencarian</h2>
+        </div>
     <form method="GET" class="space-y-4">
         <div class="flex gap-4 flex-wrap items-end">
             <div class="flex-1 min-w-[200px]">
-                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="search">Cari</label>
-                <div class="input-with-icon relative">
-                    <svg class="input-icon-inner absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="input-field w-full pl-10" placeholder="Cari nama atau email..." aria-label="Cari user">
+                <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="search">Cari</label>
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="input input-bordered w-full pl-10" placeholder="Cari nama atau email..." aria-label="Cari user">
                 </div>
             </div>
             <div class="min-w-[180px]">
-                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="role">Role</label>
-                <div class="input-with-icon relative">
-                    <select id="role" name="role" class="input-field select-enhanced w-full pr-10" aria-label="Filter role">
+                <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="role">Role</label>
+                <div class="relative">
+                    <select id="role" name="role" class="input input-bordered w-full pr-10" aria-label="Filter role">
                         <option value="">Semua Role</option>
                         <option value="pengawas" {{ request('role') === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ request('role') === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
@@ -50,9 +51,9 @@
                 </div>
             </div>
             <div class="min-w-[180px]">
-                <label class="form-label block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="status">Status</label>
-                <div class="input-with-icon relative">
-                    <select id="status" name="status" class="input-field select-enhanced w-full pr-10" aria-label="Filter status">
+                <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="status">Status</label>
+                <div class="relative">
+                    <select id="status" name="status" class="input input-bordered w-full pr-10" aria-label="Filter status">
                         <option value="">Semua Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-aktif</option>
@@ -62,34 +63,35 @@
             </div>
         </div>
         <div class="flex gap-3 pt-4 border-t border-[var(--color-border)]">
-            <button type="submit" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">
+            <button type="submit" class="btn btn-primary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293.707L3.293 7.293A1 1 0 003 8V4z"></path></svg>
                 <span>Filter</span>
             </button>
-            <a href="{{ route('admin.users') }}" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold hover:bg-[var(--color-surface-hover)] transition">
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 <span>Reset</span>
             </a>
         </div>
     </form>
 </div>
+</div>
 
-<div class="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden mb-6">
+<div class="card card-bordered overflow-hidden mb-6">
     @if ($users->count() > 0)
         <div class="overflow-visible">
-            <table class="w-full border-collapse">
+            <table class="table w-full">
                 <thead>
-                    <tr class="bg-[var(--color-surface)]">
-                        <th class="table-th min-w-[180px] max-w-[300px]">NAMA</th>
-                        <th class="table-th min-w-[100px] max-w-[140px]">PERAN</th>
-                        <th class="table-th min-w-[160px] hidden lg:table-cell">AKSES</th>
-                        <th class="table-th min-w-[70px] text-center">AKSI</th>
+                    <tr>
+                        <th class="min-w-[180px] max-w-[300px]">NAMA</th>
+                        <th class="min-w-[100px] max-w-[140px]">PERAN</th>
+                        <th class="min-w-[160px] hidden lg:table-cell">AKSES</th>
+                        <th class="min-w-[70px] text-center">AKSI</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-[var(--color-border)]">
+                <tbody>
                     @foreach ($users as $user)
-                    <tr class="hover:bg-[var(--color-surface)] transition-colors">
-                        <td class="table-td min-w-0 max-w-[300px]">
+                    <tr>
+                        <td class="min-w-0 max-w-[300px]">
                             <div class="flex items-center gap-2.5 min-w-0">
                                 <span class="font-semibold text-[var(--color-secondary)] truncate line-clamp-1 min-w-0">{{ $user->name }}</span>
                                 @if ($user->id === auth()->id())
@@ -97,7 +99,7 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="table-td min-w-0">
+                        <td class="min-w-0">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold truncate
                                 @if($user->role === 'admin') bg-[var(--color-primary)]/15 text-[var(--color-primary)]
                                 @elseif($user->role === 'pengawas') bg-[#22C55E15] text-[#166534]
@@ -107,10 +109,10 @@
                                 {{ $user->role_label }}
                             </span>
                         </td>
-                        <td class="table-td min-w-0 hidden lg:table-cell line-clamp-2 text-[13px] text-[var(--color-text)]">
+                        <td class="min-w-0 hidden lg:table-cell line-clamp-2 text-[13px] text-[var(--color-text)]">
                             {{ $user->access_description }}
                         </td>
-                        <td class="table-td min-w-0 text-center">
+                        <td class="min-w-0 text-center">
                             <div class="inline-flex gap-2 justify-center">
                                 @if ($user->id !== auth()->id() && !$user->isAdmin())
                                     <a href="{{ route('admin.users.edit', $user) }}" 
@@ -144,7 +146,7 @@
             <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
             <h3 class="mt-4 text-lg font-medium text-[var(--color-secondary)]">Tidak Ada User</h3>
             <p class="text-[var(--color-text-muted)] mt-1">Belum ada user yang terdaftar</p>
-            <a href="{{ route('admin.users.create') }}" class="btn-action inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition mt-4">
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary mt-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 <span>Tambah User Pertama</span>
             </a>
@@ -164,7 +166,7 @@
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0">
-    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in" 
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl" 
          x-show="show" 
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 scale-95"
@@ -180,11 +182,11 @@
         </div>
         <p class="text-gray-600 mb-6">User <span x-text="name" class="font-semibold"></span> akan dipindahkan ke trash. Data riwayat (absensi, laporan, dll) tetap terjaga. Tindakan ini bisa dibatalkan via restore.</p>
         <div class="flex gap-3 justify-end">
-            <button type="button" x-on:click="show = false" class="btn-action px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-sm font-semibold">Batal</button>
+            <button type="button" x-on:click="show = false" class="btn btn-secondary">Batal</button>
             <form :action="url" method="POST" class="inline">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-action px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition">Hapus</button>
+                <button type="submit" class="btn btn-primary">Hapus</button>
             </form>
         </div>
     </div>

@@ -21,6 +21,7 @@
         "@capacitor/geolocation": "^8.2.4",
         "@heroicons/react": "^2.2.0",
         "alpinejs": "^3.17.5",
+        "daisyui": "^5.7.50",
         "leaflet": "^1.9.4"
     }
 }

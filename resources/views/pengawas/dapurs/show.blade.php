@@ -9,7 +9,7 @@
             <h1>{{ $dapur->nama }}</h1>
             <div class="muted">{{ $dapur->lokasi ?? 'Lokasi tidak diset' }}</div>
         </div>
-        <a href="{{ route('pengawas.dashboard') }}" class="btn-secondary">Kembali ke Beranda</a>
+        <a href="{{ route('pengawas.dashboard') }}" class="btn btn-secondary">Kembali ke Beranda</a>
     </div>
 
     <div class="card p-8">
@@ -47,7 +47,7 @@
         @endphp
         <div class="mt-6 flex items-center justify-center">
             <a href="{{ $geoLat && $geoLng ? 'geo:' . $geoLat . ',' . $geoLng . '?q=' . urlencode($geoLat . ',' . $geoLng . ' ' . $dapur->nama) : 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->lokasi) }}"
-               class="flex-1 px-6 py-3 text-center bg-[var(--color-primary)] text-white rounded-xl text-lg font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg">
+               class="flex-1 px-6 py-3 text-center btn btn-primary text-lg font-semibold shadow-lg">
                 🗺️ Buka di Google Maps
             </a>
         </div>

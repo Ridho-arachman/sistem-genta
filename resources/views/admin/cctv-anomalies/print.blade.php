@@ -26,7 +26,7 @@
         .badge-baru { background: #fee2e2; color: #991b1b; }
         .badge-diproses { background: #fef3c7; color: #92400e; }
         .badge-selesai { background: #dcfce7; color: #166534; }
-        .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #999; }
+        .footer { margin-top: 30px; padding: 16px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; }
         @media print { body { padding: 0; } .no-print { display: none; } }
     </style>
 </head>

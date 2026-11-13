@@ -9,8 +9,9 @@
     </div>
 </div>
 
-<div class="panel">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="card card-bordered">
+    <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Tanggal Laporan</p>
@@ -80,7 +81,7 @@
     @include('pengawas.components.foto-preview', ['photoUrl' => $laporan->selfie_photo])
 
     <div class="mt-6 flex items-center justify-end gap-2">
-        <a href="{{ route('pengawas.laporan.index') }}" class="btn-secondary">Kembali</a>
+        <a href="{{ route('pengawas.laporan.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
 
     <!-- Foto Preview Modal (full screen) -->
@@ -93,6 +94,9 @@
             <img id="laporanPreviewImage" src="" alt="Preview foto laporan" class="w-full h-full max-w-full max-h-full object-contain bg-black">
         </div>
     </div>
+
+    </div>
+</div>
 
     <script src="{{ asset('js/pengawas-common.js') }}"></script>
 @endsection

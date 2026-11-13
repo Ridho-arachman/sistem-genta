@@ -24,14 +24,14 @@
         {{-- Nama (Readonly) --}}
         <div>
             <label class="block text-sm font-medium text-[var(--color-text)] mb-1">Nama <span class="text-xs text-[var(--color-text-muted)] font-normal">(tidak bisa diubah)</span></label>
-            <input type="text" class="input-field bg-[var(--color-surface)]" value="{{ auth()->user()->name }}" readonly aria-readonly="true">
+            <input type="text" class="input input-bordered bg-[var(--color-surface)]" value="{{ auth()->user()->name }}" readonly aria-readonly="true">
             <p class="mt-1 text-xs text-[var(--color-text-muted)]">Nama digunakan untuk identitas di laporan pengawasan. Hubungi admin jika perlu perubahan.</p>
         </div>
 
         {{-- Email (Readonly) --}}
         <div>
             <label for="email" class="block text-sm font-medium text-[var(--color-text)] mb-1">Email <span class="text-[var(--color-text-muted)] font-normal">(tidak bisa diubah)</span></label>
-            <input type="email" id="email" name="email" value="{{ auth()->user()->email }}" readonly class="input-field" autocomplete="email">
+            <input type="email" id="email" name="email" value="{{ auth()->user()->email }}" readonly class="input input-bordered" autocomplete="email">
             <p class="mt-1 text-xs text-[var(--color-text-muted)]">Email digunakan untuk identitas dan login. Hubungi admin jika perlu perubahan.</p>
         </div>
 
@@ -39,7 +39,7 @@
         <div>
             <label for="current_password" class="block text-sm font-medium text-[var(--color-text)] mb-1">Password Saat Ini <span class="text-red-500">*</span></label>
             <div class="relative">
-                <input type="password" id="current_password" name="current_password" required class="input-field pl-11 pr-12" autocomplete="current-password" placeholder="Masukkan password saat ini">
+                <input type="password" id="current_password" name="current_password" required class="input input-bordered pl-11 pr-12" autocomplete="current-password" placeholder="Masukkan password saat ini">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 11-8 0v4h8z"></path>
@@ -59,7 +59,7 @@
         <div>
             <label for="password" class="block text-sm font-medium text-[var(--color-text)] mb-1">Password Baru <span class="text-[var(--color-text-muted)]">(opsional)</span></label>
             <div class="relative">
-                <input type="password" id="password" name="password" class="input-field pl-11 pr-12" autocomplete="new-password" placeholder="Kosongkan jika tidak ingin mengubah">
+                <input type="password" id="password" name="password" class="input input-bordered pl-11 pr-12" autocomplete="new-password" placeholder="Kosongkan jika tidak ingin mengubah">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 11-8 0v4h8z"></path>
@@ -80,7 +80,7 @@
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-[var(--color-text)] mb-1">Konfirmasi Password Baru <span class="text-[var(--color-text-muted)]">(opsional)</span></label>
             <div class="relative">
-                <input type="password" id="password_confirmation" name="password_confirmation" class="input-field pl-11 pr-12" autocomplete="new-password" placeholder="Ulangi password baru">
+                <input type="password" id="password_confirmation" name="password_confirmation" class="input input-bordered pl-11 pr-12" autocomplete="new-password" placeholder="Ulangi password baru">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 11-8 0v4h8z"></path>
@@ -99,7 +99,7 @@
 
         {{-- Submit --}}
         <div class="flex gap-3 pt-4 border-t border-[var(--color-border)]">
-            <button type="submit" class="flex-1 btn-primary py-3">
+            <button type="submit" class="flex-1 btn btn-primary py-3">
                 Simpan Perubahan
             </button>
         </div>

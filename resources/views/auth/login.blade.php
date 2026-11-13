@@ -95,7 +95,7 @@
                     </a>
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn-primary w-full py-3.5 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <button type="submit" id="loginBtn" class="btn btn-primary w-full py-3.5 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                     Masuk
                 </button>
             </form>
