@@ -1,0 +1,42 @@
+/*
+|--------------------------------------------------------------------------
+| CSS pihak ketiga (Alpine + Leaflet) — bukan CSS desain aplikasi.
+| Dipisah dari app.css supaya app.css tetap "murni" Tailwind + daisyUI.
+|--------------------------------------------------------------------------
+*/
+
+/* Alpine: elemen ditandai x-cloak disembunyikan sampai Alpine siap */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Leaflet: samakan font dengan aplikasi */
+.leaflet-container {
+    font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+    margin: 8px 12px;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.leaflet-control-attribution {
+    font-size: 11px;
+}
+
+/* Kontrol Leaflet harus di bawah topbar/sidebar admin */
+.leaflet-control-zoom,
+.leaflet-control-attribution {
+    z-index: 1 !important;
+}
+
+/* Peta tidak boleh menumpuk topbar */
+.leaflet-container {
+    z-index: 0;
+}

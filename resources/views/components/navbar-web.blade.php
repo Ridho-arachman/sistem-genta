@@ -45,7 +45,7 @@
                         $_initials .= strtoupper($_nameParts[1][0] ?? '');
                     }
                 @endphp
-                <div class="avatar w-9 h-9 rounded-full bg-red-100 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm">{{ $_initials }}</div>
+                <div class="w-9 h-9 rounded-full bg-red-100 text-[var(--color-primary)] grid place-items-center font-extrabold text-sm">{{ $_initials }}</div>
             </button>
             <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-[var(--color-border)] rounded-lg shadow-lg z-50 py-1" x-show="open" x-cloak x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-y-95" x-transition:enter-end="transform opacity-100 scale-y-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-y-100" x-transition:leave-end="transform opacity-0 scale-y-95" @click.outside="open = false">
                 <a href="{{ route($profileRoute) }}" class="block px-4 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]">Pengaturan</a>
