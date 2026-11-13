@@ -10,14 +10,14 @@
             </div>
             <div class="hidden md:flex items-center gap-6">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('admin.dashboard') ? 'text-[var(--color-primary)]' : '' }}">Dashboard</a>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</a>
+                    <a href="{{ route('dashboard') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('admin.dashboard') ? 'text-[var(--color-primary)]' : '' }}">Dashboard</a>
+                    <button type="submit" form="logout-form" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Keluar</button>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                         @csrf
                     </form>
                 @else
-                    <a href="{{ route('home') }}" class="nav-link text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('home') ? 'text-[var(--color-primary)]' : '' }}">Beranda</a>
-                    <a href="{{ route('login') }}" class="btn-primary inline-flex items-center justify-center px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-lg font-medium transition-colors">Masuk</a>
+                    <a href="{{ route('home') }}" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors {{ request()->routeIs('home') ? 'text-[var(--color-primary)]' : '' }}">Beranda</a>
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-sm inline-flex items-center justify-center">Masuk</a>
                 @endauth
             </div>
         </div>
