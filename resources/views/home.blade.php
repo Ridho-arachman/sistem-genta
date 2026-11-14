@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="genta" class="overflow-x-hidden">
+<html lang="id" data-theme="genta">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,37 +22,10 @@
 
     @vite(["resources/css/app.css", "resources/js/app.js"])
 </head>
-<body class="overflow-x-hidden font-sans antialiased">
+<body class="overflow-x-clip font-sans antialiased">
 
-    @php
-        $navLink = 'relative px-1 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors duration-200 hover:text-[var(--color-primary)] after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:bg-[var(--color-primary)] after:transition-[width,left] after:duration-300 hover:after:left-0 hover:after:w-full';
-    @endphp
-
-    {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-white/95 shadow-sm backdrop-blur">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('home') }}" class="inline-flex min-w-0 items-center gap-2 transition-transform duration-300 hover:scale-105" aria-label="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }} - Beranda">
-                        <img src="{{ asset('logo.png') }}" alt="{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}" class="h-8 w-8 object-contain">
-                        <span class="truncate text-xl font-semibold tracking-tight text-[var(--color-secondary)]">{{ settings('app_name_web') ?? 'GENTA Pangan Banten' }}</span>
-                    </a>
-                </div>
-                <div class="hidden items-center gap-6 md:flex">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="{{ $navLink }} {{ request()->routeIs('admin.dashboard') ? 'text-[var(--color-primary)] after:left-0 after:w-full' : '' }}">Dashboard</a>
-                        <button type="submit" form="logout-form" class="{{ $navLink }} text-red-600 hover:text-red-700">Keluar</button>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                            @csrf
-                        </form>
-                    @else
-                        <a href="{{ route('home') }}" class="{{ $navLink }} {{ request()->routeIs('home') ? 'text-[var(--color-primary)] after:left-0 after:w-full' : '' }}">Beranda</a>
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Masuk</a>
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </nav>
+    {{-- Navigation (komponen bersama dengan halaman auth) --}}
+    <x-navbar-guest />
 
     {{-- Main Content --}}
     <div class="relative z-10 min-h-screen" x-data="revealSections">
@@ -139,21 +112,21 @@
 
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <div class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
-                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=800&auto=format&fit=crop');"></div>
+                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/tanaman-pangan.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Tanaman Pangan</h3>
                             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Beras, jagung, kedelai, kacang tanah ,  komoditas utama ketahanan pangan nasional.</p>
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #43A047;">
-                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=800&auto=format&fit=crop');"></div>
+                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/hortikultura.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Hortikultura</h3>
                             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Sayuran, buah-buahan, tanaman obat, dan rempah-rempah bernilai ekonomi tinggi.</p>
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
-                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=800&auto=format&fit=crop');"></div>
+                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/perkebunan.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Perkebunan</h3>
                             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Kelapa sawit, kelapa, kakao, kopi, karet ,  komoditas ekspor dan industri hulu.</p>
@@ -196,7 +169,7 @@
                         </div>
                     </div>
                     <div class="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--program-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--program-color: #2E7D32;">
-                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=800&auto=format&fit=crop');">
+                        <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/perkebunan.webp') }}');">
                             <div class="absolute inset-0 bg-linear-to-b from-black/30 to-black/50"></div>
                         </div>
                         <div class="p-6 text-center">
