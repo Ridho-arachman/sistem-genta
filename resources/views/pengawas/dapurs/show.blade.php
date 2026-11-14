@@ -2,15 +2,11 @@
 
 @section('page_content')
 <div class="max-w-3xl mx-auto">
-    {{-- Standard Header --}}
-    <div class="heading">
-        <div>
-            <div class="eyebrow">Genta · Pengawasan MBG</div>
-            <h1>{{ $dapur->nama }}</h1>
-            <div class="muted">{{ $dapur->lokasi ?? 'Lokasi tidak diset' }}</div>
-        </div>
-        <a href="{{ route('pengawas.dashboard') }}" class="btn btn-secondary">Kembali ke Beranda</a>
-    </div>
+    <x-pengawas::page-heading :title="$dapur->nama" :subtitle="$dapur->lokasi ?? 'Lokasi tidak diset'">
+        <x-slot:actions>
+            <a href="{{ route('pengawas.dashboard') }}" class="btn btn-secondary">Kembali ke Beranda</a>
+        </x-slot:actions>
+    </x-pengawas::page-heading>
 
     <div class="card p-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

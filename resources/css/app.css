@@ -130,52 +130,6 @@
     }
 }
 
-@layer components {
-    /* Halaman pengawas (belum dimigrasikan ke utility) */
-    .heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        margin-bottom: 23px;
-        flex-wrap: wrap;
-    }
-    .eyebrow {
-        color: var(--color-primary);
-        font-size: 11px;
-        letter-spacing: 1.4px;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
-    .heading h1 {
-        font-size: 28px;
-        font-weight: 800;
-        margin: 4px 0 2px;
-        letter-spacing: -0.5px;
-    }
-    .muted {
-        color: var(--color-text-muted);
-        font-size: 14px;
-    }
-
-    @media (max-width: 900px) {
-        .heading h1 {
-            font-size: 24px;
-        }
-    }
-
-    @media (max-width: 520px) {
-        .heading {
-            flex-direction: column;
-        }
-        .heading .btn-primary,
-        .heading .btn-secondary,
-        .heading .btn-light {
-            width: 100%;
-        }
-    }
-}
-
 /* Cetak: dipakai halaman laporan cetak (sp-warnings & cctv-anomalies) */
 @media print {
     @page {

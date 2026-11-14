@@ -118,7 +118,7 @@
     "src": "node_modules/leaflet/dist/images/marker-icon.png"
   },
   "node_modules/quill/dist/quill.js": {
-    "file": "assets/quill-BrA4PHru.js",
+    "file": "assets/quill-4xhY4Ad8.js",
     "name": "quill",
     "src": "node_modules/quill/dist/quill.js",
     "isDynamicEntry": true,
@@ -131,7 +131,7 @@
     "src": "node_modules/quill/dist/quill.snow.css"
   },
   "resources/css/app.css": {
-    "file": "assets/app-JA0x1St_.css",
+    "file": "assets/app-gZJ-f_gV.css",
     "name": "app",
     "names": [
       "app.css"
@@ -160,7 +160,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-UXxvpAN9.js",
+    "file": "assets/app-BZgvDb-W.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

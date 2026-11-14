@@ -47,6 +47,4 @@
         <span>Profil</span>
     </a>
 </nav>
-<script src="{{ asset('js/pengawas-layout.js') }}"></script>
-@stack('scripts')
 @endsection

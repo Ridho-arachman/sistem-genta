@@ -2,14 +2,9 @@
 
 @section('page_content')
 <div class="min-h-screen bg-[var(--color-background)]">
-    {{-- Standard Header --}}
-    <div class="heading">
-        <div>
-            <div class="eyebrow">Genta · Pengawasan MBG</div>
-            <h1>Dashboard Pengawas</h1>
-            <div class="muted">Kondisi operasional dapur dan pelaporan · {{ now()->translatedFormat('l, d F Y') }}</div>
-        </div>
-    </div>
+    <x-pengawas::page-heading
+        title="Dashboard Pengawas"
+        subtitle="Kondisi operasional dapur dan pelaporan · {{ now()->translatedFormat('l, d F Y') }}" />
 
     {{-- Tugas hari ini --}}
     <section class="bg-white rounded-xl shadow-sm mx-2 sm:mx-0 p-4 sm:p-6">

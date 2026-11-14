@@ -1,15 +1,11 @@
 @extends('pengawas.layouts.app', ['pageTitle' => 'Detail Laporan'])
 
 @section('page_content')
-<div class="heading mb-8">
-    <div>
-        <div class="eyebrow">Genta · Pengawasan MBG</div>
-        <h1>Detail Laporan</h1>
-        <div class="muted">Informasi hasil inspeksi dapur (hanya dibaca)</div>
-    </div>
-</div>
+<x-pengawas::page-heading
+    title="Detail Laporan"
+    subtitle="Informasi hasil inspeksi dapur (hanya dibaca)" />
 
-<div class="card card-bordered">
+<div class="card card-bordered" x-data="photoPreview" @keydown.escape.window="close()">
     <div class="card-body">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -85,18 +81,16 @@
     </div>
 
     <!-- Foto Preview Modal (full screen) -->
-    <div id="laporanPhotoPreviewModal" class="fixed inset-0 bg-black flex items-center justify-center z-[1000] hidden" data-action="close-photo-preview">
-        <button type="button" data-action="close-photo-preview" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
+    <div x-show="isOpen" x-cloak class="fixed inset-0 bg-black flex items-center justify-center z-[1000]" @click.self="close()">
+        <button type="button" @click="close()" class="absolute top-4 right-4 bg-white/10 text-white p-3 rounded-lg cursor-pointer shadow-lg z-20 backdrop-blur-sm hover:bg-white/20 transition-colors" aria-label="Tutup preview">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             <span class="sr-only">Tutup preview</span>
         </button>
         <div class="relative max-w-full max-h-full flex items-center justify-center">
-            <img id="laporanPreviewImage" src="" alt="Preview foto laporan" class="w-full h-full max-w-full max-h-full object-contain bg-black">
+            <img :src="src" alt="Preview foto laporan" class="w-full h-full max-w-full max-h-full object-contain bg-black">
         </div>
     </div>
 
     </div>
 </div>
-
-    <script src="{{ asset('js/pengawas-common.js') }}"></script>
 @endsection

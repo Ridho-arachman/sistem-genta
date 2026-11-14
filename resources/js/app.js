@@ -17,6 +17,7 @@ import './components/dapur-multi-select.js';
 import './components/dapur-form.js';
 import './components/hls-player.js';
 import './components/confirm-submit.js';
+import './components/photo-preview.js';
 
 // Satu file per halaman
 import './pages/home.js';
@@ -29,5 +30,6 @@ import './pages/admin/laporan-index.js';
 import './pages/admin/laporan-show.js';
 import './pages/admin/dapurs-index.js';
 import './pages/admin/cctv-anomalies-print.js';
+import './pages/pengawas/inspeksi.js';
 
 Alpine.start();
