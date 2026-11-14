@@ -1,84 +1,71 @@
-@extends('admin.layouts.app', ['pageTitle' => 'Cetak Laporan Anomali'])
+@extends('admin.layouts.app', ['pageTitle' => 'Cetak Laporan Anomali CCTV'])
+
+@php
+    $severityBadge = [
+        'tinggi' => 'badge-error',
+        'sedang' => 'badge-warning',
+        'rendah' => 'badge-neutral',
+    ];
+    $statusBadge = [
+        'baru' => 'badge-error',
+        'diproses' => 'badge-warning',
+        'selesai' => 'badge-success',
+    ];
+@endphp
 
 @section('page_content')
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $filename ?? 'Laporan Anomali CCTV' }} - {{ config('app.name') }}</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: white; color: black; padding: 20px; font-size: 12px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #E50000; padding-bottom: 15px; }
-        .header h1 { color: #E50000; font-size: 20px; font-weight: 700; }
-        .header p { color: #666; font-size: 12px; margin-top: 5px; }
-        .info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 11px; color: #333; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
-        th { background: #E50000; color: white; font-weight: 600; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 600; }
-        .badge-tinggi { background: #fee2e2; color: #991b1b; }
-        .badge-sedang { background: #fef3c7; color: #92400e; }
-        .badge-rendah { background: #f3f4f6; color: #374151; }
-        .badge-baru { background: #fee2e2; color: #991b1b; }
-        .badge-diproses { background: #fef3c7; color: #92400e; }
-        .badge-selesai { background: #dcfce7; color: #166534; }
-        .footer { margin-top: 30px; padding: 16px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; }
-        @media print { body { padding: 0; } .no-print { display: none; } }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>GENTA Pangan Banten</h1>
-        <p>Laporan Anomali CCTV</p>
+<div class="max-w-5xl mx-auto" x-data="autoPrint">
+    {{-- Header --}}
+    <div class="text-center mb-8 pb-6 border-b-2 border-[var(--color-primary)]">
+        <h1 class="text-2xl font-bold text-[var(--color-secondary)]">GENTA Pangan Banten</h1>
+        <p class="text-[var(--color-text-muted)] mt-1">Laporan Anomali CCTV</p>
+        <div class="flex flex-wrap justify-center gap-x-8 gap-y-1 mt-3 text-sm text-[var(--color-text-muted)]">
+            <span>Periode: {{ $startDate ? \Carbon\Carbon::parse($startDate)->format('d/m/Y') : 'Awal' }} - {{ $endDate ? \Carbon\Carbon::parse($endDate)->format('d/m/Y') : 'Sekarang' }}</span>
+            <span>Dicetak: {{ now()->format('d/m/Y H:i') }}</span>
+        </div>
     </div>
 
-    <div class="info">
-        <div>Periode: {{ $startDate ? \Carbon\Carbon::parse($startDate)->format('d/m/Y') : 'Semua' }} - {{ $endDate ? \Carbon\Carbon::parse($endDate)->format('d/m/Y') : 'Sekarang' }}</div>
-        <div>Dicetak: {{ now()->format('d/m/Y H:i') }}</div>
+    {{-- Tabel Data --}}
+    <div class="card overflow-x-auto print:border print:border-[var(--color-border)] print:shadow-none">
+        <table class="table table-sm w-full">
+            <thead class="bg-[var(--color-surface)] border-b-2 border-[var(--color-border)]">
+                <tr>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">No</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Tanggal</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">CCTV</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Dapur</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Area/Kamera</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Deskripsi</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Severity</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Status</th>
+                    <th class="text-left font-semibold text-[var(--color-secondary)]">Dilaporkan</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--color-border)]">
+                @forelse ($anomalies as $index => $anomaly)
+                <tr>
+                    <td class="text-[var(--color-text-muted)]">{{ $index + 1 }}</td>
+                    <td class="text-[var(--color-secondary)]">{{ $anomaly->created_at->format('d/m/Y H:i') }}</td>
+                    <td class="text-[var(--color-secondary)]">{{ $anomaly->cctv->display_name }}</td>
+                    <td class="text-[var(--color-secondary)]">{{ $anomaly->cctv->dapur->nama }}</td>
+                    <td class="text-[var(--color-secondary)]">{{ $anomaly->cctv->section ?? '-' }} / Cam {{ $anomaly->cctv->camera_number ?? '-' }}</td>
+                    <td class="text-[var(--color-secondary)] max-w-xs">{{ $anomaly->description }}</td>
+                    <td><span class="badge {{ $severityBadge[$anomaly->severity] ?? 'badge-ghost' }}">{{ ucfirst($anomaly->severity) }}</span></td>
+                    <td><span class="badge {{ $statusBadge[$anomaly->status] ?? 'badge-ghost' }}">{{ ucfirst($anomaly->status) }}</span></td>
+                    <td class="text-[var(--color-secondary)]">{{ $anomaly->admin->name }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="9" class="py-10 text-center text-[var(--color-text-muted)]">Tidak ada anomali pada periode yang dipilih</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>CCTV</th>
-                <th>Dapur</th>
-                <th>Area/Kamera</th>
-                <th>Deskripsi</th>
-                <th>Severity</th>
-                <th>Status</th>
-                <th>Dilaporkan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($anomalies as $index => $anomaly)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $anomaly->created_at->format('d/m/Y H:i') }}</td>
-                <td>{{ $anomaly->cctv->display_name }}</td>
-                <td>{{ $anomaly->cctv->dapur->nama }}</td>
-                <td>{{ $anomaly->cctv->section ?? '-' }} / Cam {{ $anomaly->cctv->camera_number ?? '-' }}</td>
-                <td>{{ $anomaly->description }}</td>
-                <td><span class="badge badge-{{ $anomaly->severity }}">{{ ucfirst($anomaly->severity) }}</span></td>
-                <td><span class="badge badge-{{ $anomaly->status }}">{{ ucfirst($anomaly->status) }}</span></td>
-                <td>{{ $anomaly->admin->name }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="footer">
+    {{-- Footer --}}
+    <div class="mt-8 pt-6 border-t border-[var(--color-border)] text-center text-sm text-[var(--color-text-muted)]">
         <p>Dicetak otomatis oleh sistem GENTA Pangan Banten</p>
     </div>
-
-    <script>
-        window.onload = function() { window.print(); };
-    </script>
-</body>
-</html>
+</div>
 @endsection

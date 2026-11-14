@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Cetak Laporan SP'])
 
 @section('page_content')
-<div class="max-w-4xl mx-auto p-6">
+<div class="max-w-4xl mx-auto p-6 print:p-0 print:text-[11px]">
     {{-- Print Header --}}
     <div class="text-center mb-8 pb-6 border-b-2 border-[var(--color-border)]">
         <div class="flex items-center justify-center gap-3 mb-4">
@@ -24,26 +24,26 @@
 
     {{-- Summary Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="card p-4 text-center">
+        <div class="card p-4 text-center print:border print:border-[var(--color-border)] print:shadow-none print:break-inside-avoid">
             <p class="text-3xl font-bold text-[var(--color-primary)]">{{ $warnings->count() }}</p>
             <p class="text-sm text-[var(--color-text-muted)]">Total SP</p>
         </div>
-        <div class="card p-4 text-center">
+        <div class="card p-4 text-center print:border print:border-[var(--color-border)] print:shadow-none print:break-inside-avoid">
             <p class="text-3xl font-bold text-yellow-600">{{ $warnings->where('level', 1)->count() }}</p>
             <p class="text-sm text-[var(--color-text-muted)]">SP-1</p>
         </div>
-        <div class="card p-4 text-center">
+        <div class="card p-4 text-center print:border print:border-[var(--color-border)] print:shadow-none print:break-inside-avoid">
             <p class="text-3xl font-bold text-orange-600">{{ $warnings->where('level', 2)->count() }}</p>
             <p class="text-sm text-[var(--color-text-muted)]">SP-2</p>
         </div>
-        <div class="card p-4 text-center">
+        <div class="card p-4 text-center print:border print:border-[var(--color-border)] print:shadow-none print:break-inside-avoid">
             <p class="text-3xl font-bold text-red-600">{{ $warnings->where('level', 3)->count() }}</p>
             <p class="text-sm text-[var(--color-text-muted)]">SP-3</p>
         </div>
     </div>
 
     {{-- Data Table --}}
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden print:border print:border-[var(--color-border)] print:shadow-none">
         @if ($warnings->count() > 0)
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -102,12 +102,4 @@
         <p>Halaman {{ $page ?? 1 }}</p>
     </div>
 </div>
-
-{{-- Print Styles --}}
-<style media="print">
-    .no-print { display: none !important; }
-    .card { box-shadow: none !important; border: 1px solid #e5e7eb !important; break-inside: avoid; }
-    body { font-size: 11px; }
-    @page { margin: 1.5cm; }
-</style>
 @endsection

@@ -28,5 +28,6 @@ import './pages/admin/dashboard.js';
 import './pages/admin/laporan-index.js';
 import './pages/admin/laporan-show.js';
 import './pages/admin/dapurs-index.js';
+import './pages/admin/cctv-anomalies-print.js';
 
 Alpine.start();
