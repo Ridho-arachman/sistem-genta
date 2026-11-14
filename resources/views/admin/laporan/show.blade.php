@@ -3,7 +3,8 @@
 @section('page_content')
 <x-admin::page-heading title="Detail Laporan" subtitle="Verifikasi dan tindak lanjut laporan penemuan" />
 
-<x-admin::panel id="laporanDetail" x-data="laporanDetail()" x-effect="document.body.style.overflow = photoPreview ? 'hidden' : ''" title="Informasi Laporan" icon="document">
+<div x-data="laporanDetail(@js(old('status', $laporan->status)), @js($laporan->status))" x-effect="document.body.style.overflow = photoPreview ? 'hidden' : ''">
+<x-admin::panel id="laporanDetail" title="Informasi Laporan" icon="document">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -110,62 +111,5 @@
         </div>
     </div>
     </x-admin::panel>
+</div>
 @endsection
-
-@push('scripts')
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js"></script>
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('laporanDetail', () => ({
-        photoPreview: false,
-        photoSrc: '',
-        status: @js(old('status', $laporan->status)),
-        currentStatus: @js($laporan->status),
-        editor: null,
-        labels: {
-            'diperiksa': 'Catatan Verifikasi Pemeriksaan',
-            'temuan': 'Catatan Temuan & Tindak Lanjut',
-            'tindak lanjut': 'Catatan Tindak Lanjut',
-            'selesai': 'Catatan Selesai'
-        },
-
-        get isSelesai() {
-            return this.status === 'selesai';
-        },
-
-        get locked() {
-            return (this.currentStatus || '').toLowerCase() === 'selesai';
-        },
-
-        get catatanLabel() {
-            return this.labels[this.status] || 'Catatan Admin';
-        },
-
-        openPhoto(src) {
-            this.photoSrc = src;
-            this.photoPreview = true;
-        },
-
-        init() {
-            try {
-                this.editor = new Quill('#catatan-admin', {
-                    theme: 'snow',
-                    placeholder: 'Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...',
-                    modules: {
-                        toolbar: [
-                            [{ 'header': [false, 1, 2, 3] }],
-                            ['bold', 'italic', 'underline'],
-                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                            ['link']
-                        ]
-                    }
-                });
-            } catch (e) {
-                console.error('Quill init error:', e);
-            }
-        }
-    }));
-});
-</script>
-@endpush

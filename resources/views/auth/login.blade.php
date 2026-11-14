@@ -10,7 +10,7 @@
                 <p class="text-[var(--color-text-muted)] mt-3 text-lg">Masuk ke akun Anda untuk melanjutkan</p>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-6" x-data="{ showPassword: false }">
+            <form method="POST" action="{{ route('login') }}" class="space-y-6" x-data="loginForm" @submit="loading = true">
                 @csrf
 
                 <div>
@@ -70,7 +70,7 @@
                     </a>
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn btn-primary w-full py-3.5 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <button type="submit" id="loginBtn" :disabled="loading" :aria-busy="loading" class="btn btn-primary w-full py-3.5 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                     Masuk
                 </button>
             </form>

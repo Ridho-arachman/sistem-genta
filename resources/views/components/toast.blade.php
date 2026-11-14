@@ -21,7 +21,7 @@
 @endphp
 
 @if ($message)
-<div id="toast" x-data="{ show: true }" x-show="show" x-cloak x-init="setTimeout(() => show = false, 4000)" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="toast fixed top-10 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3">
+<div id="toast" role="status" aria-live="polite" aria-atomic="true" x-data="{ show: true }" x-show="show" x-cloak x-init="setTimeout(() => show = false, 4000)" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="toast fixed top-10 right-6 {{ $bgClass }} {{ $borderClass }} {{ $textClass }} border px-4 py-3 rounded-lg shadow-lg z-[9999] flex items-center gap-3">
     <div class="flex-shrink-0">
         {!! $icon !!}
     </div>

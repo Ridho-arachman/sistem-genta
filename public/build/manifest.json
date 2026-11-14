@@ -27,6 +27,12 @@
     "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
     "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
   },
+  "node_modules/hls.js/dist/hls.mjs": {
+    "file": "assets/hls-CY-H2rCb.js",
+    "name": "hls",
+    "src": "node_modules/hls.js/dist/hls.mjs",
+    "isDynamicEntry": true
+  },
   "node_modules/leaflet/dist/images/layers-2x.png": {
     "file": "assets/layers-2x-Bpkbi35X.png",
     "src": "node_modules/leaflet/dist/images/layers-2x.png"
@@ -39,8 +45,21 @@
     "file": "assets/marker-icon-hN30_KVU.png",
     "src": "node_modules/leaflet/dist/images/marker-icon.png"
   },
+  "node_modules/quill/dist/quill.js": {
+    "file": "assets/quill-B_dStHgi.js",
+    "name": "quill",
+    "src": "node_modules/quill/dist/quill.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "node_modules/quill/dist/quill.snow.css": {
+    "file": "assets/quill-jRJTf_C9.css",
+    "src": "node_modules/quill/dist/quill.snow.css"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-BuDAaMXN.css",
+    "file": "assets/app-BVCKnP52.css",
     "name": "app",
     "names": [
       "app.css"
@@ -49,10 +68,14 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cg5SdTlL.js",
+    "file": "assets/app-DN_5y6sm.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "dynamicImports": [
+      "node_modules/hls.js/dist/hls.mjs",
+      "node_modules/quill/dist/quill.js"
+    ],
     "css": [
       "assets/app-1DTFk8zz.css"
     ],

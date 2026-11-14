@@ -59,7 +59,7 @@
 
             @if ($spWarning->status === 'aktif')
             <div class="border-t border-[var(--color-border)] pt-6">
-                <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
+                <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
                     @csrf
                     @method('PUT')
                     <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered flex-1">

@@ -10,7 +10,8 @@
     </x-slot:actions>
 </x-admin::page-heading>
 
-<x-admin::panel x-data="laporanFilter()">
+<div x-data="laporanFilter(@js($laporanRows))">
+<x-admin::panel>
     <x-slot:head>
         <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-[var(--color-border)]">
             <h2 class="text-sm font-bold text-[var(--color-secondary)]">Daftar Laporan</h2>
@@ -140,81 +141,5 @@
         Menampilkan <span x-text="filteredRows.length"></span> dari <span x-text="allRows.length"></span> laporan
     </div>
 </x-admin::panel>
+</div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('laporanFilter', () => ({
-        search: '',
-        statusFilter: '',
-        lokasiFilter: '',
-        dateFrom: '',
-        dateTo: '',
-        
-        // Data dari server (di-inject via Blade)
-        allRows: @json($laporanRows),
-        
-        filteredRows: [],
-        
-        init() {
-            this.filteredRows = [...this.allRows];
-        },
-        
-        get uniqueStatuses() {
-            return [...new Set(this.allRows.map(r => r.status))];
-        },
-        
-        get uniqueLokasi() {
-            return [...new Set(this.allRows.map(r => r.lokasi))];
-        },
-        
-        get hasActiveFilters() {
-            return this.search || this.statusFilter || this.lokasiFilter || this.dateFrom || this.dateTo;
-        },
-        
-        filterRows() {
-            let rows = [...this.allRows];
-            
-            // Search filter (lokasi, pengawas)
-            if (this.search) {
-                const q = this.search.toLowerCase();
-                rows = rows.filter(r => 
-                    r.lokasi.toLowerCase().includes(q) || 
-                    r.pengawas.toLowerCase().includes(q)
-                );
-            }
-            
-            // Status filter
-            if (this.statusFilter) {
-                rows = rows.filter(r => r.status === this.statusFilter);
-            }
-            
-            // Lokasi filter
-            if (this.lokasiFilter) {
-                rows = rows.filter(r => r.lokasi === this.lokasiFilter);
-            }
-            
-            // Date range filter
-            if (this.dateFrom) {
-                rows = rows.filter(r => r.date >= this.dateFrom);
-            }
-            if (this.dateTo) {
-                rows = rows.filter(r => r.date <= this.dateTo);
-            }
-            
-            this.filteredRows = rows;
-        },
-        
-        resetFilters() {
-            this.search = '';
-            this.statusFilter = '';
-            this.lokasiFilter = '';
-            this.dateFrom = '';
-            this.dateTo = '';
-            this.filteredRows = [...this.allRows];
-        }
-    }));
-});
-</script>
-@endpush

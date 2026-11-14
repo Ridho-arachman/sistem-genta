@@ -4,7 +4,7 @@
 <div class="max-w-5xl mx-auto">
     <x-admin::page-heading title="Edit User: {{ $user->name }}" subtitle="Perbarui data pengguna" />
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" id="user-form" x-data="userFormEdit()">
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6" id="user-form" x-data="userForm(@js($dapurData), @js($user->role), @js($user->dapurs->pluck('id')->values()), @js($user->dapur_id))">
         @csrf
         @method('PUT')
 
@@ -285,44 +285,3 @@
     </form>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('userFormEdit', () => ({
-        selectedRole: @js($user->role),
-        selectedDapurIds: @js($user->dapurs->pluck('id')->values()),
-        kepalaDapurId: @js($user->dapur_id),
-        dapurs: @json($dapurData),
-
-        get selectedKepalaDapur() {
-            const selected = this.dapurs.find(d => d.id == this.kepalaDapurId);
-            return selected?.kepala_dapur_name || '';
-        },
-
-        handleRoleChange() {
-            this.selectedDapurIds = [];
-            this.kepalaDapurId = '';
-        },
-
-        toggleDapur(id) {
-            const idx = this.selectedDapurIds.indexOf(id);
-            if (idx === -1) {
-                this.selectedDapurIds.push(id);
-            } else {
-                this.selectedDapurIds.splice(idx, 1);
-            }
-        },
-
-        removeDapur(id) {
-            this.selectedDapurIds = this.selectedDapurIds.filter(d => d !== id);
-        },
-
-        getDapurName(id) {
-            const d = this.dapurs.find(d => d.id == id);
-            return d ? d.nama : id;
-        }
-    }));
-});
-</script>
-@endpush

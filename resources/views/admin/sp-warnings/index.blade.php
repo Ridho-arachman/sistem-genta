@@ -98,7 +98,7 @@
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.sp-warnings.show', $warning) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
                                     @if ($warning->status === 'aktif')
-                                    <form action="{{ route('admin.sp-warnings.update', $warning) }}" method="POST" class="inline" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
+                                    <form action="{{ route('admin.sp-warnings.update', $warning) }}" method="POST" class="inline" x-data="confirmSubmit">
                                         @csrf
                                         @method('PUT')
                                         <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered text-xs py-1">

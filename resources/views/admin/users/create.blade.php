@@ -4,7 +4,7 @@
 <div class="max-w-5xl mx-auto">
     <x-admin::page-heading title="Tambah User Baru" subtitle="Hanya bisa mendaftarkan role: Pengawas, Manajerial, Kepala Dapur" />
 
-    <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6" x-data="userForm()" x-cloak>
+    <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6" x-data="userForm(@js($dapurData))" x-cloak>
         @csrf
 
         <x-admin::panel title="Data Pengguna">
@@ -227,46 +227,3 @@
     </form>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('alpine:init', () => {
-    // Main form component (create) — komponen dapurAutocomplete & dapurMultiSelect ada di app.js
-    Alpine.data('userForm', () => ({
-        selectedRole: '',
-        selectedDapurIds: [],
-        kepalaDapurId: '',
-        dapurs: @json($dapurData),
-
-        get selectedKepalaDapur() {
-            const selected = this.dapurs.find(d => d.id == this.kepalaDapurId);
-            return selected?.kepala_dapur_name || '';
-        },
-
-        handleRoleChange() {
-            // Reset dapur fields when role changes
-            this.selectedDapurIds = [];
-            this.kepalaDapurId = '';
-        },
-
-        toggleDapur(id) {
-            const idx = this.selectedDapurIds.indexOf(id);
-            if (idx === -1) {
-                this.selectedDapurIds.push(id);
-            } else {
-                this.selectedDapurIds.splice(idx, 1);
-            }
-        },
-
-        removeDapur(id) {
-            this.selectedDapurIds = this.selectedDapurIds.filter(d => d !== id);
-        },
-
-        getDapurName(id) {
-            const d = this.dapurs.find(d => d.id == id);
-            return d ? d.nama : id;
-        }
-    }));
-});
-</script>
-@endpush

@@ -104,7 +104,7 @@
                             <td>
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('admin.cctv-anomalies.show', $anomaly) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
-                                    <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="inline" x-data="{ confirmStatus: (msg) => window.confirm(msg) }">
+                                    <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="inline" x-data="confirmSubmit">
                                         @csrf
                                         @method('PUT')
                                         <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered text-xs py-1">

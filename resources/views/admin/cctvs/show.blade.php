@@ -118,10 +118,4 @@
         @endif
     </div>
 
-@if ($cctv->hls_url)
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
-@endpush
-@endif
-
 @endsection
