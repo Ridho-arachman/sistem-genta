@@ -62,7 +62,7 @@
                 <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
                     @csrf
                     @method('PUT')
-                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered flex-1">
+                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered flex-1">
                         <option value="aktif" selected>Aktif</option>
                         <option value="dicabut">Cabut SP</option>
                         <option value="selesai">Tandai Selesai</option>

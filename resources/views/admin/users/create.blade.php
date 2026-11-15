@@ -16,7 +16,7 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <input id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name"
-                               class="input input-bordered" placeholder="Masukkan nama lengkap">
+                               class="input input-bordered pl-10" placeholder="Masukkan nama lengkap">
                     </div>
                 </x-admin::form-field>
 
@@ -25,13 +25,13 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email"
-                               class="input input-bordered" placeholder="Masukkan email">
+                               class="input input-bordered pl-10" placeholder="Masukkan email">
                     </div>
                 </x-admin::form-field>
 
                 {{-- Role --}}
                 <x-admin::form-field label="Role" name="role" required class="lg:col-span-1">
-                    <select id="role" name="role" required class="input input-bordered" x-model="selectedRole" @change="handleRoleChange()">
+                    <select id="role" name="role" required class="select select-bordered" x-model="selectedRole" @change="handleRoleChange()">
                         <option value="">Pilih role</option>
                         <option value="pengawas">Pengawas</option>
                         <option value="manajerial">Manajerial</option>
@@ -57,7 +57,7 @@
                                            @keydown.enter.prevent="selectHighlighted()"
                                            @keydown.escape="showDropdown = false"
                                            placeholder="Cari dapur..."
-                                           class="input input-bordered"
+                                           class="input input-bordered pl-10"
                                            autocomplete="off">
                                 </div>
                                 <input type="hidden" id="dapur_id" name="dapur_id" :value="kepalaDapurId" required>
@@ -118,7 +118,7 @@
                                 <input type="text" 
                                        x-model="searchQuery" 
                                        placeholder="Cari dapur..."
-                                       class="input input-bordered"
+                                       class="input input-bordered pl-10"
                                        autocomplete="off">
                             </div>
                             
@@ -199,7 +199,7 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password" type="password" name="password" required autocomplete="new-password"
-                               class="input input-bordered" placeholder="Minimal 8 karakter">
+                               class="input input-bordered pl-10" placeholder="Minimal 8 karakter">
                     </div>
                 </x-admin::form-field>
 
@@ -208,7 +208,7 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
-                               class="input input-bordered" placeholder="Ulangi password">
+                               class="input input-bordered pl-10" placeholder="Ulangi password">
                     </div>
                 </x-admin::form-field>
             </div>

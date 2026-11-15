@@ -69,7 +69,7 @@
                 <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
                     @csrf
                     @method('PUT')
-                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered flex-1">
+                    <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered flex-1">
                         <option value="baru" {{ $anomaly->status === 'baru' ? 'selected' : '' }}>Baru</option>
                         <option value="diproses" {{ $anomaly->status === 'diproses' ? 'selected' : '' }}>Diproses</option>
                         <option value="selesai" {{ $anomaly->status === 'selesai' ? 'selected' : '' }}>Selesai</option>

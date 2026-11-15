@@ -39,7 +39,7 @@
                     Kabupaten / Kota <span class="text-xs text-[var(--color-primary)]">*</span>
                 </label>
                 <select id="filterKabupaten" x-model="filter.kabupaten_kota" @change="onKabupatenChange($event.target.value)"
-                        class="input input-bordered text-sm">
+                        class="select select-bordered text-sm">
                     <option value="">-- Pilih Kabupaten/Kota --</option>
                     @foreach ($filterOptions['kabupaten_kota'] as $kab)
                         <option value="{{ $kab }}">{{ $kab }}</option>
@@ -52,7 +52,7 @@
                     Kecamatan
                 </label>
                 <select id="filterKecamatan" x-model="filter.kecamatan" @change="applyFilters()"
-                        class="input input-bordered text-sm"
+                        class="select select-bordered text-sm"
                         :disabled="kecamatanOptions.length === 0"
                         x-html="getKecamatanOptionsHtml()">
                 </select>

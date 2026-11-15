@@ -37,13 +37,12 @@
                 <div class="mb-4">
                     <p class="text-sm text-[var(--color-text-muted)] mb-2">Status Baru</p>
                     <div class="relative">
-                        <select id="statusSelect" class="input input-bordered border border-[var(--color-border)] w-full pr-10 appearance-none">
+                        <select id="statusSelect" class="select select-bordered w-full">
                             <option value="diperiksa" {{ old('status', $laporan->status) === 'diperiksa' ? 'selected' : '' }}>Diperiksa</option>
                             <option value="temuan" {{ old('status', $laporan->status) === 'temuan' ? 'selected' : '' }}>Temuan</option>
                             <option value="tindak lanjut" {{ old('status', $laporan->status) === 'tindak lanjut' ? 'selected' : '' }}>Tindak Lanjut</option>
                             <option value="selesai" {{ old('status', $laporan->status) === 'selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
-                        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
             </div>
@@ -89,7 +88,7 @@
             @csrf
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="status" id="statusInput" :value="status">
-            <textarea id="catatan-admin" name="catatan" rows="6" x-ref="catatan" :readonly="locked || isSelesai" class="input input-bordered border border-[var(--color-border)] w-full" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...">{{ old('catatan', $laporan->catatan) }}</textarea>
+            <textarea id="catatan-admin" name="catatan" rows="6" x-ref="catatan" :readonly="locked || isSelesai" class="textarea textarea-bordered border border-[var(--color-border)] w-full" placeholder="Tuliskan catatan verifikasi, temuan, atau tindak lanjut admin...">{{ old('catatan', $laporan->catatan) }}</textarea>
             <button type="submit" class="btn btn-primary mt-3" id="saveBtn" :disabled="locked || isSelesai">
                 Simpan Verifikasi
             </button>

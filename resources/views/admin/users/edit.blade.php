@@ -13,12 +13,11 @@
             <x-slot:iconSvg>♙</x-slot:iconSvg>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- Nama Lengkap --}}
-                {{-- Nama Lengkap --}}
                 <x-admin::form-field label="Nama Lengkap" name="name" required class="lg:col-span-1">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name"
-                               class="input input-bordered" placeholder="Masukkan nama lengkap">
+                               class="input input-bordered pl-10" placeholder="Masukkan nama lengkap">
                     </div>
                 </x-admin::form-field>
 
@@ -27,13 +26,13 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email"
-                               class="input input-bordered" placeholder="Masukkan email">
+                               class="input input-bordered pl-10" placeholder="Masukkan email">
                     </div>
                 </x-admin::form-field>
 
                 {{-- Role --}}
                 <x-admin::form-field label="Role" name="role" required class="lg:col-span-1">
-                    <select id="role" name="role" required class="input input-bordered" x-model="selectedRole" @change="handleRoleChange()">
+                    <select id="role" name="role" required class="select select-bordered" x-model="selectedRole" @change="handleRoleChange()">
                         <option value="pengawas" {{ $user->role === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ $user->role === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
                         <option value="kepala_dapur" {{ $user->role === 'kepala_dapur' ? 'selected' : '' }}>Kepala Dapur</option>
@@ -58,7 +57,7 @@
                                            @keydown.enter.prevent="selectHighlighted()"
                                            @keydown.escape="showDropdown = false"
                                            placeholder="Cari dapur..."
-                                           class="input input-bordered"
+                                           class="input input-bordered pl-10"
                                            autocomplete="off">
                                 </div>
                                 <input type="hidden" id="dapur_id" name="dapur_id" :value="kepalaDapurId" required>
@@ -118,7 +117,7 @@
                                 <input type="text"
                                        x-model="searchQuery"
                                        placeholder="Cari dapur..."
-                                       class="input input-bordered"
+                                       class="input input-bordered pl-10"
                                        autocomplete="off">
                             </div>
 
@@ -137,25 +136,25 @@
                             <!-- Dapur list (card-based) -->
                             <div class="mt-2 max-h-60 overflow-y-auto border border-[var(--color-border)] rounded-lg bg-white">
                                 <template x-for="dapur in filteredDapurs" :key="dapur.id">
-                                    <label class="dapur-card group relative cursor-pointer">
+                                    <label class="group relative block cursor-pointer">
                                         <input type="checkbox"
                                                :value="dapur.id"
                                                :checked="selectedDapurIds.includes(dapur.id)"
                                                @change="toggleDapur(dapur.id)"
                                                class="sr-only peer">
-                                        <div class="dapur-card-body p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/50 transition-colors peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/5">
+                                        <div class="p-4 border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface)]/50 transition-colors peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/5">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex-1 min-w-0">
                                                     <div class="flex items-center gap-2 mb-1">
                                                         <h3 class="text-sm font-semibold text-[var(--color-secondary)] line-clamp-2" x-text="dapur.nama"></h3>
-                                                        <span class="dapur-badge inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">Dapur</span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">Dapur</span>
                                                     </div>
                                                     <p class="text-xs text-[var(--color-text-muted)] truncate" x-text="dapur.lokasi"></p>
                                                 </div>
                                                 <div class="w-6 h-6 shrink-0"></div>
                                             </div>
                                         </div>
-                                        <div class="dapur-check absolute right-4 top-4 flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 peer-checked:bg-[var(--color-primary)] peer-checked:text-white">
+                                        <div class="absolute right-4 top-4 flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 peer-checked:bg-[var(--color-primary)] peer-checked:text-white">
                                             <svg class="w-5 h-5 text-[var(--color-primary)] opacity-0 stroke-[2.5] transition-opacity duration-200 group-hover:opacity-20 peer-checked:opacity-100 peer-checked:group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                                         </div>
                                     </label>
@@ -204,7 +203,7 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password" type="password" name="password" autocomplete="new-password"
-                               class="input input-bordered" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
+                               class="input input-bordered pl-10" placeholder="Minimal 8 karakter (kosongkan jika tidak diubah)">
                     </div>
                 </x-admin::form-field>
 
@@ -213,7 +212,7 @@
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password"
-                               class="input input-bordered" placeholder="Ulangi password baru">
+                               class="input input-bordered pl-10" placeholder="Ulangi password baru">
                     </div>
                 </x-admin::form-field>
             </div>

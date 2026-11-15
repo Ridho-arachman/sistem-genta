@@ -41,7 +41,7 @@
                 <div class="relative">
                     <select
                         id="filterStatus"
-                        class="input input-bordered border border-[var(--color-border)] w-full pr-10 appearance-none"
+                        class="select select-bordered w-full"
                         x-model="statusFilter"
                         @change="filterRows()"
                     >
@@ -50,7 +50,6 @@
                             <option :value="s" x-text="s"></option>
                         </template>
                     </select>
-                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </div>
 
@@ -60,7 +59,7 @@
                 <div class="relative">
                     <select
                         id="filterLokasi"
-                        class="input input-bordered border border-[var(--color-border)] w-full pr-10 appearance-none"
+                        class="select select-bordered w-full"
                         x-model="lokasiFilter"
                         @change="filterRows()"
                     >
@@ -69,7 +68,6 @@
                             <option :value="l" x-text="l"></option>
                         </template>
                     </select>
-                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </div>
 

@@ -24,7 +24,7 @@
     <div class="card p-4">
         <form method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="md:w-64">
-                <select name="user_id" class="input input-bordered">
+                <select name="user_id" class="select select-bordered">
                     <option value="">Semua Pengawas</option>
                     @foreach ($pengawas as $p)
                         <option value="{{ $p->id }}" {{ request('user_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -32,7 +32,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="level" class="input input-bordered">
+                <select name="level" class="select select-bordered">
                     <option value="">Semua Level</option>
                     <option value="1" {{ request('level') == '1' ? 'selected' : '' }}>SP-1</option>
                     <option value="2" {{ request('level') == '2' ? 'selected' : '' }}>SP-2</option>
@@ -40,7 +40,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="status" class="input input-bordered">
+                <select name="status" class="select select-bordered">
                     <option value="">Semua Status</option>
                     <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="dicabut" {{ request('status') === 'dicabut' ? 'selected' : '' }}>Dicabut</option>
@@ -101,7 +101,7 @@
                                     <form action="{{ route('admin.sp-warnings.update', $warning) }}" method="POST" class="inline" x-data="confirmSubmit">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered text-xs py-1">
+                                        <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered text-xs py-1">
                                             <option value="aktif" {{ $warning->status === 'aktif' ? 'selected' : '' }}>Aktif</option>
                                             <option value="dicabut" {{ $warning->status === 'dicabut' ? 'selected' : '' }}>Cabut</option>
                                             <option value="selesai" {{ $warning->status === 'selesai' ? 'selected' : '' }}>Selesai</option>

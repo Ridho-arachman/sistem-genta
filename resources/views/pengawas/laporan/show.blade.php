@@ -29,7 +29,7 @@
         <div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">Status</p>
-                @include('pengawas.components.status-badge', ['status' => $laporan->status])
+                <x-pengawas::status-badge :status="$laporan->status" />
             </div>
             <div class="mb-4">
                 <p class="text-sm text-[var(--color-text-muted)]">GPS</p>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Foto Laporan -->
-    @include('pengawas.components.foto-preview', ['photoUrl' => $laporan->selfie_photo])
+    <x-pengawas::foto-preview :photo-url="$laporan->selfie_photo" />
 
     <div class="mt-6 flex items-center justify-end gap-2">
         <a href="{{ route('pengawas.laporan.index') }}" class="btn btn-secondary">Kembali</a>

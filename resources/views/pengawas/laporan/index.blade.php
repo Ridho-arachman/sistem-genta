@@ -12,7 +12,7 @@
             <form method="GET" action="{{ route('pengawas.laporan.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-[var(--color-text-muted)] mb-1">Dapur</label>
-                    <select name="dapur_id" class="input input-bordered w-full">
+                    <select name="dapur_id" class="select select-bordered w-full">
                         <option value="">-- Semua Dapur --</option>
                         @foreach ($dapurs as $dapur)
                             <option value="{{ $dapur->id }}" {{ request('dapur_id') == $dapur->id ? 'selected' : '' }}>{{ $dapur->nama }}</option>
@@ -29,7 +29,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-[var(--color-text-muted)] mb-1">Status</label>
-                    <select name="status" class="input input-bordered w-full">
+                    <select name="status" class="select select-bordered w-full">
                         <option value="">-- Semua Status --</option>
                         <option value="diperiksa" {{ request('status') == 'diperiksa' ? 'selected' : '' }}>Diperiksa</option>
                         <option value="temuan" {{ request('status') == 'temuan' ? 'selected' : '' }}>Temuan</option>

@@ -36,7 +36,7 @@
 
         {{-- Date Inputs --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="dateFields">
-            <div class="flex flex-col gap-1.5 date-field">
+            <div class="flex flex-col gap-1.5">
                 <label for="start_date" class="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--color-secondary)] uppercase tracking-[0.5px]">
                     <svg class="w-3.5 h-3.5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Tanggal Mulai
@@ -48,7 +48,7 @@
                 <span id="startDateHelp" class="text-[11px] text-[var(--color-text-muted)] mt-0.5" x-text="startHint"></span>
             </div>
 
-            <div class="flex flex-col gap-1.5 date-field">
+            <div class="flex flex-col gap-1.5">
                 <label for="end_date" class="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--color-secondary)] uppercase tracking-[0.5px]">
                     <svg class="w-3.5 h-3.5 text-[var(--color-primary)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
                     Tanggal Akhir
@@ -67,12 +67,11 @@
                 </label>
                 <div class="relative">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                    <select name="format" id="format" class="input input-bordered border border-[var(--color-border)] w-full pl-[44px] pr-10 appearance-none">
+                    <select name="format" id="format" class="select select-bordered w-full pl-[44px]">
                         <option value="xlsx" {{ request('format') === 'xlsx' ? 'selected' : '' }}>Excel (.xlsx)</option>
                         <option value="pdf" {{ request('format') === 'pdf' ? 'selected' : '' }}>PDF</option>
                         <option value="csv" {{ request('format') === 'csv' ? 'selected' : '' }}>CSV</option>
                     </select>
-                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </div>
         </div>
@@ -89,7 +88,7 @@
                 <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 <span x-show="!loading">Ekspor Data</span>
                 <span x-show="loading" x-cloak class="inline-flex items-center gap-2">
-                    <svg class="h-[18px] w-[18px] animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014-12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
                     Menyiapkan...
                 </span>
             </button>

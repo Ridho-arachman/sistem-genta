@@ -17,7 +17,7 @@
                     <label for="email" class="block text-sm font-medium text-[var(--color-secondary)] mb-2">Email</label>
                     <div class="relative">
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email"
-                               class="input input-bordered w-full rounded-xl border px-4 py-3.5 pl-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 focus:border-transparent transition-all duration-200 min-h-12 {{ $errors->has('email') ? 'border-[#EF4444]' : 'border-[var(--color-border)]' }}" placeholder="Masukkan email Anda" autofocus>
+                               class="input input-bordered w-full rounded-xl px-4 py-3.5 pl-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 transition-all duration-200 min-h-12 {{ $errors->has('email') ? 'input-error' : '' }}" placeholder="Masukkan email Anda" autofocus>
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -36,7 +36,7 @@
                     <label for="password" class="block text-sm font-medium text-[var(--color-secondary)] mb-2">Password</label>
                     <div class="relative">
                         <input id="password" :type="showPassword ? 'text' : 'password'" name="password" required autocomplete="current-password"
-                               class="input input-bordered w-full rounded-xl border px-4 py-3.5 pl-11 pr-12 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 focus:border-transparent transition-all duration-200 min-h-12 {{ $errors->has('password') ? 'border-[#EF4444]' : 'border-[var(--color-border)]' }}" placeholder="Masukkan password">
+                               class="input input-bordered w-full rounded-xl px-4 py-3.5 pl-11 pr-12 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]/60 transition-all duration-200 min-h-12 {{ $errors->has('password') ? 'input-error' : '' }}" placeholder="Masukkan password">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-text-muted)]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 11-8 0v4h8z"></path>

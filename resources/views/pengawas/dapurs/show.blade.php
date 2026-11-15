@@ -27,7 +27,7 @@
         </div>
 
         {{-- Map Embed --}}
-        @include('pengawas.components.peta-embed', ['dapur' => $dapur])
+        <x-pengawas::peta-embed :dapur="$dapur" />
 
         {{-- Tombol Buka di Google Maps --}}
         @if ($dapur->map_embed_url)

@@ -30,7 +30,7 @@
         @elseif ($title || isset($actions))
             <div class="card-title flex items-center gap-2.5 mb-5 {{ $divider ? 'pb-4 border-b border-[var(--color-border)]' : '' }}">
                 @if ($icon || isset($iconSvg))
-                    <span class="section-icon w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
+                    <span class="w-6 h-6 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] grid place-items-center text-xs">
                         @if ($icon)
                             <x-heroicon :name="$icon" class="w-4 h-4" />
                         @else

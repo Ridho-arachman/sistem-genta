@@ -15,11 +15,11 @@
                 </x-admin::form-field>
 
                 <x-admin::form-field label="Alamat Lengkap" name="alamat">
-                    <textarea id="alamat" name="alamat" rows="3" class="input input-bordered border border-[var(--color-border)] w-full" placeholder="Alamat lengkap dapur">{{ old('alamat') }}</textarea>
+                    <textarea id="alamat" name="alamat" rows="3" class="textarea textarea-bordered border border-[var(--color-border)] w-full" placeholder="Alamat lengkap dapur">{{ old('alamat') }}</textarea>
                 </x-admin::form-field>
 
                 <x-admin::form-field label="Embed Google Maps" name="map_embed_url" hint="Contoh: https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.12…">
-                    <textarea id="map_embed_url" name="map_embed_url" rows="4" class="input input-bordered border border-[var(--color-border)] w-full" placeholder="Tempelkan src URL iframe Google Maps…">{{ old('map_embed_url') }}</textarea>
+                    <textarea id="map_embed_url" name="map_embed_url" rows="4" class="textarea textarea-bordered border border-[var(--color-border)] w-full" placeholder="Tempelkan src URL iframe Google Maps…">{{ old('map_embed_url') }}</textarea>
                 </x-admin::form-field>
         </x-admin::panel>
 
@@ -30,7 +30,7 @@
                     <x-admin::form-field label="Kabupaten / Kota" name="kabupaten_kota" required>
                         <div class="relative">
                             <select id="kabupaten_kota" name="kabupaten_kota"
-                                    class="input input-bordered border border-[var(--color-border)] w-full pr-10 appearance-none" required
+                                    class="select select-bordered w-full" required
                                     x-model="form.kabupaten_kota"
                                     x-on:change="onKabupatenChange($event.target.value)">
                                 <option value="">-- Pilih Kabupaten/Kota --</option>
@@ -40,19 +40,17 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </x-admin::form-field>
 
                     <x-admin::form-field label="Kecamatan" name="kecamatan" required>
                         <div class="relative">
                             <select id="kecamatan" name="kecamatan"
-                                    class="input input-bordered border border-[var(--color-border)] w-full pr-10 appearance-none" required
+                                    class="select select-bordered w-full" required
                                     x-model="form.kecamatan"
                                     :disabled="kecamatanOptions.length === 0"
                                     x-html="getKecamatanOptionsHtml()">
                             </select>
-                            <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </x-admin::form-field>
 

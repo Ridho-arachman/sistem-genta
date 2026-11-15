@@ -25,7 +25,7 @@
     <form method="GET" action="{{ route($indexRoute) }}" class="px-4 py-3 border-b border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase" for="dapur_id">Dapur</label>
-            <select id="dapur_id" name="dapur_id" class="input input-bordered w-full text-sm">
+            <select id="dapur_id" name="dapur_id" class="select select-bordered w-full text-sm">
                 <option value="">Semua Dapur</option>
                 @foreach ($dapurs as $d)
                     <option value="{{ $d->id }}" {{ request('dapur_id') == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>

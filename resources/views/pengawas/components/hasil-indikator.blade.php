@@ -6,7 +6,7 @@
     
     {{-- Select Hasil --}}
     <div class="mt-3">
-        <select name="hasil[]" class="input input-bordered w-full">
+        <select name="hasil[]" class="select select-bordered w-full">
             <option value="">-- Pilih Hasil --</option>
             <option value="diperiksa">Sesuai standar</option>
             <option value="temuan_sedang">Perlu perbaikan</option>

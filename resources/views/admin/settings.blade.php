@@ -87,7 +87,7 @@
                 <x-admin::form-field label="Alamat Lengkap Kantor" name="office_address" hint="Alamat yang tampil di halaman kontak dan informasi publik — diisi otomatis saat memilih lokasi di peta">
                     <div class="relative">
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <textarea id="office_address" name="office_address" x-model="form.office_address" class="input input-bordered border border-[var(--color-border)] w-full pl-10 min-h-[100px] resize-y bg-[var(--color-surface)]" placeholder="Alamat lengkap kantor pusat (akan terisi otomatis dari peta)" readonly></textarea>
+                        <textarea id="office_address" name="office_address" x-model="form.office_address" class="textarea textarea-bordered border border-[var(--color-border)] w-full pl-10 min-h-[100px] resize-y bg-[var(--color-surface)]" placeholder="Alamat lengkap kantor pusat (akan terisi otomatis dari peta)" readonly></textarea>
                     </div>
                 </x-admin::form-field>
             </div>
@@ -100,7 +100,7 @@
         <x-admin::form-field label="Zona Waktu" name="timezone" required>
             <div class="relative">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <select id="timezone" name="timezone" x-model="form.timezone" class="input input-bordered border border-[var(--color-border)] w-full pr-10" required>
+                <select id="timezone" name="timezone" x-model="form.timezone" class="select select-bordered border border-[var(--color-border)] w-full pr-10" required>
                     <option value="Asia/Jakarta">WIB — Asia/Jakarta (UTC+7)</option>
                     <option value="Asia/Makassar">WITA — Asia/Makassar (UTC+8)</option>
                     <option value="Asia/Jayapura">WIT — Asia/Jayapura (UTC+9)</option>
@@ -113,7 +113,7 @@
     <div class="mt-6 flex gap-3">
         <button type="submit" :disabled="saving" :aria-busy="saving" class="btn btn-primary inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold opacity-100 disabled:opacity-75 disabled:cursor-not-allowed">
             <template x-if="saving">
-                <svg class="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
             </template>
             <template x-if="!saving">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>

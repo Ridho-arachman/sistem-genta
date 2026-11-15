@@ -27,7 +27,7 @@
     <div class="card p-4">
         <form method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="md:w-64">
-                <select name="cctv_id" class="input input-bordered">
+                <select name="cctv_id" class="select select-bordered">
                     <option value="">Semua CCTV</option>
                     @foreach ($cctvs as $cctv)
                         <option value="{{ $cctv->id }}" {{ request('cctv_id') == $cctv->id ? 'selected' : '' }}>{{ $cctv->display_name }} ({{ $cctv->dapur->nama }})</option>
@@ -35,7 +35,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="severity" class="input input-bordered">
+                <select name="severity" class="select select-bordered">
                     <option value="">Semua Severity</option>
                     <option value="rendah" {{ request('severity') === 'rendah' ? 'selected' : '' }}>Rendah</option>
                     <option value="sedang" {{ request('severity') === 'sedang' ? 'selected' : '' }}>Sedang</option>
@@ -43,7 +43,7 @@
                 </select>
             </div>
             <div class="md:w-32">
-                <select name="status" class="input input-bordered">
+                <select name="status" class="select select-bordered">
                     <option value="">Semua Status</option>
                     <option value="baru" {{ request('status') === 'baru' ? 'selected' : '' }}>Baru</option>
                     <option value="diproses" {{ request('status') === 'diproses' ? 'selected' : '' }}>Diproses</option>
@@ -107,7 +107,7 @@
                                     <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="inline" x-data="confirmSubmit">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="input input-bordered text-xs py-1">
+                                        <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered text-xs py-1">
                                             <option value="baru" {{ $anomaly->status === 'baru' ? 'selected' : '' }}>Baru</option>
                                             <option value="diproses" {{ $anomaly->status === 'diproses' ? 'selected' : '' }}>Diproses</option>
                                             <option value="selesai" {{ $anomaly->status === 'selesai' ? 'selected' : '' }}>Selesai</option>

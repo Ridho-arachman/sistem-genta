@@ -10,7 +10,7 @@
             @csrf
 
             <x-admin::form-field label="CCTV" name="cctv_id" required>
-                <select id="cctv_id" name="cctv_id" required class="input input-bordered">
+                <select id="cctv_id" name="cctv_id" required class="select select-bordered">
                     <option value="">Pilih CCTV</option>
                     @foreach ($cctvs as $cctv)
                         <option value="{{ $cctv->id }}">{{ $cctv->display_name }} ({{ $cctv->dapur->nama }})</option>
@@ -19,11 +19,11 @@
             </x-admin::form-field>
 
             <x-admin::form-field label="Deskripsi Anomali" name="description" required>
-                <textarea id="description" name="description" required rows="4" class="input input-bordered" placeholder="Jelaskan anomali yang terdeteksi..."></textarea>
+                <textarea id="description" name="description" required rows="4" class="textarea textarea-bordered" placeholder="Jelaskan anomali yang terdeteksi..."></textarea>
             </x-admin::form-field>
 
             <x-admin::form-field label="Tingkat Keparahan" name="severity" required>
-                <select id="severity" name="severity" required class="input input-bordered">
+                <select id="severity" name="severity" required class="select select-bordered">
                     <option value="">Pilih tingkat</option>
                     <option value="rendah">Rendah - Gangguan minor</option>
                     <option value="sedang" selected>Sedang - Perlu perhatian</option>

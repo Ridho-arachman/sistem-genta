@@ -10,7 +10,7 @@
         <x-admin::panel title="Data Surat Peringatan" iconSvg="⚠">
 
             <x-admin::form-field label="Pengawas" name="user_id" required>
-                <select id="user_id" name="user_id" required class="input input-bordered">
+                <select id="user_id" name="user_id" required class="select select-bordered">
                     <option value="">Pilih pengawas</option>
                     @foreach ($pengawas as $p)
                         <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->email }})</option>
@@ -19,7 +19,7 @@
             </x-admin::form-field>
 
             <x-admin::form-field label="Level SP" name="level" required>
-                <select id="level" name="level" required class="input input-bordered">
+                <select id="level" name="level" required class="select select-bordered">
                     <option value="">Pilih level</option>
                     <option value="1">SP-1 (Peringatan Pertama)</option>
                     <option value="2">SP-2 (Peringatan Kedua)</option>
@@ -28,7 +28,7 @@
             </x-admin::form-field>
 
             <x-admin::form-field label="Alasan" name="reason" required>
-                <textarea id="reason" name="reason" required rows="4" class="input input-bordered" placeholder="Jelaskan alasan pemberian SP..."></textarea>
+                <textarea id="reason" name="reason" required rows="4" class="textarea textarea-bordered" placeholder="Jelaskan alasan pemberian SP..."></textarea>
             </x-admin::form-field>
 
             <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">

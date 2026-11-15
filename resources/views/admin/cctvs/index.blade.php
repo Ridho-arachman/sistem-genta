@@ -26,13 +26,13 @@
     <form method="GET" action="{{ route('admin.cctvs.index') }}" class="px-4 py-3 border-b border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3" x-data="{ filterOpen: false }">
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase">Provinsi</label>
-            <select name="provinsi" id="provinsiFilter" class="input input-bordered text-sm w-full" disabled>
+            <select name="provinsi" id="provinsiFilter" class="select select-bordered text-sm w-full" disabled>
                 <option value="Banten" {{ request('provinsi') === 'Banten' ? 'selected' : '' }}>Banten</option>
             </select>
         </div>
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase">Kabupaten / Kota</label>
-            <select name="kabupaten_kota" id="kabupatenKotaFilter" class="input input-bordered text-sm w-full" @change="$event.target.form.submit()">
+            <select name="kabupaten_kota" id="kabupatenKotaFilter" class="select select-bordered text-sm w-full" @change="$event.target.form.submit()">
                 <option value="">Semua Kabupaten/Kota</option>
                 @foreach ($kabupatenKotas as $value => $label)
                     <option value="{{ $value }}" {{ request('kabupaten_kota') === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -41,7 +41,7 @@
         </div>
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase">Kecamatan</label>
-            <select name="kecamatan" id="kecamatanFilter" class="input input-bordered text-sm w-full" @change="$event.target.form.submit()">
+            <select name="kecamatan" id="kecamatanFilter" class="select select-bordered text-sm w-full" @change="$event.target.form.submit()">
                 <option value="">Semua Kecamatan</option>
                 @foreach ($kecamatans as $value => $label)
                     <option value="{{ $value }}" {{ request('kecamatan') === $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -50,7 +50,7 @@
         </div>
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase">Dapur</label>
-            <select name="dapur_id" id="dapurFilter" class="input input-bordered text-sm w-full" @change="$event.target.form.submit()">
+            <select name="dapur_id" id="dapurFilter" class="select select-bordered text-sm w-full" @change="$event.target.form.submit()">
                 <option value="">Semua Dapur</option>
                 @foreach ($filteredDapurs as $dapur)
                     <option value="{{ $dapur->id }}" {{ request('dapur_id') === $dapur->id ? 'selected' : '' }}>{{ $dapur->nama }}</option>

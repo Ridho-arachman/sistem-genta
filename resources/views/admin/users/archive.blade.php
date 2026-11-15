@@ -24,7 +24,7 @@
             <div class="min-w-[180px]">
                 <label class="block text-xs font-semibold text-[var(--color-secondary)] mb-2" for="role">Role</label>
                 <div class="relative">
-                    <select id="role" name="role" class="input input-bordered w-full pr-10" aria-label="Filter role">
+                    <select id="role" name="role" class="select select-bordered w-full pr-10" aria-label="Filter role">
                         <option value="">Semua Role</option>
                         <option value="pengawas" {{ request('role') === 'pengawas' ? 'selected' : '' }}>Pengawas</option>
                         <option value="manajerial" {{ request('role') === 'manajerial' ? 'selected' : '' }}>Manajerial</option>
