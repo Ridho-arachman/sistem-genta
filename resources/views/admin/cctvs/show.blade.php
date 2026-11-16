@@ -57,7 +57,7 @@
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">HLS URL</p>
-                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm truncate">{{ $cctv->hls_url ?? '-' }}</p>
+                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm truncate">{{ $cctv->stream_url ?? '-' }}</p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">Dibuat</p>
