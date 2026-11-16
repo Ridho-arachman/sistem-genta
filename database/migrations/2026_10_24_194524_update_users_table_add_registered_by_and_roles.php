@@ -19,11 +19,11 @@ return new class extends Migration
         if (DB::getDriverName() === 'sqlite') {
             // SQLite doesn't support ALTER COLUMN TYPE, so we recreate
             DB::statement("CREATE TABLE users_new (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id varchar(26) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 role VARCHAR(20) NOT NULL DEFAULT 'pengawas' CHECK (role IN ('admin', 'pengawas', 'manajerial', 'kepala_dapur')),
-                registered_by INTEGER NULL REFERENCES users(id) ON DELETE SET NULL,
+                registered_by varchar(26) NULL REFERENCES users(id) ON DELETE SET NULL,
                 password VARCHAR(255) NOT NULL,
                 remember_token VARCHAR(100) NULL,
                 email_verified_at DATETIME NULL,
@@ -54,7 +54,7 @@ return new class extends Migration
 
         if (DB::getDriverName() === 'sqlite') {
             DB::statement("CREATE TABLE users_old (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id varchar(26) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 role VARCHAR(20) NOT NULL DEFAULT 'pengawas' CHECK (role IN ('admin', 'pengawas')),

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class SpWarningController extends Controller
 {
-    public function __construct()
+    public function __construct(protected FcmService $fcm)
     {
         $this->middleware(['auth', 'role:admin']);
     }
@@ -173,7 +173,7 @@ class SpWarningController extends Controller
             3 => 'SP-3 (Peringatan Terakhir/PHK)',
         ];
 
-        app(FcmService::class)->sendToUser($user->id, [
+        $this->fcm->sendToUser($user->id, [
             'title' => '⚠️ Surat Peringatan Baru',
             'body' => "Anda menerima {$levelLabels[$warning->level]}: {$warning->reason}",
             'icon' => 'ic_stat_icon_config_sample',
@@ -193,7 +193,7 @@ class SpWarningController extends Controller
         $manajerials = User::where('role', 'manajerial')->get();
 
         foreach ($manajerials as $m) {
-            app(FcmService::class)->sendToUser($m->id, [
+            $this->fcm->sendToUser($m->id, [
                 'title' => '📋 Surat Peringatan Diterbitkan',
                 'body' => "Pengawas {$warning->user->name} menerima SP-{$warning->level}",
                 'icon' => 'ic_stat_icon_config_sample',

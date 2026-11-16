@@ -13,7 +13,7 @@ class CctvAnomalyReportController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct()
+    public function __construct(protected FcmService $fcm)
     {
         $this->middleware(['auth']);
     }
@@ -173,7 +173,7 @@ class CctvAnomalyReportController extends Controller
         $manajerials = User::where('role', 'manajerial')->get();
 
         foreach ($manajerials as $m) {
-            app(FcmService::class)->sendToUser($m->id, [
+            $this->fcm->sendToUser($m->id, [
                 'title' => '🚨 Anomali CCTV Terdeteksi',
                 'body' => "CCTV {$anomaly->cctv->display_name} di {$anomaly->cctv->dapur->nama}: {$anomaly->description}",
                 'icon' => 'ic_stat_icon_config_sample',

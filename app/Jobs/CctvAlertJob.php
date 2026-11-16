@@ -15,7 +15,7 @@ class CctvAlertJob implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        public int $cctvId,
+        public string $cctvId,
         public string $status, // 'offline' | 'maintenance' | 'online'
         public bool $notifyAdmins = true
     ) {}

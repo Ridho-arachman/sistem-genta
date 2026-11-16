@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\CctvAlertJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
+use App\Services\MediaMtxClient;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class CctvController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct()
+    public function __construct(protected MediaMtxClient $mediaMtx)
     {
         $this->middleware('auth');
     }
@@ -107,14 +108,15 @@ class CctvController extends Controller
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'nama' => ['required', 'string', 'max:255'],
             'ip_address' => ['nullable', 'string', 'max:45'],
-            'rtsp_url' => ['nullable', 'string', 'max:500'],
+            'rtsp_url' => ['nullable', 'string', 'max:500', 'starts_with:rtsp://,rtsps://'],
             'hls_url' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:online,offline,maintenance'],
             'section' => ['nullable', 'string', 'max:255'],
             'camera_number' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        Cctv::create($validated);
+        $cctv = Cctv::create($validated);
+        $this->syncStreamPath($cctv);
 
         return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil ditambahkan.');
     }
@@ -165,7 +167,7 @@ class CctvController extends Controller
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'nama' => ['required', 'string', 'max:255'],
             'ip_address' => ['nullable', 'string', 'max:45'],
-            'rtsp_url' => ['nullable', 'string', 'max:500'],
+            'rtsp_url' => ['nullable', 'string', 'max:500', 'starts_with:rtsp://,rtsps://'],
             'hls_url' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:online,offline,maintenance'],
             'section' => ['nullable', 'string', 'max:255'],
@@ -174,6 +176,7 @@ class CctvController extends Controller
 
         $oldStatus = $cctv->status;
         $cctv->update($validated);
+        $this->syncStreamPath($cctv);
 
         if ($oldStatus !== $cctv->status && in_array($cctv->status, ['offline', 'maintenance'])) {
             CctvAlertJob::dispatch($cctv->id, $cctv->status, true);
@@ -188,9 +191,23 @@ class CctvController extends Controller
             abort(403);
         }
 
+        if ($cctv->stream_key) {
+            $this->mediaMtx->removePath($cctv->stream_key);
+        }
+
         $cctv->delete();
 
         return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil dihapus.');
+    }
+
+    /**
+     * Sinkronkan path MediaMTX untuk kamera ini (mode pull kalau ada rtsp_url).
+     */
+    private function syncStreamPath(Cctv $cctv): void
+    {
+        if ($cctv->stream_key) {
+            $this->mediaMtx->addPath($cctv->stream_key, $cctv->rtsp_url);
+        }
     }
 
     public function monitoringDashboard()
@@ -203,12 +220,12 @@ class CctvController extends Controller
 
         $dapurIds = $user->getAccessibleDapurIds();
 
-        // Get all CCTV with dapur relationship, ordered by dapur then camera_number
+        // Batasi jumlah tile per halaman supaya tidak membuka ribuan stream sekaligus.
         $cctvs = Cctv::with('dapur')
             ->whereIn('dapur_id', $dapurIds)
             ->orderBy('dapur_id')
             ->orderBy('camera_number')
-            ->get();
+            ->paginate(24);
 
         if ($user->isKepalaDapur()) {
             return view('kepala-dapur.cctvs.monitoring-dashboard', compact('cctvs'));

@@ -4,6 +4,7 @@ use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -123,4 +124,61 @@ test('cctv requires dapur_id', function () {
             'nama' => 'Test Camera',
         ])
         ->assertSessionHasErrors('dapur_id');
+});
+
+test('stream key dibuat otomatis dan unik', function () {
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+
+    expect($cctv->stream_key)->not->toBeNull()
+        ->and($cctv->stream_key)->not->toBe($cctv->id);
+});
+
+test('stream url diturunkan dari base media server', function () {
+    config(['cctv.hls_base' => 'http://mediamtx.local:8888/']);
+
+    $cctv = Cctv::factory()->create([
+        'dapur_id' => $this->dapur->id,
+        'hls_url' => 'https://example.com/stream.m3u8',
+    ]);
+
+    expect($cctv->stream_url)->toBe('http://mediamtx.local:8888/'.$cctv->stream_key.'/index.m3u8');
+});
+
+test('stream url memakai hls_url manual saat media server belum dikonfigurasi', function () {
+    config(['cctv.hls_base' => null]);
+
+    $cctv = Cctv::factory()->create([
+        'dapur_id' => $this->dapur->id,
+        'hls_url' => 'https://example.com/stream.m3u8',
+    ]);
+
+    expect($cctv->stream_url)->toBe('https://example.com/stream.m3u8');
+});
+
+test('menambah cctv mendaftarkan path ke media server', function () {
+    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
+    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.cctvs.store'), [
+            'dapur_id' => $this->dapur->id,
+            'nama' => 'Kamera Area Masak',
+            'rtsp_url' => 'rtsp://admin:pass@192.168.0.1:554/Streaming/Channels/101',
+            'status' => 'online',
+        ])
+        ->assertRedirect(route('admin.cctvs.index'));
+
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/replace/')
+        && $request['source'] === 'rtsp://admin:pass@192.168.0.1:554/Streaming/Channels/101');
+});
+
+test('rtsp url harus dimulai dengan rtsp scheme', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.cctvs.store'), [
+            'dapur_id' => $this->dapur->id,
+            'nama' => 'Kamera Salah',
+            'rtsp_url' => 'http://192.168.0.1/stream',
+            'status' => 'online',
+        ])
+        ->assertSessionHasErrors('rtsp_url');
 });

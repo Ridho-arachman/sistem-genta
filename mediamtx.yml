@@ -1,0 +1,25 @@
+# Konfigurasi media server MediaMTX (jalankan di sisi jaringan/hardware).
+# Laravel hanya mendaftarkan path lewat Control API dan menyajikan URL HLS ke browser.
+#
+# Rekaman/backup TIDAK dipegang sistem ini — itu urusan NVR tim hardware.
+# Semua stream di-pull on-demand: hanya jalan saat ada yang menonton.
+
+api: yes
+apiAddress: :9997
+
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigin: '*'
+
+webrtc: yes
+webrtcAddress: :8889
+
+rtsp: yes
+rtspAddress: :8554
+
+# Default path (path aktual diatur Laravel via POST /v3/config/paths/replace/{stream_key})
+sourceOnDemand: yes
+sourceOnDemandCloseAfter: 30s
+record: no
+
+paths: {}

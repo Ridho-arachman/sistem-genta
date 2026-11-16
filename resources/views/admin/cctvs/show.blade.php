@@ -47,6 +47,9 @@
                         {{ ucfirst($cctv->status) }}
                     </span>
                 </p>
+                <p class="text-xs text-[var(--color-text-muted)] mt-1">
+                    {{ $cctv->last_checked_at ? 'Dicek '.$cctv->last_checked_at->diffForHumans() : 'Belum pernah dicek otomatis' }}
+                </p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">RTSP URL</p>
@@ -63,10 +66,10 @@
         </div>
 
         {{-- Streaming Preview --}}
-        @if ($cctv->hls_url)
+        @if ($cctv->stream_url)
         <div class="border-t border-[var(--color-border)] pt-6">
             <h3 class="text-lg font-semibold mb-4">Preview Streaming (HLS)</h3>
-            <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="hlsPlayer(@js($cctv->hls_url), true)">
+            <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="hlsPlayer(@js($cctv->stream_url), true)">
                 <video controls class="block h-full w-full object-cover" crossorigin="anonymous"></video>
             </div>
         </div>

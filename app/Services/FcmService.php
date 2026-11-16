@@ -27,7 +27,7 @@ class FcmService
     /**
      * Send push notification to a specific user.
      */
-    public function sendToUser(int $userId, array $notification, array $data = []): array
+    public function sendToUser(string $userId, array $notification, array $data = []): array
     {
         $tokens = FcmToken::where('user_id', $userId)
             ->where('last_used_at', '>=', now()->subDays(30))
@@ -144,7 +144,7 @@ class FcmService
     /**
      * Send absensi reminder notification.
      */
-    public function sendAbsensiReminder(int $userId, string $type, string $dapurName, string $time): array
+    public function sendAbsensiReminder(string $userId, string $type, string $dapurName, string $time): array
     {
         $titles = [
             'checkin_reminder' => '⏰ Waktu Check-in Absen',
@@ -174,7 +174,7 @@ class FcmService
     /**
      * Send CCTV alert notification.
      */
-    public function sendCctvAlert(int $userId, string $cctvName, string $status, int $dapurId): array
+    public function sendCctvAlert(string $userId, string $cctvName, string $status, string $dapurId): array
     {
         $statusLabels = [
             'offline' => '🔴 OFFLINE',
@@ -219,7 +219,7 @@ class FcmService
     /**
      * Send test notification.
      */
-    public function sendTest(int $userId): array
+    public function sendTest(string $userId): array
     {
         return $this->sendToUser($userId, [
             'title' => '🧪 Test Notification',

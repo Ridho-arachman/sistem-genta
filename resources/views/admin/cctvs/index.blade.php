@@ -75,8 +75,8 @@
                     </span>
                 </div>
                 <div class="aspect-video bg-black relative pb-2">
-                    @if ($cctv->hls_url && $cctv->status === 'online' && str_starts_with($cctv->hls_url, 'http://localhost'))
-                        <div class="absolute inset-0 flex flex-col items-center justify-center" x-data="hlsPlayer(@js($cctv->hls_url))">
+                    @if ($cctv->stream_url && $cctv->status === 'online')
+                        <div class="absolute inset-0 flex flex-col items-center justify-center" x-data="hlsPlayer(@js($cctv->stream_url))">
                             <video class="absolute inset-0 w-full h-full object-cover" controls crossorigin="anonymous" preload="none" muted></video>
                             <div class="absolute inset-0 z-10 flex-col items-center justify-center bg-black/80" id="video-error-{{ $cctv->id }}" x-show="error" x-cloak>
                                 <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -88,7 +88,15 @@
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
                             <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             <p class="text-sm">Feed belum terhubung</p>
-                            <p class="text-[10px] text-white/40">Contoh tampilan saja</p>
+                            <p class="text-[10px] text-white/40">
+                                @if ($cctv->status === 'online')
+                                    Stream belum dikonfigurasi
+                                @elseif ($cctv->last_checked_at)
+                                    Terakhir dicek {{ $cctv->last_checked_at->diffForHumans() }}
+                                @else
+                                    Belum pernah dicek
+                                @endif
+                            </p>
                         </div>
                     @endif
                 </div>

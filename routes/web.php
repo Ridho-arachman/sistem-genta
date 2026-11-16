@@ -111,12 +111,14 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
     Route::middleware(['web', 'role:pengawas'])->prefix('pengawas')->name('pengawas.')->group(function () {
         Route::get('/dashboard', function () {
             $user = auth()->user();
-            $dapurs = Dapur::forUser($user)->with('cctvs')->get();
+            $dapurs = Dapur::forUser($user)
+                ->withCount(['cctvs', 'cctvs as cctv_online_count' => fn ($q) => $q->where('status', 'online')])
+                ->get();
 
             $stats = [
                 'total_dapur' => $dapurs->count(),
                 'total_cctv' => $dapurs->sum('cctvs_count'),
-                'cctv_online' => $dapurs->sum(fn ($d) => $d->cctvs->where('status', 'online')->count()),
+                'cctv_online' => $dapurs->sum('cctv_online_count'),
                 'laporan_hari_ini' => Laporan::where('created_by', $user->id)->whereDate('created_at', today())->count(),
                 'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
             ];

@@ -15,8 +15,8 @@ class Cctv extends Model
     /** @use HasFactory<CctvFactory> */
     use HasFactory;
 
-    #[Fillable(['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number'])]
-    protected $fillable = ['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number'];
+    #[Fillable(['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'])]
+    protected $fillable = ['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'];
 
     protected $keyType = 'string';
 
@@ -24,6 +24,7 @@ class Cctv extends Model
 
     protected $casts = [
         'camera_number' => 'integer',
+        'last_checked_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -32,7 +33,25 @@ class Cctv extends Model
             if (empty($cctv->id)) {
                 $cctv->id = Str::ulid();
             }
+            if (empty($cctv->stream_key)) {
+                $cctv->stream_key = Str::ulid();
+            }
         });
+    }
+
+    /**
+     * URL HLS yang diputar browser: diturunkan dari media server kalau
+     * dikonfigurasi, kalau tidak pakai hls_url manual.
+     */
+    public function getStreamUrlAttribute(): ?string
+    {
+        $base = config('cctv.hls_base');
+
+        if ($base && $this->stream_key) {
+            return rtrim($base, '/').'/'.$this->stream_key.'/index.m3u8';
+        }
+
+        return $this->hls_url;
     }
 
     public function dapur(): BelongsTo

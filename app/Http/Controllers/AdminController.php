@@ -299,9 +299,11 @@ class AdminController extends Controller
                 ->count(),
         ];
 
-        $dapurs = Dapur::with(['cctvs', 'users' => function ($q) {
-            $q->where('role', 'kepala_dapur');
-        }])->get();
+        $dapurs = Dapur::withCount('cctvs')
+            ->with(['users' => function ($q) {
+                $q->where('role', 'kepala_dapur');
+            }])
+            ->get();
 
         // Pengawas assignment overview
         $pengawas = User::where('role', 'pengawas')

@@ -16,9 +16,9 @@ class AbsensiReminderJob implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        public int $userId,
+        public string $userId,
         public string $type, // 'checkin_reminder' | 'checkout_reminder'
-        public int $dapurId,
+        public string $dapurId,
         public string $scheduledTime // '07:00' format
     ) {}
 
