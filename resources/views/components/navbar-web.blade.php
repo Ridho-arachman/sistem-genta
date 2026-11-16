@@ -9,7 +9,7 @@
     'brandSubText' => 'ADMIN PANEL',
 ])
 
-<header class="navbar h-[72px] fixed top-0 left-0 right-0 z-1000 gap-4 bg-primary px-4 text-primary-content shadow-[0_2px_8px_rgb(0_0_0_/_0.08)] sm:px-6 {{ $topbarClass }}">
+<header class="navbar h-[72px] fixed top-0 left-0 right-0 z-1000 gap-4 bg-primary px-4 text-primary-content shadow-[0_2px_8px_rgb(0_0_0_/_0.08)] sm:px-6 {{ $topbarClass }}" x-data>
     <div class="navbar-start gap-3 px-2">
         @if($showHamburger)
         <button
