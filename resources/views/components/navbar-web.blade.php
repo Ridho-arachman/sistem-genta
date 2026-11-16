@@ -34,7 +34,7 @@
         <span class="badge badge-outline hidden text-xs font-extrabold tracking-wide sm:inline-flex">MODE PRODUKSI</span>
         @endif
         <div id="profileMenu" class="dropdown dropdown-end" :class="{ 'dropdown-open': open }" x-data="{ open: false }">
-            <button id="profileBtn" class="btn btn-ghost gap-2 px-1.5 py-1 text-current hover:bg-transparent" @click="open = !open" :aria-expanded="open" aria-label="Profile menu">
+            <button id="profileBtn" class="btn btn-ghost gap-2 px-1.5 py-1 text-current hover:bg-transparent hover:border-transparent" @click="open = !open" :aria-expanded="open" aria-label="Profile menu">
                 <span class="hidden max-w-[160px] truncate sm:inline-block">{{ auth()->user()->name }}</span>
                 @php
                     $_userName = auth()->user()->name ?? 'Admin';

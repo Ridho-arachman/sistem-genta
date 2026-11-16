@@ -14,7 +14,7 @@
     </div>
     <div class="navbar-end gap-3">
         <div id="profileMenu" class="dropdown dropdown-end" :class="{ 'dropdown-open': open }" x-data="{ open: false }">
-            <button id="profileBtn" class="btn btn-ghost gap-2 px-1.5 py-1 text-current hover:bg-transparent" @click="open = !open" :aria-expanded="open" aria-label="Profile menu">
+            <button id="profileBtn" class="btn btn-ghost gap-2 px-1.5 py-1 text-current hover:bg-transparent hover:border-transparent" @click="open = !open" :aria-expanded="open" aria-label="Profile menu">
                 @php
                     $_userName = auth()->user()->name ?? 'Pengawas';
                     $_nameParts = array_filter(explode(' ', trim($_userName)));
