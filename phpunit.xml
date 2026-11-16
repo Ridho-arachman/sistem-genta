@@ -32,5 +32,8 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- Test hermetis: jangan ikut .env mesin (media server & HLS nonaktif) -->
+        <env name="CCTV_HLS_BASE" value="" force="true"/>
+        <env name="CCTV_MEDIAMTX_API" value="" force="true"/>
     </php>
 </phpunit>
