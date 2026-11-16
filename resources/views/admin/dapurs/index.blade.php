@@ -67,10 +67,7 @@
                     <div class="flex-1 min-w-0">
                         <h3 class="text-[13px] font-extrabold text-[var(--color-secondary)] truncate" x-text="dapur.nama"></h3>
                         <div class="text-[11px] text-[var(--color-text-muted)] mt-[5px] truncate" x-text="dapur.lokasiPengawas"></div>
-                        <div class="h-[5px] bg-[var(--color-surface)] rounded-full overflow-hidden mt-[11px]">
-                            <div class="h-full bg-[var(--color-primary)] rounded-full transition-all duration-300"
-                                 :style="'width: ' + dapur.progress + '%'"></div>
-                        </div>
+                        <progress class="progress progress-primary h-[5px] mt-[11px]" :value="dapur.progress" max="100"></progress>
                         <div class="flex justify-between text-[10px] text-[var(--color-text-muted)] mt-[7px]">
                             <span x-text="dapur.cctvs_count_online + '/' + dapur.cctvs_count_total + ' kamera online'"></span>
                             <span class="font-medium text-[var(--color-secondary)]" x-text="dapur.progress + '%'"></span>

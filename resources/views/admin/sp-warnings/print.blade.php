@@ -46,7 +46,7 @@
     <div class="card overflow-hidden print:border print:border-[var(--color-border)] print:shadow-none">
         @if ($warnings->count() > 0)
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="table w-full text-sm">
                     <thead class="bg-[var(--color-surface)] border-b-2 border-[var(--color-border)]">
                         <tr>
                             <th class="p-3 text-left font-semibold text-[var(--color-secondary)]">No</th>

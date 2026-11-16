@@ -57,15 +57,6 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        presetClass(preset) {
-            const base =
-                'px-[14px] py-2 rounded-full border text-xs font-medium transition-all cursor-pointer whitespace-nowrap';
-            return this.activePreset === preset
-                ? base + ' bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                : base +
-                      ' bg-white text-[var(--color-text-muted)] border-[var(--color-border)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/50';
-        },
-
         applyPreset(preset) {
             const range = this.presets[preset];
             if (!range) return;

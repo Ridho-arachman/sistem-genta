@@ -27,11 +27,11 @@
     <form method="GET" action="{{ route('admin.inspeksi.export') }}" class="space-y-4" id="exportForm" x-data="exportForm(@js(request('start_date')), @js(request('end_date')))" @submit="if (dateError) { $event.preventDefault(); } else { loading = true; }">
         {{-- Date Presets --}}
         <div class="flex gap-2 flex-wrap mb-4 pb-4 border-b border-[var(--color-border)]" role="group" aria-label="Pilihan cepat rentang tanggal">
-            <button type="button" :class="presetClass('today')" @click="applyPreset('today')" title="Hari ini">Hari ini</button>
-            <button type="button" :class="presetClass('week')" @click="applyPreset('week')" title="7 hari terakhir">Minggu ini</button>
-            <button type="button" :class="presetClass('month')" @click="applyPreset('month')" title="Bulan ini">Bulan ini</button>
-            <button type="button" :class="presetClass('last_month')" @click="applyPreset('last_month')" title="Bulan lalu">Bulan lalu</button>
-            <button type="button" :class="presetClass('custom')" @click="setCustom()" title="Rentang kustom">Kustom</button>
+            <button type="button" :class="activePreset === 'today' ? 'btn-primary' : 'btn-outline'" class="btn btn-sm rounded-full" @click="applyPreset('today')" title="Hari ini">Hari ini</button>
+            <button type="button" :class="activePreset === 'week' ? 'btn-primary' : 'btn-outline'" class="btn btn-sm rounded-full" @click="applyPreset('week')" title="7 hari terakhir">Minggu ini</button>
+            <button type="button" :class="activePreset === 'month' ? 'btn-primary' : 'btn-outline'" class="btn btn-sm rounded-full" @click="applyPreset('month')" title="Bulan ini">Bulan ini</button>
+            <button type="button" :class="activePreset === 'last_month' ? 'btn-primary' : 'btn-outline'" class="btn btn-sm rounded-full" @click="applyPreset('last_month')" title="Bulan lalu">Bulan lalu</button>
+            <button type="button" :class="activePreset === 'custom' ? 'btn-primary' : 'btn-outline'" class="btn btn-sm rounded-full" @click="setCustom()" title="Rentang kustom">Kustom</button>
         </div>
 
         {{-- Date Inputs --}}
@@ -120,9 +120,7 @@
                         <div class="flex-1 min-w-0">
                             <div data-kitchen="name" class="font-bold text-sm text-[var(--color-secondary)] truncate">{{ $dapur->nama }}</div>
                             <div data-kitchen="meta" class="text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{{ $dapur->lokasi ?? '-' }}</div>
-                            <div class="h-[6px] bg-[var(--color-border)] rounded-[3px] overflow-hidden mt-2">
-                                <i class="h-full rounded-[3px] transition-all duration-300 {{ $dapur->status === 'operasional' ? 'bg-green-500' : ($dapur->status === 'perlu_perhatian' ? 'bg-yellow-500' : 'bg-red-500') }}" style="width: {{ $dapur->progress ?? 0 }}%"></i>
-                            </div>
+                            <progress class="progress {{ $dapur->status === 'operasional' ? 'progress-success' : ($dapur->status === 'perlu_perhatian' ? 'progress-warning' : 'progress-error') }} h-[6px] mt-2" value="{{ $dapur->progress ?? 0 }}" max="100"></progress>
                             <div class="flex gap-4 text-[11px] text-[var(--color-text-muted)] mt-1">
                                 <span>{{ $dapur->cctvs_count ?? 0 }} kamera</span>
                                 <span>{{ $dapur->progress ?? 0 }}%</span>

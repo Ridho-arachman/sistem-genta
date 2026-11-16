@@ -120,14 +120,14 @@
      x-on:open-restore-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
      x-show="show" 
      x-cloak 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+     class="modal modal-open z-[1001]"
      x-transition:enter="transition ease-out duration-150"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0">
-    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl" 
+    <div class="modal-box max-w-md" 
          x-show="show" 
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 scale-95"
@@ -158,14 +158,14 @@
      x-on:open-force-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
      x-show="show" 
      x-cloak 
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+     class="modal modal-open z-[1001]"
      x-transition:enter="transition ease-out duration-150"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0">
-    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl" 
+    <div class="modal-box max-w-md" 
          x-show="show" 
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 scale-95"
