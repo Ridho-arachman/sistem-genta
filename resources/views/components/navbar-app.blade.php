@@ -1,11 +1,11 @@
-@php
-    $profileRoute = $profileRoute ?? 'pengawas.settings';
-    $topbarClass = $topbarClass ?? 'h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4';
-    $brandLogo = $brandLogo ?? 'icons/icon-512.png';
-    $brandAlt = $brandAlt ?? 'Genta Logo';
-    $brandText = $brandText ?? 'GENTA';
-    $brandSubText = $brandSubText ?? 'PENGAWASAN DAPUR MBG';
-@endphp
+@props([
+    'profileRoute' => 'pengawas.settings',
+    'topbarClass' => 'h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4',
+    'brandLogo' => 'icons/icon-512.png',
+    'brandAlt' => 'Genta Logo',
+    'brandText' => 'GENTA',
+    'brandSubText' => 'PENGAWASAN DAPUR MBG',
+])
 
 <header class="{{ $topbarClass }}">
     <div class="flex items-center gap-3 font-extrabold tracking-[-0.3px]">

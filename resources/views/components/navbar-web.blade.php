@@ -1,13 +1,13 @@
-@php
-    $profileRoute = $profileRoute ?? 'admin.settings.profile';
-    $showHamburger = $showHamburger ?? true;
-    $showModeBadge = $showModeBadge ?? false;
-    $topbarClass = $topbarClass ?? '';
-    $brandLogo = $brandLogo ?? 'logo.png';
-    $brandAlt = $brandAlt ?? 'GENTA Pangan Banten';
-    $brandText = $brandText ?? 'GENTA';
-    $brandSubText = $brandSubText ?? 'ADMIN PANEL';
-@endphp
+@props([
+    'profileRoute' => 'admin.settings.profile',
+    'showHamburger' => true,
+    'showModeBadge' => false,
+    'topbarClass' => '',
+    'brandLogo' => 'logo.png',
+    'brandAlt' => 'GENTA Pangan Banten',
+    'brandText' => 'GENTA',
+    'brandSubText' => 'ADMIN PANEL',
+])
 
 <header class="bg-[var(--color-primary)] text-white h-[72px] fixed top-0 left-0 right-0 z-1000 flex items-center justify-between px-4 sm:px-6 gap-4 shadow-[0_2px_8px_rgb(0_0_0_/_0.08)] {{ $topbarClass }}">
     <div class="flex items-center gap-3 px-2">

@@ -2,27 +2,14 @@
 
 @section('header')
 <div>
-    @if (request()->cookie('capacitor_app'))
-        @include('components.navbar-web', [
-            'profileRoute' => 'admin.settings.profile',
-            'showHamburger' => true,
-            'showModeBadge' => false,
-            'brandLogo' => 'logo.png',
-            'brandAlt' => settings('app_name_desktop') ?? 'GENTA Pangan Banten',
-            'brandText' => strtoupper(settings('app_name_desktop') ?? 'GENTA'),
-            'brandSubText' => 'ADMIN PANEL',
-        ])
-    @else
-        @include('components.navbar-web', [
-            'profileRoute' => 'admin.settings.profile',
-            'showHamburger' => true,
-            'showModeBadge' => false,
-            'brandLogo' => 'logo.png',
-            'brandAlt' => settings('app_name_desktop') ?? 'GENTA Pangan Banten',
-            'brandText' => strtoupper(settings('app_name_desktop') ?? 'GENTA'),
-            'brandSubText' => 'ADMIN PANEL',
-        ])
-    @endif
+    <x-navbar-web
+        :profile-route="'admin.settings.profile'"
+        :show-hamburger="true"
+        :show-mode-badge="false"
+        brand-logo="logo.png"
+        :brand-alt="settings('app_name_desktop') ?? 'GENTA Pangan Banten'"
+        :brand-text="strtoupper(settings('app_name_desktop') ?? 'GENTA')"
+        brand-sub-text="ADMIN PANEL" />
 </div>
 @endsection
 

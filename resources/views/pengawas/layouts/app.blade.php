@@ -2,24 +2,22 @@
 
 @section('header')
 @if (request()->cookie('capacitor_app'))
-    @include('components.navbar-app', [
-        'profileRoute' => 'pengawas.settings',
-        'brandLogo' => 'icons/icon-512.png',
-        'brandAlt' => 'Genta Logo',
-        'brandText' => 'GENTA',
-        'brandSubText' => 'PENGAWASAN DAPUR MBG',
-    ])
+    <x-navbar-app
+        :profile-route="'pengawas.settings'"
+        brand-logo="icons/icon-512.png"
+        brand-alt="Genta Logo"
+        brand-text="GENTA"
+        brand-sub-text="PENGAWASAN DAPUR MBG" />
 @else
-    @include('components.navbar-web', [
-        'profileRoute' => 'pengawas.settings',
-        'showHamburger' => false,
-        'showModeBadge' => true,
-        'topbarClass' => 'h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4',
-        'brandLogo' => 'icons/icon-512.png',
-        'brandAlt' => 'Genta Logo',
-        'brandText' => 'GENTA',
-        'brandSubText' => 'PENGAWASAN DAPUR MBG',
-    ])
+    <x-navbar-web
+        :profile-route="'pengawas.settings'"
+        :show-hamburger="false"
+        :show-mode-badge="true"
+        topbar-class="h-18 bg-[var(--color-primary)] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4"
+        brand-logo="icons/icon-512.png"
+        brand-alt="Genta Logo"
+        brand-text="GENTA"
+        brand-sub-text="PENGAWASAN DAPUR MBG" />
 @endif
 @endsection
 
