@@ -10,7 +10,7 @@
 <header class="navbar {{ $topbarClass }}">
     <div class="navbar-start gap-3 font-extrabold tracking-[-0.3px]">
         <img src="{{ asset($brandLogo) }}" alt="{{ $brandAlt }}" class="w-10 h-10 rounded-xl object-contain">
-        <div>{{ $brandText }} <small class="block text-[11px] font-medium tracking-wide opacity-75 mt-0.5">{{ $brandSubText }}</small></div>
+        <div class="hidden sm:block">{{ $brandText }} <small class="block text-[11px] font-medium tracking-wide opacity-75 mt-0.5">{{ $brandSubText }}</small></div>
     </div>
     <div class="navbar-end gap-3">
         <div id="profileMenu" class="dropdown dropdown-end" :class="{ 'dropdown-open': open }" x-data="{ open: false }">

@@ -27,7 +27,7 @@
         <div class="w-10 h-10 rounded-[13px] bg-white p-2 overflow-hidden">
             <img src="{{ asset($brandLogo) }}" alt="{{ $brandAlt }}" class="h-full w-full object-contain">
         </div>
-        <div class="font-extrabold tracking-tight tracking-[-0.3px]">{{ $brandText }} <small class="text-[11px] font-semibold tracking-wide opacity-75 mt-1 block">{{ $brandSubText }}</small></div>
+        <div class="hidden font-extrabold tracking-tight tracking-[-0.3px] sm:block">{{ $brandText }} <small class="text-[11px] font-semibold tracking-wide opacity-75 mt-1 block">{{ $brandSubText }}</small></div>
     </div>
     <div class="navbar-end gap-3">
         @if($showModeBadge)
