@@ -46,7 +46,7 @@ class MediaMtxClient
             return false;
         }
 
-        $response = $this->request('post', "/v3/config/paths/remove/{$streamKey}");
+        $response = $this->request('delete', "/v3/config/paths/delete/{$streamKey}");
 
         return $response?->successful() ?? false;
     }

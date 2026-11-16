@@ -48,3 +48,13 @@ test('membaca status ready dan menganggap path hilang sebagai belum siap', funct
     expect($client->isReady('live'))->toBeTrue()
         ->and($client->isReady('missing'))->toBeFalse();
 });
+
+test('menghapus path memakai endpoint delete', function () {
+    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
+    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
+
+    expect((new MediaMtxClient)->removePath('abc'))->toBeTrue();
+
+    Http::assertSent(fn ($request) => $request->method() === 'DELETE'
+        && $request->url() === 'http://mediamtx.test:9997/v3/config/paths/delete/abc');
+});

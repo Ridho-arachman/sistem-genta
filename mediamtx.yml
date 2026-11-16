@@ -9,7 +9,7 @@ apiAddress: :9997
 
 hls: yes
 hlsAddress: :8888
-hlsAllowOrigin: '*'
+hlsAllowOrigins: ['*']
 
 webrtc: yes
 webrtcAddress: :8889
@@ -17,9 +17,11 @@ webrtcAddress: :8889
 rtsp: yes
 rtspAddress: :8554
 
-# Default path (path aktual diatur Laravel via POST /v3/config/paths/replace/{stream_key})
-sourceOnDemand: yes
-sourceOnDemandCloseAfter: 30s
-record: no
+# Default untuk semua path (termasuk yang dibuat Laravel via
+# POST /v3/config/paths/replace/{stream_key})
+pathDefaults:
+  sourceOnDemand: yes
+  sourceOnDemandCloseAfter: 30s
+  record: no
 
 paths: {}
