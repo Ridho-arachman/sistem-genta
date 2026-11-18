@@ -5,19 +5,12 @@ namespace App\Http\Controllers;
 use App\Exports\LaporanXlsxExport;
 use App\Models\Dapur;
 use App\Models\Laporan;
-use App\Services\GeolocationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class InspeksiController extends Controller
 {
     use AuthorizesRequests;
-
-    public function __construct(
-        protected GeolocationService $geolocation
-    ) {
-        $this->middleware('auth');
-    }
 
     public function index(Request $request)
     {
@@ -82,22 +75,6 @@ class InspeksiController extends Controller
         $selectedDapurId = $request->query('dapur');
 
         return view('pengawas.inspeksi.index', compact('dapurs', 'selectedDapurId'));
-    }
-
-    public function store(Request $request)
-    {
-        // Store is handled by LaporanController@store
-        // This method is kept for route compatibility but redirects
-        return redirect()->route('pengawas.laporan.store');
-    }
-
-    public function checkOut(Request $request, Laporan $laporan)
-    {
-        $this->authorize('checkOut', $laporan);
-
-        $laporan->update(['check_out_at' => now()]);
-
-        return back()->with('status', 'Check-out berhasil dicatat.');
     }
 
     public function export(Request $request)

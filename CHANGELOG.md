@@ -11,6 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `LaporanController::create()` (tidak ada route) dihapus.
 - `monitoringDashboard()` (dead code) dihapus.
 - Direktori `docs/` (20 file) dihapus; isinya usang/salah (Absensi, `ip_address`/`hls_url`, MySQL/Redis, Laravel Cloud) dan digantikan dokumen root.
+- 5 route mati dihapus: `admin/manajerial/pengawas.inspeksi.store` (stub redirect ke POST route), `admin/pengawas.inspeksi.checkout` (`authorize('checkOut')` di `LaporanPolicy` tidak ada → selalu 403), beserta method `InspeksiController::store()` dan `checkOut()` serta dependensi `GeolocationService` yang tidak dipakai.
 
 ### Added
 - `manajerial.dashboard`, `manajerial.settings`, `kepala-dapur.dashboard`, `kepala-dapur.settings` views (sebelumnya 500).
@@ -21,6 +22,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `$tries=3` + `$backoff=[30,120,300]` pada `CctvHealthCheckJob`; `retry_after` queue 90→300.
 - `scripts/backup-db.sh` (pg_dump + retensi 14 hari).
 - `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`).
+- `SpWarningTest` (5 tes): akses baca SP untuk manajerial, tombol kelola hanya admin, kepala_dapur 403.
 
 ### Fixed
 - Fix 500 pada `PUT /pengawas/settings/profile` — closure memanggil `Hash::make` tanpa import (dipindah ke `AuthController::updatePassword()`).
@@ -28,8 +30,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `manajerial.dashboard` route memanggil `Laporan::with('user')` (relasi tidak ada) → `with('createdBy')`.
 - `AdminController@dashboard` mengimpor statistik; `admin/dashboard.blade.php` memakai `createdBy` (sebelumnya `->user` yang selalu fallback); tag `</x-admin-page-heading>` yang tidak cocok.
 - Toggle buttons tulis (Tambah Dapur/CCTV/Edit) tersembunyi untuk manajerial/kepala-dapur; tombol "Kembali" role-aware; view `admin/dapurs/show`, `admin/cctvs/show`, `admin/dapurs/index`, `admin/cctvs/index` diselaraskan (read-only untuk peran read-only).
+- `manajerial.sp-warnings.*` kini bisa diakses manajerial (sebelumnya 100% 403: route `role:manajerial` tapi controller memaksa `role:admin`). Parameter route `{warning}` diselaraskan ke `{sp_warning}` agar implicit binding bekerja. View SP menyembunyikan aksi kelola (buat/ubah status/export) untuk non-admin dan route Kembali/Detail/Detail-button role-aware.
 - `user_can_login` test dibandingkan via `(string) getKey()`; `DapurTest` menyesuaikan judul halaman.
-- Suite penuh: **48/48 lulus** (sebelumnya 5 gagal).
+- Suite penuh: **55/55 lulus** (sebelumnya 5 gagal, lalu 50/50, lalu 54/55 setelah penambahan tes SP).
 
 ## [2.0.0] — 2026-10-26 · *usang sebagian*
 - Layout shell admin/pengawas, password reset, 4 policy, FCM service, geoloc. **Catatan**: fitur Absensi yang disebut di sini sudah dihapus (lihat di atas); stack "Laravel 12/MySQL/Redis" di dokumen lama juga usang — lihat `TRD.md`.

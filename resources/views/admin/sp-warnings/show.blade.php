@@ -1,10 +1,11 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail SP: ' . $spWarning->user->name])
 
 @section('page_content')
+@php $spPrefix = auth()->user()->isAdmin() ? 'admin' : 'manajerial'; @endphp
 <div class="max-w-3xl mx-auto">
     <x-admin::page-heading title="Detail Surat Peringatan" subtitle="SP-{{ $spWarning->level }} untuk {{ $spWarning->user->name }}">
         <x-slot:actions>
-            <a href="{{ route('admin.sp-warnings.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route($spPrefix.'.sp-warnings.index') }}" class="btn btn-secondary">Kembali</a>
         </x-slot:actions>
     </x-admin::page-heading>
 
@@ -57,7 +58,7 @@
                 <p class="text-[var(--color-secondary)] whitespace-pre-wrap">{{ $spWarning->reason }}</p>
             </div>
 
-            @if ($spWarning->status === 'aktif')
+            @if (auth()->user()->isAdmin() && $spWarning->status === 'aktif')
             <div class="border-t border-[var(--color-border)] pt-6">
                 <form action="{{ route('admin.sp-warnings.update', $spWarning) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
                     @csrf

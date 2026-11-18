@@ -11,7 +11,7 @@ class SpWarningController extends Controller
 {
     public function __construct(protected FcmService $fcm)
     {
-        $this->middleware(['auth', 'role:admin']);
+        $this->middleware(['auth']);
     }
 
     public function index(Request $request)

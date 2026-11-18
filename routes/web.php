@@ -76,9 +76,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // Inspeksi (monitor & export)
         Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
         Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
-        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
         Route::get('inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
-        Route::post('inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
 
         // Settings
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
@@ -97,8 +95,6 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // Inspeksi
         Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
         Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
-        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
-        Route::post('inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
 
         // Laporan Pengawasan
         Route::get('laporan', [LaporanController::class, 'indexPengawas'])->name('laporan.index');
@@ -132,12 +128,11 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 
         // SP Warnings (read - receive copy)
         Route::get('sp-warnings', [SpWarningController::class, 'index'])->name('sp-warnings.index');
-        Route::get('sp-warnings/{warning}', [SpWarningController::class, 'show'])->name('sp-warnings.show');
+        Route::get('sp-warnings/{sp_warning}', [SpWarningController::class, 'show'])->name('sp-warnings.show');
 
         // Inspeksi (read + export)
         Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
         Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
-        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
         Route::get('inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
 
         // Settings (read only)
