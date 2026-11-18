@@ -23,6 +23,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`).
 
 ### Fixed
+- Fix 500 pada `PUT /pengawas/settings/profile` — closure memanggil `Hash::make` tanpa import (dipindah ke `AuthController::updatePassword()`).
+- `routes/web.php` 277→178 baris — deklarasi saja; logika closure dipindah ke `DashboardController` (dashboard per peran), `LaporanController::indexPengawas()`, `AuthController::updatePassword()`. Nama route/URI identik (diverifikasi `route:list` before/after).
 - `manajerial.dashboard` route memanggil `Laporan::with('user')` (relasi tidak ada) → `with('createdBy')`.
 - `AdminController@dashboard` mengimpor statistik; `admin/dashboard.blade.php` memakai `createdBy` (sebelumnya `->user` yang selalu fallback); tag `</x-admin-page-heading>` yang tidak cocok.
 - Toggle buttons tulis (Tambah Dapur/CCTV/Edit) tersembunyi untuk manajerial/kepala-dapur; tombol "Kembali" role-aware; view `admin/dapurs/show`, `admin/cctvs/show`, `admin/dapurs/index`, `admin/cctvs/index` diselaraskan (read-only untuk peran read-only).
