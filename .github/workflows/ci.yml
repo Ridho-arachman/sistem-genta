@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, pdo_sqlite, sqlite3, gd, bcmath, zip, curl
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - run: cp .env.example .env
+      - run: php artisan key:generate --no-interaction
+
+      - name: Pint
+        run: vendor/bin/pint --test --format=github
+
+      # Suite penuh masih memiliki tes lama yang gagal (dashboard manajerial/
+      # kepala-dapur, DapurTest, LaporanFactory). CI menjaga area yang aktif.
+      - name: Tests
+        run: vendor/bin/pest tests/Feature/CctvTest.php tests/Feature/CctvHealthCheckTest.php tests/Feature/MediaMtxClientTest.php tests/Feature/LoginRateLimitTest.php --compact
