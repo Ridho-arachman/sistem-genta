@@ -1,6 +1,6 @@
 # CHANGELOG — GENTA Pangan Banten
 
-Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenaran changelog sejak 2026-11-18 (sebelumnya di `docs/18-changelog.md`).
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenaran changelog sejak 2026-11-18 (`docs/` lama dihapus).
 
 ## [Unreleased] — 2026-11-18
 
@@ -10,6 +10,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - View `admin/cctvs/monitoring-dashboard.blade.php` (dead code, tidak ada route) dihapus.
 - `LaporanController::create()` (tidak ada route) dihapus.
 - `monitoringDashboard()` (dead code) dihapus.
+- Direktori `docs/` (20 file) dihapus; isinya usang/salah (Absensi, `ip_address`/`hls_url`, MySQL/Redis, Laravel Cloud) dan digantikan dokumen root.
 
 ### Added
 - `manajerial.dashboard`, `manajerial.settings`, `kepala-dapur.dashboard`, `kepala-dapur.settings` views (sebelumnya 500).
@@ -19,7 +20,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - Indeks `laporans(dapur_id,status)`, `laporans(created_by)`, `laporans(created_at)`, `dapur_user(user_id)` (migrasi `2026_11_18_000002`).
 - `$tries=3` + `$backoff=[30,120,300]` pada `CctvHealthCheckJob`; `retry_after` queue 90→300.
 - `scripts/backup-db.sh` (pg_dump + retensi 14 hari).
-- `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`, `docs/` lama ditandai usang).
+- `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`).
 
 ### Fixed
 - `manajerial.dashboard` route memanggil `Laporan::with('user')` (relasi tidak ada) → `with('createdBy')`.

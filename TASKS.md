@@ -21,7 +21,7 @@
 - [ ] `scripts/backup-db.sh` diverifikasi restore setidaknya 1×
 
 ## Penting, bisa dikerjakan sekarang
-- [ ] `docs/06-cctv-monitoring.md`, `docs/09-mobile-api.md`, `docs/14-database-schema.md` — ditandai "usang, lihat root docs" (masih salah soal Absensi/IP/HLS)
+
 - [ ] Sidebar di `admin/layouts/app.blade.php` menampilkan link admin-only untuk manajerial/kepala-dapur (mengklik → 403). Buat sidebar role-aware atau layout read-only terpisah saat dashboard pimpinan dirancang
 - [ ] `FcmService::sendAbsensiReminder()` belum dipanggil dari mana pun (Absensi dihapus) — hapus atau daur ulang untuk pengingat laporan
 - [ ] `cctv:health-check` belum mengukur durasi per batch (untuk skala worker nyata)

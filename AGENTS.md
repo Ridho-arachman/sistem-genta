@@ -130,4 +130,4 @@ Aturan Laravel Boost di atas tetap berlaku. Dokumen proyek (root repo):
 - AI (belum ada fitur): `PROMPT_ENGINEERING.md`, `AI_EVALUATION_AND_BENCHMARKS.md`, `MEMORY_AND_CONTEXT.md`, `COST_AND_RATE_LIMITS.md`
 - Status: `CHANGELOG.md` (kebenaran perubahan), `TASKS.md` (backlog)
 
-`docs/` adalah modul lama (usang sebagian); lihat `docs/README.md` sebelum memakainya. Jangan gunakan dokumen usang untuk keputusan baru.
+`docs/` (modul lama, usang) dihapus 2026-11-18; sumber kebenaran tunggal adalah dokumen root di atas.

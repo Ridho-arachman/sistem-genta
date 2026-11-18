@@ -38,7 +38,7 @@ Middleware `role:<nama>` (`App\Http\Middleware\RoleMiddleware`) dan `restrict.pe
 - `pengawas` → mobile/web terbatas
 
 ## Keputusan arsitektur
-Lihat `docs/19-architecture-decisions.md` (index lama, akan dirapikan) dan bagian "Keputusan" di `TASKS.md`. Ringkasan keputusan terpenting:
+Bagian "Keputusan" di `TASKS.md`. Ringkasan keputusan terpenting:
 1. Pull (bukan push) RTSP; `sourceOnDemand` agar kamera idle tidak mengonsumsi bandwidth/NVR-CPU.
 2. HLS URL diturunkan dari `CCTV_HLS_BASE` + `stream_key` (tidak disimpan di DB; kolom `hls_url`/`ip_address` dihapus).
 3. Queue driver database (tidak perlu Redis); `retry_after` 300 > timeout job 180.

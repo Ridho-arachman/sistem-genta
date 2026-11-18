@@ -118,7 +118,6 @@ routes/web.php                # Rute web dan API mobile
 database/migrations/          # Skema database
 database/seeders/             # Data awal peran, dapur, CCTV, pengaturan
 android/  ios/                # Proyek Capacitor
-docs/                         # Dokumentasi teknis per modul
 ```
 
 ## Instalasi
@@ -292,7 +291,7 @@ php artisan view:cache
 ```
 
 ## Dokumentasi
-Dokumentasi teknis per modul tersedia di direktori [`docs/`](docs/) (usang sebagian — lihat `docs/README.md`), dan dokumen utama di root repo: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [TRD](TRD.md), [DATABASE](DATABASE.md), [API](API.md), [TESTING](TESTING.md), [CHANGELOG](CHANGELOG.md), [TASKS](TASKS.md).
+Penamaan docs utama di root repo: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [TRD](TRD.md), [DATABASE](DATABASE.md), [API](API.md), [TESTING](TESTING.md), [CHANGELOG](CHANGELOG.md), [TASKS](TASKS.md).
 
 ## Dokumentasi Komponen CSS (`resources/css/app.css`)
 
