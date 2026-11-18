@@ -17,8 +17,11 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn btn-secondary">Edit</a>
-                <a href="{{ route('admin.dapurs.index') }}" class="btn btn-secondary">Kembali</a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn btn-secondary">Edit</a>
+                @endif
+                @php $backRoute = auth()->user()->isAdmin() ? 'admin.dapurs.index' : (auth()->user()->isManajerial() ? 'manajerial.dapurs.index' : 'kepala-dapur.dapurs.index'); @endphp
+                <a href="{{ route($backRoute) }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
 

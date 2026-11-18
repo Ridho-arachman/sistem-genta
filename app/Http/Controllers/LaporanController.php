@@ -35,11 +35,6 @@ class LaporanController extends Controller
         return view('admin.laporan.index', compact('laporans', 'laporanRows'));
     }
 
-    public function create()
-    {
-        return view('pengawas.laporan.create');
-    }
-
     public function store(Request $request)
     {
         $user = $request->user();

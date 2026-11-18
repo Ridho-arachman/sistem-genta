@@ -33,7 +33,6 @@ jobs:
       - name: Pint
         run: vendor/bin/pint --test --format=github
 
-      # Suite penuh masih memiliki tes lama yang gagal (dashboard manajerial/
-      # kepala-dapur, DapurTest, LaporanFactory). CI menjaga area yang aktif.
+      # Suite penuh hijau sejak 2026-11-18 (view manajerial/kepala-dapur dibuat, tes diperbaiki).
       - name: Tests
-        run: vendor/bin/pest tests/Feature/CctvTest.php tests/Feature/CctvHealthCheckTest.php tests/Feature/MediaMtxClientTest.php tests/Feature/LoginRateLimitTest.php --compact
+        run: vendor/bin/pest --compact

@@ -49,11 +49,10 @@ class CctvAlertJob implements ShouldQueue
                 'action_url' => $dapur ? "/admin/cctvs?dapur_id={$dapur->id}" : null,
             ]);
         } elseif ($dapur) {
-            // Notify pengawas assigned to this dapur (optional: you can add dapur-user relation)
+            // Notify pengawas assigned to this dapur (relasi pivot dapur_user)
             $pengawas = User::where('role', 'pengawas')
-                ->whereHas('absensis', function ($q) use ($dapur) {
-                    $q->where('dapur_id', $dapur->id)
-                        ->whereDate('created_at', today());
+                ->whereHas('dapurs', function ($q) use ($dapur) {
+                    $q->where('dapur_user.dapur_id', $dapur->id);
                 })
                 ->get();
 

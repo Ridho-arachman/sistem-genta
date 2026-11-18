@@ -178,14 +178,7 @@ class DapurController extends Controller
             ];
         }
 
-        if ($user->isManajerial()) {
-            return view('manajerial.dapurs.index', compact('dapurs'));
-        }
-
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.dapurs.index', compact('dapurs'));
-        }
-
+        // Manajerial & kepala dapur memakai tampilan admin (read-only via guard tombol di view).
         return view('admin.dapurs.index', compact('dapurs', 'dapurData', 'filterOptions', 'allKecamatanMap'));
     }
 
@@ -247,18 +240,11 @@ class DapurController extends Controller
 
         $dapur->load(['cctvs', 'pengawas', 'kepalaDapur']);
 
-        if ($user->isManajerial()) {
-            return view('manajerial.dapurs.show', compact('dapur'));
-        }
-
         if ($user->isPengawas()) {
             return view('pengawas.dapurs.show', compact('dapur'));
         }
 
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.dapurs.show', compact('dapur'));
-        }
-
+        // Manajerial & kepala dapur: tampilan admin read-only (tombol tulis disembunyikan di view).
         return view('admin.dapurs.show', compact('dapur'));
     }
 

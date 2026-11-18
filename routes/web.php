@@ -206,7 +206,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
             ];
 
             $dapurs = Dapur::with('cctvs')->get();
-            $recentLaporans = Laporan::with('user', 'dapur')->latest()->limit(10)->get();
+            $recentLaporans = Laporan::with('createdBy', 'dapur')->latest()->limit(10)->get();
 
             return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentLaporans'));
         })->name('dashboard');

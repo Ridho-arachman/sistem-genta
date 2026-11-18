@@ -18,7 +18,7 @@ test('admin can view dapur index', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.dapurs.index'))
         ->assertOk()
-        ->assertSee('Daftar Dapur');
+        ->assertSee('Data Dapur');
 });
 
 test('pengawas cannot view dapur index via web', function () {

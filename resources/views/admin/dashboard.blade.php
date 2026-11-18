@@ -12,7 +12,7 @@
             <span>Tambah User</span>
         </a>
     </x-slot:actions>
-</x-admin-page-heading>
+</x-admin::page-heading>
 
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
     <x-admin::stat-card label="Total Dapur" :value="$stats['total_dapur']" note="Lokasi terdaftar dalam sistem" icon="⌂" />
@@ -179,7 +179,7 @@
             <div class="space-y-4">
                 <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
                     <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                    <div class="flex-1 min-w-0"><strong>Laporan inspeksi baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentLaporans->first()->user->name ?? 'Pengawas' }} · {{ $dapurs->first()->nama ?? 'Dapur' }}</p></div>
+                    <div class="flex-1 min-w-0"><strong>Laporan inspeksi baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentLaporans->first()?->createdBy?->name ?? 'Pengawas' }} · {{ $dapurs->first()?->nama ?? 'Dapur' }}</p></div>
                     <time class="text-sm text-[var(--color-text-muted)]">{{ now()->format('H:i') }}</time>
                 </div>
                 <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">

@@ -80,11 +80,6 @@ class User extends Authenticatable
         });
     }
 
-    public function absensis(): HasMany
-    {
-        return $this->hasMany(Absensi::class);
-    }
-
     public function registeredUsers(): HasMany
     {
         return $this->hasMany(User::class, 'registered_by');
@@ -204,16 +199,6 @@ class User extends Authenticatable
     public function canViewCctvDashboard(): bool
     {
         return $this->hasRole(['admin', 'manajerial', 'kepala_dapur']);
-    }
-
-    public function canViewAbsensi(): bool
-    {
-        return $this->hasRole(['admin', 'pengawas', 'manajerial']);
-    }
-
-    public function canManageAbsensi(): bool
-    {
-        return $this->hasRole(['admin', 'pengawas']);
     }
 
     public function canExportReports(): bool

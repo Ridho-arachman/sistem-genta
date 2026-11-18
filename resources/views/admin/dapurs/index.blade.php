@@ -2,12 +2,14 @@
 
 @section('page_content')
 <x-admin::page-heading title="Data Dapur" subtitle="Kelola dapur pangan dan geofence absensi">
+    @if (auth()->user()->isAdmin())
     <x-slot:actions>
         <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary">
             <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Tambah Dapur</span>
         </a>
     </x-slot:actions>
+    @endif
 </x-admin::page-heading>
 
 <div x-data="dapurList(@js($allKecamatanMap ?? []), @js($dapurData ?? []), @js(route('admin.dapurs.show', ':id')))">
@@ -102,12 +104,14 @@
                     </svg>
                 </div>
             </x-slot:icon>
+            @if (auth()->user()->isAdmin())
             <x-slot:action>
                 <a href="{{ route('admin.dapurs.create') }}" class="btn btn-primary inline-flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah Dapur
                 </a>
             </x-slot:action>
+            @endif
         </x-admin::empty-state>
     @endif
 </x-admin::panel>

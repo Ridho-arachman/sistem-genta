@@ -11,12 +11,15 @@
                 <p class="text-[var(--color-text-muted)] mt-1">{{ $cctv->dapur->nama }}</p>
             </div>
             <div class="flex gap-2">
+                @if (auth()->user()->isAdmin())
                 <a href="{{ route('admin.cctvs.edit', $cctv) }}" class="btn btn-secondary">Edit</a>
                 <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="btn btn-secondary flex items-center gap-2">
                     <span>!</span>
                     <span>Laporkan Anomali</span>
                 </a>
-                <a href="{{ route('admin.cctvs.index') }}" class="btn btn-secondary">Kembali</a>
+                @endif
+                @php $backRoute = auth()->user()->isAdmin() ? 'admin.cctvs.index' : (auth()->user()->isManajerial() ? 'manajerial.cctvs.index' : 'kepala-dapur.cctvs.index'); @endphp
+                <a href="{{ route($backRoute) }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
 

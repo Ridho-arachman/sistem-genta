@@ -76,14 +76,8 @@ class CctvController extends Controller
 
         $cctvs = $cctvQuery->orderBy('dapur_id')->orderBy('camera_number')->paginate(10);
 
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
-        } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
-        }
-
+        // Manajerial & kepala dapur memakai tampilan yang sama; tombol tulis
+        // disembunyikan lewat @if di view (mereka tidak punya route tulis).
         return view('admin.cctvs.index', compact('cctvs', 'kabupatenKotas', 'kecamatans', 'filteredDapurs', 'provinsi', 'kabupatenKota', 'kecamatan', 'dapurId'));
     }
 
@@ -132,14 +126,6 @@ class CctvController extends Controller
         }
 
         $cctv->load('dapur');
-
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.show', compact('cctv'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.show', compact('cctv'));
-        } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.show', compact('cctv'));
-        }
 
         return view('admin.cctvs.show', compact('cctv'));
     }
@@ -204,33 +190,5 @@ class CctvController extends Controller
         if ($cctv->stream_key) {
             $this->mediaMtx->addPath($cctv->stream_key, $cctv->rtsp_url);
         }
-    }
-
-    public function monitoringDashboard()
-    {
-        $user = auth()->user();
-
-        if (! $user->hasRole(['admin', 'manajerial', 'kepala_dapur', 'pengawas'])) {
-            abort(403);
-        }
-
-        $dapurIds = $user->getAccessibleDapurIds();
-
-        // Batasi jumlah tile per halaman supaya tidak membuka ribuan stream sekaligus.
-        $cctvs = Cctv::with('dapur')
-            ->whereIn('dapur_id', $dapurIds)
-            ->orderBy('dapur_id')
-            ->orderBy('camera_number')
-            ->paginate(24);
-
-        if ($user->isKepalaDapur()) {
-            return view('kepala-dapur.cctvs.monitoring-dashboard', compact('cctvs'));
-        } elseif ($user->isManajerial()) {
-            return view('manajerial.cctvs.monitoring-dashboard', compact('cctvs'));
-        } elseif ($user->isPengawas()) {
-            return view('pengawas.cctvs.monitoring-dashboard', compact('cctvs'));
-        }
-
-        return view('admin.cctvs.monitoring-dashboard', compact('cctvs'));
     }
 }

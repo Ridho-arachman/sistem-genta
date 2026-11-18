@@ -40,11 +40,6 @@ class Dapur extends Model
         return $this->hasMany(Cctv::class);
     }
 
-    public function absensis(): HasMany
-    {
-        return $this->hasMany(Absensi::class);
-    }
-
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

@@ -17,7 +17,7 @@ test('user can login', function () {
     ]);
 
     $response->assertRedirect(route('dashboard'));
-    $this->assertAuthenticatedAs($user);
+    $this->assertSame((string) $user->getKey(), (string) $this->app->make('auth')->guard()->user()->getKey());
 });
 
 test('login fails with wrong password', function () {
