@@ -6,67 +6,47 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CctvAnomalyReportController;
 use App\Http\Controllers\CctvController;
 use App\Http\Controllers\DapurController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SpWarningController;
-use App\Models\Cctv;
-use App\Models\CctvAnomalyReport;
-use App\Models\Dapur;
-use App\Models\Laporan;
-use App\Models\SpWarning;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// ==================== LANDING & AUTH ====================
 Route::get('/', [LandingController::class, 'home'])->name('home');
 
-// Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Password Reset
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
 
-// Protected routes
+// ==================== PROTECTED ROUTES ====================
 Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
-    // Dashboard - role based
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->isPengawas()) {
-            return redirect()->route('pengawas.dashboard');
-        } elseif ($user->isManajerial()) {
-            return redirect()->route('manajerial.dashboard');
-        } elseif ($user->isKepalaDapur()) {
-            return redirect()->route('kepala-dapur.dashboard');
-        }
+    // Dashboard - redirect per peran
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        abort(403);
-    })->name('dashboard');
-
-    // ==================== ADMIN ROUTES ====================
+    // ==================== ADMIN ====================
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-        // User Management
-        Route::get('/users', [AdminController::class, 'users'])->name('users');
-        Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
-        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-        Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
-        Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
-        Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+        // Users
+        Route::get('users', [AdminController::class, 'users'])->name('users');
+        Route::get('users/create', [AdminController::class, 'createUser'])->name('users.create');
+        Route::post('users', [AdminController::class, 'storeUser'])->name('users.store');
+        Route::get('users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+        Route::put('users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+        Route::delete('users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 
-        // Archived Users (Soft Deleted) - pakai ID manual, bukan route model binding
-        Route::get('/users/archive', [AdminController::class, 'archivedUsers'])->name('users.archive');
-        Route::post('/users/{id}/restore', [AdminController::class, 'restoreUser'])->name('users.restore');
-        Route::delete('/users/{id}/force', [AdminController::class, 'forceDeleteUser'])->name('users.force');
+        // Archived Users (soft deleted) - pakai ID manual, bukan route model binding
+        Route::get('users/archive', [AdminController::class, 'archivedUsers'])->name('users.archive');
+        Route::post('users/{id}/restore', [AdminController::class, 'restoreUser'])->name('users.restore');
+        Route::delete('users/{id}/force', [AdminController::class, 'forceDeleteUser'])->name('users.force');
 
         // SP Warnings
         // export WAJIB sebelum resource: rute {sp_warning} akan menelan '/export' kalau urutannya sesudah
@@ -81,15 +61,17 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 
         // Dapur (full CRUD)
         Route::resource('dapurs', DapurController::class)->names('dapurs');
+
+        // CCTV
         Route::get('cctvs/monitoring', function () {
             return redirect()->route('admin.cctvs.index');
         })->name('cctvs.monitoring');
         Route::resource('cctvs', CctvController::class)->names('cctvs');
 
         // Laporan Pengawasan
-        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
-        Route::put('/laporan/{laporan}', [LaporanController::class, 'update'])->name('laporan.update');
+        Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
+        Route::put('laporan/{laporan}', [LaporanController::class, 'update'])->name('laporan.update');
 
         // Inspeksi (monitor & export)
         Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
@@ -101,177 +83,96 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         // Settings
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
-
-        // Profile Settings
         Route::get('settings/profile', [AdminController::class, 'editProfile'])->name('settings.profile');
         Route::put('settings/profile', [AdminController::class, 'updateProfile'])->name('settings.profile.update');
     });
 
-    // ==================== PENGAWAS ROUTES ====================
-    Route::middleware(['web', 'role:pengawas'])->prefix('pengawas')->name('pengawas.')->group(function () {
-        Route::get('/dashboard', function () {
-            $user = auth()->user();
-            $dapurs = Dapur::forUser($user)
-                ->withCount(['cctvs', 'cctvs as cctv_online_count' => fn ($q) => $q->where('status', 'online')])
-                ->get();
-
-            $stats = [
-                'total_dapur' => $dapurs->count(),
-                'total_cctv' => $dapurs->sum('cctvs_count'),
-                'cctv_online' => $dapurs->sum('cctv_online_count'),
-                'laporan_hari_ini' => Laporan::where('created_by', $user->id)->whereDate('created_at', today())->count(),
-                'temuan_terbuka' => CctvAnomalyReport::whereHas('cctv.dapur', fn ($q) => $q->whereIn('id', $dapurs->pluck('id')))->where('status', '!=', 'selesai')->count(),
-            ];
-
-            return view('pengawas.dashboard', compact('dapurs', 'stats'));
-        })->name('dashboard');
+    // ==================== PENGAWAS ====================
+    Route::middleware(['role:pengawas'])->prefix('pengawas')->name('pengawas.')->group(function () {
+        Route::get('dashboard', [DashboardController::class, 'pengawas'])->name('dashboard');
 
         // Dapur (detail only)
-        Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
+        Route::get('dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
         // Inspeksi
-        Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
-        Route::get('/inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
-        Route::post('/inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
-        Route::post('/inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
+        Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
+        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
+        Route::post('inspeksi/{inspeksi}/checkout', [InspeksiController::class, 'checkOut'])->name('inspeksi.checkout');
 
         // Laporan Pengawasan
-        Route::get('/laporan', function (Request $request) {
-            $query = Laporan::with('dapur', 'createdBy');
-
-            if ($request->filled('dapur_id')) {
-                $query->where('dapur_id', $request->dapur_id);
-            }
-
-            if ($request->filled('start_date')) {
-                $query->whereDate('created_at', '>=', $request->start_date);
-            }
-
-            if ($request->filled('end_date')) {
-                $query->whereDate('created_at', '<=', $request->end_date);
-            }
-
-            if ($request->filled('status')) {
-                $query->where('status', $request->status);
-            }
-
-            $laporans = $query->latest()->paginate(10)->withQueryString();
-
-            $dapurs = Dapur::forUser($request->user())->get();
-
-            return view('pengawas.laporan.index', compact('laporans', 'dapurs'));
-        })->name('laporan.index');
-        Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
-        Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
+        Route::get('laporan', [LaporanController::class, 'indexPengawas'])->name('laporan.index');
+        Route::get('laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
+        Route::post('laporan', [LaporanController::class, 'store'])->name('laporan.store');
 
         // Pengaturan
-        Route::get('/settings', function () {
+        Route::get('settings', function () {
             return view('pengawas.settings.index');
         })->name('settings');
-
-        Route::put('/settings/profile', function (Request $request) {
-            $user = $request->user();
-
-            $request->validate([
-                'current_password' => 'required',
-                'password' => 'required|min:8|confirmed',
-            ]);
-
-            if (! password_verify($request->current_password, $user->password)) {
-                return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
-            }
-
-            $user->password = Hash::make($request->password);
-            $user->save();
-
-            return back()->with('status', 'Password berhasil diperbarui.');
-        })->name('settings.profile.update');
+        Route::put('settings/profile', [AuthController::class, 'updatePassword'])->name('settings.profile.update');
     });
 
-    // ==================== MANAJERIAL ROUTES (READ ONLY) ====================
+    // ==================== MANAJERIAL (READ ONLY) ====================
     Route::middleware(['role:manajerial'])->prefix('manajerial')->name('manajerial.')->group(function () {
-        Route::get('/dashboard', function () {
-            $stats = [
-                'total_pengawas' => User::where('role', 'pengawas')->count(),
-                'total_manajerial' => User::where('role', 'manajerial')->count(),
-                'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
-                'total_dapur' => Dapur::count(),
-                'total_cctv' => Cctv::count(),
-                'cctv_online' => Cctv::where('status', 'online')->count(),
-                'cctv_offline' => Cctv::where('status', 'offline')->count(),
-                'cctv_maintenance' => Cctv::where('status', 'maintenance')->count(),
-                'laporan_hari_ini' => Laporan::whereDate('created_at', today())->count(),
-                'sp_warnings_aktif' => SpWarning::where('status', 'aktif')->count(),
-                'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
-            ];
-
-            $dapurs = Dapur::with('cctvs')->get();
-            $recentLaporans = Laporan::with('createdBy', 'dapur')->latest()->limit(10)->get();
-
-            return view('manajerial.dashboard', compact('stats', 'dapurs', 'recentLaporans'));
-        })->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'manajerial'])->name('dashboard');
 
         // Dapur (read only)
-        Route::get('/dapurs', [DapurController::class, 'index'])->name('dapurs.index');
-        Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
+        Route::get('dapurs', [DapurController::class, 'index'])->name('dapurs.index');
+        Route::get('dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
         // CCTV (read only)
-        Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
-        Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
+        Route::get('cctvs', [CctvController::class, 'index'])->name('cctvs.index');
+        Route::get('cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
 
         // CCTV Anomaly Reports (read + receive notifications)
         // export WAJIB sebelum rute {anomaly} supaya '/export' tidak tertelan binding
-        Route::get('/cctv-anomalies/export', [CctvAnomalyReportController::class, 'export'])->name('cctv-anomalies.export');
-        Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
-        Route::get('/cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
+        Route::get('cctv-anomalies/export', [CctvAnomalyReportController::class, 'export'])->name('cctv-anomalies.export');
+        Route::get('cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
+        Route::get('cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
 
         // SP Warnings (read - receive copy)
-        Route::get('/sp-warnings', [SpWarningController::class, 'index'])->name('sp-warnings.index');
-        Route::get('/sp-warnings/{warning}', [SpWarningController::class, 'show'])->name('sp-warnings.show');
+        Route::get('sp-warnings', [SpWarningController::class, 'index'])->name('sp-warnings.index');
+        Route::get('sp-warnings/{warning}', [SpWarningController::class, 'show'])->name('sp-warnings.show');
 
         // Inspeksi (read + export)
-        Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
-        Route::get('/inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
-        Route::post('/inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
-        Route::get('/inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
+        Route::get('inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('inspeksi/create', [InspeksiController::class, 'create'])->name('inspeksi.create');
+        Route::post('inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
+        Route::get('inspeksi/export', [InspeksiController::class, 'export'])->name('inspeksi.export');
 
         // Settings (read only)
-        Route::get('/settings', function () {
+        Route::get('settings', function () {
             return view('manajerial.settings');
         })->name('settings');
     });
 
-    // ==================== KEPALA DAPUR ROUTES ====================
+    // ==================== KEPALA DAPUR ====================
     Route::middleware(['role:kepala_dapur'])->prefix('kepala-dapur')->name('kepala-dapur.')->group(function () {
-        Route::get('/dashboard', function () {
-            $user = auth()->user();
-            $dapurs = Dapur::forUser($user)->with('cctvs')->get();
-
-            return view('kepala-dapur.dashboard', compact('dapurs'));
-        })->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'kepalaDapur'])->name('dashboard');
 
         // Dapur (read only)
-        Route::get('/dapurs', [DapurController::class, 'index'])->name('dapurs.index');
-        Route::get('/dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
+        Route::get('dapurs', [DapurController::class, 'index'])->name('dapurs.index');
+        Route::get('dapurs/{dapur}', [DapurController::class, 'show'])->name('dapurs.show');
 
-        // CCTV Dashboard
-        Route::get('/cctvs', [CctvController::class, 'index'])->name('cctvs.index');
-        Route::get('/cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
+        // CCTV (read only)
+        Route::get('cctvs', [CctvController::class, 'index'])->name('cctvs.index');
+        Route::get('cctvs/{cctv}', [CctvController::class, 'show'])->name('cctvs.show');
+
         // CCTV Anomaly History (read only)
-        Route::get('/cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
-        Route::get('/cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
+        Route::get('cctv-anomalies', [CctvAnomalyReportController::class, 'index'])->name('cctv-anomalies.index');
+        Route::get('cctv-anomalies/{anomaly}', [CctvAnomalyReportController::class, 'show'])->name('cctv-anomalies.show');
 
-        // Settings
-        Route::get('/settings', function () {
+        // Settings (read only)
+        Route::get('settings', function () {
             return view('kepala-dapur.settings');
         })->name('settings');
     });
 });
 
-// API Routes for Mobile App
+// ==================== MOBILE API (Sanctum) ====================
 Route::prefix('api/mobile')->middleware(['auth:sanctum'])->group(function () {
-    Route::post('/fcm-token', [MobileController::class, 'storeFcmToken']);
-    Route::post('/sync-locations', [MobileController::class, 'syncLocations']);
-    Route::get('/dapurs/geofences', [MobileController::class, 'getGeofences']);
-    Route::post('/absensi/auto-checkin', [MobileController::class, 'autoCheckin']);
+    Route::post('fcm-token', [MobileController::class, 'storeFcmToken']);
+    Route::post('sync-locations', [MobileController::class, 'syncLocations']);
+    Route::get('dapurs/geofences', [MobileController::class, 'getGeofences']);
+    Route::post('absensi/auto-checkin', [MobileController::class, 'autoCheckin']);
 });

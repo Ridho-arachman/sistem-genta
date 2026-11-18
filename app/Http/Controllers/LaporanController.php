@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
@@ -33,6 +34,33 @@ class LaporanController extends Controller
         })->toArray();
 
         return view('admin.laporan.index', compact('laporans', 'laporanRows'));
+    }
+
+    public function indexPengawas(Request $request)
+    {
+        $query = Laporan::with('dapur', 'createdBy');
+
+        if ($request->filled('dapur_id')) {
+            $query->where('dapur_id', $request->dapur_id);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $laporans = $query->latest()->paginate(10)->withQueryString();
+
+        $dapurs = Dapur::forUser($request->user())->get();
+
+        return view('pengawas.laporan.index', compact('laporans', 'dapurs'));
     }
 
     public function store(Request $request)

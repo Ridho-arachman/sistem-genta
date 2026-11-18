@@ -141,4 +141,26 @@ class AuthController extends Controller
 
         return redirect('/');
     }
+
+    /**
+     * Ganti password untuk pengawas (via pengaturan profil).
+     */
+    public function updatePassword(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        if (! password_verify($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return back()->with('status', 'Password berhasil diperbarui.');
+    }
 }
