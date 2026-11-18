@@ -1,5 +1,9 @@
 # Mobile API Documentation
 
+> **USANG** (2026-11-18): `routes/api.php` tidak ada; endpoint mobile di `routes/web.php` (`/api/mobile`, Sanctum); `absensi` dihapus; gunakan `../API.md`, `../TRD.md`.
+
+# Mobile API Documentation
+
 ## Overview
 RESTful API for mobile application (Android/iOS) used by pengawas (supervisors) for field operations.
 

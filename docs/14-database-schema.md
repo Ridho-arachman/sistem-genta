@@ -1,5 +1,9 @@
 # Database Schema Documentation
 
+> **USANG** (2026-11-18): kolom `ip_address`/`hls_url` di-drop; tabel `absensis` dihapus; indeks & jobs PK diperbarui; gunakan `../DATABASE.md` untuk skema saat ini.
+
+# Database Schema Documentation
+
 ## Overview
 Complete database schema for GENTA Pangan Banten application with all tables, relationships, and indexes.
 

@@ -118,3 +118,16 @@
 - After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
 
 </laravel-boost-guidelines>
+
+<!-- genta-project-docs -->
+# GENTA — Peta dokumentasi
+
+Aturan Laravel Boost di atas tetap berlaku. Dokumen proyek (root repo):
+
+- Produk & kode: `PRD.md`, `TRD.md`, `ARCHITECTURE.md`, `APP_FLOW.md`, `DATABASE.md`, `API.md`
+- Frontend & UX: `DESIGN_SYSTEM.md`, `RESPONSIVE.md`, `ERROR_STATES.md`, `PERFORMANCE.md`
+- Proses & kualitas: `TESTING.md`, `CODE_STYLE.md`, `ENV.md`, `SECURITY.md`, `IMPLEMENTATION_PLAN.md`
+- AI (belum ada fitur): `PROMPT_ENGINEERING.md`, `AI_EVALUATION_AND_BENCHMARKS.md`, `MEMORY_AND_CONTEXT.md`, `COST_AND_RATE_LIMITS.md`
+- Status: `CHANGELOG.md` (kebenaran perubahan), `TASKS.md` (backlog)
+
+`docs/` adalah modul lama (usang sebagian); lihat `docs/README.md` sebelum memakainya. Jangan gunakan dokumen usang untuk keputusan baru.

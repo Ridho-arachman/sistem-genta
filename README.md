@@ -292,8 +292,7 @@ php artisan view:cache
 ```
 
 ## Dokumentasi
-
-Dokumentasi teknis per modul tersedia di direktori [`docs/`](docs/), dimulai dari [Project Overview](docs/01-project-overview.md).
+Dokumentasi teknis per modul tersedia di direktori [`docs/`](docs/) (usang sebagian — lihat `docs/README.md`), dan dokumen utama di root repo: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [TRD](TRD.md), [DATABASE](DATABASE.md), [API](API.md), [TESTING](TESTING.md), [CHANGELOG](CHANGELOG.md), [TASKS](TASKS.md).
 
 ## Dokumentasi Komponen CSS (`resources/css/app.css`)
 

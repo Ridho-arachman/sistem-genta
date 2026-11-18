@@ -1,5 +1,9 @@
 # CCTV Monitoring System Documentation
 
+> **USANG** (2026-11-18): kolom `ip_address`/`hls_url` sudah dihapus, `stream_url` diturunkan dari `CCTV_HLS_BASE + stream_key`, kesehatan kamera lewat ffprobe tiap 5 menit. LIHAT root: `ARCHITECTURE.md`, `DATABASE.md`, `TRD.md`.
+
+# CCTV Monitoring System Documentation
+
 ## Overview
 Complete CCTV device management with status tracking, anomaly detection, and monitoring capabilities.
 
