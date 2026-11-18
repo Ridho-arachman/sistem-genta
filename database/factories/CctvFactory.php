@@ -21,9 +21,7 @@ class CctvFactory extends Factory
         return [
             'dapur_id' => Dapur::factory(),
             'nama' => fake()->randomElement($sections).' '.fake()->randomElement(['Kiri', 'Kanan', 'Tengah']),
-            'ip_address' => fake()->ipv4(),
             'rtsp_url' => 'rtsp://'.fake()->userName().':'.fake()->password().'@'.fake()->ipv4().':554/stream',
-            'hls_url' => null,
             'status' => 'online',
             'section' => fake()->randomElement($sections),
             'camera_number' => fake()->numberBetween(1, 5),

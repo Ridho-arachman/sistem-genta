@@ -44,31 +44,13 @@
                 </x-admin::form-field>
             </div>
 
-            <x-admin::form-field label="IP Address" name="ip_address">
+            <x-admin::form-field label="RTSP URL" name="rtsp_url">
                 <div class="relative">
-                    <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m4 0h2a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-4-4h4m0 0l3-3m-3 3l-3-3"></path></svg>
-                    <input id="ip_address" type="text" name="ip_address" value="{{ old('ip_address') }}"
-                           class="input input-bordered pl-10" placeholder="Contoh: 192.168.1.100">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <input id="rtsp_url" type="text" name="rtsp_url" value="{{ old('rtsp_url') }}"
+                           class="input input-bordered pl-10" placeholder="rtsp://user:pass@ip:554/stream">
                 </div>
             </x-admin::form-field>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <x-admin::form-field label="RTSP URL" name="rtsp_url">
-                    <div class="relative">
-                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        <input id="rtsp_url" type="text" name="rtsp_url" value="{{ old('rtsp_url') }}"
-                               class="input input-bordered pl-10" placeholder="rtsp://user:pass@ip:554/stream">
-                    </div>
-                </x-admin::form-field>
-
-                <x-admin::form-field label="HLS URL (streaming web)" name="hls_url">
-                    <div class="relative">
-                        <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        <input id="hls_url" type="text" name="hls_url" value="{{ old('hls_url') }}"
-                               class="input input-bordered pl-10" placeholder="https://domain.com/stream.m3u8">
-                    </div>
-                </x-admin::form-field>
-            </div>
 
             <x-admin::form-field label="Status" name="status" required>
                 <select id="status" name="status" required class="select select-bordered">

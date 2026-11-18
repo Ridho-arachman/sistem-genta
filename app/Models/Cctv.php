@@ -15,8 +15,8 @@ class Cctv extends Model
     /** @use HasFactory<CctvFactory> */
     use HasFactory;
 
-    #[Fillable(['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'])]
-    protected $fillable = ['dapur_id', 'nama', 'ip_address', 'rtsp_url', 'hls_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'];
+    #[Fillable(['dapur_id', 'nama', 'rtsp_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'])]
+    protected $fillable = ['dapur_id', 'nama', 'rtsp_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'];
 
     protected $keyType = 'string';
 

@@ -28,9 +28,7 @@ test('admin can create cctv', function () {
         ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Depan',
-            'ip_address' => '192.168.1.100',
             'rtsp_url' => 'rtsp://admin:pass@192.168.1.100:554/stream',
-            'hls_url' => 'https://example.com/stream.m3u8',
             'status' => 'online',
         ])
         ->assertRedirect(route('admin.cctvs.index'))
@@ -61,9 +59,7 @@ test('user can update cctv', function () {
         ->put(route('admin.cctvs.update', $cctv), [
             'dapur_id' => $this->dapur->id,
             'nama' => 'Kamera Utama Updated',
-            'ip_address' => '192.168.1.101',
             'rtsp_url' => 'rtsp://admin:pass@192.168.1.101:554/stream',
-            'hls_url' => 'https://example.com/new-stream.m3u8',
             'status' => 'online',
         ])
         ->assertRedirect(route('admin.cctvs.index'))
@@ -91,15 +87,13 @@ test('cctv show page loads', function () {
     $cctv = Cctv::factory()->create([
         'dapur_id' => $this->dapur->id,
         'rtsp_url' => 'rtsp://example.com/stream',
-        'hls_url' => 'https://example.com/stream.m3u8',
     ]);
 
     $this->actingAs($this->admin)
         ->get(route('admin.cctvs.show', $cctv))
         ->assertOk()
         ->assertSee($cctv->nama)
-        ->assertSee($cctv->rtsp_url)
-        ->assertSee($cctv->hls_url);
+        ->assertSee($cctv->rtsp_url);
 });
 
 test('monitoring page redirects to cctv index', function () {
@@ -138,7 +132,6 @@ test('stream url diturunkan dari base media server', function () {
 
     $cctv = Cctv::factory()->create([
         'dapur_id' => $this->dapur->id,
-        'hls_url' => 'https://example.com/stream.m3u8',
     ]);
 
     expect($cctv->stream_url)->toBe('http://mediamtx.local:8888/'.$cctv->stream_key.'/index.m3u8');
@@ -147,10 +140,8 @@ test('stream url diturunkan dari base media server', function () {
 test('stream url memakai hls_url manual saat media server belum dikonfigurasi', function () {
     config(['cctv.hls_base' => null]);
 
-    $cctv = Cctv::factory()->create([
-        'dapur_id' => $this->dapur->id,
-        'hls_url' => 'https://example.com/stream.m3u8',
-    ]);
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+    $cctv->forceFill(['hls_url' => 'https://example.com/stream.m3u8']);
 
     expect($cctv->stream_url)->toBe('https://example.com/stream.m3u8');
 });

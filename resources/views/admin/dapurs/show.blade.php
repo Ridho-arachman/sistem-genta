@@ -124,7 +124,6 @@
                             <th>Nama</th>
                             <th>Area</th>
                             <th>Cam #</th>
-                            <th>IP Address</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -135,7 +134,6 @@
                             <td class="font-medium">{{ $cctv->nama }}</td>
                             <td>{{ $cctv->section ?? '-' }}</td>
                             <td>{{ $cctv->camera_number ?? '-' }}</td>
-                            <td class="text-[var(--color-text-muted)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</td>
                             <td>
                                 <span class="badge 
                                     @if($cctv->status === 'online') badge-success

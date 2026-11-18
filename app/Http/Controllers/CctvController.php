@@ -107,9 +107,7 @@ class CctvController extends Controller
         $validated = $request->validate([
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'nama' => ['required', 'string', 'max:255'],
-            'ip_address' => ['nullable', 'string', 'max:45'],
             'rtsp_url' => ['nullable', 'string', 'max:500', 'starts_with:rtsp://,rtsps://'],
-            'hls_url' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:online,offline,maintenance'],
             'section' => ['nullable', 'string', 'max:255'],
             'camera_number' => ['nullable', 'integer', 'min:1'],
@@ -166,9 +164,7 @@ class CctvController extends Controller
         $validated = $request->validate([
             'dapur_id' => ['required', 'exists:dapurs,id'],
             'nama' => ['required', 'string', 'max:255'],
-            'ip_address' => ['nullable', 'string', 'max:45'],
             'rtsp_url' => ['nullable', 'string', 'max:500', 'starts_with:rtsp://,rtsps://'],
-            'hls_url' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:online,offline,maintenance'],
             'section' => ['nullable', 'string', 'max:255'],
             'camera_number' => ['nullable', 'integer', 'min:1'],

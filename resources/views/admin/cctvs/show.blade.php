@@ -34,10 +34,6 @@
                 <p class="font-semibold text-[var(--color-secondary)]">{{ $cctv->camera_number ?? '-' }}</p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
-                <p class="text-sm text-[var(--color-text-muted)]">IP Address</p>
-                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm">{{ $cctv->ip_address ?? '-' }}</p>
-            </div>
-            <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">Status</p>
                 <p class="font-semibold text-[var(--color-secondary)]">
                     <span class="badge 
