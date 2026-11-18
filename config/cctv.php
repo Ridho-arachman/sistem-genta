@@ -2,7 +2,7 @@
 
 return [
     // Base URL HLS dari media server (MediaMTX), mis. http://mediamtx.local:8888.
-    // Kalau diisi, URL stream diturunkan dari stream_key kamera, bukan dari kolom hls_url.
+    // URL stream diturunkan dari stream_key kamera.
     'hls_base' => env('CCTV_HLS_BASE'),
 
     'mediamtx' => [
