@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="card card-bordered max-w-[720px]">
+    <div class="card border border-[var(--color-border)] bg-base-100 max-w-[720px]">
         <div class="card-body">
             <form method="POST" action="{{ route('pengawas.laporan.store') }}" id="laporanForm" x-ref="form" @submit.prevent="submit()" class="space-y-6">
                 @csrf

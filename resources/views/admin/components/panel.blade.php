@@ -7,7 +7,7 @@
 ])
 
 {{--
-    Pembungkus kartu standar halaman admin (card card-bordered + card-body).
+    Pembungkus kartu standar halaman admin (card + border + card-body).
 
     Pemakaian:
     <x-admin::panel title="Data Dapur" icon="home" subtitle="Total 12 dapur">
@@ -20,7 +20,7 @@
     - iconSvg : ikon custom (svg mentah) kalau tidak pakai prop icon (nama heroicon)
     - head    : override penuh area head (mis. headline justify-between)
 --}}
-<div {{ $attributes->merge(['class' => 'card card-bordered']) }}>
+<div {{ $attributes->merge(['class' => 'card border border-[var(--color-border)] bg-base-100']) }}>
     @if ($flush)
         {{ $slot }}
     @else

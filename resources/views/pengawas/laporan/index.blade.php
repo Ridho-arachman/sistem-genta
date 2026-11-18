@@ -5,7 +5,7 @@
     title="Laporan Pengawasan"
     subtitle="Rekap inspeksi dan tindak lanjut" />
 
-<div class="card card-bordered">
+<div class="card border border-[var(--color-border)] bg-base-100">
     <div class="card-body">
         {{-- Filter Form --}}
         <div class="bg-[var(--color-surface)] p-4 rounded-lg mb-6">
@@ -62,7 +62,7 @@
                                 <td>{{ $laporan->created_at->format('d M Y') }}</td>
                                 <td>{{ $laporan->dapur->nama ?? 'Dapur' }}</td>
                                 <td>
-                                    <span class="badge badge-{{ match($laporan->status) { 'diperiksa' => 'success', 'temuan' => 'danger', 'tindak lanjut' => 'warning', 'selesai' => 'success', default => 'info' } }}">{{ ucfirst($laporan->status) }}</span>
+                                    <span class="badge {{ match($laporan->status) { 'diperiksa' => 'badge-success', 'temuan' => 'badge-error', 'tindak lanjut' => 'badge-warning', 'selesai' => 'badge-success', default => 'badge-info' } }}">{{ ucfirst($laporan->status) }}</span>
                                 </td>
                                 <td>
                                     <a href="{{ route('pengawas.laporan.show', $laporan->id) }}" class="text-[var(--color-primary)] text-sm font-medium underline">Detail</a>

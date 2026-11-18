@@ -102,6 +102,7 @@
                 Reset
             </button>
         </div>
+    </div>
     </x-slot:head>
 
     <div class="overflow-x-auto">

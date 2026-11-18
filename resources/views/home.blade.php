@@ -75,21 +75,21 @@
                 </div>
 
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="card card-bordered bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
                         <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-agri-light text-white">
                             <x-heroicon name="sparkles" class="h-8 w-8" />
                         </div>
                         <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Visi</h3>
                         <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Terwujudnya ketahanan pangan Banten melalui sinergi petani, nelayan, dan pelaku UMKM lokal.</p>
                     </div>
-                    <div class="card card-bordered bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
                         <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-[var(--color-primary)]">
                             <x-heroicon name="arrow-up-right" class="h-8 w-8" />
                         </div>
                         <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Misi</h3>
                         <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Memperkuat kapasitas produksi pangan lokal melalui pelatihan, teknologi, dan akses pasar.</p>
                     </div>
-                    <div class="card card-bordered bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_8px_30px_rgb(229_0_0_/_0.08)]">
                         <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFF3E0] text-[#F57C00]">
                             <x-heroicon name="shield-check" class="h-8 w-8" />
                         </div>
@@ -111,21 +111,21 @@
                 </div>
 
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="card card-bordered bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
+                    <div class="card border border-[var(--color-border)] bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
                         <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/tanaman-pangan.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Tanaman Pangan</h3>
                             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Beras, jagung, kedelai, kacang tanah ,  komoditas utama ketahanan pangan nasional.</p>
                         </div>
                     </div>
-                    <div class="card card-bordered bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #43A047;">
+                    <div class="card border border-[var(--color-border)] bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #43A047;">
                         <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/hortikultura.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Hortikultura</h3>
                             <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">Sayuran, buah-buahan, tanaman obat, dan rempah-rempah bernilai ekonomi tinggi.</p>
                         </div>
                     </div>
-                    <div class="card card-bordered bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
+                    <div class="card border border-[var(--color-border)] bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--sector-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--sector-color: #2E7D32;">
                         <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/perkebunan.webp') }}');"></div>
                         <div class="p-6 text-center">
                             <h3 class="mb-2 text-lg font-semibold text-[var(--color-secondary)]">Perkebunan</h3>
@@ -147,7 +147,7 @@
                 </div>
 
                 <div class="grid gap-6 md:grid-cols-2">
-                    <div class="card card-bordered bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--program-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--program-color: #E50000;">
+                    <div class="card border border-[var(--color-border)] bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--program-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--program-color: #E50000;">
                         <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('/images/programs/MBG-2-765x510.webp');">
                             <div class="absolute inset-0 bg-linear-to-b from-black/30 to-black/50"></div>
                         </div>
@@ -168,7 +168,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="card card-bordered bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--program-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--program-color: #2E7D32;">
+                    <div class="card border border-[var(--color-border)] bg-base-100 relative overflow-hidden transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-(--program-color) hover:-translate-y-2 hover:shadow-[0_16px_48px_rgb(0_0_0_/_0.1)]" style="--program-color: #2E7D32;">
                         <div class="relative h-[180px] bg-cover bg-center" style="background-image: url('{{ asset('images/perkebunan.webp') }}');">
                             <div class="absolute inset-0 bg-linear-to-b from-black/30 to-black/50"></div>
                         </div>
@@ -229,28 +229,28 @@
                 </div>
 
                 <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="card card-bordered bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
                         <div class="mx-auto mb-4 flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-red-50 text-[var(--color-primary)]">
                             <x-heroicon name="location" class="h-5 w-5" />
                         </div>
                         <h3 class="mb-2 text-lg font-bold">Kantor Pusat</h3>
                         <p class="text-[var(--color-text-muted)]">{{ settings('office_address') ?? 'Gedung Pemprov Banten, Serang' }}</p>
                     </div>
-                    <div class="card card-bordered bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
                         <div class="mx-auto mb-4 flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-red-50 text-[var(--color-primary)]">
                             <x-heroicon name="mail" class="h-5 w-5" />
                         </div>
                         <h3 class="mb-2 text-lg font-bold">Email</h3>
                         <p class="text-[var(--color-text-muted)]">info@gentabanten.go.id</p>
                     </div>
-                    <div class="card card-bordered bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
                         <div class="mx-auto mb-4 flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-red-50 text-[var(--color-primary)]">
                             <x-heroicon name="phone" class="h-5 w-5" />
                         </div>
                         <h3 class="mb-2 text-lg font-bold">Telepon</h3>
                         <p class="text-[var(--color-text-muted)]">+62 254 123 456</p>
                     </div>
-                    <div class="card card-bordered bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
+                    <div class="card border border-[var(--color-border)] bg-base-100 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary">
                         <div class="mx-auto mb-4 flex h-[50px] w-[50px] items-center justify-center rounded-2xl bg-red-50 text-[var(--color-primary)]">
                             <x-heroicon name="users" class="h-5 w-5" />
                         </div>

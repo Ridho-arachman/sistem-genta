@@ -75,7 +75,7 @@
             @endforeach
         </ul>
 
-        <div class="card card-bordered mt-6 bg-base-200 p-3.5">
+        <div class="card border border-[var(--color-border)] mt-6 bg-base-200 p-3.5">
             <div class="mb-1.5 flex items-center gap-2">
                 <x-heroicon name="info" class="h-4 w-4 shrink-0 text-[var(--color-primary)]" />
                 <span class="text-[11px] font-bold uppercase tracking-wide text-[var(--color-secondary)]">Mode Produksi</span>

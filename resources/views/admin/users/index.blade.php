@@ -144,7 +144,8 @@
      x-on:open-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
      x-show="show" 
      x-cloak 
-     class="modal modal-open z-[1001]"
+     class="modal z-[1001]"
+     :class="show ? 'modal-open' : ''"
      x-transition:enter="transition ease-out duration-150"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"

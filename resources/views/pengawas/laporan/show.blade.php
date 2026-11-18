@@ -5,7 +5,7 @@
     title="Detail Laporan"
     subtitle="Informasi hasil inspeksi dapur (hanya dibaca)" />
 
-<div class="card card-bordered" x-data="photoPreview" @keydown.escape.window="close()">
+<div class="card border border-[var(--color-border)] bg-base-100" x-data="photoPreview" @keydown.escape.window="close()">
     <div class="card-body">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -52,9 +52,9 @@
                 'temuan_kritis' => 'Temuan kritis',
             ];
             $hasilBadge = [
-                'diperiksa' => 'success',
-                'temuan_sedang' => 'warning',
-                'temuan_kritis' => 'danger',
+                'diperiksa' => 'badge-success',
+                'temuan_sedang' => 'badge-warning',
+                'temuan_kritis' => 'badge-error',
             ];
         @endphp
         @if ($laporan->hasil->isNotEmpty())
@@ -63,7 +63,7 @@
                     <div class="border border-[var(--color-border)] rounded-lg p-3 bg-[var(--color-surface)]">
                         <div class="flex justify-between items-start mb-1">
                             <span class="text-sm font-medium text-[var(--color-text)]">{{ $hasil->indikator }}</span>
-                            <span class="badge badge-{{ $hasilBadge[$hasil->hasil] ?? 'info' }} text-[9px] uppercase">{{ $hasilLabels[$hasil->hasil] ?? $hasil->hasil }}</span>
+                            <span class="badge {{ $hasilBadge[$hasil->hasil] ?? 'badge-info' }} text-[9px] uppercase">{{ $hasilLabels[$hasil->hasil] ?? $hasil->hasil }}</span>
                         </div>
                     </div>
                 @endforeach

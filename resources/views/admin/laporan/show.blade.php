@@ -28,7 +28,7 @@
             <div>
                 <div class="mb-4">
                     <p class="text-sm text-[var(--color-text-muted)]">Status Saat Ini</p>
-                    <span class="badge badge-{{ match($laporan->status) { 'diperiksa' => 'success', 'temuan' => 'error', 'tindak lanjut' => 'warning', 'selesai' => 'success', default => 'secondary' } }}">{{ ucfirst($laporan->status) }}</span>
+                    <span class="badge {{ match($laporan->status) { 'diperiksa' => 'badge-success', 'temuan' => 'badge-error', 'tindak lanjut' => 'badge-warning', 'selesai' => 'badge-success', default => 'badge-secondary' } }}">{{ ucfirst($laporan->status) }}</span>
                 </div>
                 <div class="mb-4">
                     <p class="text-sm text-[var(--color-text-muted)] mb-2">Koordinat GPS</p>
