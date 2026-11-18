@@ -40,18 +40,17 @@ class Cctv extends Model
     }
 
     /**
-     * URL HLS yang diputar browser: diturunkan dari media server kalau
-     * dikonfigurasi, kalau tidak pakai hls_url manual.
+     * URL HLS yang diputar browser, diturunkan dari media server.
      */
     public function getStreamUrlAttribute(): ?string
     {
         $base = config('cctv.hls_base');
 
-        if ($base && $this->stream_key) {
-            return rtrim($base, '/').'/'.$this->stream_key.'/index.m3u8';
+        if (! $base || ! $this->stream_key) {
+            return null;
         }
 
-        return $this->hls_url;
+        return rtrim($base, '/').'/'.$this->stream_key.'/index.m3u8';
     }
 
     public function dapur(): BelongsTo

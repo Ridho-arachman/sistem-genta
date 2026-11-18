@@ -137,13 +137,12 @@ test('stream url diturunkan dari base media server', function () {
     expect($cctv->stream_url)->toBe('http://mediamtx.local:8888/'.$cctv->stream_key.'/index.m3u8');
 });
 
-test('stream url memakai hls_url manual saat media server belum dikonfigurasi', function () {
+test('stream url kosong saat media server belum dikonfigurasi', function () {
     config(['cctv.hls_base' => null]);
 
     $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
-    $cctv->forceFill(['hls_url' => 'https://example.com/stream.m3u8']);
 
-    expect($cctv->stream_url)->toBe('https://example.com/stream.m3u8');
+    expect($cctv->stream_url)->toBeNull();
 });
 
 test('menambah cctv mendaftarkan path ke media server', function () {
