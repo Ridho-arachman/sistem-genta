@@ -5,6 +5,13 @@ on:
     branches: [main, master]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,10 +32,22 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
 
+      - run: composer validate --no-check-lock
+
       - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
 
       - run: cp .env.example .env
       - run: php artisan key:generate --no-interaction
+
+      - name: Build aset
+        run: npm run build
 
       - name: Pint
         run: vendor/bin/pint --test --format=github

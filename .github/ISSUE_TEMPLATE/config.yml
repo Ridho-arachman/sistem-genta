@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Pertanyaan keamanan
+    url: https://github.com/Ridho-arachman/sistem-genta/security/advisories/new
+    about: Laporkan potensi kerentanan secara privat, bukan lewat issue publik (lihat SECURITY.md)

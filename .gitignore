@@ -15,6 +15,9 @@ yarn-error.log
 !public/images/**/*.webp
 *.apk
 *.keystore
+# sertifikat TLS MediaMTX yang di-generate otomatis — jangan masuk repo
+auto.crt
+auto.key
 nul
 .DS_Store
 Thumbs.db
