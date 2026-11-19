@@ -6,10 +6,15 @@
 
 **Sistem Pengawasan Dapur MBG (Makan Bergizi Gratis) — Provinsi Banten**
 
-[![PHP](https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![CI](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml)
+[![Security](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml)
+
+[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Pest](https://img.shields.io/badge/Pest-5-8B5CF6?logo=php&logoColor=white)](https://pestphp.com/)
+[![Release](https://img.shields.io/github/v/release/Ridho-arachman/sistem-genta?logo=github&label=release)](https://github.com/Ridho-arachman/sistem-genta/releases)
 [![License](https://img.shields.io/badge/License-Internal-lightgrey)](#lisensi)
 
 </div>
@@ -18,6 +23,7 @@
 
 ## Daftar Isi
 
+- [About](#about)
 - [Ringkasan](#ringkasan)
 - [Fitur Utama](#fitur-utama)
 - [Peran dan Hak Akses](#peran-dan-hak-akses)
@@ -30,12 +36,19 @@
 - [Pengujian dan Kualitas Kode](#pengujian-dan-kualitas-kode)
 - [Keamanan](#keamanan)
 - [Deployment](#deployment)
+- [Release](#release)
 - [Dokumentasi](#dokumentasi)
 - [Lisensi](#lisensi)
 
-## Ringkasan
+## About
 
-GENTA Pangan Banten adalah aplikasi web internal untuk pengawasan operasional dapur MBG. Sistem menangani pendataan dapur, pemantauan CCTV, absensi pengawas berbasis lokasi, pelaporan, dan surat peringatan, serta menyediakan API untuk aplikasi mobile Android dan iOS.
+GENTA Pangan Banten adalah sistem pengawasan operasional program Makan Bergizi Gratis (MBG) di Provinsi Banten. Masalah yang dipecahkan: data dapur, kamera CCTV, laporan pengawas, dan surat peringatan (SP) selama ini terpencar dan tidak bisa dipantau dari satu tempat. GENTA menyatukannya dalam satu aplikasi web internal — pendataan dapur dan CCTV, health check kamera otomatis, alur laporan hingga tindak lanjut SP, serta API untuk aplikasi mobile pengawas.
+
+Sistem dipakai empat peran: `admin` (kelola seluruh data), `manajerial` (pemantauan dan ekspor), `pengawas` (laporan lapangan), dan `kepala_dapur` (status dapur sendiri).
+
+Status saat ini: **pengembangan menuju pilot** — belum dipakai penuh di produksi. Urutan rilis dan sisa pekerjaan dilacak di [TASKS.md](TASKS.md) serta [board Kanban](https://github.com/users/Ridho-arachman/projects/17); riwayat perubahan ada di [CHANGELOG.md](CHANGELOG.md).
+
+## Ringkasan
 
 Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah sesuai peran: administrator, manajerial, pengawas lapangan, dan kepala dapur.
 
@@ -46,9 +59,8 @@ Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah s
 | **Autentikasi** | Login, logout, lupa dan reset password, redirect berbasis peran, rate limiting |
 | **Dashboard** | Ringkasan statistik dan aktivitas sesuai peran pengguna |
 | **Dapur** | CRUD data dapur, status operasional, progres, geofence, data wilayah |
-| **CCTV** | Registrasi perangkat, status perangkat, live preview HLS, monitoring terpusat |
+| **CCTV** | Registrasi perangkat, health check otomatis (ffprobe), status, live preview HLS, monitoring terpusat |
 | **Anomali CCTV** | Pelaporan, penanganan, dan ekspor data anomali |
-| **Absensi** | Check-in/check-out dengan validasi geofence, foto, rekap dan ekspor |
 | **Laporan** | Penyusunan laporan pengawas dan tindak lanjut |
 | **Surat Peringatan** | Penerbitan SP1–SP3, riwayat, dan ekspor |
 | **Manajemen Pengguna** | CRUD pengguna, arsip, pemulihan, hapus permanen, jejak audit |
@@ -64,7 +76,6 @@ Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah s
 | Dapur | Kelola | Lihat | Lihat | Lihat |
 | CCTV | Kelola | Lihat | Lihat | Lihat |
 | Anomali CCTV | Kelola | Lihat + ekspor | — | Lihat |
-| Absensi | Kelola + ekspor | Check-in + ekspor | Check-in/out | — |
 | Laporan | Kelola | — | Buat | — |
 | Surat Peringatan | Kelola | Lihat | — | — |
 | Manajemen Pengguna | Kelola | — | — | — |
@@ -78,14 +89,17 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute dan `Policy` pada 
 
 | Lapisan | Teknologi |
 | --- | --- |
-| Backend | Laravel 13, PHP 8.5, Laravel Sanctum |
-| Frontend | Blade, Tailwind CSS 4, Alpine.js 3, Leaflet, Vite 8 |
-| Database | SQLite (default), MySQL, PostgreSQL |
-| Mobile | Capacitor (Android dan iOS) |
+| Backend | Laravel 13, PHP 8.3+, Laravel Sanctum |
+| Frontend | Blade, Tailwind CSS 4, daisyUI 5, Alpine.js 3, Leaflet, Vite 8 |
+| Database | PostgreSQL (driver `pgsql`) |
+| Queue / cache / session | driver `database` |
+| Streaming CCTV | MediaMTX (HLS) + health check ffprobe |
+| Mobile | Capacitor (Android) |
 | Notifikasi | Firebase Cloud Messaging |
 | Ekspor Dokumen | barryvdh/laravel-dompdf |
-| Pengujian | Pest 5 |
+| Pengujian | Pest 5 (58 tes / 153 assertion) |
 | Kualitas Kode | Laravel Pint |
+| Container | Docker + docker compose (app, queue, scheduler, MediaMTX) |
 
 ### Struktur Direktori
 
@@ -117,7 +131,8 @@ resources/views/
 routes/web.php                # Rute web dan API mobile
 database/migrations/          # Skema database
 database/seeders/             # Data awal peran, dapur, CCTV, pengaturan
-android/  ios/                # Proyek Capacitor
+android/                      # Proyek Capacitor (Android)
+tests/                        # Tes Pest (Feature & Unit)
 ```
 
 ## Instalasi
@@ -126,7 +141,8 @@ android/  ios/                # Proyek Capacitor
 
 - PHP 8.3 atau lebih baru (disarankan 8.5) beserta ekstensi standar Laravel
 - Composer 2
-- Node.js 20 dan npm
+- Node.js 20 atau lebih baru dan npm
+- PostgreSQL untuk database
 - Android Studio atau Xcode, hanya jika membangun aplikasi mobile
 
 ### Langkah Cepat
@@ -197,9 +213,12 @@ Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
 | Variabel | Keterangan |
 | --- | --- |
 | `APP_URL` | URL dasar aplikasi |
-| `DB_CONNECTION` | Driver database (`sqlite`, `mysql`, `pgsql`) |
+| `DB_CONNECTION` | Driver database — proyek ini berjalan di PostgreSQL (`pgsql`) |
+| `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION` | Driver session, cache, dan antrean (`database`) |
 | `FCM_SERVER_KEY` | Server key Firebase Cloud Messaging untuk push notification |
-| `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION` | Driver session, cache, dan antrean |
+| `CCTV_HLS_BASE` | Base URL HLS media server (kosong = preview kamera tidak tampil) |
+| `CCTV_MEDIAMTX_API`, `CCTV_MEDIAMTX_USER`, `CCTV_MEDIAMTX_PASS` | Control API MediaMTX dan kredensialnya (kosong = sinkronisasi path nonaktif) |
+| `CCTV_PROBE_TIMEOUT` | Batas waktu probe ffprobe per kamera (detik) |
 
 Nilai sensitif seperti `.env`, keystore, dan cookie lokal tidak disertakan dalam repositori.
 
@@ -253,7 +272,7 @@ APK release ditandatangani menggunakan `gentapangan.keystore` yang tidak disimpa
 php artisan test --compact
 ```
 
-Cakupan pengujian mencakup autentikasi, dashboard, dapur, CCTV, absensi, dan API mobile.
+Cakupan pengujian mencakup autentikasi dan rate limit login, CCTV (health check, sinkronisasi MediaMTX, anomali), dapur, laporan, dan API mobile. Backend memakai SQLite in-memory dan server MediaMTX dipaksa nonaktif agar tes tetap terisolasi dari jaringan nyata.
 
 Menjalankan formatter:
 
@@ -261,11 +280,13 @@ Menjalankan formatter:
 vendor/bin/pint --dirty
 ```
 
+CI (GitHub Actions) menjalankan `composer validate`, Pint, Pest, dan build aset (`npm run build`) pada setiap push dan pull request — lihat [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## Keamanan
 
 - Otorisasi berbasis peran pada rute dan kebijakan pada level model
 - Proteksi CSRF, escaping output Blade, dan pencegahan SQL injection melalui Eloquent
-- Rate limiting pada rute autentikasi
+- Rate limiting pada rute autentikasi (`POST /login`, `/forgot-password`); endpoint `/api/mobile/*` masih menunggu throttle — dilacak sebagai issue
 - Hashing password dengan bcrypt
 - Token API Sanctum dengan masa berlaku terkelola
 - Kolom audit dan soft delete untuk manajemen pengguna
@@ -274,10 +295,11 @@ Laporkan potensi kerentanan secara internal kepada tim pengelola sistem, bukan m
 
 ## Deployment
 
-- Kompatibel dengan Laravel Cloud
-- Mendukung container Docker
+- Container Docker (`Dockerfile` + `docker compose`: app, queue, scheduler, MediaMTX)
+- Web server nginx + TLS (Let's Encrypt) untuk produksi
 - Build aset produksi melalui `npm run build`
-- Konfigurasi berbasis environment untuk database, antrean, dan notifikasi
+- Konfigurasi berbasis environment untuk database, antrean, MediaMTX, dan notifikasi
+- Worker antrean (`queue:work`) dan scheduler (`schedule:work`) sebagai container terpisah
 
 Langkah umum di server produksi:
 
@@ -290,175 +312,25 @@ php artisan route:cache
 php artisan view:cache
 ```
 
+## Release
+
+Versi mengikuti [Semantic Versioning](https://semver.org/) `vMAJOR.MINOR.PATCH`. Riwayat rilis tercatat di [halaman Releases](https://github.com/Ridho-arachman/sistem-genta/releases) dan di [CHANGELOG.md](CHANGELOG.md).
+
+Alur rilis:
+
+1. Perbarui [CHANGELOG.md](CHANGELOG.md) — pindahkan isi `Unreleased` ke versi baru (format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)).
+2. Gunakan [Conventional Commits](https://www.conventionalcommits.org/) pada setiap commit: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`.
+3. Buat tag lalu push (branch ikut terkirim agar commit rilis ada di remote):
+   ```bash
+   git tag v2.1.0
+   git push origin master --follow-tags
+   ```
+4. Workflow [`.github/workflows/release.yml`](.github/workflows/release.yml) berjalan otomatis: validasi, Pint, Pest, dan build aset dijalankan ulang, lalu GitHub Release diterbitkan dengan catatan yang di-generate dari commit dan label pull request (kategori diatur di [`.github/release.yml`](.github/release.yml)).
+
+Catatan: paket APK release belum dibuat otomatis oleh CI — build dan penandatanganan masih manual karena keystore (`gentapangan.keystore`) tidak disimpan di repositori.
+
 ## Dokumentasi
 Penamaan docs utama di root repo: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [TRD](TRD.md), [DATABASE](DATABASE.md), [API](API.md), [TESTING](TESTING.md), [CHANGELOG](CHANGELOG.md), [TASKS](TASKS.md).
-
-## Dokumentasi Komponen CSS (`resources/css/app.css`)
-
-Komponen CSS di `resources/css/app.css` menggunakan Tailwind CSS v4 dengan `@layer components`. Komponen-komponen berikut tersedia untuk digunakan di semua panel (admin, manajerial, pengawas, kepala dapur) agar tampilan konsisten tanpa perlu membuat class baru dari nol.
-
-### Warna (CSS Custom Properties)
-
-Semua warna didefinisikan sebagai CSS variable dan dapat digunakan langsung di class atau inline style:
-
-| Variabel | Nilai | Keterangan |
-|----------|-------|------------|
-| `--color-primary` | `#E50000` | Warna utama merah |
-| `--color-primary-dark` | `#B20000` | Hover state |
-| `--color-primary-light` | `#FF3333` | |
-| `--color-secondary` | `#000000` | Judul teks |
-| `--color-background` | `#FFFFFF` | Background halaman |
-| `--color-surface` | `#F5F5F5` | Background card/panel |
-| `--color-border` | `#E0E0E0` | Border |
-| `--color-text` | `#000000` | Teks utama |
-| `--color-text-muted` | `#666666` | Teks sekunder |
-
-### Tombol (Buttons)
-
-| Class | Keterangan | Contoh |
-|-------|------------|--------|
-| `.btn-primary` | Tombol utama warna merah | `<button class="btn-primary">Simpan</button>` |
-| `.btn-secondary` | Tombol abu-abu dengan border | `<button class="btn-secondary">Batal</button>` |
-| `.btn-danger` | Tombol merah untuk aksi menghapus | |
-| `.btn-outline-primary` | Outline merah | |
-| `.btn-light` | Putih dengan border | |
-| `.btn-action` | Tombol aksi pada halaman (lebih lebar) | `.btn-action.btn-action-primary` |
-| `.btn-action-primary` | Tombol aksi warna utama | |
-| `.btn-action-secondary` | Tombol aksi warna abu-abu | |
-| `.btn-action-ghost` | Tombol aksi tanpa background | |
-
-### Form Input
-
-| Class | Keterangan | Contoh |
-|-------|------------|--------|
-| `.input-field` | Input standar (rounded-xl, focus:ring-primary) | `<input class="input-field">` |
-| `.input-field.select-enhanced` | Select dengan ikon panah di kanan | |
-| `.input-with-icon` | Wrapper input dengan ikon di kiri | |
-| `.input-icon-inner` | Ikon di dalam input | |
-| `.form-field` | Wrapper label + input (flex column) | `<div class="form-field">...</div>` |
-| `.form-label` | Label form | |
-| `.form-label .required` | Bintang merah untuk field wajib | |
-| `.form-hint` | Teks petunjuk kecil di bawah input | |
-| `.form-error` | Pesan error | |
-| `.input-field-error` | State input error (border merah) | |
-
-### Card & Section
-
-| Class | Keterangan | Contoh |
-|-------|------------|--------|
-| `.card` | Card standar (putih, border, rounded-xl, shadow-sm) | `<div class="card">...</div>` |
-| `.panel` | Sama seperti card | |
-| `.form-section` | Section form dengan padding 24px | |
-| `.form-section-title` | Judul section form | |
-| `.section-icon` | Ikon kecil di judul section | |
-
-### Tabel
-
-| Class | Keterangan |
-|-------|------------|
-| `.table-th` | Header tabel (text-xs, uppercase, bg-surface) |
-| `.table-td` | Sel data tabel (text-sm) |
-
-### Badge & Status
-
-| Class | Keterangan | Contoh |
-|-------|------------|--------|
-| `.badge` | Badge dasar (rounded-full, text-xs) | `<span class="badge badge-primary">...</span>` |
-| `.badge-primary` | Badge warna utama | |
-| `.badge-success` | Badge warna hijau | |
-| `.badge-warning` | Badge warna kuning | |
-| `.badge-danger` | Badge warna merah tua | |
-| `.badge-gray` | Badge warna abu-abu | |
-| `.status-ok` | Status aktif (hijau muda) | |
-| `.status-warn` | Status peringatan (kuning muda) | |
-| `.status-off` | Status tidak aktif (merah muda) | |
-
-### Layout Shell
-
-| Class | Keterangan |
-|-------|------------|
-| `.shell` | Wrapper layout utama (flex, min-height layar penuh) |
-| `.topbar` | Atas halaman (72px, warna utama merah) |
-| `.aside` | Sidebar kiri (230px, posisi fixed) |
-| `.main` | Konten utama (margin-left: 230px untuk ruang sidebar) |
-| `.heading` | Header halaman dengan judul dan tombol aksi |
-| `.eyebrow` | Teks kecil di atas judul utama |
-| `.main h1` | Judul halaman utama (font Space Grotesk) |
-| `.muted` | Teks abu-abu untuk keterangan |
-
-### Statistik
-
-| Class | Keterangan |
-|-------|------------|
-| `.stats` | Grid statistik (responsif: 4 kolom desktop, 2 tablet, 1 mobile) |
-| `.stat` | Satu kartu statistik |
-| `.stat-value` | Angka besar (font Space Grotesk) |
-| `.stat-icon` | Ikon di dalam kartu statistik |
-| `.stat-foot` | Keterangan kecil di bawah angka |
-
-### Komponen Lainnya
-
-| Class | Keterangan |
-|-------|------------|
-| `.search` | Input pencarian (max-width 280px, focus:ring-primary) |
-| `.kitchen-card` | Kartu dapur dengan flex layout |
-| `.progress-bar` / `.progress-fill` | Progress bar |
-| `.progress-ok` / `.progress-warn` / `.progress-off` | Warna progres |
-| `.activity` / `.activity-row` | Feed aktivitas |
-| `.camera` / `.camera-art` | Panel kamera |
-| `.footer` | Footer halaman (padding 16px, border atas) |
-
-### Transisi & Animasi
-
-| Class | Keterangan |
-|-------|------------|
-| `.transition-scale` | Transisi transform + opacity |
-| `.transition-slide` | Transisi transform |
-| `.animate-scale-in` | Animasi skala masuk |
-| `.spinner` | Ikon loading berputar |
-
-### Contoh Penggunaan Lengkap
-
-```blade
-@extends('admin.layouts.app', ['pageTitle' => 'Halaman Baru'])
-
-@section('page_content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="heading">
-        <div>
-            <div class="eyebrow">Genta · Panel Baru</div>
-            <h1>Judul Halaman</h1>
-            <div class="muted">Keterangan halaman</div>
-        </div>
-    </div>
-
-    <div class="form-section">
-        <div class="form-section-title">
-            <span class="section-icon">⌂</span>
-            Judul Section
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="form-field">
-                <label class="form-label" for="nama">Nama <span class="required">*</span></label>
-                <input type="text" id="nama" name="nama" class="input-field" required>
-            </div>
-            <div class="form-field">
-                <label class="form-label" for="status">Status</label>
-                <select id="status" name="status" class="input-field select-enhanced">
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-actions flex justify-end gap-3 mt-4">
-        <a href="{{ route('admin.index') }}" class="btn-action btn-action-secondary">Batal</a>
-        <button type="submit" class="btn-action btn-action-primary">Simpan</button>
-    </div>
-</div>
-@endsection
-```
 
 ## Lisensi
 
