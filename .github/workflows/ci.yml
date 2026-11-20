@@ -50,7 +50,7 @@ jobs:
         run: npm run build
 
       - name: Pint
-        run: vendor/bin/pint --test --format=github
+        run: vendor/bin/pint --test
 
       # Suite penuh hijau sejak 2026-11-18 (view manajerial/kepala-dapur dibuat, tes diperbaiki).
       - name: Tests
