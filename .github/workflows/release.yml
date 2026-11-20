@@ -22,7 +22,7 @@ jobs:
           extensions: mbstring, xml, pdo_sqlite, sqlite3, gd, bcmath, zip, curl
           coverage: none
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
