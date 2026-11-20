@@ -10,7 +10,6 @@ updates:
     commit-message:
       prefix: build(deps)
       prefix-development: build(deps-dev)
-      include: scope
 
   - package-ecosystem: npm
     directory: /
@@ -22,7 +21,6 @@ updates:
     commit-message:
       prefix: build(deps)
       prefix-development: build(deps-dev)
-      include: scope
 
   - package-ecosystem: github-actions
     directory: /
