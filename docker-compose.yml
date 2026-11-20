@@ -46,7 +46,8 @@ services:
     restart: unless-stopped
 
   mediamtx:
-    image: bluenviron/mediamtx:latest
+    # dipin agar build reproducible dan bisa di-update Dependabot (TRD: MediaMTX v1.21+)
+    image: bluenviron/mediamtx:1.21.4
     command: /mediamtx.yml
     volumes:
       - "./mediamtx.yml:/mediamtx.yml:ro"

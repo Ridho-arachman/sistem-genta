@@ -26,10 +26,9 @@ jobs:
 
       - run: composer install --no-interaction --prefer-dist --no-progress
 
-      # shortcut: advisory masih terbuka (10 Composer + 1 npm/Quill), jadi audit belum mem-block
-      # merge. Hapus continue-on-error setelah advisory dibersihkan agar job merah saat ada temuan.
+      # shortcut: 1 advisory npm/Quill masih terbuka (PR dependabot #35), jadi audit belum mem-block
+      # merge. Hapus continue-on-error setelah Quill di-upgrade agar job merah saat ada temuan.
       - name: Composer audit
-        continue-on-error: true
         run: composer audit --locked
 
       - uses: actions/setup-node@v4

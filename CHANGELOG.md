@@ -6,8 +6,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 
 ### Added
 - `CctvAnomalyReportTest` (3 tes): akses form anomaly create, preselect `cctv_id` dari query string, non-admin 403.
+- Dependabot: ekosistem `github-actions` + `docker` di samping composer/npm, prefix commit `build(deps)`/`build(deps-dev)`, Dependabot alerts + security updates diaktifkan.
 
 ### Fixed
+- `Dockerfile` base image `php:8.5-cli` — sebelumnya `php:8.3-cli` padahal `composer.lock` butuh PHP >=8.4, sehingga `composer install` dalam image pasti gagal (input untuk #21).
+- `docker-compose.yml`: image MediaMTX di-pin `1.21.4` (sebelumnya `latest`, tidak reproducible dan tak bisa di-update Dependabot).
+- `composer audit` di `security.yml` sekarang mem-block merge — 10 advisory Composer bersih setelah PHPUnit 13.4.7 (CVE-2026-119193) + update dependensi dev lain (Pest 5.3.7, paratest, php-code-coverage, pail, boost, tinker, pint, collision, vite, laravel-vite-plugin, @tailwindcss/vite, concurrently). Advisory npm-Quill menunggu upgrade Quill (PR #35 + audit XSS #26).
 - Form CCTV admin (`create`/`edit`) dirapikan grid 2 kolom (pola user form), input `w-full`, urutan: Dapur+Status → Nama → Area+No Kamera → RTSP. Form anomaly create dirapikan grid 2 kolom + panel `warning`; form anomaly create kini preselect `cctv_id` dari query string (diabaikan sebelumnya). Dropdown CCTV di form anomaly create diganti combobox Alpine (`cctv-autocomplete.js`): pencarian berdasarkan nama CCTV atau nama dapur, navigasi keyboard (↑↓ Enter Esc). Data CCTV yang dirender hanya `id`/`label`/`dapur_name` (URL RTSP tidak dikirim ke browser). Sidebar admin widened ke `admin.cctvs.*` agar menu Monitoring CCTV aktif di halaman create/edit/show.
 - Suite penuh: **58/58 lulus** (sebelumnya 5 gagal, lalu 50/50, lalu 54/55 setelah penambahan tes SP).
 
