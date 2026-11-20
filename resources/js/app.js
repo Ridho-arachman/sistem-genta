@@ -13,6 +13,7 @@ import './components/ui.js';
 import './components/kitchen-filter.js';
 import './components/public-map.js';
 import './components/dapur-autocomplete.js';
+import './components/cctv-autocomplete.js';
 import './components/dapur-multi-select.js';
 import './components/dapur-form.js';
 import './components/hls-player.js';
