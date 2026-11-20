@@ -2,7 +2,16 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenaran changelog sejak 2026-11-18 (`docs/` lama dihapus).
 
-## [Unreleased] — 2026-11-18
+## [Unreleased] — 2026-11-20
+
+### Added
+- `CctvAnomalyReportTest` (3 tes): akses form anomaly create, preselect `cctv_id` dari query string, non-admin 403.
+
+### Fixed
+- Form CCTV admin (`create`/`edit`) dirapikan grid 2 kolom (pola user form), input `w-full`, urutan: Dapur+Status → Nama → Area+No Kamera → RTSP. Form anomaly create dirapikan grid 2 kolom + panel `warning`; form anomaly create kini preselect `cctv_id` dari query string (diabaikan sebelumnya). Dropdown CCTV di form anomaly create diganti combobox Alpine (`cctv-autocomplete.js`): pencarian berdasarkan nama CCTV atau nama dapur, navigasi keyboard (↑↓ Enter Esc). Data CCTV yang dirender hanya `id`/`label`/`dapur_name` (URL RTSP tidak dikirim ke browser). Sidebar admin widened ke `admin.cctvs.*` agar menu Monitoring CCTV aktif di halaman create/edit/show.
+- Suite penuh: **58/58 lulus** (sebelumnya 5 gagal, lalu 50/50, lalu 54/55 setelah penambahan tes SP).
+
+## [2.1.0] — 2026-11-20 · *rilis CI & dokumentasi*
 
 ### Removed
 - **Absensi dihapus sepenuhnya** (sudah tidak dipakai sejak 2026-11-02): tabel `absensis` (migrasi drop), model, policy, service registrasi, controller, relasi `absensis()` di `User`/`Dapur`, command `DispatchAbsensiReminders` (sebelumnya dijadwalkan daily 06:50), `AbsensiReminderJob`, `AbsensiXlsxExport`. Alarm `CctvAlertJob` diganti query pivot `dapur_user`.
@@ -23,6 +32,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `scripts/backup-db.sh` (pg_dump + retensi 14 hari).
 - `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`).
 - `SpWarningTest` (5 tes): akses baca SP untuk manajerial, tombol kelola hanya admin, kepala_dapur 403.
+- CI diperluas (`.github/workflows/ci.yml`): `composer validate`, verifikasi build aset (`npm run build`), `concurrency` + `permissions: contents: read`.
+- Workflow `security.yml`: `composer audit` + `npm audit` pada push/PR dan mingguan — belum mem-block, advisory dibersihkan di #30.
+- Workflow `release.yml`: tag `v*` → tes + build aset → `gh release create --generate-notes`; kategori catatan rilis per label (`.github/release.yml`).
+- Dependabot (composer + npm, mingguan), template issue (bug/fitur) + PR, `CODEOWNERS`.
+- README: bagian **About**, bagian **Release** (SemVer + Conventional Commits), koreksi stack yang usang (PHP 8.3+, PostgreSQL, tanpa Absensi/Laravel Cloud/MySQL/SQLite), dokumentasi komponen CSS dihapus (sudah pakai daisyUI).
 
 ### Fixed
 - Fix 500 pada `PUT /pengawas/settings/profile` — closure memanggil `Hash::make` tanpa import (dipindah ke `AuthController::updatePassword()`).
@@ -32,7 +46,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - Toggle buttons tulis (Tambah Dapur/CCTV/Edit) tersembunyi untuk manajerial/kepala-dapur; tombol "Kembali" role-aware; view `admin/dapurs/show`, `admin/cctvs/show`, `admin/dapurs/index`, `admin/cctvs/index` diselaraskan (read-only untuk peran read-only).
 - `manajerial.sp-warnings.*` kini bisa diakses manajerial (sebelumnya 100% 403: route `role:manajerial` tapi controller memaksa `role:admin`). Parameter route `{warning}` diselaraskan ke `{sp_warning}` agar implicit binding bekerja. View SP menyembunyikan aksi kelola (buat/ubah status/export) untuk non-admin dan route Kembali/Detail/Detail-button role-aware.
 - `user_can_login` test dibandingkan via `(string) getKey()`; `DapurTest` menyesuaikan judul halaman.
-- Suite penuh: **55/55 lulus** (sebelumnya 5 gagal, lalu 50/50, lalu 54/55 setelah penambahan tes SP).
+
 
 ## [2.0.0] — 2026-10-26 · *usang sebagian*
 - Layout shell admin/pengawas, password reset, 4 policy, FCM service, geoloc. **Catatan**: fitur Absensi yang disebut di sini sudah dihapus (lihat di atas); stack "Laravel 12/MySQL/Redis" di dokumen lama juga usang — lihat `TRD.md`.

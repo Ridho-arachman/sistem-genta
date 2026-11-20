@@ -19,12 +19,19 @@ class CctvAnomalyReportController extends Controller
     }
 
     // Admin: Create anomaly report
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('create', CctvAnomalyReport::class);
-        $cctvs = Cctv::with('dapur')->get();
+        $cctvs = Cctv::with('dapur')->get()->map(fn (Cctv $cctv) => [
+            'id' => (string) $cctv->id,
+            'label' => $cctv->display_name,
+            'dapur_name' => $cctv->dapur->nama,
+        ])->values();
 
-        return view('admin.cctv-anomalies.create', compact('cctvs'));
+        return view('admin.cctv-anomalies.create', [
+            'cctvs' => $cctvs,
+            'cctvId' => $request->query('cctv_id'),
+        ]);
     }
 
     public function store(Request $request)
