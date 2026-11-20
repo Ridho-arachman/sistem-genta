@@ -2,7 +2,9 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenaran changelog sejak 2026-11-18 (`docs/` lama dihapus).
 
-## [Unreleased] — 2026-11-20
+## [Unreleased]
+
+## [2.1.1] — 2026-11-20 · *perbaikan CCTV + keamanan dependensi*
 
 ### Added
 - `CctvAnomalyReportTest` (3 tes): akses form anomaly create, preselect `cctv_id` dari query string, non-admin 403.
