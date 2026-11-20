@@ -22,7 +22,7 @@
     $menuItems = [
         ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'icon' => 'squares-2x2', 'match' => 'admin.dashboard'],
         ['label' => 'Data Dapur', 'route' => 'admin.dapurs.index', 'icon' => 'home', 'match' => 'admin.dapurs*'],
-        ['label' => 'Monitoring CCTV', 'route' => 'admin.cctvs.index', 'icon' => 'video', 'match' => ['admin.cctvs.index', 'admin.cctv-anomalies.*']],
+        ['label' => 'Monitoring CCTV', 'route' => 'admin.cctvs.index', 'icon' => 'video', 'match' => ['admin.cctvs.*', 'admin.cctv-anomalies.*']],
         ['label' => 'Laporan Pengawasan', 'route' => 'admin.laporan.index', 'icon' => 'document-text', 'match' => 'admin.laporan*'],
         ['label' => 'Manajemen Pengguna', 'route' => 'admin.users', 'icon' => 'users', 'match' => 'admin.users*'],
     ];
