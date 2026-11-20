@@ -9,7 +9,7 @@
 [![CI](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml)
 [![Security](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml)
 
-[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
@@ -89,7 +89,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute dan `Policy` pada 
 
 | Lapisan | Teknologi |
 | --- | --- |
-| Backend | Laravel 13, PHP 8.3+, Laravel Sanctum |
+| Backend | Laravel 13, PHP 8.4+, Laravel Sanctum |
 | Frontend | Blade, Tailwind CSS 4, daisyUI 5, Alpine.js 3, Leaflet, Vite 8 |
 | Database | PostgreSQL (driver `pgsql`) |
 | Queue / cache / session | driver `database` |
@@ -139,7 +139,7 @@ tests/                        # Tes Pest (Feature & Unit)
 
 ### Prasyarat
 
-- PHP 8.3 atau lebih baru (disarankan 8.5) beserta ekstensi standar Laravel
+- PHP 8.4 atau lebih baru (proyek dikembangkan di 8.5) beserta ekstensi standar Laravel
 - Composer 2
 - Node.js 20 atau lebih baru dan npm
 - PostgreSQL untuk database
