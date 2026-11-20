@@ -2,7 +2,7 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenaran changelog sejak 2026-11-18 (`docs/` lama dihapus).
 
-## [Unreleased] — 2026-11-18
+## [2.1.0] — 2026-11-20 · *rilis CI & dokumentasi*
 
 ### Removed
 - **Absensi dihapus sepenuhnya** (sudah tidak dipakai sejak 2026-11-02): tabel `absensis` (migrasi drop), model, policy, service registrasi, controller, relasi `absensis()` di `User`/`Dapur`, command `DispatchAbsensiReminders` (sebelumnya dijadwalkan daily 06:50), `AbsensiReminderJob`, `AbsensiXlsxExport`. Alarm `CctvAlertJob` diganti query pivot `dapur_user`.
@@ -23,6 +23,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - `scripts/backup-db.sh` (pg_dump + retensi 14 hari).
 - `LaporanFactory`; dokumentasi lengkap di root (`PRD.md` … `TASKS.md`).
 - `SpWarningTest` (5 tes): akses baca SP untuk manajerial, tombol kelola hanya admin, kepala_dapur 403.
+- CI diperluas (`.github/workflows/ci.yml`): `composer validate`, verifikasi build aset (`npm run build`), `concurrency` + `permissions: contents: read`.
+- Workflow `security.yml`: `composer audit` + `npm audit` pada push/PR dan mingguan — belum mem-block, advisory dibersihkan di #30.
+- Workflow `release.yml`: tag `v*` → tes + build aset → `gh release create --generate-notes`; kategori catatan rilis per label (`.github/release.yml`).
+- Dependabot (composer + npm, mingguan), template issue (bug/fitur) + PR, `CODEOWNERS`.
+- README: bagian **About**, bagian **Release** (SemVer + Conventional Commits), koreksi stack yang usang (PHP 8.3+, PostgreSQL, tanpa Absensi/Laravel Cloud/MySQL/SQLite), dokumentasi komponen CSS dihapus (sudah pakai daisyUI).
 
 ### Fixed
 - Fix 500 pada `PUT /pengawas/settings/profile` — closure memanggil `Hash::make` tanpa import (dipindah ke `AuthController::updatePassword()`).
