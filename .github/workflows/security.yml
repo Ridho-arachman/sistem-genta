@@ -36,8 +36,5 @@ jobs:
 
       - run: npm ci
 
-      # shortcut: advisory low GHSA-v3m3-f69x-jf25 (CVE-2025-15056, XSS via fitur HTML export)
-      # hanya kena versi 2.0.3 dan belum ada patched release. Kita tidak pakai API export Quill
-      # (form baca editor.root.innerHTML), jadi level high — audit low tidak mem-block.
       - name: npm audit
         run: npm audit --audit-level=high
