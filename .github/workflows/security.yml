@@ -26,8 +26,6 @@ jobs:
 
       - run: composer install --no-interaction --prefer-dist --no-progress
 
-      # shortcut: 1 advisory npm/Quill masih terbuka (PR dependabot #35), jadi audit belum mem-block
-      # merge. Hapus continue-on-error setelah Quill di-upgrade agar job merah saat ada temuan.
       - name: Composer audit
         run: composer audit --locked
 
@@ -38,7 +36,8 @@ jobs:
 
       - run: npm ci
 
-      # Quill <=1.3.7 (advisories XSS) baru tertutup setelah upgrade; level high agar belum mem-block.
+      # shortcut: advisory low GHSA-v3m3-f69x-jf25 (CVE-2025-15056, XSS via fitur HTML export)
+      # hanya kena versi 2.0.3 dan belum ada patched release. Kita tidak pakai API export Quill
+      # (form baca editor.root.innerHTML), jadi level high — audit low tidak mem-block.
       - name: npm audit
-        continue-on-error: true
         run: npm audit --audit-level=high
