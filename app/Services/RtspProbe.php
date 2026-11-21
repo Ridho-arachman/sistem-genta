@@ -35,10 +35,11 @@ class RtspProbe
             $executable,
             '-v', 'error',
             '-rtsp_transport', 'tcp',
+            '-rw_timeout', '10000000',
             '-i', $url,
-            '-t', '1',
-            '-f', 'null',
-            '-',
+            '-read_intervals', '%+1',
+            '-show_entries', 'format=format_name',
+            '-of', 'default=nw=1:nk=1',
         ]);
         $process->setTimeout((float) config('cctv.probe_timeout', 8));
 

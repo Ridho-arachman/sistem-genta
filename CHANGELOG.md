@@ -4,6 +4,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 
 ## [Unreleased]
 
+### Added
+- README: bagian **Menjalankan semua komponen secara lokal (tanpa Docker)** — empat terminal (`serve`, `queue:work`, `schedule:work`, `mediamtx.exe mediamtx.yml`), verifikasi Control API `:9997` dan HLS `:8888`, konfigurasi `.env` lokal, dan catatan Docker sebagai alternatif. Dukungan `Ekspor` dokumen barryvdh/laravel-dompdf dan `intervention/image` sudah tercatat di stack.
+
 ### Fixed
 - README diselaraskan dengan kode: perintah build APK yang menunjuk skrip `build-apk.ps1`/`.bat` (sudah dihapus di 2.1.0) diganti alur Android Studio/Gradle; `CCTV_FFPROBE` dan `FCM_SERVER_KEY` masuk tabel konfigurasi (`FCM_SERVER_KEY` kini juga ada di `.env.example`); status peran `pengawas` dikoreksi sesuai `RestrictPengawasFromWeb` (web hanya dari Capacitor, tanpa CCTV/anomali) dan modul Inspeksi dicatat; deskripsi seeder dan status `sanctum.expiration` (`null`) diperbaiki; workflow `release.yml` disebut tanpa `composer validate` (khusus `ci.yml`).
 

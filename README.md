@@ -210,6 +210,39 @@ Akses aplikasi:
 
 > Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di ketiga file di atas dan restart `composer run dev`.
 
+### Menjalankan semua komponen secara lokal (tanpa Docker)
+
+Streaming tidak memutar `rtsp_url` langsung di browser: Laravel mendaftarkan `stream_key` kamera ke MediaMTX lewat Control API, lalu browser memutar HLS dari `CCTV_HLS_BASE/{stream_key}/index.m3u8`. Karena itu selain web server ada dua proses dan satu media server yang harus ikut jalan.
+
+Pakai **empat terminal terpisah**:
+
+```bash
+php artisan serve          # 1. web server
+php artisan queue:work     # 2. antrean (job health check, notifikasi, ekspor)
+php artisan schedule:work  # 3. scheduler — memicu health check tiap 5 menit
+.\mediamtx.exe .\mediamtx.yml   # 4. media server (sesuaikan path binary)
+```
+
+Verifikasi MediaMTX:
+
+```bash
+curl -s http://127.0.0.1:9997/v3/paths/list   # Control API harus JSON, bukan koneksi ditolak
+curl -s -I http://127.0.0.1:8888/             # HLS harus merespons
+```
+
+Konfigurasi `.env` untuk pengembangan lokal:
+
+```env
+CCTV_HLS_BASE=http://127.0.0.1:8888
+CCTV_MEDIAMTX_API=http://127.0.0.1:9997
+```
+
+Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — port `8000` bentrok, dan `composer run dev` juga tidak menyalakan scheduler. Aset sudah ada di `public/build`, jadi `npm run dev` tidak wajib; jalankan hanya bila aset belum ter-build.
+
+Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview HLS tidak ada di tabel Monitoring CCTV.
+
+Alternatif via Docker (opsional): `docker compose up -d --force-recreate mediamtx`. Pastikan Control API `:9997` ikut ter-publish; container lama yang dibuat sebelum `docker-compose.yml` memiliki `9997` bisa membuat sinkronisasi path gagal.
+
 ## Konfigurasi
 
 Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
