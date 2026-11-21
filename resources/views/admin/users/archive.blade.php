@@ -142,7 +142,7 @@
             </div>
             <h3 class="text-lg font-semibold text-gray-900">Pulihkan User</h3>
         </div>
-        <p class="text-gray-600 mb-6">User <span x-text="name" class="font-semibold"></span> akan dipulihkan dan muncul kembali di Manajemen User. Status aktif (is_active) akan dikembalikan seperti sebelum dihapus.</p>
+        <p class="text-gray-600 mb-6">User <span x-text="name" class="font-semibold"></span> akan dipulihkan dan muncul kembali di Manajemen User.</p>
         <div class="flex gap-3 justify-end">
             <button type="button" x-on:click="show = false" class="btn btn-secondary">Batal</button>
             <form :action="url" method="POST" class="inline">

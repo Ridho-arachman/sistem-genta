@@ -154,7 +154,6 @@ class AdminController extends Controller
             'dapur_ids' => ['nullable', 'array'],
             'dapur_ids.*' => ['exists:dapurs,id'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
-            'is_active' => ['sometimes', 'boolean'],
         ], [
             'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
             'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',

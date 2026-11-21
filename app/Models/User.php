@@ -186,26 +186,6 @@ class User extends Authenticatable
         return in_array($this->role, $roles);
     }
 
-    public function canAccessAdminPanel(): bool
-    {
-        return $this->isAdmin();
-    }
-
-    public function canManageUsers(): bool
-    {
-        return $this->isAdmin();
-    }
-
-    public function canViewCctvDashboard(): bool
-    {
-        return $this->hasRole(['admin', 'manajerial', 'kepala_dapur']);
-    }
-
-    public function canExportReports(): bool
-    {
-        return $this->hasRole(['admin', 'manajerial']);
-    }
-
     /**
      * Scopes
      */

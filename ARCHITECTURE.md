@@ -28,7 +28,7 @@ Tidak ada rekaman; tidak ada broadcasting/WebSocket; tidak ada `routes/api.php` 
 | Policy | `app/Policies/*` | Cctv, CctvAnomalyReport, Dapur, Laporan |
 | Service | `app/Services/*` | MediaMtxClient, RtspProbe, GeolocationService, FcmService |
 | Job | `app/Jobs/*` | CctvHealthCheckJob, CctvAlertJob |
-| Command | `app/Console/Commands/*` | CctvHealthCheck (tiap 5 menit), MigrateLaporanPhotos |
+| Command | `app/Console/Commands/*` | CctvHealthCheck (tiap 5 menit) |
 
 ## Boundary peran
 Middleware `role:<nama>` (`App\Http\Middleware\RoleMiddleware`) dan `restrict.pengawas` (pengawas dibatasi ke halaman tertentu di web). Dashboard peran:
