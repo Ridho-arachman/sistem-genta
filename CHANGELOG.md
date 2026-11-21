@@ -4,6 +4,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 
 ## [Unreleased]
 
+### Fixed
+- README diselaraskan dengan kode: perintah build APK yang menunjuk skrip `build-apk.ps1`/`.bat` (sudah dihapus di 2.1.0) diganti alur Android Studio/Gradle; `CCTV_FFPROBE` dan `FCM_SERVER_KEY` masuk tabel konfigurasi (`FCM_SERVER_KEY` kini juga ada di `.env.example`); status peran `pengawas` dikoreksi sesuai `RestrictPengawasFromWeb` (web hanya dari Capacitor, tanpa CCTV/anomali) dan modul Inspeksi dicatat; deskripsi seeder dan status `sanctum.expiration` (`null`) diperbaiki; workflow `release.yml` disebut tanpa `composer validate` (khusus `ci.yml`).
+
 ## [2.1.1] — 2026-11-20 · *perbaikan CCTV + keamanan dependensi*
 
 ### Added

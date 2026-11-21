@@ -62,6 +62,7 @@ Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah s
 | **CCTV** | Registrasi perangkat, health check otomatis (ffprobe), status, live preview HLS, monitoring terpusat |
 | **Anomali CCTV** | Pelaporan, penanganan, dan ekspor data anomali |
 | **Laporan** | Penyusunan laporan pengawas dan tindak lanjut |
+| **Inspeksi** | Pemantauan laporan inspeksi pengawas dan ekspor (index, create, export) |
 | **Surat Peringatan** | Penerbitan SP1–SP3, riwayat, dan ekspor |
 | **Manajemen Pengguna** | CRUD pengguna, arsip, pemulihan, hapus permanen, jejak audit |
 | **Pengaturan** | Pengaturan aplikasi dan pengelolaan profil, email, serta password |
@@ -73,15 +74,18 @@ Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah s
 | Modul | `admin` | `manajerial` | `pengawas` | `kepala_dapur` |
 | --- | :---: | :---: | :---: | :---: |
 | Dashboard | Lihat | Lihat | Lihat | Lihat |
-| Dapur | Kelola | Lihat | Lihat | Lihat |
-| CCTV | Kelola | Lihat | Lihat | Lihat |
+| Dapur | Kelola | Lihat | Detail saja | Lihat |
+| CCTV | Kelola | Lihat | — | Lihat |
 | Anomali CCTV | Kelola | Lihat + ekspor | — | Lihat |
+| Inspeksi | Kelola | Lihat + ekspor | Lihat | — |
 | Laporan | Kelola | — | Buat | — |
 | Surat Peringatan | Kelola | Lihat | — | — |
 | Manajemen Pengguna | Kelola | — | — | — |
 | Pengaturan | Kelola | Lihat | Lihat | Lihat |
 
 Otorisasi diterapkan melalui `RoleMiddleware` pada level rute dan `Policy` pada level model.
+
+> Peran `pengawas` dibatasi lebih ketat: `RestrictPengawasFromWeb` mem-logout dan melempar ke halaman login bila akun pengawas membuka halaman web dari browser biasa — akses hanya diizinkan dari aplikasi mobile Capacitor (`User-Agent` `GentaCapacitor` atau cookie `capacitor_app=1`). Karena itu modul CCTV dan Anomali CCTV tidak dapat diakses pengawas melalui web.
 
 ## Arsitektur
 
@@ -130,7 +134,7 @@ resources/views/
 
 routes/web.php                # Rute web dan API mobile
 database/migrations/          # Skema database
-database/seeders/             # Data awal peran, dapur, CCTV, pengaturan
+database/seeders/             # Data awal pengguna per peran (UserSeeder)
 android/                      # Proyek Capacitor (Android)
 tests/                        # Tes Pest (Feature & Unit)
 ```
@@ -213,12 +217,13 @@ Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
 | Variabel | Keterangan |
 | --- | --- |
 | `APP_URL` | URL dasar aplikasi |
-| `DB_CONNECTION` | Driver database — proyek ini berjalan di PostgreSQL (`pgsql`) |
+| `DB_CONNECTION` | Driver database — proyek ini berjalan di PostgreSQL (`pgsql`); `.env.example` masih `sqlite`, ubah sebelum `migrate` |
 | `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION` | Driver session, cache, dan antrean (`database`) |
-| `FCM_SERVER_KEY` | Server key Firebase Cloud Messaging untuk push notification |
+| `FCM_SERVER_KEY` | Server key Firebase Cloud Messaging untuk push notification (wakili variabel yang dibaca `FcmService`) |
 | `CCTV_HLS_BASE` | Base URL HLS media server (kosong = preview kamera tidak tampil) |
 | `CCTV_MEDIAMTX_API`, `CCTV_MEDIAMTX_USER`, `CCTV_MEDIAMTX_PASS` | Control API MediaMTX dan kredensialnya (kosong = sinkronisasi path nonaktif) |
 | `CCTV_PROBE_TIMEOUT` | Batas waktu probe ffprobe per kamera (detik) |
+| `CCTV_FFPROBE` | Nama/path binary ffprobe (kosongkan saja bila `ffprobe` sudah ada di PATH) |
 
 Nilai sensitif seperti `.env`, keystore, dan cookie lokal tidak disertakan dalam repositori.
 
@@ -257,14 +262,9 @@ npm run build
 npx cap sync android
 ```
 
-Alternatif melalui skrip yang tersedia di repositori:
+Setelah itu bangun APK lewat Android Studio (`Build > Generate Signed App Bundle / APK`) atau `./gradlew assembleRelease` dari direktori `android/`. Skrip build batch/PowerShell yang dulu ada sudah dihapus dari repositori.
 
-```bash
-./build-apk.ps1    # PowerShell
-build-apk.bat      # Command Prompt
-```
-
-APK release ditandatangani menggunakan `gentapangan.keystore` yang tidak disimpan di repositori.
+APK release ditandatangani menggunakan `gentapangan.keystore` — sesuai `storeFile` di `android/app/build.gradle`, file ini tidak disimpan di repositori (`.gitignore` mem-ignore `*.keystore`), jadi tiap pembuat APK menyediakan sendiri.
 
 ## Pengujian dan Kualitas Kode
 
@@ -288,7 +288,7 @@ CI (GitHub Actions) menjalankan `composer validate`, Pint, Pest, dan build aset 
 - Proteksi CSRF, escaping output Blade, dan pencegahan SQL injection melalui Eloquent
 - Rate limiting pada rute autentikasi (`POST /login`, `/forgot-password`); endpoint `/api/mobile/*` masih menunggu throttle — dilacak sebagai issue
 - Hashing password dengan bcrypt
-- Token API Sanctum dengan masa berlaku terkelola
+- Token API Sanctum (`expiration` masih `null` di `config/sanctum.php`, atur bila ingin token kedaluwarsa)
 - Kolom audit dan soft delete untuk manajemen pengguna
 
 Laporkan potensi kerentanan secara internal kepada tim pengelola sistem, bukan melalui issue publik.
@@ -325,7 +325,7 @@ Alur rilis:
    git tag v2.1.0
    git push origin master --follow-tags
    ```
-4. Workflow [`.github/workflows/release.yml`](.github/workflows/release.yml) berjalan otomatis: validasi, Pint, Pest, dan build aset dijalankan ulang, lalu GitHub Release diterbitkan dengan catatan yang di-generate dari commit dan label pull request (kategori diatur di [`.github/release.yml`](.github/release.yml)).
+4. Workflow [`.github/workflows/release.yml`](.github/workflows/release.yml) berjalan otomatis: Pint, Pest, dan build aset dijalankan ulang, lalu GitHub Release diterbitkan dengan catatan yang di-generate dari commit dan label pull request (kategori diatur di [`.github/release.yml`](.github/release.yml)).
 
 Catatan: paket APK release belum dibuat otomatis oleh CI — build dan penandatanganan masih manual karena keystore (`gentapangan.keystore`) tidak disimpan di repositori.
 
