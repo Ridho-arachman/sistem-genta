@@ -2,10 +2,14 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('hlsPlayer', (src, autoplay = false, initialStatus = 'offline') => ({
         error: false,
+        playing: false,
         initialStatus,
 
         get status() {
-            return this.error ? 'offline' : this.initialStatus;
+            if (this.error) return 'offline';
+            if (this.playing && this.initialStatus !== 'maintenance') return 'online';
+
+            return this.initialStatus;
         },
 
         async init() {
@@ -17,6 +21,9 @@ document.addEventListener('alpine:init', () => {
                 this.error = true;
                 video.classList.add('hidden');
             };
+            video.addEventListener('playing', () => {
+                this.playing = true;
+            });
 
             const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
 
@@ -47,8 +54,8 @@ document.addEventListener('alpine:init', () => {
                     if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
                         // URL baru butuh waktu sampai source MediaMTX siap;
                         // beri kesempatan sebelum menampilkan "Feed tidak tersedia".
-                        if (networkRetries++ < 8) {
-                            setTimeout(() => hls.startLoad(), 1500);
+                        if (networkRetries++ < 20) {
+                            setTimeout(() => hls.startLoad(), 1000);
                         } else {
                             hls.destroy();
                             showError();

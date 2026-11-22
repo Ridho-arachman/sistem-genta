@@ -4,6 +4,8 @@ use App\Jobs\CctvHealthCheckJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Models\User;
+use App\Services\MediaMtxClient;
+use App\Services\RtspProbe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -26,6 +28,8 @@ test('authenticated user can view cctv index', function () {
 });
 
 test('admin can create cctv', function () {
+    Queue::fake();
+
     $this->actingAs($this->admin)
         ->post(route('admin.cctvs.store'), [
             'dapur_id' => $this->dapur->id,
@@ -41,6 +45,10 @@ test('admin can create cctv', function () {
         'nama' => 'Kamera Depan',
         'status' => 'online',
     ]);
+
+    Queue::assertPushed(CctvHealthCheckJob::class, function ($job) {
+        return $job->cctvId !== null;
+    });
 });
 
 test('pengawas cannot create cctv via web (mobile only)', function () {
@@ -95,6 +103,32 @@ test('updating cctv schedules an immediate health check', function () {
         return $job->dapurId === (string) $this->dapur->id
             && $job->cctvId === (string) $cctv->id;
     });
+});
+
+test('health check setelah simpan url baru menunggu playlist hls sebelum menandai online', function () {
+    config([
+        'cctv.mediamtx.api' => 'http://mediamtx.test:9997',
+        'cctv.hls_base' => 'http://mediamtx.test:8888',
+    ]);
+    Http::fake([
+        'mediamtx.test:9997/*' => Http::response([], 200),
+        'mediamtx.test:8888/*' => Http::sequence()
+            ->push('', 500)
+            ->push('#EXTM3U', 200)
+            ->push('#EXTM3U', 200),
+    ]);
+
+    $cctv = Cctv::factory()->create([
+        'dapur_id' => $this->dapur->id,
+        'rtsp_url' => 'rtsp://cam/live',
+        'status' => 'offline',
+    ]);
+
+    (new CctvHealthCheckJob($cctv->dapur_id, $cctv->id))
+        ->handle(app(RtspProbe::class), app(MediaMtxClient::class));
+
+    expect($cctv->fresh()->status)->toBe('online')
+        ->and($cctv->fresh()->last_checked_at)->not->toBeNull();
 });
 
 test('user can delete cctv', function () {

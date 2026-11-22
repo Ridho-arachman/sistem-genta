@@ -125,6 +125,28 @@ class MediaMtxClient
         return $response->successful() && str_contains($response->body(), '#EXTM3U');
     }
 
+    /**
+     * Tunggu sampai sourceOnDemand selesai menarik stream saat URL baru
+     * disimpan. Pull RTSP bisa butuh ~15 detik, jadi jangan beri status
+     * offline hanya karena playlist belum sempat terbentuk.
+     */
+    public function warmPath(string $streamKey): bool
+    {
+        if (! filled(config('cctv.hls_base'))) {
+            return false;
+        }
+
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            if ($this->isServing($streamKey) === true) {
+                return true;
+            }
+
+            sleep(1);
+        }
+
+        return false;
+    }
+
     private function request(string $method, string $path, array $body = []): ?Response
     {
         $base = rtrim((string) config('cctv.mediamtx.api'), '/');

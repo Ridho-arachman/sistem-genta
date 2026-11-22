@@ -72,10 +72,14 @@ test('health check dengan cctv_id hanya memeriksa kamera itu', function () {
     $target = Cctv::factory()->create(['status' => 'offline']);
     $other = Cctv::factory()->create(['dapur_id' => $target->dapur_id, 'status' => 'offline']);
 
-    $this->mock(RtspProbe::class)
-        ->shouldReceive('isReachable')
-        ->once()
+    $this->mock(MediaMtxClient::class)
+        ->shouldReceive('warmPath')
+        ->andReturn(true)
+        ->shouldReceive('isServing')
         ->andReturn(true);
+
+    $this->mock(RtspProbe::class)
+        ->shouldNotReceive('isReachable');
 
     (new CctvHealthCheckJob($target->dapur_id, $target->id))
         ->handle(app(RtspProbe::class), app(MediaMtxClient::class));

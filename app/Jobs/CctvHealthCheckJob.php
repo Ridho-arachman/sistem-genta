@@ -50,6 +50,13 @@ class CctvHealthCheckJob implements ShouldQueue
                 continue;
             }
 
+            // Saat admin menyimpan URL baru, source on-demand butuh waktu
+            // beberapa detik sebelum playlist HLS bisa dibaca. Tunggu dulu di
+            // job (bukan di request) supaya status tak salah jadi offline.
+            if (filled($this->cctvId) && $cctv->stream_key) {
+                $mediaMtx->warmPath($cctv->stream_key);
+            }
+
             // MediaMTX diutamakan: itulah yang benar-benar melayani video di browser.
             // isServing() uji playlist HLS (sekaligus memicu pull RTSP on-demand),
             // karena field `online` hanya berarti path punya sumber, bukan stream hidup.
