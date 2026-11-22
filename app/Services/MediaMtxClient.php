@@ -52,7 +52,11 @@ class MediaMtxClient
     }
 
     /**
-     * Status path di MediaMTX. Null = tidak bisa diverifikasi (server mati/kosong).
+     * Status path di MediaMTX. Null = tidak bisa diverifikasi (server mati /
+     * path belum terdaftar), false = path ada tapi sumbernya offline.
+     *
+     * Pakai field `online`, bukan `ready`: dengan sourceOnDemand, `ready`
+     * hanya true saat ada penonton dan bisa diputar — idle tetap false.
      */
     public function isReady(string $streamKey): ?bool
     {
@@ -67,10 +71,10 @@ class MediaMtxClient
         }
 
         if ($response->status() === 404) {
-            return false;
+            return null;
         }
 
-        return $response->successful() ? (bool) $response->json('ready') : null;
+        return $response->successful() ? (bool) $response->json('online') : null;
     }
 
     private function request(string $method, string $path, array $body = []): ?Response

@@ -36,17 +36,19 @@ test('mendaftarkan path mode push saat tanpa rtsp url', function () {
         && $request['sourceOnDemand'] === false);
 });
 
-test('membaca status ready dan menganggap path hilang sebagai belum siap', function () {
+test('membaca status online path dan menganggap path belum terdaftar tak bisa diverifikasi', function () {
     config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
     Http::fake([
-        'mediamtx.test:9997/v3/paths/get/live' => Http::response(['ready' => true], 200),
+        'mediamtx.test:9997/v3/paths/get/live' => Http::response(['online' => true], 200),
+        'mediamtx.test:9997/v3/paths/get/down' => Http::response(['online' => false], 200),
         'mediamtx.test:9997/v3/paths/get/missing' => Http::response([], 404),
     ]);
 
     $client = new MediaMtxClient;
 
     expect($client->isReady('live'))->toBeTrue()
-        ->and($client->isReady('missing'))->toBeFalse();
+        ->and($client->isReady('down'))->toBeFalse()
+        ->and($client->isReady('missing'))->toBeNull();
 });
 
 test('menghapus path memakai endpoint delete', function () {

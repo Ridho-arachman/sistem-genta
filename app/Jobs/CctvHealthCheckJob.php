@@ -38,8 +38,10 @@ class CctvHealthCheckJob implements ShouldQueue
                 continue;
             }
 
-            $online = $probe->isReachable($cctv->rtsp_url)
-                ?? ($cctv->stream_key ? $mediaMtx->isReady($cctv->stream_key) : null);
+            // MediaMTX diutamakan: itulah yang benar-benar melayani video di browser.
+            // ffprobe hanya jadi acuan bila MediaMTX tak bisa menjawab.
+            $online = ($cctv->stream_key ? $mediaMtx->isReady($cctv->stream_key) : null)
+                ?? $probe->isReachable($cctv->rtsp_url);
 
             if ($online === null) {
                 continue; // tidak bisa diverifikasi, biarkan status lama

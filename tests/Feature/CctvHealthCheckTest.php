@@ -26,6 +26,27 @@ test('health check menandai kamera online saat rtsp terbaca', function () {
         ->and($cctv->last_checked_at)->not->toBeNull();
 });
 
+test('health check memakai mediamtx saat ffprobe gagal', function () {
+    Queue::fake();
+
+    $cctv = Cctv::factory()->create(['status' => 'offline']);
+
+    $this->mock(MediaMtxClient::class)
+        ->shouldReceive('isReady')
+        ->with(Mockery::type('string'))
+        ->andReturn(true);
+
+    $this->mock(RtspProbe::class)
+        ->shouldReceive('isReachable')
+        ->andReturn(false);
+
+    (new CctvHealthCheckJob($cctv->dapur_id))->handle(app(RtspProbe::class), app(MediaMtxClient::class));
+
+    expect($cctv->fresh()->status)->toBe('online');
+
+    Queue::assertNotPushed(CctvAlertJob::class);
+});
+
 test('health check menandai offline dan mengirim alert sekali saja', function () {
     Queue::fake();
 
