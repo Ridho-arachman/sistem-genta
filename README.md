@@ -239,9 +239,11 @@ CCTV_MEDIAMTX_API=http://127.0.0.1:9997
 
 Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — port `8000` bentrok, dan `composer run dev` juga tidak menyalakan scheduler. Aset sudah ada di `public/build`, jadi `npm run dev` tidak wajib; jalankan hanya bila aset belum ter-build.
 
-Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview HLS tidak ada di tabel Monitoring CCTV.
+Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap 5 menit oleh health check).
 
 Alternatif via Docker (opsional): `docker compose up -d --force-recreate mediamtx`. Pastikan Control API `:9997` ikut ter-publish; container lama yang dibuat sebelum `docker-compose.yml` memiliki `9997` bisa membuat sinkronisasi path gagal.
+
+> `CCTV_HLS_BASE` wajib `http://127.0.0.1:8888` saat preview dibuka dari browser pada PC yang menjalankan MediaMTX: MediaMTX memasang cookie `Secure` untuk HLS, dan browser hanya menerimanya pada origin yang trusted — `http://127.0.0.1` dan `http://localhost` ya, `http://192.168.x.x` tidak. Kalau preview dibuka dari Android/WebView di Wi-Fi (bukan dari PC MediaMTX), letakkan MediaMTX di belakang HTTPS atau pakai WebRTC (`:8889`) sebagai pengganti HLS; mengganti `CCTV_HLS_BASE` ke IP LAN saja **tidak** cukup.
 
 ## Konfigurasi
 

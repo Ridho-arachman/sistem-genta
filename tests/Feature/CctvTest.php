@@ -96,6 +96,19 @@ test('cctv show page loads', function () {
         ->assertSee($cctv->rtsp_url);
 });
 
+test('token rtsp url dimask di halaman detail', function () {
+    $cctv = Cctv::factory()->create([
+        'dapur_id' => $this->dapur->id,
+        'rtsp_url' => 'rtsp://example.com/stream?token=rahasia123',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.cctvs.show', $cctv))
+        ->assertOk()
+        ->assertSee('token=••••')
+        ->assertDontSee('rahasia123');
+});
+
 test('monitoring page redirects to cctv index', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.cctvs.monitoring'))

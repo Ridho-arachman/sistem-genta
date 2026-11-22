@@ -77,7 +77,7 @@
                     </span>
                 </div>
                 <div class="aspect-video bg-black relative pb-2">
-                    @if ($cctv->stream_url && $cctv->status === 'online')
+                    @if ($cctv->stream_url)
                         <div class="absolute inset-0 flex flex-col items-center justify-center" x-data="hlsPlayer(@js($cctv->stream_url))">
                             <video class="absolute inset-0 w-full h-full object-cover" controls crossorigin="anonymous" preload="none" muted></video>
                             <div class="absolute inset-0 z-10 flex-col items-center justify-center bg-black/80" id="video-error-{{ $cctv->id }}" x-show="error" x-cloak>

@@ -52,7 +52,8 @@
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">RTSP URL</p>
-                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm truncate">{{ $cctv->rtsp_url ?? '-' }}</p>
+                {{-- Token/query RTSP dimask supaya tidak terekspos di halaman publik admin. --}}
+                <p class="font-semibold text-[var(--color-secondary)] font-mono text-sm truncate">{{ $cctv->rtsp_url ? preg_replace('/([?&]token=)[^&\s]+/', '$1••••', $cctv->rtsp_url) : '-' }}</p>
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg">
                 <p class="text-sm text-[var(--color-text-muted)]">HLS URL</p>
