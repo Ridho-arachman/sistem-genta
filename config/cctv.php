@@ -10,6 +10,8 @@ return [
         'api' => env('CCTV_MEDIAMTX_API'),
         'username' => env('CCTV_MEDIAMTX_USER'),
         'password' => env('CCTV_MEDIAMTX_PASS'),
+        // Alamat RTSP MediaMTX untuk path turunan (kamera dengan RTSP URL sama).
+        'rtsp' => env('CCTV_MEDIAMTX_RTSP', 'rtsp://127.0.0.1:8554'),
     ],
 
     // Timeout probe RTSP (detik) saat health check.

@@ -160,7 +160,8 @@ class CctvController extends Controller
         $oldStatus = $cctv->status;
         $cctv->update($validated);
         $this->syncStreamPath($cctv);
-        CctvHealthCheckJob::dispatch($cctv->dapur_id, $cctv->id);
+        // Path baru butuh waktu mulai; cek langsung sering salah tandai offline.
+        CctvHealthCheckJob::dispatch($cctv->dapur_id, $cctv->id)->delay(now()->addSeconds(5));
 
         if ($oldStatus !== $cctv->status && in_array($cctv->status, ['offline', 'maintenance'])) {
             CctvAlertJob::dispatch($cctv->id, $cctv->status, true);

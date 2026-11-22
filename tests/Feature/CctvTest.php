@@ -196,8 +196,12 @@ test('menambah cctv mendaftarkan path ke media server', function () {
         ])
         ->assertRedirect(route('admin.cctvs.index'));
 
+    $sourcePath = 'src-'.substr(hash('sha256', 'rtsp://admin:pass@192.168.0.1:554/Streaming/Channels/101'), 0, 20);
+
     Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/replace/')
         && $request['source'] === 'rtsp://admin:pass@192.168.0.1:554/Streaming/Channels/101');
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/replace/')
+        && $request['source'] === 'rtsp://127.0.0.1:8554/'.$sourcePath);
 });
 
 test('rtsp url harus dimulai dengan rtsp scheme', function () {

@@ -31,9 +31,27 @@ class MediaMtxClient
             return false;
         }
 
+        $source = 'publisher';
+
+        if (filled($rtspUrl)) {
+            // Satu URL RTSP = satu koneksi upstream. Path kamera lain yang
+            // memakai URL yang sama menarik dari path sumber ini lewat RTSP
+            // lokal, bukan membuka koneksi baru (rtsplink membatasi 2 koneksi).
+            $sourcePath = 'src-'.substr(hash('sha256', $rtspUrl), 0, 20);
+            $registered = $this->request('post', "/v3/config/paths/replace/{$sourcePath}", [
+                'source' => $rtspUrl,
+                'sourceOnDemand' => true,
+                'sourceOnDemandCloseAfter' => '30s',
+            ])?->successful() ?? false;
+
+            $source = $registered
+                ? rtrim((string) config('cctv.mediamtx.rtsp', 'rtsp://127.0.0.1:8554'), '/').'/'.$sourcePath
+                : $rtspUrl;
+        }
+
         $response = $this->request('post', "/v3/config/paths/replace/{$streamKey}", [
-            'source' => filled($rtspUrl) ? $rtspUrl : 'publisher',
-            'sourceOnDemand' => filled($rtspUrl),
+            'source' => $source,
+            'sourceOnDemand' => $source !== 'publisher',
             'sourceOnDemandCloseAfter' => '30s',
         ]);
 

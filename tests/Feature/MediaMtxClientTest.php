@@ -16,15 +16,32 @@ test('tidak melakukan apa pun saat control api belum dikonfigurasi', function ()
     Http::assertNothingSent();
 });
 
-test('mendaftarkan path sebagai pull on-demand', function () {
+test('mendaftarkan path sebagai pull on-demand lewat source path bersama', function () {
     config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
     Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
 
     expect((new MediaMtxClient)->addPath('abc', 'rtsp://cam/1'))->toBeTrue();
 
-    Http::assertSent(fn ($request) => $request->url() === 'http://mediamtx.test:9997/v3/config/paths/replace/abc'
+    $sourcePath = 'src-'.substr(hash('sha256', 'rtsp://cam/1'), 0, 20);
+
+    Http::assertSent(fn ($request) => $request->url() === 'http://mediamtx.test:9997/v3/config/paths/replace/'.$sourcePath
         && $request['source'] === 'rtsp://cam/1'
         && $request['sourceOnDemand'] === true);
+
+    Http::assertSent(fn ($request) => $request->url() === 'http://mediamtx.test:9997/v3/config/paths/replace/abc'
+        && $request['source'] === 'rtsp://127.0.0.1:8554/'.$sourcePath
+        && $request['sourceOnDemand'] === true);
+});
+
+test('rtsp url yang sama hanya mendaftarkan satu source path', function () {
+    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
+    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
+
+    $client = new MediaMtxClient;
+    $client->addPath('cam-a', 'rtsp://cam/shared');
+    $client->addPath('cam-b', 'rtsp://cam/shared');
+
+    Http::assertSent(fn ($request) => $request['source'] === 'rtsp://cam/shared', 1);
 });
 
 test('mendaftarkan path mode push saat tanpa rtsp url', function () {
