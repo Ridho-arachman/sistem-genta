@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\MediaMtxClient;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 test('tidak melakukan apa pun saat control api belum dikonfigurasi', function () {
@@ -49,6 +50,36 @@ test('membaca status online path dan menganggap path belum terdaftar tak bisa di
     expect($client->isReady('live'))->toBeTrue()
         ->and($client->isReady('down'))->toBeFalse()
         ->and($client->isReady('missing'))->toBeNull();
+});
+
+test('isi playlist hls menentukan stream benar-benar bisa diputar', function () {
+    config(['cctv.hls_base' => 'http://mediamtx.test:8888', 'cctv.mediamtx.api' => null]);
+    Http::fake([
+        'mediamtx.test:8888/*/index.m3u8?cookieCheck=1' => Http::sequence()
+            ->push('#EXTM3U'.PHP_EOL.'#EXT-X-STREAM-INF', 200)
+            ->push('', 404),
+    ]);
+
+    $client = new MediaMtxClient;
+
+    expect($client->isServing('alive'))->toBeTrue()
+        ->and($client->isServing('dead'))->toBeFalse();
+});
+
+test('isServing null saat hls base belum diatur', function () {
+    config(['cctv.hls_base' => null]);
+    Http::fake();
+
+    expect((new MediaMtxClient)->isServing('alive'))->toBeNull();
+
+    Http::assertNothingSent();
+});
+
+test('isServing null saat media server tidak bisa dihubungi', function () {
+    config(['cctv.hls_base' => 'http://mediamtx.test:8888']);
+    Http::fake(fn () => throw new ConnectionException('connection refused'));
+
+    expect((new MediaMtxClient)->isServing('alive'))->toBeNull();
 });
 
 test('menghapus path memakai endpoint delete', function () {

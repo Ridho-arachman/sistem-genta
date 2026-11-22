@@ -31,10 +31,9 @@ test('health check memakai mediamtx saat ffprobe gagal', function () {
 
     $cctv = Cctv::factory()->create(['status' => 'offline']);
 
-    $this->mock(MediaMtxClient::class)
-        ->shouldReceive('isReady')
-        ->with(Mockery::type('string'))
-        ->andReturn(true);
+    $mediaMtx = $this->mock(MediaMtxClient::class);
+    $mediaMtx->shouldReceive('isServing')->andReturnNull();
+    $mediaMtx->shouldReceive('isReady')->andReturn(true);
 
     $this->mock(RtspProbe::class)
         ->shouldReceive('isReachable')
@@ -45,6 +44,26 @@ test('health check memakai mediamtx saat ffprobe gagal', function () {
     expect($cctv->fresh()->status)->toBe('online');
 
     Queue::assertNotPushed(CctvAlertJob::class);
+});
+
+test('health check menandai offline saat playlist hls tidak keluar walau path masih terdaftar', function () {
+    Queue::fake();
+
+    $cctv = Cctv::factory()->create(['status' => 'online']);
+
+    $this->mock(MediaMtxClient::class)
+        ->shouldReceive('isServing')
+        ->andReturn(false);
+
+    $this->mock(RtspProbe::class)
+        ->shouldReceive('isReachable')
+        ->andReturnNull();
+
+    (new CctvHealthCheckJob($cctv->dapur_id))->handle(app(RtspProbe::class), app(MediaMtxClient::class));
+
+    expect($cctv->fresh()->status)->toBe('offline');
+
+    Queue::assertPushed(CctvAlertJob::class, 1);
 });
 
 test('health check menandai offline dan mengirim alert sekali saja', function () {

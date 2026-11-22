@@ -77,6 +77,36 @@ class MediaMtxClient
         return $response->successful() ? (bool) $response->json('online') : null;
     }
 
+    /**
+     * Uji apakah stream benar-benar bisa diputar: minta playlist HLS dari
+     * MediaMTX. Request ini sekaligus memicu pull RTSP on-demand, jadi sumber
+     * yang mati (mis. token kedaluwarsa) akan gagal dan playlist tak muncul.
+     *
+     * `?cookieCheck=1` menghindari redirect cookie Secure yang tak jalan di
+     * browser non-localhost. Null = HLS base belum diatur / server tak bisa dihubungi.
+     */
+    public function isServing(string $streamKey): ?bool
+    {
+        $base = rtrim((string) config('cctv.hls_base'), '/');
+
+        if (! filled($base)) {
+            return null;
+        }
+
+        try {
+            $response = Http::timeout(12)->get("{$base}/{$streamKey}/index.m3u8?cookieCheck=1");
+        } catch (Throwable $e) {
+            Log::warning('MediaMTX HLS tidak bisa dihubungi', [
+                'stream_key' => $streamKey,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        return $response->successful() && str_contains($response->body(), '#EXTM3U');
+    }
+
     private function request(string $method, string $path, array $body = []): ?Response
     {
         $base = rtrim((string) config('cctv.mediamtx.api'), '/');
