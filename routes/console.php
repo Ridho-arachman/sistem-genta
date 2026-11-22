@@ -11,5 +11,5 @@ Artisan::command('inspire', function () {
 
 // Status kamera diverifikasi nyata (ffprobe/MediaMTX), bukan dari input manual.
 Schedule::command(CctvHealthCheck::class)
-    ->everyFiveMinutes()
+    ->everyMinute()
     ->withoutOverlapping();

@@ -70,7 +70,7 @@
         <div class="border-t border-[var(--color-border)] pt-6">
             <h3 class="text-lg font-semibold mb-4">Preview Streaming (HLS)</h3>
             <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="hlsPlayer(@js($cctv->stream_url), true)">
-                <video controls class="block h-full w-full object-cover" crossorigin="anonymous"></video>
+                <video controls autoplay muted playsinline class="block h-full w-full object-cover" crossorigin="anonymous"></video>
             </div>
         </div>
         @endif

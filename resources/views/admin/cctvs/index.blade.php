@@ -64,22 +64,19 @@
     @if ($cctvs->count() > 0)
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
             @foreach ($cctvs as $cctv)
-            <div class="card overflow-hidden min-w-0 w-full min-h-[400px]">
+            <div class="card overflow-hidden min-w-0 w-full min-h-[400px]" x-data="hlsPlayer(@js($cctv->stream_url), true, @js($cctv->status))">
                 <div class="p-3 flex items-center justify-between">
                     <span class="bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}
                     </span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-tightest whitespace-nowrap
-                        @if($cctv->status === 'online') bg-green-50 text-green-700
-                        @elseif($cctv->status === 'offline') bg-red-50 text-red-700
-                        @else bg-yellow-50 text-yellow-700 @endif">
-                        {{ ucfirst($cctv->status) }}
-                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-tightest whitespace-nowrap"
+                        :class="status === 'online' ? 'bg-green-50 text-green-700' : (status === 'offline' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700')"
+                        x-text="status.charAt(0).toUpperCase() + status.slice(1)">{{ ucfirst($cctv->status) }}</span>
                 </div>
                 <div class="aspect-video bg-black relative pb-2">
                     @if ($cctv->stream_url)
-                        <div class="absolute inset-0 flex flex-col items-center justify-center" x-data="hlsPlayer(@js($cctv->stream_url))">
-                            <video class="absolute inset-0 w-full h-full object-cover" controls crossorigin="anonymous" preload="none" muted></video>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <video class="absolute inset-0 w-full h-full object-cover" controls autoplay muted playsinline crossorigin="anonymous" preload="none"></video>
                             <div class="absolute inset-0 z-10 flex-col items-center justify-center bg-black/80" id="video-error-{{ $cctv->id }}" x-show="error" x-cloak>
                                 <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 <p class="text-xs text-white text-center">Feed tidak tersedia</p>

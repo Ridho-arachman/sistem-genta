@@ -122,7 +122,7 @@
     "src": "node_modules/quill/dist/quill.snow.css"
   },
   "node_modules/quill/quill.js": {
-    "file": "assets/quill-S8-UT_30.js",
+    "file": "assets/quill-dlf6ugyI.js",
     "name": "quill",
     "src": "node_modules/quill/quill.js",
     "isDynamicEntry": true,
@@ -131,7 +131,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dl3ruoo8.css",
+    "file": "assets/app-Chh9PQi0.css",
     "name": "app",
     "names": [
       "app.css"
@@ -160,7 +160,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-AEOzzsNx.js",
+    "file": "assets/app-AOH7p0pq.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

@@ -1,10 +1,18 @@
 // Pemutar HLS (cctvs/index & cctvs/show) — hls.js dimuat lazy agar halaman lain tetap ringan
 document.addEventListener('alpine:init', () => {
-    Alpine.data('hlsPlayer', (src, autoplay = false) => ({
+    Alpine.data('hlsPlayer', (src, autoplay = false, initialStatus = 'offline') => ({
         error: false,
+        initialStatus,
+
+        get status() {
+            return this.error ? 'offline' : this.initialStatus;
+        },
 
         async init() {
-            const video = this.$el.querySelector('video') || this.$el;
+            const video = this.$el.querySelector('video');
+            if (! video) {
+                return;
+            }
             const showError = () => {
                 this.error = true;
                 video.classList.add('hidden');
@@ -24,6 +32,7 @@ document.addEventListener('alpine:init', () => {
 
             if (Hls?.isSupported()) {
                 const hls = new Hls();
+                let networkRetries = 0;
                 hls.loadSource(src);
                 hls.attachMedia(video);
 
@@ -36,7 +45,14 @@ document.addEventListener('alpine:init', () => {
                 hls.on(Hls.Events.ERROR, (event, data) => {
                     if (!data.fatal) return;
                     if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                        hls.startLoad();
+                        // URL baru butuh waktu sampai source MediaMTX siap;
+                        // beri kesempatan sebelum menampilkan "Feed tidak tersedia".
+                        if (networkRetries++ < 8) {
+                            setTimeout(() => hls.startLoad(), 1500);
+                        } else {
+                            hls.destroy();
+                            showError();
+                        }
                     } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
                         hls.recoverMediaError();
                     } else {
