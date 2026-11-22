@@ -1,10 +1,12 @@
 <?php
 
+use App\Jobs\CctvHealthCheckJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 
 uses(RefreshDatabase::class);
 
@@ -53,6 +55,8 @@ test('pengawas cannot create cctv via web (mobile only)', function () {
 });
 
 test('user can update cctv', function () {
+    Queue::fake();
+
     $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'offline']);
 
     $this->actingAs($this->admin)
@@ -70,6 +74,27 @@ test('user can update cctv', function () {
         'nama' => 'Kamera Utama Updated',
         'status' => 'online',
     ]);
+});
+
+test('updating cctv schedules an immediate health check', function () {
+    Queue::fake();
+
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'status' => 'offline']);
+
+    $this->actingAs($this->admin)
+        ->put(route('admin.cctvs.update', $cctv), [
+            'dapur_id' => $this->dapur->id,
+            'nama' => 'Kamera Utama Updated',
+            'rtsp_url' => 'rtsp://admin:pass@192.168.1.101:554/stream',
+            'status' => 'offline',
+        ])
+        ->assertRedirect(route('admin.cctvs.index'));
+
+    // Badge tak perlu menunggu jadwal lima menit berikutnya.
+    Queue::assertPushed(CctvHealthCheckJob::class, function ($job) use ($cctv) {
+        return $job->dapurId === (string) $this->dapur->id
+            && $job->cctvId === (string) $cctv->id;
+    });
 });
 
 test('user can delete cctv', function () {

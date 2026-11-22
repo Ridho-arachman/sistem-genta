@@ -66,6 +66,25 @@ test('health check menandai offline saat playlist hls tidak keluar walau path ma
     Queue::assertPushed(CctvAlertJob::class, 1);
 });
 
+test('health check dengan cctv_id hanya memeriksa kamera itu', function () {
+    Queue::fake();
+
+    $target = Cctv::factory()->create(['status' => 'offline']);
+    $other = Cctv::factory()->create(['dapur_id' => $target->dapur_id, 'status' => 'offline']);
+
+    $this->mock(RtspProbe::class)
+        ->shouldReceive('isReachable')
+        ->once()
+        ->andReturn(true);
+
+    (new CctvHealthCheckJob($target->dapur_id, $target->id))
+        ->handle(app(RtspProbe::class), app(MediaMtxClient::class));
+
+    expect($target->fresh()->status)->toBe('online')
+        ->and($other->fresh()->status)->toBe('offline')
+        ->and($other->fresh()->last_checked_at)->toBeNull();
+});
+
 test('health check menandai offline dan mengirim alert sekali saja', function () {
     Queue::fake();
 

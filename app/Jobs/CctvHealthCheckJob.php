@@ -24,11 +24,23 @@ class CctvHealthCheckJob implements ShouldQueue
     /** @var array<int, int> */
     public array $backoff = [30, 120, 300];
 
-    public function __construct(public string $dapurId) {}
+    /**
+     * @param  string  $dapurId  dapur yang dicek
+     * @param  string|null  $cctvId  batasi ke satu kamera (dipakai saat admin
+     *                               menyimpan rtsp_url baru, biar status tak
+     *                               menunggu jadwal lima menit berikutnya)
+     */
+    public function __construct(public string $dapurId, public ?string $cctvId = null) {}
 
     public function handle(RtspProbe $probe, MediaMtxClient $mediaMtx): void
     {
-        $cctvs = Cctv::where('dapur_id', $this->dapurId)->get();
+        $query = Cctv::where('dapur_id', $this->dapurId);
+
+        if (filled($this->cctvId)) {
+            $query->where('id', $this->cctvId);
+        }
+
+        $cctvs = $query->get();
 
         foreach ($cctvs as $cctv) {
             // Status maintenance di-set manual admin; jangan ditimpa hasil probe.

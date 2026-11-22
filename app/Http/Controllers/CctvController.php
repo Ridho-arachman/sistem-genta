@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\CctvAlertJob;
+use App\Jobs\CctvHealthCheckJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Services\MediaMtxClient;
@@ -159,6 +160,7 @@ class CctvController extends Controller
         $oldStatus = $cctv->status;
         $cctv->update($validated);
         $this->syncStreamPath($cctv);
+        CctvHealthCheckJob::dispatch($cctv->dapur_id, $cctv->id);
 
         if ($oldStatus !== $cctv->status && in_array($cctv->status, ['offline', 'maintenance'])) {
             CctvAlertJob::dispatch($cctv->id, $cctv->status, true);
