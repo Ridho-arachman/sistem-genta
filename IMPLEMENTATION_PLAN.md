@@ -1,10 +1,10 @@
 # IMPLEMENTATION_PLAN — Rencana implementasi & rilis
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## Urutan rilis
 1. **Rilis dev (sekarang)** — kode hijau, dokumen root lengkap, tools lokal jalan (`php artisan serve`, MediaMTX, worker, scheduler).
-2. **Pilot 1 dapur** — 1 dapur dengan IP publik + port-forward 554 diverifikasi menyeluruh: preview HLS, health check nyata, FCM alert, skenario token RTSP kedaluwarsa. Backup/restore drill dilakukan sekali.
+2. **Pilot 1 dapur** — 1 dapur dengan IP publik + port-forward 554 diverifikasi menyeluruh: preview CCTV (WHEP/HLS), health check nyata, FCM alert, skenario token RTSP kedaluwarsa. Backup/restore drill dilakukan sekali.
 3. **Pilot ~20 dapur** — amati durasi probe & failure rate; tetapkan jumlah worker (target 5–10); verifikasi tidak ada job timeout.
 4. **Produksi penuh ±400 dapur** — TLS + domain, monitoring minimum (queue depth, error rate), jadwal backup harian.
 5. **Panen Tier 2** — drill DR, alert playbook, capacity review.

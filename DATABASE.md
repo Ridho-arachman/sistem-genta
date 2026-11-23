@@ -7,7 +7,7 @@
 - Waktu lokal `Asia/Jakarta`; semua kolom timestamp `timestamp without time zone`.
 - Tidak ada rekaman video; semua data disimpan sebagai record biasa.
 
-## Tabel aktif (18)
+## Tabel aktif
 | Tabel | PK | Isi utama |
 |---|---|---|
 | `users` | ULID | `name, email, password(hashed), role(admin/manajerial/pengawas/kepala_dapur), registered_by, dapur_id, created_by/updated_by/deleted_by, deleted_at` (soft deletes) |

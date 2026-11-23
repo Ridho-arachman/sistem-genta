@@ -35,7 +35,7 @@ pimpinan (manajerial) melihat dashboard read-only.
 - Waktu kerja pengawas: web pakai aplikasi mobile (Capacitor), foto disimpan sebagai file (path di DB), geofence dihitung di perangkat mobile.
 
 ## Definisi selesai (rilis ini)
-- Full test suite hijau (80 tes / 234 assertion).
+- Full test suite hijau (angka tes mengikuti keluaran `vendor/bin/pest`).
 - CI GitHub Actions (Pint + full suite).
 - Doc suite (root) lengkap dan sinkron dengan kode.
 

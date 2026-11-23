@@ -52,6 +52,6 @@ jobs:
       - name: Pint
         run: vendor/bin/pint --test
 
-      # Suite penuh hijau sejak 2026-11-18 (view manajerial/kepala-dapur dibuat, tes diperbaiki).
+      # Angka tes tidak ditulis di sini supaya tidak basi; lihat keluaran job ini.
       - name: Tests
         run: vendor/bin/pest --compact

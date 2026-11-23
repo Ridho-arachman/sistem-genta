@@ -23,7 +23,7 @@ Tidak ada rekaman; tidak ada broadcasting/WebSocket; tidak ada `routes/api.php` 
 | Lapisan | Lokasi | Catatan |
 |---|---|---|
 | Routing | `routes/web.php` | Semua route + Sanctum di sini; tidak ada `api.php` |
-| Controller | `app/Http/Controllers/*` | AdminController, DapurController, CctvController, InspeksiController, LaporanController, SpWarningController, CctvAnomalyReportController, Api\MobileController |
+| Controller | `app/Http/Controllers/*` | AdminController, DashboardController, DapurController, CctvController, InspeksiController, LaporanController, SpWarningController, CctvAnomalyReportController, Api\MobileController, Auth\AuthController |
 | Model | `app/Models/*` | ULID string PK (`keyType=string`, `incrementing=false`); tabel `jobs`/`failed_jobs` sudah bigint auto-increment |
 | Policy | `app/Policies/*` | CctvAnomalyReport, Laporan |
 | Service | `app/Services/*` | CsvExport, FcmService, MediaMtxClient, RtspProbe |

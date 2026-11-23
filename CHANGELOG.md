@@ -25,7 +25,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 - Tombol `Excel`: SP → diubah jadi `Cetak` (format `xlsx` → view cetak browser HTML, bukan `.xls` dengan HTML kustom yang rentan XSS); anomaly CCTV tombol `Excel` dihapus (`export` hanya `pdf` dan CSV sekarang).
 
 ### Changed
-- Dokumentasi diselaraskan dengan kode: policy `CctvPolicy`/`DapurPolicy` dan `GeolocationService` yang sudah dihapus tidak lagi ditulis di `ARCHITECTURE.md`/`SECURITY.md`/`README.md`/`TRD.md`; `selfie_photo` didokumentasikan sebagai path file (bukan base64) di `APP_FLOW.md`/`SECURITY.md`/`COST_AND_RATE_LIMITS.md`/`PRD.md`; angka suite (80/234) dan daftar file tes di `README.md`/`TESTING.md`/`PRD.md` diperbarui; jadwal health check "tiap menit" (bukan 5 menit) konsisten di `ARCHITECTURE.md`/`APP_FLOW.md`/`COST_AND_RATE_LIMITS.md`/`PRD.md`/`CHANGELOG.md`.
+- Dokumentasi diselaraskan dengan kode: policy `CctvPolicy`/`DapurPolicy` dan `GeolocationService` yang sudah dihapus tidak lagi ditulis di `ARCHITECTURE.md`/`SECURITY.md`/`README.md`/`TRD.md`; `selfie_photo` didokumentasikan sebagai path file (bukan base64) di `APP_FLOW.md`/`SECURITY.md`/`COST_AND_RATE_LIMITS.md`/`PRD.md`; daftar file tes di `TESTING.md` diperbarui; jadwal health check "tiap menit" (bukan 5 menit) konsisten di `ARCHITECTURE.md`/`APP_FLOW.md`/`COST_AND_RATE_LIMITS.md`/`PRD.md`/`CHANGELOG.md`.
+- Klaim yang gampang basi dikurangi: angka tes (`README`/`TESTING`/`PRD`), jumlah tabel (`DATABASE.md`), frekuensi breakpoint (`RESPONSIVE.md`), dan tanggal di komentar CI (`ci.yml`) tidak lagi ditulis sebagai angka pasti — diganti acuan "ikut keluaran perintah".
+- Kecil: minimum PHP di README/badge disamakan dengan `composer.json` (`8.3+`), `DashboardController` + `Auth\AuthController` masuk daftar controller `ARCHITECTURE.md`, baris pilot `IMPLEMENTATION_PLAN.md` menyebut WHEP/HLS.
 
 ## [2.1.1] — 2026-11-20 · *perbaikan CCTV + keamanan dependensi*
 

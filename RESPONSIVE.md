@@ -4,7 +4,7 @@
 
 ## Breakpoint (sesuai penggunaan nyata di Blade + JS)
 Tailwind default: `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px), `2xl`.
-Frekuensi pemakaian (grep di Blade + JS, Nov 2026): `lg:` 56, `md:` 43, `sm:` 39; `xl:` dan `2xl:` tidak dipakai.
+Paling sering dipakai `sm:`/`md:`/`lg:`; `xl:` dan `2xl:` tidak dipakai (angka pastinya dicari dengan grep, tidak dicatat di sini supaya tidak basi).
 Selain itu ada **arbiter** `max-[900px]:*` pada sidebar admin (off-canvas di bawah 900px) dan `min-[901px]:translate-x-0`.
 
 ## Pola nyata

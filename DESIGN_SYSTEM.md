@@ -1,6 +1,6 @@
 # DESIGN_SYSTEM — GENTA Pangan Banten
 
-**Status**: aktif · 2026-11-18 · sumber: `resources/css/app.css`, `resources/views`
+**Status**: aktif · 2026-11-23 · sumber: `resources/css/app.css`, `resources/views`
 
 ## Token
 **Font**: Inter (body), Space Grotesk (heading/display), JetBrains Mono (code) — self-hosted via `@fontsource/*`, tanpa CDN.

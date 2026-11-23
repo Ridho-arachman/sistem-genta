@@ -1,6 +1,6 @@
 # TESTING — Strategi & status tes
 
-**Status**: aktif · 2026-11-23 · **Suite: 80 tes lulus / 234 assertions**
+**Status**: aktif · 2026-11-23 · suite harus lulus penuh (angka tes mengikuti keluaran `vendor/bin/pest`)
 
 ## Stack
 Pest v5 + phpunit v13 (region PHP 8.3/8.5), `sqlite :memory:` (`phpunit.xml`), `CACHE_STORE=array`, `QUEUE_CONNECTION=sync`, `BCRYPT_ROUNDS=4`. `CCTV_HLS_BASE` & `CCTV_MEDIAMTX_API` dipaksa kosong (test hermetic; tidak menyentuh network nyata).
