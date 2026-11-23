@@ -217,6 +217,24 @@ test('stream url kosong saat media server belum dikonfigurasi', function () {
     expect($cctv->stream_url)->toBeNull();
 });
 
+test('url webrtc diturunkan dari base media server', function () {
+    config(['cctv.webrtc_base' => 'http://mediamtx.local:8889']);
+
+    $cctv = Cctv::factory()->create([
+        'dapur_id' => $this->dapur->id,
+    ]);
+
+    expect($cctv->web_rtc_url)->toBe('http://mediamtx.local:8889/'.$cctv->stream_key.'/whep');
+});
+
+test('url webrtc kosong saat base webrtc belum dikonfigurasi', function () {
+    config(['cctv.webrtc_base' => null]);
+
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+
+    expect($cctv->web_rtc_url)->toBeNull();
+});
+
 test('menambah cctv mendaftarkan path ke media server', function () {
     config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
     Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);

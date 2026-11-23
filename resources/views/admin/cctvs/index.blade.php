@@ -64,7 +64,7 @@
     @if ($cctvs->count() > 0)
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
             @foreach ($cctvs as $cctv)
-            <div class="card overflow-hidden min-w-0 w-full min-h-[400px]" x-data="hlsPlayer(@js($cctv->stream_url), true, @js($cctv->status))">
+            <div class="card overflow-hidden min-w-0 w-full min-h-[400px]" x-data="cctvPlayer(@js($cctv->stream_url), true, @js($cctv->status), @js($cctv->web_rtc_url))">
                 <div class="p-3 flex items-center justify-between">
                     <span class="bg-black/70 text-white text-xs font-mono px-2 py-1 rounded shrink-0">
                         CAM-{{ str_pad($cctv->camera_number ?? 1, 2, '0', STR_PAD_LEFT) }}

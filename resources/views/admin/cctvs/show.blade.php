@@ -69,7 +69,7 @@
         @if ($cctv->stream_url)
         <div class="border-t border-[var(--color-border)] pt-6">
             <h3 class="text-lg font-semibold mb-4">Preview Streaming (HLS)</h3>
-            <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="hlsPlayer(@js($cctv->stream_url), true)">
+            <div class="aspect-video bg-black rounded-lg overflow-hidden" x-data="cctvPlayer(@js($cctv->stream_url), true, 'offline', @js($cctv->web_rtc_url))">
                 <video controls autoplay muted playsinline class="block h-full w-full object-cover" crossorigin="anonymous"></video>
             </div>
         </div>

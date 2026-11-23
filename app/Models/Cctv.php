@@ -53,6 +53,20 @@ class Cctv extends Model
         return rtrim($base, '/').'/'.$this->stream_key.'/index.m3u8';
     }
 
+    /**
+     * URL WHEP MediaMTX untuk sesi WebRTC; fallback ke HLS bila tidak ada.
+     */
+    public function getWebRtcUrlAttribute(): ?string
+    {
+        $base = config('cctv.webrtc_base');
+
+        if (! $base || ! $this->stream_key) {
+            return null;
+        }
+
+        return rtrim((string) $base, '/').'/'.$this->stream_key.'/whep';
+    }
+
     public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
