@@ -1,6 +1,6 @@
 # CODE_STYLE — Gaya kode
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## PHP / Laravel
 - PSR-12 dipaksa via **Laravel Pint** (`vendor/bin/pint --dirty --format agent` sebelum commit PHP).
@@ -20,7 +20,7 @@
 
 ## JavaScript / CSS
 - Font self-hosted via `@fontsource/*` (Inter, Space Grotesk, JetBrains Mono).
-- `hls.js` untuk preview, `leaflet` untuk peta, `quill` untuk rich text.
+- `resources/js/components/hls-player.js` untuk preview CCTV (WebRTC/WHEP dulu, `hls.js` dimuat lazy sebagai fallback), `leaflet` untuk peta, `quill` untuk rich text.
 - Import CSS: `resources/css/app.css` (Tailwind + daisyUI) dan `resources/css/vendor.css`.
 - Jangan inline `<script>` besar baru; modul JS di `resources/js/components/*`.
 

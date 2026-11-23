@@ -1,15 +1,15 @@
 # RESPONSIVE — Strategi responsif
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
-## Breakpoint (sesuai penggunaan nyata di Blade)
-Tailwind default: `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px, dipakai 1× saja), `2xl` (tidak dipakai).
-Frekuensi pemakaian (grep): `md:` ±45, `lg:` ±44, `sm:` ±39, `xl:` 1.
+## Breakpoint (sesuai penggunaan nyata di Blade + JS)
+Tailwind default: `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px), `2xl`.
+Frekuensi pemakaian (grep di Blade + JS, Nov 2026): `lg:` 56, `md:` 43, `sm:` 39; `xl:` dan `2xl:` tidak dipakai.
 Selain itu ada **arbiter** `max-[900px]:*` pada sidebar admin (off-canvas di bawah 900px) dan `min-[901px]:translate-x-0`.
 
 ## Pola nyata
 1. **Mobile-first** dengan kelas `sm:`, `md:`, `lg:` (bukan `max-*` untuk sebagian besar komponen).
-2. **Admin shell**: sidebar fixed 230px; konten `lg:ml-[230px]`; hamburger `lg:hidden`; `pt-[72px]` karena navbar fixed 72px.
+2. **Admin shell**: sidebar fixed 230px; konten `lg:ml-[230px]`; hamburger `lg:hidden`; konten `pt-[64px]` (navbar fixed 72px, sidebar mulai `top-[72px]`).
 3. **Tabel**: dibungkus `overflow-x-auto` di panel; halaman list admin tidak horizontal scroll saat < 640px.
 4. **Grid stat**: `grid-cols-2 lg:grid-cols-4` (dashboard), `grid-cols-1 lg:grid-cols-2` (kartu dapur kepala-dapur).
 5. **Form**: `grid-cols-1 md:grid-cols-3` untuk input berlabel; label kecil uppercase.

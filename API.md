@@ -11,7 +11,6 @@ Semua route web terdokumentasi di `routes/web.php`. Ringkas: `/login`, `/passwor
 | Method | Path | Controller | Fungsi |
 |---|---|---|---|
 | POST | `/api/mobile/fcm-token` | `Api\MobileController@storeFcmToken` | simpan/update token FCM device |
-
 | POST | `/api/mobile/absensi/auto-checkin` | `Api\MobileController@autoCheckin` | check-in via geofence (sekarang membuat `Laporan`) |
 
 ## Konvensi

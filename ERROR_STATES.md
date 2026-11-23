@@ -1,6 +1,6 @@
 # ERROR_STATES — Status error & cara ditampilkan
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## Filosofi
 Jangan ubah perilaku error tanpa alasan. Pesan generik di login (`Email atau password salah`) menjaga keamanan (tidak membocorkan apakah email terdaftar). Notifikasi memakai `<x-toast />` (alert daisyUI di kanan-bawah, `alert-success`/`alert-error`).
@@ -14,7 +14,7 @@ Jangan ubah perilaku error tanpa alasan. Pesan generik di login (`Email atau pas
 | 429 | 5 percobaan/menit (login, forgot-password) | halaman 429 | `throttle:5,1` |
 | 403 | peran tidak sesuai (`role:`, `canAccessDapur`) | halaman 403 | middleware |
 | Validasi form | `validate()` gagal | kembali ke form + `withErrors` + `withInput` | semua controller |
-| CCTV tidak reachable | `ffprobe` gagal / 401 / token invalid | status `offline`, `last_checked_at` terisi, FCM saat transisi | `CctvHealthCheckJob` |
+| CCTV tidak reachable | MediaMTX/HLS tidak menjawab (fallback `ffprobe`) | status `offline`, `last_checked_at` terisi, FCM saat transisi | `CctvHealthCheckJob` |
 | MediaMTX down | API `:9997` mati | `syncStreamPath` log warning, publish jalan terus | `MediaMtxClient` |
 | Mobile 401 | token Sanctum invalid | aplikasi mobile → login ulang | `auth:sanctum` |
 | Mobile 422 | validasi gagal | error per field | controller |
