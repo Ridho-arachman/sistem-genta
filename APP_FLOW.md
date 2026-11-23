@@ -1,6 +1,6 @@
 # APP_FLOW — Alur aplikasi
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## 1. Login & hak akses
 1. `GET /login` → form. `POST /login` dibatasi `throttle:5,1` (429 setelah 5 percobaan/menit per IP bila gagal).

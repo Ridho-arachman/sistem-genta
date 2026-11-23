@@ -1,6 +1,6 @@
 # SECURITY — Keamanan
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## Autentikasi & sesi
 - Session (web) + Sanctum (mobile). `BCRYPT_ROUNDS=12`. Session driver `database`.

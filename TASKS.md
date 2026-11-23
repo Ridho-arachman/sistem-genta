@@ -1,6 +1,6 @@
 # TASKS — Backlog & status
 
-**Status**: aktif · 2026-11-18 · bekerja paling baik bersama `CHANGELOG.md`
+**Status**: aktif · 2026-11-23 · bekerja paling baik bersama `CHANGELOG.md`
 
 ## Selesai (2026-11-23)
 - [x] Link/aksi role read-only di view admin (`cctv-anomalies`, `cctvs`, `dapurs`, `inspeksi`) dibetulkan agar tidak kena 403, plus tes `RoleReadOnlyPageTest` (8 tes)

@@ -1,6 +1,6 @@
 # COST_AND_RATE_LIMITS — Biaya & batas
 
-**Status**: tidak ada fitur AI · 2026-11-18
+**Status**: tidak ada fitur AI · 2026-11-23
 
 ## Biaya (dev & produksi)
 | Komponen | Biaya | Catatan |

@@ -1,6 +1,6 @@
 # PRD — GENTA Pangan Banten (Pengawasan Dapur MBG)
 
-**Status**: aktif · **Terakhir diperbarui**: 2026-11-18
+**Status**: aktif · **Terakhir diperbarui**: 2026-11-23
 
 ## Ringkasan
 Aplikasi web + mobile untuk pengawasan operasional dapur Pangan Banten (Program MBG).

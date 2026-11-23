@@ -1,6 +1,6 @@
 # API — Mobile & Web (GENTA)
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 Tidak ada `routes/api.php`. Semua endpoint API berada di `routes/web.php`:
 

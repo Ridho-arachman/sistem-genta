@@ -1,6 +1,6 @@
 # ENV — Konfigurasi lingkungan
 
-**Status**: aktif · 2026-11-18 · sumber: `.env.example`, `config/*.php`
+**Status**: aktif · 2026-11-23 · sumber: `.env.example`, `config/*.php`
 
 ## Wajib di-set produksi (jangan isi di sini)
 `APP_KEY`, `DB_PASSWORD`, `CCTV_FFPROBE` (kalau bukan `ffprobe` di PATH), `CCTV_MEDIAMTX_PASS` (kalau API terproteksi).
