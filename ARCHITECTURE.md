@@ -8,7 +8,7 @@
 CCTV dapur (RTSP, port 554, IP publik per dapur)
         │  pull on-demand (sourceOnDemand)
         ▼
-MediaMTX di server pusat ──► HLS (/<stream_key>/index.m3u8) ──► Browser pengawas/admin (hls.js)
+MediaMTX di server pusat ──► WHEP (:8889/<stream_key>/whep) dulu, fallback HLS (:8888/<stream_key>/index.m3u8) ──► Browser pengawas/admin (hls-player.js)
         ▲
         └─ Control API (:9997) ◄── Laravel (MediaMtxClient)
 
@@ -40,7 +40,7 @@ Middleware `role:<nama>` (`App\Http\Middleware\RoleMiddleware`) dan `restrict.pe
 ## Keputusan arsitektur
 Bagian "Keputusan" di `TASKS.md`. Ringkasan keputusan terpenting:
 1. Pull (bukan push) RTSP; `sourceOnDemand` agar kamera idle tidak mengonsumsi bandwidth/NVR-CPU.
-2. HLS URL diturunkan dari `CCTV_HLS_BASE` + `stream_key` (tidak disimpan di DB; kolom `hls_url`/`ip_address` dihapus).
+2. URL player diturunkan dari `stream_key`: WHEP (`CCTV_WEBRTC_BASE`) dipakai lebih dulu, HLS (`CCTV_HLS_BASE`) jadi fallback (tidak disimpan di DB; kolom `hls_url`/`ip_address` dihapus).
 3. Queue driver database (tidak perlu Redis); `retry_after` 300 > timeout job 180.
 4. Tidak ada microservice; satu Laravel monolith.
 

@@ -24,6 +24,8 @@
 | `CCTV_HLS_BASE` | (kosong) | Base URL HLS, mis. `http://10.x.x.x:8888`. Kosong = preview kamera tidak tampil (`stream_url` = null) |
 | `CCTV_MEDIAMTX_API` | (kosong) | Control API MediaMTX, mis. `http://10.x.x.x:9997`. Kosong = sinkronisasi path dinonaktifkan |
 | `CCTV_MEDIAMTX_USER` / `_PASS` | (kosong) | Basic auth API (kosong = tanpa auth; set di produksi) |
+| `CCTV_MEDIAMTX_RTSP` | `rtsp://127.0.0.1:8554` | alamat RTSP MediaMTX untuk path turunan (kamera dengan RTSP URL sama) |
+| `CCTV_WEBRTC_BASE` | `http://127.0.0.1:8889` | Base URL WebRTC/WHEP media server (kosong = pemutar hanya HLS) |
 | `CCTV_PROBE_TIMEOUT` | `8` | timeout ffprobe (detik) per kamera |
 | `CCTV_FFPROBE` | `ffprobe` | path/nama binary ffprobe |
 

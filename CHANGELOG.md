@@ -6,6 +6,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 
 ### Added
 - README: bagian **Menjalankan semua komponen secara lokal (tanpa Docker)** — empat terminal (`serve`, `queue:work`, `schedule:work`, `mediamtx.exe mediamtx.yml`), verifikasi Control API `:9997` dan HLS `:8888`, konfigurasi `.env` lokal, dan catatan Docker sebagai alternatif.
+- Pemutar CCTV WebRTC/WHEP (commit fitur sebelumnya belum masuk changelog): kartu Monitoring CCTV dan halaman detail membuka sesi WHEP (`CCTV_WEBRTC_BASE/{stream_key}/whep`) lebih dulu, lalu fallback ke HLS (hls.js dimuat lazy). Badge kartu jadi `connecting` selama video belum mulai, supaya tidak muncul jeda `offline` setelah kamera disimpan. Env baru `CCTV_WEBRTC_BASE` dan `CCTV_MEDIAMTX_RTSP` didokumentasikan di `.env.example`, `README.md`, dan `ENV.md`.
 
 ### Fixed
 - Halaman Admin → Data Dapur → Tambah/Edit (`admin.dapurs.create`/`admin.dapurs.edit`): 500 di `DapurController::BANTEN_KABUPATEN_KOTA` / `getKnownKecamatan()` yang dihapus — dropdown kabupaten/kota, daftar kecamatan, dan kolom wilayah form kini dari `config/banten.php` (satu sumber kebenaran; ≈ −45 baris duplikat di controller). Bug ini lolos karena tak ada tes yang membuka halaman ini (70 tes lulus pun tetap hijau).

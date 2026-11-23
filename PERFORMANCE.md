@@ -1,15 +1,15 @@
 # PERFORMANCE — Performa & anggaran
 
-**Status**: aktif · 2026-11-18
+**Status**: aktif · 2026-11-23
 
 ## Anggaran CCTV health check
-400 dapur × 5 kamera = 2.000 probe / 5 menit ≈ 6,7 probe/detik. Tiap probe ≤ 8 detik; satu job per dapur, `$timeout=180`, `$tries=3`, `backoff=[30,120,300]`, `retry_after=300`. `Schedule::withoutOverlapping()` → siklus terlambat dilewatkan (bukan double). Scale worker: `docker compose up -d --scale queue=10`.
+400 dapur × 5 kamera = 2.000 probe / menit ≈ 33,3 probe/detik. Tiap probe ≤ 8 detik; satu job per dapur, `$timeout=180`, `$tries=3`, `backoff=[30,120,300]`, `retry_after=300`. `Schedule::withoutOverlapping()` → siklus terlambat dilewatkan (bukan double). Begitu banyaknya worker praktis mustahil — longgarkan jadwal bila worker produksi sedikit. Scale worker: `docker compose up -d --scale queue=10`.
 
 ## Frontend
 - Tailwind v4 (JIT, hanya utilitas yang dipakai) + daisyUI.
 - JS modular per halaman (`resources/js/components/*`), Alpine 3.
 - Tidak ada CDN untuk CSS/JS/font (semua self-hosted) — LCP diperbaiki.
-- HLS.js hanya di halaman detail CCTV; `hlsAllowOrigins: ['*']` (izinkan embed lintas domain bila perlu).
+- Pemutar CCTV (`resources/js/components/hls-player.js`) tampil di halaman Monitoring CCTV maupun detail kamera: WebRTC/WHEP dulu (latensi rendah), HLS via hls.js dimuat lazy sebagai fallback; `hlsAllowOrigins: ['*']` (izinkan embed lintas domain bila perlu).
 - Gambar landing lokal (`public/images/`).
 - Pagination ketat: `paginate(10)/(15)`; list dapur >2000 dibuat scroll/panel, bukan render semua.
 

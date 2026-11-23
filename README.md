@@ -211,7 +211,7 @@ Akses aplikasi:
 
 ### Menjalankan semua komponen secara lokal (tanpa Docker)
 
-Streaming tidak memutar `rtsp_url` langsung di browser: Laravel mendaftarkan `stream_key` kamera ke MediaMTX lewat Control API, lalu browser memutar HLS dari `CCTV_HLS_BASE/{stream_key}/index.m3u8`. Karena itu selain web server ada dua proses dan satu media server yang harus ikut jalan.
+Streaming tidak memutar `rtsp_url` langsung di browser: Laravel mendaftarkan `stream_key` kamera ke MediaMTX lewat Control API, lalu browser memutar **WebRTC/WHEP dulu** (`CCTV_WEBRTC_BASE/{stream_key}/whep`) dan jatuh ke **HLS** (`CCTV_HLS_BASE/{stream_key}/index.m3u8`) bila WHEP tidak tersedia. Karena itu selain web server ada dua proses dan satu media server yang harus ikut jalan.
 
 Pakai **empat terminal terpisah**:
 
@@ -258,6 +258,8 @@ Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
 | `FCM_SERVER_KEY` | Server key Firebase Cloud Messaging untuk push notification (wakili variabel yang dibaca `FcmService`) |
 | `CCTV_HLS_BASE` | Base URL HLS media server (kosong = preview kamera tidak tampil) |
 | `CCTV_MEDIAMTX_API`, `CCTV_MEDIAMTX_USER`, `CCTV_MEDIAMTX_PASS` | Control API MediaMTX dan kredensialnya (kosong = sinkronisasi path nonaktif) |
+| `CCTV_MEDIAMTX_RTSP` | Alamat RTSP MediaMTX untuk path turunan (kamera dengan RTSP URL sama) |
+| `CCTV_WEBRTC_BASE` | Base URL WebRTC/WHEP media server (kosong = pemutar hanya HLS) |
 | `CCTV_PROBE_TIMEOUT` | Batas waktu probe ffprobe per kamera (detik) |
 | `CCTV_FFPROBE` | Nama/path binary ffprobe (kosongkan saja bila `ffprobe` sudah ada di PATH) |
 

@@ -8,15 +8,9 @@ uses(RefreshDatabase::class);
 
 function createSpWarning(): SpWarning
 {
-    $pengawas = User::factory()->create(['role' => 'pengawas']);
-    $admin = User::factory()->create(['role' => 'admin']);
-
-    return SpWarning::create([
-        'user_id' => $pengawas->id,
-        'admin_id' => $admin->id,
+    return SpWarning::factory()->create([
         'level' => 1,
         'reason' => 'Terlambat datang',
-        'status' => 'aktif',
     ]);
 }
 

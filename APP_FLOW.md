@@ -15,7 +15,7 @@
 ## 3. Admin: kelola CCTV
 1. `admin/cctvs/create` → `dapur_id`, `nama`, `rtsp_url`, `section`, `camera_number`.
 2. Saat store/update, `syncStreamPath()` mendaftarkan path ke MediaMTX (jika `CCTV_MEDIAMTX_API` terkonfigurasi).
-3. Preview HLS di detail kamera: `config('cctv.hls_base') . '/' . $stream_key . '/index.m3u8'` (kosong bila `CCTV_HLS_BASE` tidak di-set).
+3. Preview di halaman Monitoring CCTV dan detail kamera: WebRTC/WHEP dulu (`config('cctv.webrtc_base') . '/' . $stream_key . '/whep'`), fallback HLS (`config('cctv.hls_base') . '/' . $stream_key . '/index.m3u8'`; keduanya bisa kosong bila env-nya tidak di-set).
 4. Health check (`cctv:health-check` tiap menit) memprobe tiap dapur (≤ 5 kamera × 8 detik), menulis `status` + `last_checked_at`, dan mengirim FCM hanya pada transisi ke offline.
 
 ## 4. Laporan pengawasan (semua peran, via mobile/web)
