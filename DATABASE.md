@@ -12,9 +12,9 @@
 |---|---|---|
 | `users` | ULID | `name, email, password(hashed), role(admin/manajerial/pengawas/kepala_dapur), registered_by, dapur_id, created_by/updated_by/deleted_by, deleted_at` (soft deletes) |
 | `dapurs` | ULID | `nama, lokasi, alamat, kecamatan, kabupaten_kota, provinsi, map_embed_url` |
-| `dapur_user` | ULID | pivot assignment pengawas ↔ dapur (`dapur_id, user_id`) |
+| `dapur_user` | composite (`dapur_id`,`user_id`) | pivot assignment pengawas ↔ dapur |
 | `cctvs` | ULID | `dapur_id, nama, rtsp_url, status(online/offline/maintenance), section, camera_number, stream_key(ULID, unik-ish), last_checked_at` |
-| `laporans` | ULID | `dapur_id, status, catatan, selfie_photo(text base64), latitude/longitude, address, created_by` |
+| `laporans` | ULID | `dapur_id, status, catatan, selfie_photo(path di storage, fallback data URL), latitude/longitude, address, created_by` |
 | `laporan_hasil` | ULID | `laporan_id, indikator, hasil, created_by` (satu baris per indikator) |
 | `sp_warnings` | ULID | `user_id, admin_id, level(smallint), reason, status, issued_at` |
 | `cctv_anomaly_reports` | ULID | `cctv_id, admin_id, description, severity, status` |

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Database\Factories\DapurFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +16,6 @@ class Dapur extends Model
     /** @use HasFactory<DapurFactory> */
     use HasFactory;
 
-    #[Fillable(['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'])]
     protected $fillable = ['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
 
     protected $keyType = 'string';

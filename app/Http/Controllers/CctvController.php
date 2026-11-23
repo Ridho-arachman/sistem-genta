@@ -14,10 +14,7 @@ class CctvController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(protected MediaMtxClient $mediaMtx)
-    {
-        $this->middleware('auth');
-    }
+    public function __construct(protected MediaMtxClient $mediaMtx) {}
 
     public function index(Request $request)
     {

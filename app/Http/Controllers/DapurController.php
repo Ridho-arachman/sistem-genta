@@ -10,82 +10,6 @@ class DapurController extends Controller
 {
     use AuthorizesRequests;
 
-    // Banten wilayah constants
-    public const BANTEN_PROVINSI = 'Banten';
-
-    public const BANTEN_KABUPATEN_KOTA = [
-        'Kota Serang',
-        'Kabupaten Serang',
-        'Kota Cilegon',
-        'Kota Tangerang',
-        'Kota Tangerang Selatan',
-        'Kabupaten Pandeglang',
-        'Kabupaten Lebak',
-        'Kabupaten Tangerang',
-    ];
-
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Get known kecamatan for a given kabupaten/kota
-     */
-    public function getKnownKecamatan(string $kabupatenKota): array
-    {
-        $knownKecamatan = [
-            'Kota Serang' => ['Cipocok Jaya', 'Curug', 'Kasemen', 'Serang', 'Taktakan', 'Walantaka'],
-            'Kabupaten Serang' => ['Anyar', 'Bandung', 'Baros', 'Binuang', 'Bojonegara', 'Carenang', 'Cikande', 'Cikeusal', 'Cinangka', 'Ciomas', 'Ciruas', 'Gunungsari', 'Jawilan', 'Kibin', 'Kopo', 'Kragilan', 'Kramatwatu', 'Lebak Wangi', 'Mancak', 'Pabuaran', 'Padarincang', 'Pamarayan', 'Petir', 'Pontang', 'Pulo Ampel', 'Tanara', 'Tirtayasa', 'Tunjungteja', 'Waringinkurung'],
-            'Kota Cilegon' => ['Cibeber', 'Cilegon', 'Citangkil', 'Ciwandan', 'Gerogan', 'Jombang', 'Pulomerak', 'Purwakarta'],
-            'Kota Tangerang' => ['Batuceper', 'Benda', 'Cibodas', 'Ciledug', 'Cipondoh', 'Jatiuwung', 'Karang Tengah', 'Karawaci', 'Larangan', 'Neglasari', 'Periuk', 'Pinang', 'Tangerang'],
-            'Kota Tangerang Selatan' => ['Ciputat', 'Ciputat Timur', 'Pamulang', 'Pondok Aren', 'Serpong', 'Serpong Utara', 'Setu'],
-            'Kabupaten Pandeglang' => ['Angsana', 'Banjar', 'Bojong', 'Cadasari', 'Carita', 'Cibaliung', 'Cibitung', 'Cigeulis', 'Cikedal', 'Cikeusik', 'Cimanggu', 'Cimanuk', 'Cipeucang', 'Cisata', 'Jiput', 'Kaduhejo', 'Karang Tanjung', 'Koroncong', 'Labuan', 'Majasari', 'Mandalawangi', 'Mekarjaya', 'Menes', 'Munjul', 'Pagelaran', 'Pandeglang', 'Panimbang', 'Patia', 'Picung', 'Pulosari', 'Saketi', 'Sindangresmi', 'Sobang', 'Sukaresmi', 'Sumur'],
-            'Kabupaten Lebak' => ['Banjarsari', 'Bayah', 'Bojongmanik', 'Cibadak', 'Cibeber', 'Cigemblong', 'Cihara', 'Cijaku', 'Cikulur', 'Cileles', 'Cilograng', 'Cimarga', 'Cipanas', 'Cirinten', 'Curugbitung', 'Gunungkencana', 'Kalanganyar', 'Lebak Gedong', 'Leuwidamar', 'Maja', 'Malingping', 'Muncang', 'Panggarangan', 'Rangkasbitung', 'Sajira', 'Sobang', 'Wanasalam', 'Warunggunung'],
-            'Kabupaten Tangerang' => ['Balaraja', 'Cikupa', 'Cisauk', 'Cisoka', 'Curug', 'Gunung Kaler', 'Jambe', 'Jayanti', 'Kelapa Dua', 'Kemiri', 'Kosambi', 'Kresek', 'Kronjo', 'Legok', 'Mauk', 'Mekar Baru', 'Pagedangan', 'Pakuhaji', 'Panongan', 'Pasar Kemis', 'Rajeg', 'Sepatan', 'Sepatan Timur', 'Sindang Jaya', 'Solear', 'Sukadiri', 'Sukamulya', 'Teluknaga', 'Tigaraksa'],
-        ];
-
-        return $knownKecamatan[$kabupatenKota] ?? [];
-    }
-
-    /**
-     * Validate if provinsi/kabupaten/kecamatan are valid Banten data
-     */
-    protected function validateBantenWilayah(string $provinsi, string $kabupatenKota, ?string $kecamatan = null): array
-    {
-        $errors = [];
-
-        if ($provinsi !== self::BANTEN_PROVINSI) {
-            $errors[] = 'Provinsi harus Banten.';
-        }
-
-        if (! in_array($kabupatenKota, self::BANTEN_KABUPATEN_KOTA, true)) {
-            $errors[] = 'Kabupaten/Kota harus di wilayah Banten.';
-        }
-
-        // Optional: validate kecamatan against known list for the kabupaten
-        if ($kecamatan && $this->isKnownKecamatan($kabupatenKota, $kecamatan) === false) {
-            // Warning only, not blocking - user might have more current data
-            // Could log or add as warning
-        }
-
-        return $errors;
-    }
-
-    /**
-     * Check if kecamatan is known for the kabupaten/kota
-     */
-    protected function isKnownKecamatan(string $kabupatenKota, string $kecamatan): ?bool
-    {
-        $knownKecamatan = $this->getKnownKecamatan($kabupatenKota);
-
-        if (empty($knownKecamatan)) {
-            return null; // Unknown kabupaten, can't validate
-        }
-
-        return in_array($kecamatan, $knownKecamatan, true);
-    }
-
     public function index()
     {
         $user = auth()->user();
@@ -108,73 +32,62 @@ class DapurController extends Controller
 
         $dapurs = $query->latest()->paginate(10);
 
-        // Prepare dapur data for Alpine.js component (admin view only)
-        $dapurData = [];
-        if ($user->isAdmin()) {
-            $dapurData = $dapurs->getCollection()->map(function ($d) {
-                $pengawas = $d->pengawas->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
-                $kepala = $d->kepalaDapur ? ['id' => $d->kepalaDapur->id, 'name' => $d->kepalaDapur->name] : null;
-                $totalCctvs = $d->cctvs_count ?? 0;
-                $onlineCctvs = $d->cctvs_online_count ?? 0;
-                $progress = $totalCctvs > 0 ? min(100, round(($onlineCctvs / $totalCctvs) * 100)) : 0;
+        // Prepare dapur data for Alpine.js component (dipakai admin & role read-only yang share view ini)
+        $dapurData = $dapurs->getCollection()->map(function ($d) {
+            $pengawas = $d->pengawas->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->toArray();
+            $kepala = $d->kepalaDapur ? ['id' => $d->kepalaDapur->id, 'name' => $d->kepalaDapur->name] : null;
+            $totalCctvs = $d->cctvs_count ?? 0;
+            $onlineCctvs = $d->cctvs_online_count ?? 0;
+            $progress = $totalCctvs > 0 ? min(100, round(($onlineCctvs / $totalCctvs) * 100)) : 0;
 
-                $status = 'Operasional';
-                $statusClass = 'ok';
-                if ($totalCctvs === 0) {
-                    $status = 'Kamera bermasalah';
-                    $statusClass = 'off';
-                } elseif ($onlineCctvs === 0) {
-                    $status = 'Kamera bermasalah';
-                    $statusClass = 'off';
-                } elseif ($onlineCctvs < $totalCctvs) {
-                    $status = 'Perlu perhatian';
-                    $statusClass = 'warn';
-                }
-
-                // Build lokasiPengawas string
-                $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';
-                if ($d->pengawas->count() > 0) {
-                    $lokasiPengawas .= ' · Pengawas: '.$d->pengawas->first()->name;
-                }
-
-                return [
-                    'id' => $d->id,
-                    'nama' => $d->nama,
-                    'kecamatan' => $d->kecamatan,
-                    'kabupaten_kota' => $d->kabupaten_kota,
-                    'provinsi' => $d->provinsi,
-                    'lokasiPengawas' => $lokasiPengawas,
-                    'alamat' => $d->alamat,
-                    'pengawas' => $pengawas,
-                    'kepalaDapur' => $kepala,
-                    'cctvs_count_total' => $totalCctvs,
-                    'cctvs_count_online' => $onlineCctvs,
-                    'progress' => $progress,
-                    'status' => $status,
-                    'statusClass' => $statusClass,
-                ];
-            })->toArray();
-        }
-
-        // Get unique values for filter dropdowns (admin only) - BANTEN ONLY
-        $filterOptions = [];
-        $allKecamatanMap = [];
-        if ($user->isAdmin()) {
-            // Build static kecamatan list from known Banten data (not from DB)
-            $allKecamatan = [];
-            foreach (self::BANTEN_KABUPATEN_KOTA as $kab) {
-                $kecamatanList = $this->getKnownKecamatan($kab);
-                $allKecamatanMap[$kab] = $kecamatanList;
-                $allKecamatan = array_merge($allKecamatan, $kecamatanList);
+            $status = 'Operasional';
+            $statusClass = 'ok';
+            if ($totalCctvs === 0) {
+                $status = 'Kamera bermasalah';
+                $statusClass = 'off';
+            } elseif ($onlineCctvs === 0) {
+                $status = 'Kamera bermasalah';
+                $statusClass = 'off';
+            } elseif ($onlineCctvs < $totalCctvs) {
+                $status = 'Perlu perhatian';
+                $statusClass = 'warn';
             }
-            $allKecamatan = array_unique($allKecamatan);
-            sort($allKecamatan);
 
-            // Force provinsi to only Banten
+            // Build lokasiPengawas string
+            $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';
+            if ($d->pengawas->count() > 0) {
+                $lokasiPengawas .= ' · Pengawas: '.$d->pengawas->first()->name;
+            }
+
+            return [
+                'id' => $d->id,
+                'nama' => $d->nama,
+                'kecamatan' => $d->kecamatan,
+                'kabupaten_kota' => $d->kabupaten_kota,
+                'provinsi' => $d->provinsi,
+                'lokasiPengawas' => $lokasiPengawas,
+                'alamat' => $d->alamat,
+                'pengawas' => $pengawas,
+                'kepalaDapur' => $kepala,
+                'cctvs_count_total' => $totalCctvs,
+                'cctvs_count_online' => $onlineCctvs,
+                'progress' => $progress,
+                'status' => $status,
+                'statusClass' => $statusClass,
+            ];
+        })->toArray();
+
+        // Dropdown kabupaten/kota/kecamatan dari satu sumber: config('banten.*')
+        $allKecamatanMap = collect(config('banten.kabupaten_kota'))->mapWithKeys(fn ($kab) => [
+            $kab => collect(config('banten.kecamatan')[$kab] ?? [])->values(),
+        ]);
+
+        $filterOptions = [];
+        if ($user->isAdmin()) {
             $filterOptions = [
-                'provinsi' => collect([self::BANTEN_PROVINSI]),
-                'kabupaten_kota' => collect(self::BANTEN_KABUPATEN_KOTA)->sort()->values(),
-                'kecamatan' => collect($allKecamatan)->values(),
+                'provinsi' => collect([config('banten.provinsi')]),
+                'kabupaten_kota' => collect(config('banten.kabupaten_kota'))->sort()->values(),
+                'kecamatan' => $allKecamatanMap->flatten()->unique()->sort()->values(),
             ];
         }
 
@@ -188,7 +101,7 @@ class DapurController extends Controller
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        $kecamatanMapping = $this->kecamatanMapping();
+        $kecamatanMapping = config('banten.kecamatan');
 
         return view('admin.dapurs.create', compact('kecamatanMapping'));
     }
@@ -207,18 +120,12 @@ class DapurController extends Controller
             'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
 
-        // Validate Banten wilayah (provinsi auto-set to Banten)
-        $wilayahErrors = $this->validateBantenWilayah(
-            self::BANTEN_PROVINSI,
-            $validated['kabupaten_kota'],
-            $validated['kecamatan']
-        );
-
-        if (! empty($wilayahErrors)) {
-            return back()->withErrors($wilayahErrors)->withInput();
+        // Kabupaten/kota harus ada di daftar wilayah Banten (sumber: config('banten.*'))
+        if (! in_array($validated['kabupaten_kota'], config('banten.kabupaten_kota'), true)) {
+            return back()->withErrors(['kabupaten_kota' => 'Kabupaten/Kota harus di wilayah Banten.'])->withInput();
         }
 
-        $validated['provinsi'] = self::BANTEN_PROVINSI;
+        $validated['provinsi'] = config('banten.provinsi');
 
         Dapur::create($validated);
 
@@ -254,24 +161,9 @@ class DapurController extends Controller
             abort(403);
         }
 
-        $kecamatanMapping = $this->kecamatanMapping();
+        $kecamatanMapping = config('banten.kecamatan');
 
         return view('admin.dapurs.edit', compact('dapur', 'kecamatanMapping'));
-    }
-
-    /**
-     * Peta kabupaten/kota Banten ke daftar kecamatan untuk form create/edit.
-     *
-     * @return array<string, array<int, string>>
-     */
-    private function kecamatanMapping(): array
-    {
-        $mapping = [];
-        foreach (self::BANTEN_KABUPATEN_KOTA as $kab) {
-            $mapping[$kab] = $this->getKnownKecamatan($kab);
-        }
-
-        return $mapping;
     }
 
     public function update(Request $request, Dapur $dapur)
@@ -288,18 +180,12 @@ class DapurController extends Controller
             'kabupaten_kota' => ['required', 'string', 'max:100'],
         ]);
 
-        // Validate Banten wilayah (provinsi auto-set to Banten)
-        $wilayahErrors = $this->validateBantenWilayah(
-            self::BANTEN_PROVINSI,
-            $validated['kabupaten_kota'],
-            $validated['kecamatan']
-        );
-
-        if (! empty($wilayahErrors)) {
-            return back()->withErrors($wilayahErrors)->withInput();
+        // Kabupaten/kota harus ada di daftar wilayah Banten (sumber: config('banten.*'))
+        if (! in_array($validated['kabupaten_kota'], config('banten.kabupaten_kota'), true)) {
+            return back()->withErrors(['kabupaten_kota' => 'Kabupaten/Kota harus di wilayah Banten.'])->withInput();
         }
 
-        $validated['provinsi'] = self::BANTEN_PROVINSI;
+        $validated['provinsi'] = config('banten.provinsi');
 
         $dapur->update($validated);
 

@@ -38,7 +38,9 @@ class LaporanController extends Controller
 
     public function indexPengawas(Request $request)
     {
-        $query = Laporan::with('dapur', 'createdBy');
+        $user = $request->user();
+        $query = Laporan::with('dapur', 'createdBy')
+            ->where('created_by', $user->id);
 
         if ($request->filled('dapur_id')) {
             $query->where('dapur_id', $request->dapur_id);
@@ -135,7 +137,7 @@ class LaporanController extends Controller
         }
 
         return redirect()->route('pengawas.laporan.index')
-            ->with('success', 'Laporan berhasil dikirim.');
+            ->with('status', 'Laporan berhasil dikirim.');
     }
 
     public function show(Laporan $laporan)
@@ -169,6 +171,6 @@ class LaporanController extends Controller
         $laporan->save();
 
         return redirect()->route('admin.laporan.show', $laporan->id)
-            ->with('success', 'Laporan berhasil diperbarui.');
+            ->with('status', 'Laporan berhasil diperbarui.');
     }
 }

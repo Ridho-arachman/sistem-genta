@@ -12,7 +12,8 @@
     @endif
 </x-admin::page-heading>
 
-<div x-data="dapurList(@js($allKecamatanMap ?? []), @js($dapurData ?? []), @js(route('admin.dapurs.show', ':id')))">
+@php $prefix = strtok(Route::currentRouteName(), '.'); @endphp
+<div x-data="dapurList(@js($allKecamatanMap ?? []), @js($dapurData ?? []), @js(route($prefix.'.dapurs.show', ':id')))">
 <x-admin::panel>
     <x-slot:head>
         {{-- Panel head: jumlah dapur + pencarian --}}
@@ -28,12 +29,13 @@
         </div>
     </x-slot:head>
 
-        {{-- Filter Wilayah --}}
+        {{-- Filter Wilayah (hanya admin: controller hanya memfilter untuk admin) --}}
+        @if (auth()->user()->isAdmin())
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-[var(--color-border)]">
             <div class="flex flex-col gap-1.5">
                 <label class="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-secondary)]">Provinsi</label>
-                <input type="text" value="Banten" class="input input-bordered" readonly>
-                <input type="hidden" name="provinsi" value="Banten">
+                <input type="text" value="{{ config('banten.provinsi') }}" class="input input-bordered" readonly>
+                <input type="hidden" name="provinsi" value="{{ config('banten.provinsi') }}">
             </div>
 
             <div class="flex flex-col gap-1.5">
@@ -60,6 +62,7 @@
                 </select>
             </div>
         </div>
+        @endif
 
     @if ($dapurs->count() > 0)
         <div id="dapurList" class="space-y-3">

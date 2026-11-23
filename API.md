@@ -11,8 +11,7 @@ Semua route web terdokumentasi di `routes/web.php`. Ringkas: `/login`, `/passwor
 | Method | Path | Controller | Fungsi |
 |---|---|---|---|
 | POST | `/api/mobile/fcm-token` | `Api\MobileController@storeFcmToken` | simpan/update token FCM device |
-| POST | `/api/mobile/sync-locations` | `Api\MobileController@syncLocations` | terima lokasi GPS pengawas |
-| GET | `/api/mobile/dapurs/geofences` | `Api\MobileController@getGeofences` | kirim daftar geofence dapur |
+
 | POST | `/api/mobile/absensi/auto-checkin` | `Api\MobileController@autoCheckin` | check-in via geofence (sekarang membuat `Laporan`) |
 
 ## Konvensi
@@ -21,7 +20,6 @@ Semua route web terdokumentasi di `routes/web.php`. Ringkas: `/login`, `/passwor
 - Validation: FormRequest manual di controller; tidak ada API Resource class (konvensi proyek ini).
 - Tidak ada versioning (`/api/v1/*`) — satu versi aktif.
 - **Rate limiting API belum ada** pada endpoint `/api/mobile/*` — lihat `TASKS.md` (keamanan).
-- Contoh response geofences: `[{ "id": "<ulid>", "nama": "...", "map_embed_url": "...", "latitude": ..., "longitude": ..., "alamat": "..." }]` (field aktual mengikuti `getGeofences()`).
 
 ## Error model mobile
 - 401 (token tidak valid/expired) → aplikasi menampilkan halaman login ulang.

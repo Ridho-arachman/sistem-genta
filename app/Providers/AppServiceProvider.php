@@ -2,13 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
-use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Policies\CctvAnomalyReportPolicy;
-use App\Policies\CctvPolicy;
-use App\Policies\DapurPolicy;
 use App\Policies\LaporanPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Blade;
@@ -16,9 +12,7 @@ use Illuminate\Support\Facades\Blade;
 class AppServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        Cctv::class => CctvPolicy::class,
         CctvAnomalyReport::class => CctvAnomalyReportPolicy::class,
-        Dapur::class => DapurPolicy::class,
         Laporan::class => LaporanPolicy::class,
     ];
 

@@ -9,11 +9,11 @@
 - Soft delete user; `Auth::attempt` menolak `trashed()` dengan pesan "Akun dinonaktifkan".
 
 ## Otorisasi
-Middleware `role:<admin|manajerial|pengawas|kepala_dapur>` (`RoleMiddleware`) + `canAccessDapur()` (untuk detail dapur/CCTV). Policy: `DapurPolicy`, `LaporanPolicy`, `CctvPolicy`, `CctvAnomalyReportPolicy`. Tidak ada auto-superadmin: admin tetap harus melewati route yang didaftarkan.
+Middleware `role:<admin|manajerial|pengawas|kepala_dapur>` (`RoleMiddleware`) + `canAccessDapur()` (untuk detail dapur/CCTV). Policy: `LaporanPolicy`, `CctvAnomalyReportPolicy`. Tidak ada auto-superadmin: admin tetap harus melewati route yang didaftarkan.
 
 ## Data & input
 - Eloquent (parameterisasi) untuk semua query. Raw query hanya di health check job (durasi) dan debug sesekali.
-- File upload: foto inspeksi/laporan disimpan sebagai `selfie_photo` (base64 text) — tidak disimpan di disk publik (tidak ada `storage/app/public/laporan` lagi).
+- File upload: foto inspeksi/laporan disimpan ke disk privat lalu `selfie_photo` hanya menyimpan path-nya (fallback data URL lama).
 - XSS: Blade escape literal; rich text Quill — output dirender dengan `{!! !!}`? **Periksa jika perlu mengizinkan HTML** (belum dikonfirmasi; jangan ubah tanpa audit).
 - Mass assignment: `#[Fillable]` explicit + `guarded` default.
 

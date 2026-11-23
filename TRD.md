@@ -21,7 +21,7 @@
 - **MediaMTX v1.21+** — Control API `POST /v3/config/paths/replace/{name}`, `DELETE /v3/config/paths/delete/{name}`; HLS dipublikasikan di `http://<host>:8888`, `sourceOnDemand: yes`.
 - **ffprobe** — health check RTSP (nyata, bukan TCP-connect; TCP tidak mendeteksi token kedaluwarsa/401).
 - **FCM** — notifikasi mobile (lihat `app/Services/FcmService.php`).
-- **Geolocation** — Haversine untuk geofence (lihat `app/Services/GeolocationService.php`).
+- **Geolocation** — perhitungan geofence (Haversine) berjalan di aplikasi mobile, bukan di server; API mobile hanya menerima lat/long hasil trigger geofence.
 
 ## Target infrastruktur (produksi)
 Satu server pusat: nginx → php 8.3 + Postgres, queue workers (±10), scheduler, MediaMTX. Dapur: CCTV di belakang NAT dengan port-forward 554 → padatan IPs publik; tanpa VPN untuk produksi. HTTPS wajib (lihat `SECURITY.md`).

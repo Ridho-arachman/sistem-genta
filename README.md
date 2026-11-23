@@ -83,7 +83,7 @@ Aplikasi dibangun di atas Laravel 13 dengan empat panel pengguna yang terpisah s
 | Manajemen Pengguna | Kelola | — | — | — |
 | Pengaturan | Kelola | Lihat | Lihat | Lihat |
 
-Otorisasi diterapkan melalui `RoleMiddleware` pada level rute dan `Policy` pada level model.
+Otorisasi diterapkan melalui `RoleMiddleware` pada level rute, dan `Policy`/`$this->authorize()` di level model (`CctvAnomalyReportPolicy`, `LaporanPolicy`).
 
 > Peran `pengawas` dibatasi lebih ketat: `RestrictPengawasFromWeb` mem-logout dan melempar ke halaman login bila akun pengawas membuka halaman web dari browser biasa — akses hanya diizinkan dari aplikasi mobile Capacitor (`User-Agent` `GentaCapacitor` atau cookie `capacitor_app=1`). Karena itu modul CCTV dan Anomali CCTV tidak dapat diakses pengawas melalui web.
 
@@ -100,8 +100,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute dan `Policy` pada 
 | Streaming CCTV | MediaMTX (HLS) + health check ffprobe |
 | Mobile | Capacitor (Android) |
 | Notifikasi | Firebase Cloud Messaging |
-| Ekspor Dokumen | barryvdh/laravel-dompdf |
-| Pengujian | Pest 5 (58 tes / 153 assertion) |
+| Pengujian | Pest 5 (80 tes / 234 assertion) |
 | Kualitas Kode | Laravel Pint |
 | Container | Docker + docker compose (app, queue, scheduler, MediaMTX) |
 
@@ -120,7 +119,7 @@ app/
 ├── Jobs/                     # Pekerjaan antrean
 ├── Models/                   # Model Eloquent
 ├── Policies/                 # Kebijakan otorisasi
-├── Services/                 # GeolocationService, FcmService
+├── Services/                 # CsvExport, FcmService, MediaMtxClient, RtspProbe
 └── helpers.php
 
 resources/views/
@@ -219,7 +218,7 @@ Pakai **empat terminal terpisah**:
 ```bash
 php artisan serve          # 1. web server
 php artisan queue:work     # 2. antrean (job health check, notifikasi, ekspor)
-php artisan schedule:work  # 3. scheduler — memicu health check tiap 5 menit
+php artisan schedule:work  # 3. scheduler — memicu health check tiap menit
 .\mediamtx.exe .\mediamtx.yml   # 4. media server (sesuaikan path binary)
 ```
 
@@ -239,7 +238,7 @@ CCTV_MEDIAMTX_API=http://127.0.0.1:9997
 
 Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — port `8000` bentrok, dan `composer run dev` juga tidak menyalakan scheduler. Aset sudah ada di `public/build`, jadi `npm run dev` tidak wajib; jalankan hanya bila aset belum ter-build.
 
-Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap 5 menit oleh health check).
+Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
 
 Alternatif via Docker (opsional): `docker compose up -d --force-recreate mediamtx`. Pastikan Control API `:9997` ikut ter-publish; container lama yang dibuat sebelum `docker-compose.yml` memiliki `9997` bisa membuat sinkronisasi path gagal.
 
@@ -288,8 +287,6 @@ Authorization: Bearer <token>
 | Method | Endpoint | Deskripsi |
 | --- | --- | --- |
 | `POST` | `/api/mobile/fcm-token` | Menyimpan token FCM perangkat |
-| `POST` | `/api/mobile/sync-locations` | Sinkronisasi titik lokasi |
-| `GET` | `/api/mobile/dapurs/geofences` | Mengambil daftar geofence dapur |
 | `POST` | `/api/mobile/absensi/auto-checkin` | Check-in otomatis berdasarkan lokasi |
 
 ## Build Aplikasi Mobile

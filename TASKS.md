@@ -2,6 +2,15 @@
 
 **Status**: aktif · 2026-11-18 · bekerja paling baik bersama `CHANGELOG.md`
 
+## Selesai (2026-11-23)
+- [x] Link/aksi role read-only di view admin (`cctv-anomalies`, `cctvs`, `dapurs`, `inspeksi`) dibetulkan agar tidak kena 403, plus tes `RoleReadOnlyPageTest` (8 tes)
+- [x] Data Dapur read-only: halaman index 500 (`$filterOptions` hanya admin) + daftar kosong (`$dapurData` hanya admin) diperbaiki
+- [x] Dokumen disinkronkan dengan kode: policy/service yang dihapus, `selfie_photo` sebagai path, angka suite, jadwal health check "tiap menit"
+
+## Selesai (2026-11-18, lanjutan)
+- [x] Sidebar `admin/layouts/app.blade.php` role-aware (manajerial/kepala-dapur punya menu lengkap; sebelumnya ngarah ke halaman 403)
+- [x] Hapus dead-code `FcmService::sendAbsensiReminder()` (Absensi sudah dihapus sejak 2026-11-02)
+
 ## Selesai (2026-11-18)
 - [x] Hapus kolom `ip_address`/`hls_url`; `stream_url` murni HLS (`CCTV_HLS_BASE + stream_key`)
 - [x] Fix `jobs`/`failed_jobs` PK; `retry_after` 300; `CctvHealthCheckJob` tries/backoff
@@ -22,8 +31,6 @@
 
 ## Penting, bisa dikerjakan sekarang
 
-- [ ] Sidebar di `admin/layouts/app.blade.php` menampilkan link admin-only untuk manajerial/kepala-dapur (mengklik → 403). Buat sidebar role-aware atau layout read-only terpisah saat dashboard pimpinan dirancang
-- [ ] `FcmService::sendAbsensiReminder()` belum dipanggil dari mana pun (Absensi dihapus) — hapus atau daur ulang untuk pengingat laporan
 - [ ] `cctv:health-check` belum mengukur durasi per batch (untuk skala worker nyata)
 - [ ] N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)
 - [ ] Perbaiki salah ketik/inkonsistensi dokumen lama yang tidak otomatis tercover root docs

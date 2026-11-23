@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,7 +17,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
-    #[Fillable(['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'created_by', 'updated_by', 'deleted_by'])]
     #[Hidden(['password', 'remember_token'])]
     protected $fillable = ['name', 'email', 'password', 'role', 'registered_by', 'dapur_id', 'created_by', 'updated_by', 'deleted_by'];
 
@@ -80,11 +77,6 @@ class User extends Authenticatable
         });
     }
 
-    public function registeredUsers(): HasMany
-    {
-        return $this->hasMany(User::class, 'registered_by');
-    }
-
     public function registeredBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'registered_by');
@@ -103,21 +95,6 @@ class User extends Authenticatable
     public function deletedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deleted_by');
-    }
-
-    public function spWarnings(): HasMany
-    {
-        return $this->hasMany(SpWarning::class, 'user_id');
-    }
-
-    public function spWarningsIssued(): HasMany
-    {
-        return $this->hasMany(SpWarning::class, 'admin_id');
-    }
-
-    public function cctvAnomalyReports(): HasMany
-    {
-        return $this->hasMany(CctvAnomalyReport::class, 'admin_id');
     }
 
     // Dapur relationships

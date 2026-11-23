@@ -1,25 +1,26 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Anomali CCTV'])
 
 @section('page_content')
+@php $prefix = strtok(Route::currentRouteName(), '.'); @endphp
 <div class="space-y-6">
     <x-admin::page-heading eyebrow="Genta · Monitoring CCTV" title="Monitoring CCTV" subtitle="Status perangkat dan pratinjau feed kamera">
         <x-slot:actions>
-            <a href="{{ route('admin.cctvs.index') }}" class="btn btn-primary">
+            <a href="{{ route($prefix.'.cctvs.index') }}" class="btn btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-5 7-5"></path></svg>
                 Kembali
             </a>
-            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'xlsx'])) }}" class="btn btn-primary">
-                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Excel
-            </a>
-            <a href="{{ route('admin.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'pdf'])) }}" class="btn btn-primary">
+            @if (auth()->user()->isAdmin() || auth()->user()->isManajerial())
+            <a href="{{ route($prefix.'.cctv-anomalies.export', array_merge(request()->query(), ['format' => 'pdf'])) }}" class="btn btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-6 0v6m-6-3h6v-3m0 0l3-3m-3 3l-3-3"></path></svg>
                 PDF
             </a>
-            <a href="{{ route('admin.cctv-anomalies.create') }}" class="btn btn-primary">
+            @endif
+            @if (auth()->user()->isAdmin())
+            <a href="{{ route($prefix.'.cctv-anomalies.create') }}" class="btn btn-primary">
                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Buat Laporan
             </a>
+            @endif
         </x-slot:actions>
     </x-admin::page-heading>
 
@@ -57,7 +58,7 @@
                 <input type="date" name="end_date" value="{{ request('end_date') }}" class="input input-bordered" placeholder="Tanggal Akhir">
             </div>
             <button type="submit" class="btn btn-secondary whitespace-nowrap">Filter</button>
-            <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn btn-secondary whitespace-nowrap">Reset</a>
+            <a href="{{ route($prefix.'.cctv-anomalies.index') }}" class="btn btn-secondary whitespace-nowrap">Reset</a>
         </form>
     </div>
 
@@ -103,8 +104,9 @@
                             <td>{{ $anomaly->admin->name }}</td>
                             <td>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('admin.cctv-anomalies.show', $anomaly) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
-                                    <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="inline" x-data="confirmSubmit">
+                                    <a href="{{ route($prefix.'.cctv-anomalies.show', $anomaly) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
+                                    @if (auth()->user()->isAdmin())
+                                    <form action="{{ route($prefix.'.cctv-anomalies.update', $anomaly) }}" method="POST" class="inline" x-data="confirmSubmit">
                                         @csrf
                                         @method('PUT')
                                         <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered text-xs py-1">
@@ -113,6 +115,7 @@
                                             <option value="selesai" {{ $anomaly->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
                                         </select>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -127,9 +130,11 @@
                 <x-slot:icon>
                     <svg class="w-16 h-16 mx-auto text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </x-slot:icon>
+                @if (auth()->user()->isAdmin())
                 <x-slot:action>
-                    <a href="{{ route('admin.cctv-anomalies.create') }}" class="btn btn-primary inline-block">Buat Laporan Pertama</a>
+                    <a href="{{ route($prefix.'.cctv-anomalies.create') }}" class="btn btn-primary inline-block">Buat Laporan Pertama</a>
                 </x-slot:action>
+                @endif
             </x-admin::empty-state>
         @endif
     </x-admin::panel>

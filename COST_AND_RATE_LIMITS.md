@@ -18,9 +18,9 @@
 - Queue: `retry_after=300` mencegah job terlindas ganda; `tries=3`.
 
 ## Batas operasional (skala)
-- Probe: 6,7 probe/detik pada puncak (2.000 probe / 5 menit). Kalau probe rata-rata kena timeout 8 detik, butuh ≥ 13 worker untuk 5 menit penuh tanpa tumpang tindih — mulai dengan 5–10 dan ukur.
+- Probe: 33,3 probe/detik pada puncak (2.000 probe / menit). Kalau probe rata-rata kena timeout 8 detik, butuh ≥ 267 worker untuk satu menit penuh tanpa tumpang tindih — mulai dengan 5–10 dan ukur, atau longgarkan jadwal.
 - Preview HLS: bandwidth MediaMTX keluar ke pengawas/pimpinan; batasi concurrent viewers bila perlu (jangan dulu).
-- Foto laporan: base64 di kolom text; 400 dapur × N laporan/hari bisa membengkak — pertimbangkan kompresi/resize sebelum simpan (belum diimplementasi).
+- Foto laporan: disimpan sebagai file di disk privat (`selfie_photo` menyimpan path); 400 dapur × N laporan/hari tetap bisa membengkak — kompresi/resize sebelum simpan belum diimplementasi.
 
 ## Keputusan biaya
 - Tidak ada Blaze/cloud-specific service; semua bisa dipindah ke VPS manapun dengan Docker.

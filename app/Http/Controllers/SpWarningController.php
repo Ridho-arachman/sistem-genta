@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\SpWarning;
 use App\Models\User;
+use App\Services\CsvExport;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
 
 class SpWarningController extends Controller
 {
-    public function __construct(protected FcmService $fcm)
-    {
-        $this->middleware(['auth']);
-    }
+    public function __construct(protected FcmService $fcm) {}
 
     public function index(Request $request)
     {
@@ -133,32 +131,27 @@ class SpWarningController extends Controller
 
         $format = $request->get('format', 'csv');
 
-        if ($format === 'xlsx') {
-            return $this->exportXlsx($warnings, $filename);
-        }
-
-        if ($format === 'pdf') {
+        // "xlsx" & "pdf": gunakan view print (format browser-native), bukan HTML kustom yang berantakan.
+        if ($format === 'xlsx' || $format === 'pdf') {
             return view('admin.sp-warnings.print', [
                 'warnings' => $warnings,
                 'startDate' => $request->start_date,
                 'endDate' => $request->end_date,
-                'filename' => $filename,
             ]);
         }
 
         // CSV
-        $csv = "Tanggal,Pengawas,Level,Alasan,Status,Diterbitkan Oleh\n";
-        foreach ($warnings as $w) {
-            $csv .= sprintf(
-                "%s,%s,SP-%d,%s,%s,%s\n",
+        $csv = CsvExport::csv(
+            ['Tanggal', 'Pengawas', 'Level', 'Alasan', 'Status', 'Diterbitkan Oleh'],
+            $warnings->map(fn ($w) => [
                 $w->issued_at->format('Y-m-d H:i:s'),
                 $w->user->name,
-                $w->level,
-                str_replace("\n", ' ', $w->reason),
+                'SP-'.$w->level,
+                $w->reason,
                 $w->status,
-                $w->admin->name
-            );
-        }
+                $w->admin->name,
+            ])
+        );
 
         return response($csv)
             ->header('Content-Type', 'text/csv')
@@ -207,19 +200,5 @@ class SpWarningController extends Controller
                 'action_url' => "/sp-warnings/{$warning->id}",
             ]);
         }
-    }
-
-    private function exportXlsx($warnings, $filename)
-    {
-        // Simple array-based export (can be enhanced with Maatwebsite Excel)
-        $html = '<table border="1"><tr><th>Tanggal</th><th>Pengawas</th><th>Level</th><th>Alasan</th><th>Status</th><th>Diterbitkan Oleh</th></tr>';
-        foreach ($warnings as $w) {
-            $html .= "<tr><td>{$w->issued_at->format('Y-m-d H:i:s')}</td><td>{$w->user->name}</td><td>SP-{$w->level}</td><td>{$w->reason}</td><td>{$w->status}</td><td>{$w->admin->name}</td></tr>";
-        }
-        $html .= '</table>';
-
-        return response($html)
-            ->header('Content-Type', 'application/vnd.ms-excel')
-            ->header('Content-Disposition', "attachment; filename=\"{$filename}.xls\"");
     }
 }

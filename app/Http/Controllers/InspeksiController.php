@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\LaporanXlsxExport;
 use App\Models\Dapur;
 use App\Models\Laporan;
+use App\Services\CsvExport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -115,19 +116,18 @@ class InspeksiController extends Controller
         }
 
         // Default: CSV
-        $csv = "Tanggal,Pengawas,Dapur,Status,Catatan,Latitude,Longitude\n";
-        foreach ($laporans as $l) {
-            $csv .= sprintf(
-                "%s,%s,%s,%s,%s,%s,%s\n",
+        $csv = CsvExport::csv(
+            ['Tanggal', 'Pengawas', 'Dapur', 'Status', 'Catatan', 'Latitude', 'Longitude'],
+            $laporans->map(fn ($l) => [
                 $l->created_at->format('Y-m-d H:i:s'),
                 $l->createdBy->name ?? '-',
                 $l->dapur->nama ?? '-',
                 $l->status,
                 $l->catatan ?? '-',
-                $l->latitude ?? '-',
-                $l->longitude ?? '-'
-            );
-        }
+                (string) ($l->latitude ?? '-'),
+                (string) ($l->longitude ?? '-'),
+            ])
+        );
 
         return response($csv)
             ->header('Content-Type', 'text/csv')

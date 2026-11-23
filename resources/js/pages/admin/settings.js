@@ -1,6 +1,6 @@
 // Halaman pengaturan sistem: form + peta geofence kantor
 document.addEventListener('alpine:init', () => {
-    Alpine.data('settingsForm', (branding = {}, map = {}, general = {}) => ({
+    Alpine.data('settingsForm', (branding = {}, map = {}) => ({
         form: {
             app_name_desktop: branding.app_name_desktop ?? '',
             app_name_web: branding.app_name_web ?? '',
@@ -8,7 +8,6 @@ document.addEventListener('alpine:init', () => {
             office_lat: map.office_lat ?? '',
             office_lng: map.office_lng ?? '',
             office_address: map.office_address ?? '',
-            timezone: general.timezone ?? 'Asia/Jakarta',
         },
         saving: false,
         toast: { show: false, message: '' },

@@ -1,6 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Monitoring CCTV'])
 
 @section('page_content')
+@php $prefix = strtok(Route::currentRouteName(), '.'); @endphp
 <x-admin::page-heading eyebrow="Genta · Monitoring CCTV" title="Monitoring CCTV" subtitle="Status perangkat dan pratinjau feed kamera">
     @if (auth()->user()->isAdmin())
     <x-slot:actions>
@@ -25,7 +26,7 @@
     </x-slot:head>
 
     <!-- Filter Lokasi -->
-    <form method="GET" action="{{ route('admin.cctvs.index') }}" class="px-4 py-3 border-b border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3" x-data="{ filterOpen: false }">
+    <form method="GET" action="{{ route($prefix.'.cctvs.index') }}" class="px-4 py-3 border-b border-[var(--color-border)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3" x-data="{ filterOpen: false }">
         <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-[var(--color-text-muted)] uppercase">Provinsi</label>
             <select name="provinsi" id="provinsiFilter" class="select select-bordered text-sm w-full" disabled>
@@ -105,11 +106,13 @@
                     <div class="text-xs text-[var(--color-text-muted)] mt-1">{{ $cctv->section ?? '-' }}</div>
                 </div>
                 <div class="p-3 flex items-center justify-between gap-2">
-                    <a href="{{ route('admin.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat detail</a>
-                    <a href="{{ route('admin.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="flex items-center gap-1 text-red-600 hover:underline text-sm font-medium ml-1">
+                    <a href="{{ route($prefix.'.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat detail</a>
+                    @if (auth()->user()->isAdmin())
+                    <a href="{{ route($prefix.'.cctv-anomalies.create') }}?cctv_id={{ $cctv->id }}" class="flex items-center gap-1 text-red-600 hover:underline text-sm font-medium ml-1">
                         <span>!</span>
                         <span>Laporkan anomali</span>
                     </a>
+                    @endif
                 </div>
             </div>
             @endforeach

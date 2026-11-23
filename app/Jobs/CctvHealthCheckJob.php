@@ -28,7 +28,7 @@ class CctvHealthCheckJob implements ShouldQueue
      * @param  string  $dapurId  dapur yang dicek
      * @param  string|null  $cctvId  batasi ke satu kamera (dipakai saat admin
      *                               menyimpan rtsp_url baru, biar status tak
-     *                               menunggu jadwal lima menit berikutnya)
+     *                               menunggu jadwal berikutnya)
      */
     public function __construct(public string $dapurId, public ?string $cctvId = null) {}
 

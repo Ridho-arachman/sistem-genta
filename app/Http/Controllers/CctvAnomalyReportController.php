@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cctv;
 use App\Models\CctvAnomalyReport;
 use App\Models\User;
+use App\Services\CsvExport;
 use App\Services\FcmService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -13,10 +14,7 @@ class CctvAnomalyReportController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(protected FcmService $fcm)
-    {
-        $this->middleware(['auth']);
-    }
+    public function __construct(protected FcmService $fcm) {}
 
     // Admin: Create anomaly report
     public function create(Request $request)
@@ -154,21 +152,20 @@ class CctvAnomalyReportController extends Controller
             ]);
         }
 
-        // CSV / XLSX
-        $csv = "Tanggal,CCTV,Dapur,Area/Kamera,Deskripsi,Severity,Status,Dilaporkan Oleh\n";
-        foreach ($anomalies as $a) {
-            $csv .= sprintf(
-                "%s,%s,%s,%s,%s,%s,%s,%s\n",
+        // CSV
+        $csv = CsvExport::csv(
+            ['Tanggal', 'CCTV', 'Dapur', 'Area/Kamera', 'Deskripsi', 'Severity', 'Status', 'Dilaporkan Oleh'],
+            $anomalies->map(fn ($a) => [
                 $a->created_at->format('Y-m-d H:i:s'),
                 $a->cctv->nama,
                 $a->cctv->dapur->nama,
                 $a->cctv->section ?? '-',
-                str_replace("\n", ' ', $a->description),
+                $a->description,
                 ucfirst($a->severity),
                 ucfirst($a->status),
-                $a->admin->name
-            );
-        }
+                $a->admin->name,
+            ])
+        );
 
         return response($csv)
             ->header('Content-Type', 'text/csv')

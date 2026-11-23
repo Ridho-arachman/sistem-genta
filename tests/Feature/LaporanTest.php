@@ -37,7 +37,7 @@ test('pengawas can create laporan with single photo and GPS via mobile app', fun
             'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
         ])
         ->assertRedirect(route('pengawas.laporan.index'))
-        ->assertSessionHas('success');
+        ->assertSessionHas('status', 'Laporan berhasil dikirim.');
 
     $laporan = Laporan::latest()->first();
     $this->assertNotNull($laporan);

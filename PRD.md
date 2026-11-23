@@ -17,8 +17,8 @@ pimpinan (manajerial) melihat dashboard read-only.
 
 ## Fitur inti
 1. Manajemen dapur (CRUD admin) + wilayah Banten (provinsi/kabupaten/kecamatan) + geofence (map_embed_url).
-2. Manajemen CCTV: `rtsp_url` + `stream_key`, preview HLS, health check otomatis tiap 5 menit (ffprobe real, bukan input manual), status online/offline/maintenance, alerta FCM saat transisi ke offline.
-3. Laporan pengawasan harian (`laporans` + `laporan_hasil` + selfie foto base64).
+2. Manajemen CCTV: `rtsp_url` + `stream_key`, preview HLS, health check otomatis tiap menit (MediaMTX/HLS, ffprobe sebagai fallback), status online/offline/maintenance, alerta FCM saat transisi ke offline.
+3. Laporan pengawasan harian (`laporans` + `laporan_hasil` + selfie disimpan sebagai file, kolom hanya berisi path).
 4. Inspeksi (check-in/check-out + export).
 5. SP Warning, Anomaly CCTV, FCM push notification, mobile API (Sanctum).
 6. Dashboard pimpinan: ringkas (manajerial, `kepala-dapur`), masih read-only sederhana.
@@ -30,12 +30,12 @@ pimpinan (manajerial) melihat dashboard read-only.
 - Tidak ada multi-tenancy di luar peran di atas; tidak ada billing; tidak ada SSO.
 
 ## Skala & SLA (target)
-- 400 job health-check/5 menit ≈ 80 job/menit; tiap job probe ≤ 5 kamera × 8 detik.
-- Praktis: `docker compose up -d --scale queue=10` di server produksi.
-- Waktu kerja pengawas: web pakai aplikasi mobile (Capacitor), foto base64, geofence Hriversine.
+- 400 job health-check/menit; tiap job probe ≤ 5 kamera × 8 detik.
+- Praktis: `docker compose up -d --scale queue=10` di server produksi, atau longgarkan jadwal health check bila worker terbatas.
+- Waktu kerja pengawas: web pakai aplikasi mobile (Capacitor), foto disimpan sebagai file (path di DB), geofence dihitung di perangkat mobile.
 
 ## Definisi selesai (rilis ini)
-- Full test suite hijau (48 tes).
+- Full test suite hijau (80 tes / 234 assertion).
 - CI GitHub Actions (Pint + full suite).
 - Doc suite (root) lengkap dan sinkron dengan kode.
 

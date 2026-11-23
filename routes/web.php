@@ -167,7 +167,5 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 // ==================== MOBILE API (Sanctum) ====================
 Route::prefix('api/mobile')->middleware(['auth:sanctum'])->group(function () {
     Route::post('fcm-token', [MobileController::class, 'storeFcmToken']);
-    Route::post('sync-locations', [MobileController::class, 'syncLocations']);
-    Route::get('dapurs/geofences', [MobileController::class, 'getGeofences']);
     Route::post('absensi/auto-checkin', [MobileController::class, 'autoCheckin']);
 });

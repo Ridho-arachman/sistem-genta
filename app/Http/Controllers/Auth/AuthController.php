@@ -63,13 +63,6 @@ class AuthController extends Controller
         // Regenerate session AFTER role check to prevent session fixation
         $request->session()->regenerate();
 
-        // Force login with user object to ensure session is saved with user_id
-        Auth::login($user, true);
-
-        // Explicitly save session to database to ensure user_id is persisted
-        $request->session()->put('login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d', $user->id);
-        $request->session()->save();
-
         return redirect()->intended(route('dashboard'));
     }
 
@@ -154,7 +147,7 @@ class AuthController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        if (! password_verify($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
         }
 

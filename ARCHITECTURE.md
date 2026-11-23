@@ -12,7 +12,7 @@ MediaMTX di server pusat ──► HLS (/<stream_key>/index.m3u8) ──► Brow
         ▲
         └─ Control API (:9997) ◄── Laravel (MediaMtxClient)
 
-ffprobe (per 5 mnt, per dapur) ──► status cctvs (online/offline/maintenance) ──► FCM alert
+CctvHealthCheck (tiap menit, per dapur: MediaMTX ready + HLS playlist dulu, ffprobe sebagai fallback) ──► status cctvs ──► FCM alert
 Laravel (web + /api/mobile via Sanctum) ──► PostgreSQL (jobs/cache/sessions juga di DB)
 ```
 
@@ -25,10 +25,10 @@ Tidak ada rekaman; tidak ada broadcasting/WebSocket; tidak ada `routes/api.php` 
 | Routing | `routes/web.php` | Semua route + Sanctum di sini; tidak ada `api.php` |
 | Controller | `app/Http/Controllers/*` | AdminController, DapurController, CctvController, InspeksiController, LaporanController, SpWarningController, CctvAnomalyReportController, Api\MobileController |
 | Model | `app/Models/*` | ULID string PK (`keyType=string`, `incrementing=false`); tabel `jobs`/`failed_jobs` sudah bigint auto-increment |
-| Policy | `app/Policies/*` | Cctv, CctvAnomalyReport, Dapur, Laporan |
-| Service | `app/Services/*` | MediaMtxClient, RtspProbe, GeolocationService, FcmService |
+| Policy | `app/Policies/*` | CctvAnomalyReport, Laporan |
+| Service | `app/Services/*` | CsvExport, FcmService, MediaMtxClient, RtspProbe |
 | Job | `app/Jobs/*` | CctvHealthCheckJob, CctvAlertJob |
-| Command | `app/Console/Commands/*` | CctvHealthCheck (tiap 5 menit) |
+| Command | `app/Console/Commands/*` | CctvHealthCheck (tiap menit) |
 
 ## Boundary peran
 Middleware `role:<nama>` (`App\Http\Middleware\RoleMiddleware`) dan `restrict.pengawas` (pengawas dibatasi ke halaman tertentu di web). Dashboard peran:
@@ -45,4 +45,4 @@ Bagian "Keputusan" di `TASKS.md`. Ringkasan keputusan terpenting:
 4. Tidak ada microservice; satu Laravel monolith.
 
 ## Skala
-400 dapur × 5 kamera = 2.000 probe / 5 menit ≈ **6,7 probe/detik**. `Schedule::withoutOverlapping()` mencegah tumpang tindih; butuh banyak worker kalau probe sering kena timeout 8 detik.
+400 dapur × 5 kamera = 2.000 probe / menit ≈ **33,3 probe/detik**. `Schedule::withoutOverlapping()` mencegah tumpang tindih; butuh banyak worker kalau probe sering kena timeout 8 detik.

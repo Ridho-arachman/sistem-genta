@@ -74,8 +74,9 @@
                             {{ $l->latitude && $l->longitude ? number_format((float) $l->latitude, 5).', '.number_format((float) $l->longitude, 5) : '-' }}
                         </td>
                         <td>
-                            {{-- shortcut: link detail hanya valid untuk admin, role lain memakai view berbeda --}}
-                            <a href="{{ route('admin.laporan.show', $l) }}" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat</a>
+                            @if (auth()->user()->isAdmin())
+                                <a href="{{ route('admin.laporan.show', $l) }}" class="text-[var(--color-primary)] hover:underline text-sm font-medium">Lihat</a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

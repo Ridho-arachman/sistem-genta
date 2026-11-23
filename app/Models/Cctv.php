@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Database\Factories\CctvFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +14,6 @@ class Cctv extends Model
     /** @use HasFactory<CctvFactory> */
     use HasFactory;
 
-    #[Fillable(['dapur_id', 'nama', 'rtsp_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'])]
     protected $fillable = ['dapur_id', 'nama', 'rtsp_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'];
 
     protected $keyType = 'string';

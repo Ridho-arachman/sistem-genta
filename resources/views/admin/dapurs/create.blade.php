@@ -34,7 +34,7 @@
                                     x-model="form.kabupaten_kota"
                                     x-on:change="onKabupatenChange($event.target.value)">
                                 <option value="">-- Pilih Kabupaten/Kota --</option>
-                                @foreach(\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab)
+                                @foreach(config('banten.kabupaten_kota') as $kab)
                                     <option value="{{ $kab }}" {{ old('kabupaten_kota') == $kab ? 'selected' : '' }}>
                                         {{ $kab }}
                                     </option>
@@ -55,9 +55,9 @@
                     </x-admin::form-field>
 
                     <x-admin::form-field label="Provinsi" name="provinsi">
-                        <input id="provinsi" type="text" name="provinsi" value="Banten"
+                        <input id="provinsi" type="text" name="provinsi" value="{{ config('banten.provinsi') }}"
                                class="input input-bordered border border-[var(--color-border)] w-full" readonly>
-                        <input type="hidden" name="provinsi" value="Banten">
+                        <input type="hidden" name="provinsi" value="{{ config('banten.provinsi') }}">
                     </x-admin::form-field>
                 </div>
         </x-admin::panel>
@@ -72,16 +72,5 @@
             </a>
         </div>
     </form>
-
-@php
-$kecamatanMapping = [];
-$controller = app(\App\Http\Controllers\DapurController::class);
-foreach (\App\Http\Controllers\DapurController::BANTEN_KABUPATEN_KOTA as $kab) {
-    $kecs = $controller->getKnownKecamatan($kab);
-    if (!empty($kecs)) {
-        $kecamatanMapping[$kab] = $kecs;
-    }
-}
-@endphp
 
 @endsection

@@ -1,10 +1,11 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Detail Anomali: ' . $anomaly->cctv->display_name])
 
 @section('page_content')
+@php $prefix = strtok(Route::currentRouteName(), '.'); @endphp
 <div class="max-w-3xl mx-auto">
     <x-admin::page-heading title="Detail Anomali CCTV" subtitle="{{ $anomaly->cctv->display_name }} - {{ $anomaly->cctv->dapur->nama }}">
         <x-slot:actions>
-            <a href="{{ route('admin.cctv-anomalies.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route($prefix.'.cctv-anomalies.index') }}" class="btn btn-secondary">Kembali</a>
         </x-slot:actions>
     </x-admin::page-heading>
 
@@ -65,8 +66,9 @@
                 <p class="text-[var(--color-secondary)] whitespace-pre-wrap">{{ $anomaly->description }}</p>
             </div>
 
+            @if (auth()->user()->isAdmin())
             <div class="border-t border-[var(--color-border)] pt-6">
-                <form action="{{ route('admin.cctv-anomalies.update', $anomaly) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
+                <form action="{{ route($prefix.'.cctv-anomalies.update', $anomaly) }}" method="POST" class="flex gap-4" x-data="confirmSubmit">
                     @csrf
                     @method('PUT')
                     <select name="status" @change="confirmStatus('Yakin ubah status?') && $event.target.form.submit()" class="select select-bordered flex-1">
@@ -76,6 +78,7 @@
                     </select>
                 </form>
             </div>
+            @endif
         </div>
     </x-admin::panel>
 </div>

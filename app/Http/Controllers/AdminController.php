@@ -14,11 +14,6 @@ use Illuminate\Validation\Rules\Password;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'role:admin']);
-    }
-
     // User Management
     public function users(Request $request)
     {
@@ -85,7 +80,7 @@ class AdminController extends Controller
                 ->first();
             if ($existingKepala) {
                 return back()->withErrors([
-                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpah akan mengubah assignment.',
+                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpa akan mengubah assignment.',
                 ])->withInput();
             }
         }
@@ -175,7 +170,7 @@ class AdminController extends Controller
                 ->first();
             if ($existingKepala) {
                 return back()->withErrors([
-                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpah akan mengubah assignment.',
+                    'dapur_id' => 'Dapur ini sudah memiliki Kepala Dapur: '.$existingKepala->name.'. Menimpa akan mengubah assignment.',
                 ])->withInput();
             }
         }
@@ -190,12 +185,19 @@ class AdminController extends Controller
             ]);
         }
 
-        $user->update(array_filter([
+        $update = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $validated['role'],
             'dapur_id' => $validated['dapur_id'] ?? null,
-        ]));
+        ];
+
+        // Password baru dari form edit user.
+        if ($validated['password'] ?? null) {
+            $update['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($update);
 
         // Sync multi-dapur for pengawas
         if ($user->isPengawas()) {
@@ -277,8 +279,8 @@ class AdminController extends Controller
     {
         $totalCctv = Cctv::count();
         $cctvOnline = Cctv::where('status', 'online')->count();
-        $laporanHariIni = CctvAnomalyReport::whereDate('created_at', today())->count();
-        $laporanHariIniSelesai = CctvAnomalyReport::whereDate('created_at', today())->where('status', 'selesai')->count();
+        $laporanHariIni = Laporan::whereDate('created_at', today())->count();
+        $laporanHariIniSelesai = Laporan::whereDate('created_at', today())->where('status', 'selesai')->count();
 
         $stats = [
             'total_dapur' => Dapur::count(),
@@ -355,7 +357,6 @@ class AdminController extends Controller
             'office_lat' => ['required', 'numeric', 'between:-90,90'],
             'office_lng' => ['required', 'numeric', 'between:-180,180'],
             'office_address' => ['nullable', 'string', 'max:255'],
-            'timezone' => ['required', 'string', 'max:50'],
         ]);
 
         Settings::set('app_name_desktop', $validated['app_name_desktop']);
@@ -364,7 +365,6 @@ class AdminController extends Controller
         Settings::set('office_lat', $validated['office_lat']);
         Settings::set('office_lng', $validated['office_lng']);
         Settings::set('office_address', $validated['office_address'] ?? '');
-        Settings::set('timezone', $validated['timezone']);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -393,11 +393,16 @@ class AdminController extends Controller
             'password' => ['nullable', 'confirmed', Password::defaults()],
         ]);
 
-        $user->update(array_filter([
+        $update = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => $validated['password'] ? Hash::make($validated['password']) : null,
-        ]));
+        ];
+
+        if ($validated['password'] ?? null) {
+            $update['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($update);
 
         return redirect()->route('admin.settings.profile')->with('status', 'Profil berhasil diperbarui.');
     }

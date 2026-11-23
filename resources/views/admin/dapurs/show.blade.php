@@ -10,7 +10,7 @@
                 <h2 class="text-2xl font-bold text-[var(--color-secondary)]">{{ $dapur->nama }}</h2>
                 <p class="text-[var(--color-text-muted)] mt-1">
                     @if ($dapur->kecamatan && $dapur->kabupaten_kota)
-                        {{ $dapur->kecamatan }}, {{ $dapur->kabupaten_kota }}, {{ $dapur->provinsi ?? 'Banten' }}
+                        {{ $dapur->kecamatan }}, {{ $dapur->kabupaten_kota }}, {{ $dapur->provinsi ?? config('banten.provinsi') }}
                     @else
                         Wilayah tidak diset
                     @endif
@@ -20,8 +20,8 @@
                 @if (auth()->user()->isAdmin())
                     <a href="{{ route('admin.dapurs.edit', $dapur) }}" class="btn btn-secondary">Edit</a>
                 @endif
-                @php $backRoute = auth()->user()->isAdmin() ? 'admin.dapurs.index' : (auth()->user()->isManajerial() ? 'manajerial.dapurs.index' : 'kepala-dapur.dapurs.index'); @endphp
-                <a href="{{ route($backRoute) }}" class="btn btn-secondary">Kembali</a>
+                @php $prefix = strtok(Route::currentRouteName(), '.'); @endphp
+                <a href="{{ route($prefix.'.dapurs.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
             </div>
             <div class="p-4 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]">
                 <p class="text-sm text-[var(--color-text-muted)]">Provinsi</p>
-                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->provinsi ?? 'Banten' }}</p>
+                <p class="font-semibold text-[var(--color-secondary)]">{{ $dapur->provinsi ?? config('banten.provinsi') }}</p>
             </div>
         </div>
 
@@ -146,7 +146,7 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('admin.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
+                                <a href="{{ route($prefix.'.cctvs.show', $cctv) }}" class="text-[var(--color-primary)] hover:underline text-sm">Detail</a>
                             </td>
                         </tr>
                         @endforeach

@@ -7,7 +7,7 @@
     subtitle="Konfigurasi sistem, branding, dan lokasi kantor"
     titleClass="text-2xl font-extrabold text-[var(--color-secondary)]" />
 
-<form action="{{ route('admin.settings.update') }}" method="POST" x-data="settingsForm(@js($branding), @js($map), @js($general))" @submit.prevent="submit()">
+<form action="{{ route('admin.settings.update') }}" method="POST" x-data="settingsForm(@js($branding), @js($map))" @submit.prevent="submit()">
     @csrf
     @method('PUT')
 
@@ -94,20 +94,6 @@
         </div>
     </x-admin::panel>
 
-    {{-- General Section --}}
-    <x-admin::panel title="Umum" icon="clock" class="mb-6">
-
-        <x-admin::form-field label="Zona Waktu" name="timezone" required>
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <select id="timezone" name="timezone" x-model="form.timezone" class="select select-bordered border border-[var(--color-border)] w-full pr-10" required>
-                    <option value="Asia/Jakarta">WIB — Asia/Jakarta (UTC+7)</option>
-                    <option value="Asia/Makassar">WITA — Asia/Makassar (UTC+8)</option>
-                    <option value="Asia/Jayapura">WIT — Asia/Jayapura (UTC+9)</option>
-                </select>
-            </div>
-        </x-admin::form-field>
-    </x-admin::panel>
 
     {{-- Form Actions --}}
     <div class="mt-6 flex gap-3">

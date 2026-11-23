@@ -21,6 +21,22 @@ test('admin can view dapur index', function () {
         ->assertSee('Data Dapur');
 });
 
+test('admin can view dapur create form', function () {
+    $this->actingAs($this->admin)
+        ->get(route('admin.dapurs.create'))
+        ->assertOk()
+        ->assertSee('Tambah Dapur Baru');
+});
+
+test('admin can view dapur edit form', function () {
+    $dapur = Dapur::factory()->create(['kecamatan' => 'Curug', 'kabupaten_kota' => 'Kota Serang', 'provinsi' => 'Banten']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.dapurs.edit', $dapur))
+        ->assertOk()
+        ->assertSee('Edit Dapur: '.$dapur->nama);
+});
+
 test('pengawas cannot view dapur index via web', function () {
     Dapur::factory()->count(3)->create();
 

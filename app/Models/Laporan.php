@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Database\Factories\LaporanFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +14,6 @@ class Laporan extends Model
 {
     use Factories\HasFactory;
 
-    #[Fillable(['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address', 'created_by', 'updated_by'])]
     protected $fillable = ['dapur_id', 'status', 'catatan', 'selfie_photo', 'latitude', 'longitude', 'address', 'created_by', 'updated_by'];
 
     protected $keyType = 'string';
@@ -52,15 +50,5 @@ class Laporan extends Model
     public function hasil(): HasMany
     {
         return $this->hasMany(LaporanHasil::class);
-    }
-
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
-
-    public function scopeOpen($query)
-    {
-        return $query->where('status', '!=', 'selesai');
     }
 }

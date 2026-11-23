@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Database\Factories\FcmTokenFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -13,7 +12,6 @@ class FcmToken extends Model
     /** @use HasFactory<FcmTokenFactory> */
     use HasFactory;
 
-    #[Fillable(['user_id', 'token', 'platform', 'last_used_at'])]
     protected $fillable = ['user_id', 'token', 'platform', 'last_used_at'];
 
     protected $keyType = 'string';

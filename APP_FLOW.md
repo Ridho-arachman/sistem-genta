@@ -16,18 +16,16 @@
 1. `admin/cctvs/create` → `dapur_id`, `nama`, `rtsp_url`, `section`, `camera_number`.
 2. Saat store/update, `syncStreamPath()` mendaftarkan path ke MediaMTX (jika `CCTV_MEDIAMTX_API` terkonfigurasi).
 3. Preview HLS di detail kamera: `config('cctv.hls_base') . '/' . $stream_key . '/index.m3u8'` (kosong bila `CCTV_HLS_BASE` tidak di-set).
-4. Health check (`cctv:health-check` tiap 5 menit) memprobe tiap dapur (≤ 5 kamera × 8 detik), menulis `status` + `last_checked_at`, dan mengirim FCM hanya pada transisi ke offline.
+4. Health check (`cctv:health-check` tiap menit) memprobe tiap dapur (≤ 5 kamera × 8 detik), menulis `status` + `last_checked_at`, dan mengirim FCM hanya pada transisi ke offline.
 
 ## 4. Laporan pengawasan (semua peran, via mobile/web)
-`pengawas/laporan` atau `admin/laporan` — list + detail + export. Isi: `laporan_hasil` per indikator, `selfie_photo` (base64 disimpan sebagai text), `latitude/longitude/address` (foto tidak menyimpan lat/long sendiri setelah migrasi Drop). Inspeksi check-in/out + export tersedia di `admin/inspeksi` dan `pengawas/inspeksi`.
+`pengawas/laporan` atau `admin/laporan` — list + detail + export. Isi: `laporan_hasil` per indikator, `selfie_photo` (path di disk privat; data URL lama ditoleransi), `latitude/longitude/address` (foto tidak menyimpan lat/long sendiri setelah migrasi Drop). Inspeksi check-in/out + export tersedia di `admin/inspeksi` dan `pengawas/inspeksi`.
 
 ## 5. Anomali & SP
 Anomali CCTV: `admin/cctv-anomalies` (create/list/show). SP: `admin/sp-warnings` terikat ke `user_id`, ada level, status, export.
 
 ## 6. API mobile (`/api/mobile`, Sanctum)
 - `POST /fcm-token` — simpan token FCM device.
-- `POST /sync-locations` — lokasi gps (geofence).
-- `GET /dapurs/geofences` — daftar geofence dapur.
 - `POST /absensi/auto-checkin` — check-in via geofence (sekarang membuat `Laporan`).
 
 ## 7. Alur error utama
