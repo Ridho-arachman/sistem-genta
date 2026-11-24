@@ -7,13 +7,10 @@ use App\Models\CctvAnomalyReport;
 use App\Models\User;
 use App\Services\CsvExport;
 use App\Services\FcmService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class CctvAnomalyReportController extends Controller
 {
-    use AuthorizesRequests;
-
     public function __construct(protected FcmService $fcm) {}
 
     // Admin: Create anomaly report

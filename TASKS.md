@@ -2,6 +2,11 @@
 
 **Status**: aktif · 2026-11-23 · bekerja paling baik bersama `CHANGELOG.md`
 
+## Selesai (2026-11-24)
+- [x] Sisa backlog kecil: password rule disatukan ke `Password::defaults()` (`reset` + `updatePassword`), policy SP (`SpWarningPolicy`) + `authorize` di `SpWarningController`, trait `AuthorizesRequests` dipindah ke `Controller` dasar (4 controller tak perlu ulang), `SANCTUM_*` masuk `.env.example`, pesan validasi mati di `storeUser` dibuang
+- [x] Audit N+1 diformalkan jadi tes: `NoLazyLoadingTest` (17 halaman dengan `preventLazyLoading`) — hijau, jadi tak ada perbaikan N+1 baru
+- [x] Komponen Blade pengawas vs admin sengaja tidak digabung (props/kelas berbeda; lihat CHANGELOG)
+
 ## Selesai (2026-11-23)
 - [x] Audit konsistensi repo: upload foto (ekstensi dari allowlist), ekspor XLSX berskope pengawas, API mobile check-in hanya dapur assignment, dashboard status dapur (progress/status dari accessor `Dapur`), restore user mempertahankan pivot, statistik tak menghitung user terhapus, SP hanya untuk pengawas, teks `switch-mode.bat` yang tidak ada di `public/index.html` — plus 12 tes regresi
 - [x] Link/aksi role read-only di view admin (`cctv-anomalies`, `cctvs`, `dapurs`, `inspeksi`) dibetulkan agar tidak kena 403, plus tes `RoleReadOnlyPageTest` (8 tes)
@@ -33,7 +38,7 @@
 ## Penting, bisa dikerjakan sekarang
 
 - [ ] `cctv:health-check` belum mengukur durasi per batch (untuk skala worker nyata)
-- [ ] N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)
+- [ ] ~~N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)~~ → selesai 2026-11-24 lewat `NoLazyLoadingTest`
 - [ ] IP dev server hardcode di 6 file (`.env`, `vite.config.js`, `public/hot`, `capacitor.config.json`, `public/index.html`, `public/fonts-manifest.dev.json`) — satu sumber saja (mis. satu env `DEV_SERVER_URL` yang dibaca semua file) supaya ganti IP cukup satu tempat; `fonts-manifest.dev.json` juga salinan lama di `android/app/src/main/assets/`
 - [ ] Perbaiki salah ketik/inkonsistensi dokumen lama yang tidak otomatis tercover root docs
 

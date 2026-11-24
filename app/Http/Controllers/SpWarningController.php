@@ -15,6 +15,8 @@ class SpWarningController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', SpWarning::class);
+
         $query = SpWarning::with(['user', 'admin'])->latest();
 
         if ($request->filled('user_id')) {
@@ -45,6 +47,8 @@ class SpWarningController extends Controller
 
     public function create()
     {
+        $this->authorize('create', SpWarning::class);
+
         $pengawas = User::where('role', 'pengawas')->get();
 
         return view('admin.sp-warnings.create', compact('pengawas'));
@@ -52,6 +56,8 @@ class SpWarningController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', SpWarning::class);
+
         $validated = $request->validate([
             // SP hanya untuk pengawas (bukan admin/manajerial lain).
             'user_id' => ['required', Rule::exists('users', 'id')->where('role', 'pengawas')],
@@ -81,6 +87,8 @@ class SpWarningController extends Controller
 
     public function show(SpWarning $spWarning)
     {
+        $this->authorize('view', $spWarning);
+
         $spWarning->load(['user', 'admin']);
 
         return view('admin.sp-warnings.show', compact('spWarning'));
@@ -88,6 +96,8 @@ class SpWarningController extends Controller
 
     public function update(Request $request, SpWarning $spWarning)
     {
+        $this->authorize('update', $spWarning);
+
         $validated = $request->validate([
             'status' => ['required', 'in:aktif,dicabut,selesai'],
         ]);
@@ -99,6 +109,8 @@ class SpWarningController extends Controller
 
     public function destroy(SpWarning $spWarning)
     {
+        $this->authorize('delete', $spWarning);
+
         $spWarning->delete();
 
         return redirect()->route('admin.sp-warnings.index')->with('status', 'SP berhasil dihapus.');
@@ -106,6 +118,8 @@ class SpWarningController extends Controller
 
     public function export(Request $request)
     {
+        $this->authorize('export', SpWarning::class);
+
         $query = SpWarning::with(['user', 'admin'])->latest();
 
         if ($request->filled('user_id')) {

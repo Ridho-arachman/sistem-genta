@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dapur;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class DapurController extends Controller
 {
-    use AuthorizesRequests;
-
     public function index()
     {
         $user = auth()->user();

@@ -60,11 +60,7 @@ class AdminController extends Controller
             'dapur_id' => ['nullable', 'exists:dapurs,id'],
             'dapur_ids' => ['nullable', 'array'],
             'dapur_ids.*' => ['exists:dapurs,id'],
-        ], [
-            'dapur_id.required' => 'Dapur wajib dipilih untuk Kepala Dapur.',
-            'dapur_ids.required' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
-            'dapur_ids.min' => 'Minimal 1 dapur wajib dipilih untuk Pengawas.',
-        ]);
+        ]); // Pesan khusus dapur_id/dapur_ids ada di blok role-specific di bawah (di sini nullable, jadi tak pernah memicu).
 
         // Role-specific validation
         if ($validated['role'] === 'kepala_dapur') {

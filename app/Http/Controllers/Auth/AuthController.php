@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -100,7 +101,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
+            'password' => ['required', 'string', 'confirmed', PasswordRule::defaults()],
         ]);
 
         $user = User::withTrashed()->where('email', $request->email)->first();
@@ -144,7 +145,8 @@ class AuthController extends Controller
 
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
+            // Aturan password sekali jalan (sama seperti storeUser), bukan min:8 tulis tangan.
+            'password' => ['required', 'string', 'confirmed', PasswordRule::defaults()],
         ]);
 
         if (! Hash::check($request->current_password, $user->password)) {

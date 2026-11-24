@@ -7,13 +7,10 @@ use App\Jobs\CctvHealthCheckJob;
 use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Services\MediaMtxClient;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class CctvController extends Controller
 {
-    use AuthorizesRequests;
-
     public function __construct(protected MediaMtxClient $mediaMtx) {}
 
     public function index(Request $request)

@@ -61,3 +61,21 @@ test('kepala_dapur tidak boleh akses halaman SP manajerial', function () {
         ->get(route('manajerial.sp-warnings.index'))
         ->assertForbidden();
 });
+
+test('policy SP: hanya admin yang boleh terbitkan, ubah, dan hapus', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $manajerial = User::factory()->create(['role' => 'manajerial']);
+    $warning = createSpWarning();
+
+    // Kelola SP = admin saja; lihat = admin + manajerial.
+    expect($admin->can('viewAny', SpWarning::class))->toBeTrue()
+        ->and($admin->can('create', SpWarning::class))->toBeTrue()
+        ->and($admin->can('update', $warning))->toBeTrue()
+        ->and($admin->can('delete', $warning))->toBeTrue();
+
+    expect($manajerial->can('viewAny', SpWarning::class))->toBeTrue()
+        ->and($manajerial->can('view', $warning))->toBeTrue()
+        ->and($manajerial->can('create', SpWarning::class))->toBeFalse()
+        ->and($manajerial->can('update', $warning))->toBeFalse()
+        ->and($manajerial->can('delete', $warning))->toBeFalse();
+});

@@ -11,7 +11,7 @@ tests/Feature/    AuthTest, LoginRateLimitTest, CctvTest, CctvHealthCheckTest,
                  MediaMtxClientTest, DapurTest, LaporanTest, ExampleTest,
                  CctvAnomalyReportTest, SpWarningTest, PengawasSettingsTest,
                  RoleReadOnlyPageTest, MobileApiTest, InspeksiExportTest,
-                 AdminDashboardTest, UserSoftDeleteTest
+                 AdminDashboardTest, UserSoftDeleteTest, NoLazyLoadingTest
 tests/Unit/       ExampleTest
 tests/Pest.php, tests/TestCase.php
 ```
