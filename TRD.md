@@ -1,6 +1,6 @@
 # TRD — Technical Requirements Document
 
-**Status**: aktif · 2026-11-23
+**Status**: aktif · 2026-11-24
 
 ## Runtime
 | Komponen | Versi / pilihan | Bukti |
@@ -29,5 +29,5 @@ Satu server pusat: nginx → php 8.3 + Postgres, queue workers (±10), scheduler
 ## Batas & aturan
 - Tidak menyimpan token RTSP asli di doc/repo (`.env` only).
 - Health check hanya mengubah status saat transisi `online↔offline`; `maintenance` tidak ditimpa; alert hanya pada transisi.
-- `jobs` & `failed_jobs` PK sudah auto-increment (migrasi `2026_11_18_000000_fix_jobs_table_primary_keys.php`).
+- `jobs` & `failed_jobs` PK sudah auto-increment.
 - Zona waktu: `Asia/Jakarta` (WIB).

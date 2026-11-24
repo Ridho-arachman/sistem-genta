@@ -1,12 +1,14 @@
 // Service Worker for GENTAPANGAN PWA
 // Cache-first strategy for static assets, network-first for API
 
-const CACHE_NAME = 'gentapangan-v3';
+const CACHE_NAME = 'gentapangan-v4';
+// Hanya URL stabil yang di-precache. Nama aset Vite (app-*.css/js) berubah setiap
+// `npm run build`, dan satu URL saja yang 404 membuat cache.addAll reject —
+// service worker gagal install dan PWA tidak pernah aktif. Aset ber-hash tetap
+// ter-cache on-demand lewat handler di bawah (cache.put saat fetch berhasil).
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
-  '/build/assets/app-CYHCe1Rd.css',
-  '/build/assets/app-CDhytwuE.js',
 ];
 
 const CACHE_STRATEGIES = {

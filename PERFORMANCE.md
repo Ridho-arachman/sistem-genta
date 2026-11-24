@@ -1,6 +1,6 @@
 # PERFORMANCE — Performa & anggaran
 
-**Status**: aktif · 2026-11-23
+**Status**: aktif · 2026-11-24
 
 ## Anggaran CCTV health check
 400 dapur × 5 kamera = 2.000 probe / menit ≈ 33,3 probe/detik. Tiap probe ≤ 8 detik; satu job per dapur, `$timeout=180`, `$tries=3`, `backoff=[30,120,300]`, `retry_after=300`. `Schedule::withoutOverlapping()` → siklus terlambat dilewatkan (bukan double). Begitu banyaknya worker praktis mustahil — longgarkan jadwal bila worker produksi sedikit. Scale worker: `docker compose up -d --scale queue=10`.
@@ -14,7 +14,7 @@
 - Pagination ketat: `paginate(10)/(15)`; list dapur >2000 dibuat scroll/panel, bukan render semua.
 
 ## Database
-- Indeks `laporans(dapur_id,status)`, `laporans(created_by)`, `laporans(created_at)`, `dapur_user(user_id)` (migrasi `2026_11_18_000002`). Indeks `cctvs(dapur_id)` sudah bawaan.
+- Indeks `laporans(dapur_id,status)`, `laporans(created_by)`, `laporans(created_at)`, `dapur_user(user_id)`. Indeks `cctvs(dapur_id)` sudah bawaan.
 - Eager load di list: `with()`/`withCount()` (contoh: `DapurController::show` → `load(['cctvs','pengawas','kepalaDapur'])`; `LaporanController::index` → `with(['dapur','createdBy'])`; anomaly/SP/Cctv semua `with`).
 - N+1 audit belum formal (lihat `TASKS.md`); satu mismatch query/akses sudah diperbaiki (`admin/dashboard`).
 - PostgreSQL: `timestamp without time zone`, ULID string — bandingkan string, bukan integer. Tidak ada full-text index; string match `where('nama', 'like')` terbatas pada admin.
