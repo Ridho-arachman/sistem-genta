@@ -1,6 +1,6 @@
 # DATABASE — Skema & data
 
-**Status**: aktif · 2026-11-23 · DB dev: PostgreSQL `laravel` @ 127.0.0.1:5432
+**Status**: aktif · 2026-11-24 · DB dev: PostgreSQL `laravel` @ 127.0.0.1:5432
 
 ## Prinsip
 - PK string ULID (`Str::ulid()`), tanpa auto-increment — **kecuali** `jobs`/`failed_jobs` (sudah diperbaiki jadi bigint auto-increment).
@@ -30,13 +30,14 @@
 | `sessions` | bigint/ULID | session driver `database` (di `0001_01_01_000000_create_users_table`) |
 
 ## Tabel yang sudah dihapus
-`absensis` (modul absensi, migrasi `2026_11_02_220443_drop_absensis_table.php`), `laporan_photos` (migrasi `2026_11_03_150325_drop_laporan_photos_table.php`) — foto laporan kini tinggal di satu kolom `laporans.selfie_photo`.
+`absensis` (modul absensi) dan `laporan_photos` — foto laporan kini tinggal di satu kolom `laporans.selfie_photo`.
 
 ## Migrasi penting terakhir
-- `2026_11_17_000000_add_stream_key_and_last_checked_at_to_cctvs_table.php`
-- `2026_11_18_000000_fix_jobs_table_primary_keys.php` — `jobs`/`failed_jobs` PK → bigint auto-increment (hanya jika tabel kosong)
-- `2026_11_18_000001_drop_cctv_legacy_url_columns.php` — **DROP `ip_address`, `hls_url`** (kolom tidak dipakai lagi; `stream_url` turunan `CCTV_HLS_BASE + stream_key` dan `web_rtc_url` turunan `CCTV_WEBRTC_BASE + stream_key`, keduanya atribut model)
-- `2026_11_18_000002_add_performance_indexes.php` — indeks: `laporans(dapur_id,status)`, `laporans(created_by)`, `laporans(created_at)`, `dapur_user(user_id)`
+Sejak 2026-11-24 migrasi dikonsolidasikan jadi 13 file di `database/migrations/`; struktur akhir ada di `database/schema/sqlite-schema.sql` dan `database/schema/pgsql-schema.sql`. Efek perubahan terakhir yang masih terasa:
+- `cctvs.stream_key` + `last_checked_at` — status kamera diverifikasi scheduler, bukan input manual.
+- `jobs`/`failed_jobs` PK → bigint auto-increment (hanya jika tabel kosong).
+- Kolom legacy `cctvs.ip_address` dan `cctvs.hls_url` dihapus; `stream_url` turunan `CCTV_HLS_BASE + stream_key` dan `web_rtc_url` turunan `CCTV_WEBRTC_BASE + stream_key` (keduanya atribut model, bukan kolom).
+- Indeks performa: `laporans(dapur_id,status)`, `laporans(created_by)`, `laporans(created_at)`, `dapur_user(user_id)`.
 
 ## Indeks yang sudah ada
 `cctvs` (bawaan), `dapur_user(dapur_id+user_id)`, indeks performa di atas. Belum ada: `laporans(status)` terpisah, indeks pada `created_at` di tabel lain. Catat N+1: sebagian besar list view sudah eager-load; satu mismatch (`admin/dashboard` `->user` vs `createdBy`) sudah diperbaiki.
