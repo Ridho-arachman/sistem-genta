@@ -27,13 +27,13 @@
 | `failed_jobs` | bigint | job gagal |
 | `cache` | key | cache driver `database` |
 | `cache_locks` | — | lock cache (migrasi bawaan Laravel) |
-| `sessions` | bigint/ULID | session driver `database` (di `0001_01_01_000000_create_users_table`) |
+| `sessions` | bigint/ULID | session driver `database` (di `0001_01_01_000001_create_users_table`) |
 
 ## Tabel yang sudah dihapus
 `absensis` (modul absensi) dan `laporan_photos` — foto laporan kini tinggal di satu kolom `laporans.selfie_photo`.
 
 ## Migrasi penting terakhir
-Sejak 2026-11-24 migrasi dikonsolidasikan jadi 13 file di `database/migrations/` (migrasi lama yang sudah dihapus tidak menjadi schema dump). Efek perubahan terakhir yang masih terasa:
+Sejak 2026-11-24 migrasi lama dikonsolidasikan ke `database/migrations/` (tanpa schema dump). Efek perubahan terakhir yang masih terasa:
 - `cctvs.stream_key` + `last_checked_at` — status kamera diverifikasi scheduler, bukan input manual.
 - `jobs`/`failed_jobs` PK → bigint auto-increment (hanya jika tabel kosong).
 - Kolom legacy `cctvs.ip_address` dan `cctvs.hls_url` dihapus; `stream_url` turunan `CCTV_HLS_BASE + stream_key` dan `web_rtc_url` turunan `CCTV_WEBRTC_BASE + stream_key` (keduanya atribut model, bukan kolom).
