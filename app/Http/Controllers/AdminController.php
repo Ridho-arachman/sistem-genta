@@ -43,7 +43,7 @@ class AdminController extends Controller
         $dapurData = $dapurs->map(fn ($d) => [
             'id' => $d->id,
             'nama' => $d->nama,
-            'lokasi' => $d->lokasi,
+            'wilayah' => $d->wilayah,
             'kepala_dapur_name' => $d->kepalaDapur ? $d->kepalaDapur->name : null,
         ])->toArray();
 
@@ -125,7 +125,7 @@ class AdminController extends Controller
         $dapurData = $dapurs->map(fn ($d) => [
             'id' => $d->id,
             'nama' => $d->nama,
-            'lokasi' => $d->lokasi,
+            'wilayah' => $d->wilayah,
             'kepala_dapur_name' => $d->kepalaDapur ? $d->kepalaDapur->name : null,
         ])->toArray();
 

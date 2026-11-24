@@ -20,7 +20,6 @@ class DapurFactory extends Factory
 
         return [
             'nama' => fake('id_ID')->company().' '.fake()->randomElement(['Pusat', 'Utama', 'Cabang', 'Satuan']),
-            'lokasi' => $kabupatenKota.' · Kec. '.$kecamatan,
             'alamat' => fake('id_ID')->address(),
             'kecamatan' => $kecamatan,
             'kabupaten_kota' => $kabupatenKota,

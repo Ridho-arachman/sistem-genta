@@ -47,10 +47,10 @@ class DapurController extends Controller
                 default => 'off',
             };
 
-            // Build lokasiPengawas string
-            $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';
+            // Build wilayahPengawas string
+            $wilayahPengawas = $d->wilayah ?? '—';
             if ($d->pengawas->count() > 0) {
-                $lokasiPengawas .= ' · Pengawas: '.$d->pengawas->first()->name;
+                $wilayahPengawas .= ' · Pengawas: '.$d->pengawas->first()->name;
             }
 
             return [
@@ -59,7 +59,7 @@ class DapurController extends Controller
                 'kecamatan' => $d->kecamatan,
                 'kabupaten_kota' => $d->kabupaten_kota,
                 'provinsi' => $d->provinsi,
-                'lokasiPengawas' => $lokasiPengawas,
+                'wilayahPengawas' => $wilayahPengawas,
                 'alamat' => $d->alamat,
                 'pengawas' => $pengawas,
                 'kepalaDapur' => $kepala,

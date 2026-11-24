@@ -34,7 +34,7 @@
                         <td class="font-semibold">{{ $dapur->nama }}</td>
                         <td>{{ $dapur->cctvs->count() }}</td>
                         <td>{{ $dapur->cctvs->where('status', 'online')->count() }}</td>
-                        <td>{{ $dapur->kecamatan ?? $dapur->lokasi ?? '-' }}</td>
+                        <td>{{ $dapur->kecamatan ?? '-' }}</td>
                     </tr>
                 @empty
                     <tr>

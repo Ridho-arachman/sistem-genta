@@ -2,7 +2,7 @@
 
 @section('page_content')
 <div class="max-w-3xl mx-auto">
-    <x-pengawas::page-heading :title="$dapur->nama" :subtitle="$dapur->lokasi ?? 'Lokasi tidak diset'">
+    <x-pengawas::page-heading :title="$dapur->nama" :subtitle="$dapur->wilayah ?? 'Wilayah tidak diset'">
         <x-slot:actions>
             <a href="{{ route('pengawas.dashboard') }}" class="btn btn-secondary">Kembali ke Beranda</a>
         </x-slot:actions>
@@ -42,7 +42,7 @@
             }
         @endphp
         <div class="mt-6 flex items-center justify-center">
-            <a href="{{ $geoLat && $geoLng ? 'geo:' . $geoLat . ',' . $geoLng . '?q=' . urlencode($geoLat . ',' . $geoLng . ' ' . $dapur->nama) : 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->lokasi) }}"
+            <a href="{{ $geoLat && $geoLng ? 'geo:' . $geoLat . ',' . $geoLng . '?q=' . urlencode($geoLat . ',' . $geoLng . ' ' . $dapur->nama) : 'geo:0,0?q=' . urlencode($dapur->nama) . ',' . urlencode($dapur->wilayah) }}"
                class="flex-1 px-6 py-3 text-center btn btn-primary text-lg font-semibold shadow-lg">
                 🗺️ Buka di Google Maps
             </a>

@@ -50,7 +50,6 @@ test('admin can create dapur', function () {
     $this->actingAs($this->admin)
         ->post(route('admin.dapurs.store'), [
             'nama' => 'Dapur Utama',
-            'lokasi' => 'Kota Serang · Kec. Curug',
             'alamat' => 'Jl. Raya Curug No. 1',
             'provinsi' => 'Banten',
             'kabupaten_kota' => 'Kota Serang',
@@ -86,7 +85,6 @@ test('admin can update dapur', function () {
     $this->actingAs($this->admin)
         ->put(route('admin.dapurs.update', $dapur), [
             'nama' => 'Dapur Baru',
-            'lokasi' => 'Kota Cilegon · Kec. Citangkil',
             'alamat' => 'Jl. Raya Citangkil No. 5',
             'provinsi' => 'Banten',
             'kabupaten_kota' => 'Kota Cilegon',

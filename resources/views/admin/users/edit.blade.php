@@ -78,7 +78,7 @@
                                                 @mouseover="highlightedIndex = index"
                                                 :class="['flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-[var(--color-primary)]/10', highlightedIndex === index ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : '']">
                                             <span class="font-medium" x-text="dapur.nama"></span>
-                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.lokasi"></span>
+                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.wilayah"></span>
                                             <template x-if="dapur.kepala_dapur_name">
                                                 <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">
                                                     Kepala: <span x-text="dapur.kepala_dapur_name"></span>
@@ -149,7 +149,7 @@
                                                         <h3 class="text-sm font-semibold text-[var(--color-secondary)] line-clamp-2" x-text="dapur.nama"></h3>
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">Dapur</span>
                                                     </div>
-                                                    <p class="text-xs text-[var(--color-text-muted)] truncate" x-text="dapur.lokasi"></p>
+                                                    <p class="text-xs text-[var(--color-text-muted)] truncate" x-text="dapur.wilayah"></p>
                                                 </div>
                                                 <div class="w-6 h-6 shrink-0"></div>
                                             </div>

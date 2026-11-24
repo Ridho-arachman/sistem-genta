@@ -16,7 +16,7 @@ class Dapur extends Model
     /** @use HasFactory<DapurFactory> */
     use HasFactory;
 
-    protected $fillable = ['nama', 'lokasi', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
+    protected $fillable = ['nama', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
 
     protected $keyType = 'string';
 
@@ -65,6 +65,19 @@ class Dapur extends Model
         $dapurIds = $user->getAccessibleDapurIds();
 
         return $query->whereIn('id', $dapurIds);
+    }
+
+    /**
+     * Wilayah turunan dari kecamatan/kabupaten_kota, menggantikan kolom `lokasi`.
+     */
+    public function getWilayahAttribute(): ?string
+    {
+        $parts = array_filter([
+            $this->kabupaten_kota,
+            $this->kecamatan ? 'Kec. '.$this->kecamatan : null,
+        ]);
+
+        return $parts === [] ? null : implode(' · ', $parts);
     }
 
     /**

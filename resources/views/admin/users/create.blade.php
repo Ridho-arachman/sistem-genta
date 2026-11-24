@@ -79,7 +79,7 @@
                                                 :class="['w-full px-4 py-2 text-left hover:bg-[var(--color-primary)]/10', highlightedIndex === index ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : '']"
                                                 class="flex items-center gap-3">
                                             <span class="font-medium" x-text="dapur.nama"></span>
-                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.lokasi"></span>
+                                            <span class="text-sm text-[var(--color-text-muted)]" x-text="dapur.wilayah"></span>
                                             <template x-if="dapur.kepala_dapur_name">
                                                 <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">
                                                     Kepala: <span x-text="dapur.kepala_dapur_name"></span>
@@ -143,7 +143,7 @@
                                                :checked="selectedDapurIds.includes(dapur.id)"
                                                @change="toggleDapur(dapur.id)"
                                                class="w-4 h-4 text-[var(--color-primary)] border-[var(--color-border)] rounded focus:ring-[var(--color-primary)] focus:ring-2">
-                                        <span class="text-sm" x-text="dapur.nama + ' (' + dapur.lokasi + ')'"></span>
+                                        <span class="text-sm" x-text="dapur.nama + ' (' + dapur.wilayah + ')'"></span>
                                     </label>
                                 </template>
                                 <template x-if="filteredDapurs.length === 0 && searchQuery">

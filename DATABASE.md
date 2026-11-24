@@ -11,7 +11,7 @@
 | Tabel | PK | Isi utama |
 |---|---|---|
 | `users` | ULID | `name, email, password(hashed), role(admin/manajerial/pengawas/kepala_dapur), registered_by, dapur_id, created_by/updated_by/deleted_by, deleted_at` (soft deletes) |
-| `dapurs` | ULID | `nama, lokasi, alamat, kecamatan, kabupaten_kota, provinsi, map_embed_url` |
+| `dapurs` | ULID | `nama, alamat, kecamatan, kabupaten_kota, provinsi, map_embed_url` |
 | `dapur_user` | composite (`dapur_id`,`user_id`) | pivot assignment pengawas ↔ dapur |
 | `cctvs` | ULID | `dapur_id, nama, rtsp_url, status(online/offline/maintenance), section, camera_number, stream_key(ULID, unik-ish), last_checked_at` — `stream_url` (HLS) dan `web_rtc_url` (WHEP) adalah atribut turunan, bukan kolom |
 | `laporans` | ULID | `dapur_id, status, catatan, selfie_photo(path di storage, fallback data URL), latitude/longitude, address, created_by` |

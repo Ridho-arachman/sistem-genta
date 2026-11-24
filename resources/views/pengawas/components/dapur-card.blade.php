@@ -1,7 +1,7 @@
 @props(['dapur'])
 
 {{--
-    Satu baris tugas dapur di dashboard pengawas (nama + lokasi + aksi).
+    Satu baris tugas dapur di dashboard pengawas (nama + wilayah + aksi).
 
     <x-pengawas::dapur-card :dapur="$dapur" />
 --}}
@@ -11,7 +11,7 @@
             <span class="w-2 h-2 rounded-full bg-[var(--color-primary)]"></span>
             <div>
                 <div class="text-sm font-semibold text-[var(--color-text)]">{{ $dapur->nama }}</div>
-                <div class="text-xs text-[var(--color-text-muted)]">{{ $dapur->lokasi ?? 'Wilayah' }} · Pemeriksaan hari ini</div>
+                <div class="text-xs text-[var(--color-text-muted)]">{{ $dapur->wilayah ?? 'Wilayah' }} · Pemeriksaan hari ini</div>
             </div>
         </div>
     </div>

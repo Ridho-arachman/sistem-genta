@@ -13,7 +13,7 @@ document.addEventListener('alpine:init', () => {
             if (!this.searchQuery) return this.parent.dapurs || [];
             const q = this.searchQuery.toLowerCase();
             return (this.parent.dapurs || []).filter(
-                (d) => d.nama.toLowerCase().includes(q) || (d.lokasi || '').toLowerCase().includes(q),
+                (d) => d.nama.toLowerCase().includes(q) || (d.wilayah || '').toLowerCase().includes(q),
             );
         },
 

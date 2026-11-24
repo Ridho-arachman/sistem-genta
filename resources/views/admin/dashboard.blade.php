@@ -119,7 +119,7 @@
                     <div data-kitchen="card" class="flex items-center justify-between gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[12px] transition-shadow hover:shadow-sm">
                         <div class="flex-1 min-w-0">
                             <div data-kitchen="name" class="font-bold text-sm text-[var(--color-secondary)] truncate">{{ $dapur->nama }}</div>
-                            <div data-kitchen="meta" class="text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{{ $dapur->lokasi ?? '-' }}</div>
+                            <div data-kitchen="meta" class="text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{{ $dapur->wilayah ?? '-' }}</div>
                             <progress class="progress {{ $dapur->status === 'operasional' ? 'progress-success' : ($dapur->status === 'perlu_perhatian' ? 'progress-warning' : 'progress-error') }} h-[6px] mt-2" value="{{ $dapur->progress ?? 0 }}" max="100"></progress>
                             <div class="flex gap-4 text-[11px] text-[var(--color-text-muted)] mt-1">
                                 <span>{{ $dapur->cctvs_count ?? 0 }} kamera</span>

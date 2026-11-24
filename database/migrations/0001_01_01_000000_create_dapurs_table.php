@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('dapurs', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('nama');
-            $table->text('lokasi')->nullable();
             $table->text('alamat')->nullable();
             $table->string('kecamatan', 100)->nullable();
             $table->string('kabupaten_kota', 100)->nullable();
