@@ -37,9 +37,9 @@
 
 ## Penting, bisa dikerjakan sekarang
 
-- [ ] `cctv:health-check` belum mengukur durasi per batch (untuk skala worker nyata)
-- [ ] ~~N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)~~ → selesai 2026-11-24 lewat `NoLazyLoadingTest`
-- [ ] IP dev server hardcode di 6 file (`.env`, `vite.config.js`, `public/hot`, `capacitor.config.json`, `public/index.html`, `public/fonts-manifest.dev.json`) — satu sumber saja (mis. satu env `DEV_SERVER_URL` yang dibaca semua file) supaya ganti IP cukup satu tempat; `fonts-manifest.dev.json` juga salinan lama di `android/app/src/main/assets/`
+- [x] `cctv:health-check` mengukur durasi per batch (log `cctv:health-check batch` + total detikan di output; tesnya di `CctvHealthCheckTest`) — selesai 2026-11-25
+- [x] ~~N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)~~ → selesai 2026-11-24 lewat `NoLazyLoadingTest`
+- [x] ~~IP dev server hardcode di 6 file~~ → selesai 2026-11-25: `vite.config.js` kini membaca `APP_URL` (`.env`), `public/hot` dan `public/fonts-manifest.dev.json` nyatanya di-generate plugin (bukan editable manual; README sebelumnya menyebut `public/hot` manual — salah). Yang tersisa hanya `.env`, `capacitor.config.json` (JSON, tak bisa baca env), dan chip saran di `public/index.html`; README sudah diperbaiki.
 - [ ] Perbaiki salah ketik/inkonsistensi dokumen lama yang tidak otomatis tercover root docs
 
 ## Tier 2 (sesuai arsitektur 111)

@@ -195,7 +195,7 @@
                 </div>
 
                 {{-- Password --}}
-                <x-admin::form-field label="Password" name="password" required hint="Minimal 8 karakter, kombinasikan huruf & angka" class="lg:col-span-1">
+                <x-admin::form-field label="Password" name="password" required hint="Minimal 8 karakter" class="lg:col-span-1">
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         <input id="password" type="password" name="password" required autocomplete="new-password"

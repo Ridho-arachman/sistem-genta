@@ -39,17 +39,13 @@ pengawas_mbg_demo.html
 cropped-cropped-SEKNAS-GENTA-PANGAN.webp
 generate-icons.cjs
 update_css.php
-C:tempupdate_program.php
-D:Codingsistem-genta*
 gentapangan.keystore
 gentapangan-release-*.apk
 mediamtx.exe
-ENDOFSCRIPT
 /.opencode
 /.agents
 /.playwright-mcp
 /public/fonts-manifest.dev.json
-D*Codingsistem-genta*
 cookies.txt
 desktop.ini
 Screenshot*.png

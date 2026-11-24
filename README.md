@@ -180,50 +180,37 @@ Perintah ini menjalankan server Laravel, Vite, antrean, dan log secara bersamaan
 
 **Konfigurasi IP Dev Server (wajib):**
 
-Sebelum menjalankan `composer run dev`, sesuaikan IP di file berikut ke IP Wi-Fi laptop kamu saat ini (contoh: `192.168.101.6`):
+Sebelum menjalankan `composer run dev`, sesuaikan IP Wi-Fi laptop kamu saat ini (contoh: `192.168.101.6`) di dua file berikut:
 
 1. **`.env`** — ubah `APP_URL`:
    ```env
    APP_URL=http://192.168.101.6:8000
    ```
 
-2. **`vite.config.js`** — ubah `server.origin`:
-   ```js
-   server: {
-       host: '0.0.0.0',
-       port: 5173,
-       origin: 'http://192.168.101.6:5173',  // sesuaikan IP
-       watch: { usePolling: true },
-   }
-   ```
+   `vite.config.js` membaca IP yang sama dari `APP_URL`, jadi `server.origin` (`http://<IP>:5173`) ikut berubah sendiri — tanpa edit file JS. `APP_URL` juga dipakai Laravel untuk membuat URL di Blade.
 
-3. **`public/hot`** — isi manual (file ini di-`.gitignore`, tiap developer punya sendiri):
-   ```
-   http://192.168.101.6:5173
-   ```
-
-Dua file berikut ikut menyimpan IP dan **ikut ter-commit ke git**, jadi wajib disesuaikan juga:
-
-4. **`capacitor.config.json`** — ubah `server.url`:
+2. **`capacitor.config.json`** — ubah `server.url`:
    ```json
    { "server": { "url": "http://192.168.101.6:8000" } }
    ```
+   Ini satu-satunya file lain yang tetap perlu diedit: file JSON, jadi tidak bisa membaca `.env`.
 
-5. **`public/index.html`** — ubah chip "IP default" di halaman "Alamat server" (halaman pertama saat aplikasi mobile dibuka):
+   Satu lagi hanya **saran**, bukan wajib — halaman "Alamat server" (`public/index.html`) menyimpan IP di `localStorage` dan bisa menerima IP baru lewat formnya tanpa install ulang APK:
    ```html
    <span class="chip" data-url="http://192.168.101.6:8000">IP default (192.168.101.6)</span>
    ```
 
-Satu file lagi memuat IP tapi **hasil generate** (`npm run dev` / `npm run build`), jadi tak perlu diedit manual:
+Tiga file berikut memuat IP tapi **hasil generate**, tak perlu diedit manual:
 
-6. **`public/fonts-manifest.dev.json`** — IP di sini otomatis berubah saat Vite dev server menghasilkan file ini; kalau masih IP lama, hapus file itu lalu jalankan ulang `npm run dev`.
+- **`public/hot`** — ditulis plugin Laravel saat dev server Vite mulai; isinya `server.origin`, jadi ikut `APP_URL` di `.env`.
+- **`public/fonts-manifest.dev.json`** — IP-nya dibaca ulang dari `public/hot`, bukan ditulis tangan. Kalau `public/hot` masih sisa run lama (IP lama), manifest ikut memakai IP salah; hapus **kedua** file ini lalu jalankan ulang `npm run dev`.
 
 Akses aplikasi:
 
 - **Dari PC (browser):** `http://192.168.101.6:8000`
 - **Dari Android (browser / WebView Capacitor):** `http://192.168.101.6:8000` — harus satu jaringan Wi-Fi dengan PC.
 
-> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di file yang ber-IP di atas, lalu:
+> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di `.env` dan `capacitor.config.json`, lalu:
 > 1. restart `composer run dev`;
 > 2. jalankan `npx cap copy android` supaya salinan IP di `android/app/src/main/assets/capacitor.config.json` ikut ter-refresh — tanpa ini aplikasi di HP tetap memakai IP lama dan aset gagal dimuat.
 >

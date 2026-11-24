@@ -7,16 +7,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 ### Added
 - Tes regresi untuk perbaikan di bawah: `MobileApiTest` (check-in hanya dapur assignment + geofence berulang tak membuat laporan ganda + simpan FCM token), `InspeksiExportTest` (XLSX admin memuat semua laporan, XLSX berskope `createdBy` hanya memuat milik sendiri), `AdminDashboardTest` (progress/status dapur benar), `UserSoftDeleteTest` (restore mempertahankan assignment + statistik tak menghitung user terhapus), dan satu tes di `LaporanTest` (foto dengan ekstensi non-gambar disimpan sebagai `.jpg`).
 - `NoLazyLoadingTest` (audit N+1 formal): 17 halaman daftar/dashboard dijalankan dengan `Model::preventLazyLoading()` — hijau sekarang; kalau ada view yang membaca relasi tak di-eager load, tes ini gagal alih-alih menambah query per baris.
+- Tes untuk `cctv:health-check` (perintahnya, bukan cuma job): memastikan satu job per dapur bersangkutan (dapur tanpa kamera dilewati) dan tiap batch mencatat durasinya di log `cctv:health-check batch`.
 - README: bagian **Menjalankan semua komponen secara lokal (tanpa Docker)** — empat terminal (`serve`, `queue:work`, `schedule:work`, `mediamtx.exe mediamtx.yml`), verifikasi Control API `:9997` dan HLS `:8888`, konfigurasi `.env` lokal, dan catatan Docker sebagai alternatif.
 - Pemutar CCTV WebRTC/WHEP (commit fitur sebelumnya belum masuk changelog): kartu Monitoring CCTV dan halaman detail membuka sesi WHEP (`CCTV_WEBRTC_BASE/{stream_key}/whep`) lebih dulu, lalu fallback ke HLS (hls.js dimuat lazy). Badge kartu jadi `connecting` selama video belum mulai, supaya tidak muncul jeda `offline` setelah kamera disimpan. Env baru `CCTV_WEBRTC_BASE` dan `CCTV_MEDIAMTX_RTSP` didokumentasikan di `.env.example`, `README.md`, dan `ENV.md`.
 
 ### Changed
+- IP dev server: `vite.config.js` membaca `APP_URL` (`.env`) untuk `server.origin`, sehingga ganti Wi-Fi cukup satu tempat (`.env`) — sebelumnya `server.origin` ditulis tangan lagi dengan IP yang sama.
 - SP kini punya policy (`SpWarningPolicy`) dan `SpWarningController` memakai `$this->authorize(...)` di semua aksi, mengikuti pola `CctvAnomalyReportPolicy` (kelola = admin, lihat = admin/manajerial).
 - `App\Http\Controllers\Controller` memakai trait `AuthorizesRequests`, jadi empat controller (CCTV, CCTV anomali, Dapur, Inspeksi) tidak perlu mendeklarasikan trait yang sama lagi.
 - `.env.example` mencatat `SANCTUM_STATEFUL_DOMAINS` dan `SANCTUM_TOKEN_PREFIX` (kosong default; mobile sudah pakai token Bearer).
 - Komponen Blade pengawas vs admin (`status-badge`, `page-heading`) sengaja **tidak** digabung: keduanya beda props dan kelas (badge status laporan `diperiksa/temuan/...` vs badge `ok/warn/off` kamera & dapur), jadi menggabungkan akan menambah props kondisional, bukan mengurangi kode.
 
 ### Fixed
+- README salah soal `public/hot`: file itu di-generate plugin Laravel saat dev server Vite mulai (isinya `server.origin`), bukan diisi manual. Konsekuensinya `public/fonts-manifest.dev.json` juga bacaan IP-nya dari `public/hot` — kalau `public/hot` masih sisa run lama, manifest ikut memakai IP lama dan menyebabkan `net::ERR_FAILED` saat load font; cara memperbaiki kini tertulis (hapus kedua file, jalankan ulang `npm run dev`).
+- Hint form Admin → Tambah User kini menyebut "Minimal 8 karakter" saja, sesuai `Password::defaults()` yang hanya `min:8` — sebelumnya mengharuskan "kombinasikan huruf & angka" yang tidak dicek validasi.
 - `DATABASE.md` mengikuti konsolidasi migrasi: tidak lagi menyebut jumlah file (bisa berubah) dan rujukan tabel `sessions` menunjuk `0001_01_01_000001_create_users_table.php`, bukan nama lama yang sudah tidak ada.
 - Aturan password sekali jalan: reset password dan ganti password profil kini memakai `Password::defaults()` (seperti `storeUser`), bukan `min:8`/`confirmed` tulis tangan per metode — `AuthController::reset` dan `AuthController::updatePassword`.
 - Pesan validasi mati di `AdminController::storeUser` dibuang (pesan `dapur_id.required`/`dapur_ids.*` sudah disediakan di blok validasi khusus role; di blok pertama yang nullable ia tak pernah memicu).

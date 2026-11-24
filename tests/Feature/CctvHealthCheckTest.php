@@ -3,12 +3,37 @@
 use App\Jobs\CctvAlertJob;
 use App\Jobs\CctvHealthCheckJob;
 use App\Models\Cctv;
+use App\Models\Dapur;
 use App\Services\MediaMtxClient;
 use App\Services\RtspProbe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 uses(RefreshDatabase::class);
+
+test('perintah cctv:health-check mengirim satu job per dapur bersangkutan', function () {
+    Queue::fake();
+    Log::spy();
+
+    $dapur = Dapur::factory()->create();
+
+    Cctv::factory()->create();
+    Cctv::factory()->create(['dapur_id' => $dapur->id]);
+    Dapur::factory()->create();
+
+    $this->artisan('cctv:health-check')
+        ->expectsOutput('Dispatched 2 CCTV health-check jobs.')
+        ->assertOk();
+
+    Queue::assertPushed(CctvHealthCheckJob::class, 2);
+    Log::shouldHaveReceived('info')
+        ->withArgs(fn (string $message, array $context) => $message === 'cctv:health-check batch'
+            && $context['dapurs'] === 2
+            && $context['dispatched'] === 2
+            && is_float($context['seconds']))
+        ->once();
+});
 
 test('health check menandai kamera online saat rtsp terbaca', function () {
     $cctv = Cctv::factory()->create(['status' => 'offline']);
