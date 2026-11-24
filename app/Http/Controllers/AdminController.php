@@ -289,10 +289,11 @@ class AdminController extends Controller
             'anomaly_reports_open' => CctvAnomalyReport::where('status', '!=', 'selesai')->count(),
             'laporan_hari_ini' => $laporanHariIni,
             'laporan_hari_ini_selesai' => $laporanHariIniSelesai,
-            'total_pengawas' => User::where('role', 'pengawas')->count(),
-            'total_manajerial' => User::where('role', 'manajerial')->count(),
-            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
+            'total_pengawas' => User::where('role', 'pengawas')->active()->count(),
+            'total_manajerial' => User::where('role', 'manajerial')->active()->count(),
+            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->active()->count(),
             'pengawas_without_dapur' => User::where('role', 'pengawas')
+                ->active()
                 ->whereDoesntHave('dapurs')
                 ->count(),
             'kepala_dapur_without_dapur' => User::where('role', 'kepala_dapur')
@@ -300,7 +301,10 @@ class AdminController extends Controller
                 ->count(),
         ];
 
-        $dapurs = Dapur::withCount('cctvs')
+        $dapurs = Dapur::withCount([
+            'cctvs',
+            'cctvs as cctvs_online_count' => fn ($q) => $q->where('status', 'online'),
+        ])
             ->with(['users' => function ($q) {
                 $q->where('role', 'kepala_dapur');
             }])

@@ -10,6 +10,7 @@ class LaporanXlsxExport
         protected ?string $startDate = null,
         protected ?string $endDate = null,
         protected ?string $dapurId = null,
+        protected ?string $createdBy = null,
     ) {}
 
     public function generate(): string
@@ -43,6 +44,11 @@ class LaporanXlsxExport
     protected function query()
     {
         $query = Laporan::with('createdBy', 'dapur');
+
+        // Batas akses dioper dari controller: pengawas hanya laporan sendiri.
+        if ($this->createdBy) {
+            $query->where('created_by', $this->createdBy);
+        }
 
         if ($this->dapurId) {
             $query->where('dapur_id', $this->dapurId);

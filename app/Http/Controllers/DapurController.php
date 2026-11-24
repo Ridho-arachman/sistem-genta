@@ -38,20 +38,14 @@ class DapurController extends Controller
             $kepala = $d->kepalaDapur ? ['id' => $d->kepalaDapur->id, 'name' => $d->kepalaDapur->name] : null;
             $totalCctvs = $d->cctvs_count ?? 0;
             $onlineCctvs = $d->cctvs_online_count ?? 0;
-            $progress = $totalCctvs > 0 ? min(100, round(($onlineCctvs / $totalCctvs) * 100)) : 0;
+            $progress = $d->progress;
 
-            $status = 'Operasional';
-            $statusClass = 'ok';
-            if ($totalCctvs === 0) {
-                $status = 'Kamera bermasalah';
-                $statusClass = 'off';
-            } elseif ($onlineCctvs === 0) {
-                $status = 'Kamera bermasalah';
-                $statusClass = 'off';
-            } elseif ($onlineCctvs < $totalCctvs) {
-                $status = 'Perlu perhatian';
-                $statusClass = 'warn';
-            }
+            $status = ucfirst(str_replace('_', ' ', $d->status));
+            $statusClass = match ($d->status) {
+                'operasional' => 'ok',
+                'perlu_perhatian' => 'warn',
+                default => 'off',
+            };
 
             // Build lokasiPengawas string
             $lokasiPengawas = $d->kabupaten_kota ? "{$d->kabupaten_kota} · Kec. {$d->kecamatan}" : '—';

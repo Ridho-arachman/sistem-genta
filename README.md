@@ -202,12 +202,32 @@ Sebelum menjalankan `composer run dev`, sesuaikan IP di file berikut ke IP Wi-Fi
    http://192.168.101.6:5173
    ```
 
+Dua file berikut ikut menyimpan IP dan **ikut ter-commit ke git**, jadi wajib disesuaikan juga:
+
+4. **`capacitor.config.json`** — ubah `server.url`:
+   ```json
+   { "server": { "url": "http://192.168.101.6:8000" } }
+   ```
+
+5. **`public/index.html`** — ubah chip "IP default" di halaman "Alamat server" (halaman pertama saat aplikasi mobile dibuka):
+   ```html
+   <span class="chip" data-url="http://192.168.101.6:8000">IP default (192.168.101.6)</span>
+   ```
+
+Satu file lagi memuat IP tapi **hasil generate** (`npm run dev` / `npm run build`), jadi tak perlu diedit manual:
+
+6. **`public/fonts-manifest.dev.json`** — IP di sini otomatis berubah saat Vite dev server menghasilkan file ini; kalau masih IP lama, hapus file itu lalu jalankan ulang `npm run dev`.
+
 Akses aplikasi:
 
 - **Dari PC (browser):** `http://192.168.101.6:8000`
 - **Dari Android (browser / WebView Capacitor):** `http://192.168.101.6:8000` — harus satu jaringan Wi-Fi dengan PC.
 
-> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di ketiga file di atas dan restart `composer run dev`.
+> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di file yang ber-IP di atas, lalu:
+> 1. restart `composer run dev`;
+> 2. jalankan `npx cap copy android` supaya salinan IP di `android/app/src/main/assets/capacitor.config.json` ikut ter-refresh — tanpa ini aplikasi di HP tetap memakai IP lama dan aset gagal dimuat.
+>
+> Di aplikasi mobile sendiri, halaman "Alamat server" (`public/index.html`) juga menerima IP baru tanpa install ulang — tapi itu hanya jalan setelah APK berhasil dibuka.
 
 ### Menjalankan semua komponen secara lokal (tanpa Docker)
 

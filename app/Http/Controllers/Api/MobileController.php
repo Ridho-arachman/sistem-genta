@@ -61,7 +61,10 @@ class MobileController extends Controller
 
         // Transaksi: check-then-insert supaya geofence yang terkirim berulang tidak membuat laporan ganda.
         return DB::transaction(function () use ($validated) {
-            $dapur = Dapur::find($validated['dapur_id']);
+            $dapur = Dapur::findOrFail($validated['dapur_id']);
+
+            // Sama seperti form web: pengawas hanya boleh lapor untuk dapur yang ditugaskan.
+            abort_unless(Auth::user()->canAccessDapur($dapur->id), 403);
 
             $laporan = Laporan::where('created_by', Auth::id())
                 ->where('dapur_id', $dapur->id)

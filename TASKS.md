@@ -3,6 +3,7 @@
 **Status**: aktif · 2026-11-23 · bekerja paling baik bersama `CHANGELOG.md`
 
 ## Selesai (2026-11-23)
+- [x] Audit konsistensi repo: upload foto (ekstensi dari allowlist), ekspor XLSX berskope pengawas, API mobile check-in hanya dapur assignment, dashboard status dapur (progress/status dari accessor `Dapur`), restore user mempertahankan pivot, statistik tak menghitung user terhapus, SP hanya untuk pengawas, teks `switch-mode.bat` yang tidak ada di `public/index.html` — plus 12 tes regresi
 - [x] Link/aksi role read-only di view admin (`cctv-anomalies`, `cctvs`, `dapurs`, `inspeksi`) dibetulkan agar tidak kena 403, plus tes `RoleReadOnlyPageTest` (8 tes)
 - [x] Data Dapur read-only: halaman index 500 (`$filterOptions` hanya admin) + daftar kosong (`$dapurData` hanya admin) diperbaiki
 - [x] Dokumen disinkronkan dengan kode: policy/service yang dihapus, `selfie_photo` sebagai path, angka suite, jadwal health check "tiap menit"
@@ -33,6 +34,7 @@
 
 - [ ] `cctv:health-check` belum mengukur durasi per batch (untuk skala worker nyata)
 - [ ] N+1 formal audit + tes query-count untuk list 500+ item (dapur/cctv list)
+- [ ] IP dev server hardcode di 6 file (`.env`, `vite.config.js`, `public/hot`, `capacitor.config.json`, `public/index.html`, `public/fonts-manifest.dev.json`) — satu sumber saja (mis. satu env `DEV_SERVER_URL` yang dibaca semua file) supaya ganti IP cukup satu tempat; `fonts-manifest.dev.json` juga salinan lama di `android/app/src/main/assets/`
 - [ ] Perbaiki salah ketik/inkonsistensi dokumen lama yang tidak otomatis tercover root docs
 
 ## Tier 2 (sesuai arsitektur 111)

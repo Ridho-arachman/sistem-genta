@@ -50,9 +50,9 @@ class DashboardController extends Controller
     public function manajerial()
     {
         $stats = [
-            'total_pengawas' => User::where('role', 'pengawas')->count(),
-            'total_manajerial' => User::where('role', 'manajerial')->count(),
-            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->count(),
+            'total_pengawas' => User::where('role', 'pengawas')->active()->count(),
+            'total_manajerial' => User::where('role', 'manajerial')->active()->count(),
+            'total_kepala_dapur' => User::where('role', 'kepala_dapur')->active()->count(),
             'total_dapur' => Dapur::count(),
             'total_cctv' => Cctv::count(),
             'cctv_online' => Cctv::where('status', 'online')->count(),

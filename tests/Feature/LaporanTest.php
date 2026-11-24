@@ -92,6 +92,31 @@ test('pengawas cannot create laporan with incomplete hasil', function () {
         ->assertSessionHasErrors(['hasil']);
 });
 
+test('selfie with a non-image extension is still saved as jpg', function () {
+    $dapur = Dapur::factory()->create();
+    $this->pengawas->dapurs()->attach($dapur->id);
+
+    // data-URL mengaku "image/php": ekstensi harus dipaksa jadi jpg, bukan .php
+    $evilPhoto = 'data:image/php;base64,'.base64_encode('<?php echo "x"; ?>');
+
+    $this->withoutMiddleware();
+
+    $this->actingAs($this->pengawas)
+        ->withCookie('capacitor_app', '1')
+        ->post(route('pengawas.laporan.store'), [
+            'dapur_id' => $dapur->id,
+            'status' => 'diperiksa',
+            'selfie_photo' => $evilPhoto,
+            'latitude' => -6.208800,
+            'longitude' => 106.845600,
+            'address' => 'Jl. A',
+            'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
+        ])
+        ->assertRedirect(route('pengawas.laporan.index'));
+
+    expect(Laporan::latest()->first()->selfie_photo)->toEndWith('.jpg');
+});
+
 test('admin can view laporan show with single photo', function () {
     $dapur = Dapur::factory()->create();
     $laporan = Laporan::factory()->create([

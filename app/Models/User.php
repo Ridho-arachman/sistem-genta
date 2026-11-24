@@ -70,8 +70,9 @@ class User extends Authenticatable
                 $user->deleted_by = auth()->id();
                 $user->saveQuietly();
             }
-            // Detach dapur_user pivot on soft delete
-            if (! $user->isForceDeleting()) {
+            // Detach dapur_user hanya saat hard delete: soft delete mempertahankan
+            // assignment supaya restore tidak membuat pengawas kehilangan akses dapur.
+            if ($user->isForceDeleting()) {
                 $user->dapurs()->detach();
             }
         });

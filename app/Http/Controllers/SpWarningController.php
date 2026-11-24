@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\CsvExport;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SpWarningController extends Controller
 {
@@ -52,7 +53,8 @@ class SpWarningController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'exists:users,id'],
+            // SP hanya untuk pengawas (bukan admin/manajerial lain).
+            'user_id' => ['required', Rule::exists('users', 'id')->where('role', 'pengawas')],
             'level' => ['required', 'in:1,2,3'],
             'reason' => ['required', 'string'],
         ]);

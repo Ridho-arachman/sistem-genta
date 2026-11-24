@@ -66,4 +66,36 @@ class Dapur extends Model
 
         return $query->whereIn('id', $dapurIds);
     }
+
+    /**
+     * Persentase kamera online (0-100). Pakai hasil withCount kalau ada,
+     * supaya halaman daftar dan dashboard tidak menghitung ulang sendiri.
+     */
+    public function getProgressAttribute(): int
+    {
+        $total = $this->cctvs_count ?? $this->cctvs->count();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        $online = $this->cctvs_online_count ?? $this->cctvs->where('status', 'online')->count();
+
+        return (int) min(100, round(($online / $total) * 100));
+    }
+
+    /**
+     * Status kesehatan kamera: operasional | perlu_perhatian | kamera_bermasalah.
+     */
+    public function getStatusAttribute(): string
+    {
+        $total = $this->cctvs_count ?? $this->cctvs->count();
+        $online = $this->cctvs_online_count ?? $this->cctvs->where('status', 'online')->count();
+
+        if ($total === 0 || $online === 0) {
+            return 'kamera_bermasalah';
+        }
+
+        return $online < $total ? 'perlu_perhatian' : 'operasional';
+    }
 }

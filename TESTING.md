@@ -10,7 +10,8 @@ Pest v5 + phpunit v13 (region PHP 8.3/8.5), `sqlite :memory:` (`phpunit.xml`), `
 tests/Feature/    AuthTest, LoginRateLimitTest, CctvTest, CctvHealthCheckTest,
                  MediaMtxClientTest, DapurTest, LaporanTest, ExampleTest,
                  CctvAnomalyReportTest, SpWarningTest, PengawasSettingsTest,
-                 RoleReadOnlyPageTest
+                 RoleReadOnlyPageTest, MobileApiTest, InspeksiExportTest,
+                 AdminDashboardTest, UserSoftDeleteTest
 tests/Unit/       ExampleTest
 tests/Pest.php, tests/TestCase.php
 ```

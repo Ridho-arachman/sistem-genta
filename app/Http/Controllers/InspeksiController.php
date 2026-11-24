@@ -107,7 +107,8 @@ class InspeksiController extends Controller
             $exporter = new LaporanXlsxExport(
                 $request->start_date,
                 $request->end_date,
-                $request->dapur_id
+                $request->dapur_id,
+                $user->isPengawas() ? $user->id : null,
             );
 
             return response($exporter->generate())

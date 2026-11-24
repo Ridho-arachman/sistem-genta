@@ -95,8 +95,10 @@ class LaporanController extends Controller
             [$type, $data] = explode(';', $selfiePhoto, 2);
             [, $data] = explode(',', $data, 2);
             $data = base64_decode($data);
+            // Ekstensi hanya dari allowlist gambar; sisanya disimpan sebagai jpg supaya
+            // file yang bisa dieksekusi (mis. .php) tidak pernah masuk storage publik.
             $extension = 'jpg';
-            if (preg_match('/image\/(\w+)/', $type ?? '', $m)) {
+            if (str_starts_with($type, 'data:image/') && preg_match('/image\/(\w+)/', $type, $m) && in_array($m[1], ['jpg', 'jpeg', 'png', 'webp'], true)) {
                 $extension = $m[1];
             }
             $filename = 'laporan-selfies/'.uniqid('lpr_', true).'.'.$extension;
