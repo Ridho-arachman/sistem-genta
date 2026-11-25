@@ -22,7 +22,11 @@ class CctvHealthCheck extends Command
             $chunkStartedAt = microtime(true);
 
             foreach ($ids as $dapurId) {
-                CctvHealthCheckJob::dispatch((string) $dapurId);
+                CctvHealthCheckJob::dispatch(
+                    (string) $dapurId,
+                    null,
+                    Log::sharedContext()['correlation_id'] ?? null
+                );
                 $count++;
             }
 

@@ -6,6 +6,7 @@ use App\Models\Dapur;
 use App\Models\Laporan;
 use App\Models\LaporanHasil;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
@@ -106,40 +107,56 @@ class LaporanController extends Controller
             $photoPath = $filename;
         }
 
-        // Create laporan first (need ID for folder)
-        $laporan = Laporan::create([
-            'dapur_id' => $validated['dapur_id'],
-            'status' => $validated['status'],
-            'catatan' => $validated['catatan'] ?? null,
-            'selfie_photo' => $photoPath,
-            'latitude' => $validated['latitude'],
-            'longitude' => $validated['longitude'],
-            'address' => $validated['address'],
-            'created_by' => $user->id,
-            'updated_by' => $user->id,
-        ]);
+        return DB::transaction(function () use ($user, $validated, $photoPath) {
+            // Idempotensi: cegah duplikasi laporan yang sama per pengawas + dapur +
+            // hari ini + status (double-click / retry di form pengawasan).
+            $existing = Laporan::where('created_by', $user->id)
+                ->where('dapur_id', $validated['dapur_id'])
+                ->whereDate('created_at', today())
+                ->where('status', $validated['status'])
+                ->lockForUpdate()
+                ->first();
 
-        // Store hasil pemeriksaan per indikator (5 indikator tetap)
-        $indikators = [
-            'Kebersihan dan sanitasi',
-            'Penyimpanan bahan',
-            'Proses pengolahan',
-            'Distribusi makanan',
-            'Peralatan dan fasilitas',
-        ];
+            if ($existing) {
+                return redirect()->route('pengawas.laporan.index')
+                    ->with('status', 'Laporan untuk dapur dan status ini sudah tersimpan hari ini.');
+            }
 
-        foreach ($indikators as $index => $indikatorName) {
-            LaporanHasil::create([
-                'laporan_id' => $laporan->id,
-                'indikator' => $indikatorName,
-                'hasil' => $validated['hasil'][$index] ?? 'diperiksa',
+            // Create laporan first (need ID for folder)
+            $laporan = Laporan::create([
+                'dapur_id' => $validated['dapur_id'],
+                'status' => $validated['status'],
+                'catatan' => $validated['catatan'] ?? null,
+                'selfie_photo' => $photoPath,
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+                'address' => $validated['address'],
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
             ]);
-        }
 
-        return redirect()->route('pengawas.laporan.index')
-            ->with('status', 'Laporan berhasil dikirim.');
+            // Store hasil pemeriksaan per indikator (5 indikator tetap)
+            $indikators = [
+                'Kebersihan dan sanitasi',
+                'Penyimpanan bahan',
+                'Proses pengolahan',
+                'Distribusi makanan',
+                'Peralatan dan fasilitas',
+            ];
+
+            foreach ($indikators as $index => $indikatorName) {
+                LaporanHasil::create([
+                    'laporan_id' => $laporan->id,
+                    'indikator' => $indikatorName,
+                    'hasil' => $validated['hasil'][$index] ?? 'diperiksa',
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
+                ]);
+            }
+
+            return redirect()->route('pengawas.laporan.index')
+                ->with('status', 'Laporan berhasil dikirim.');
+        });
     }
 
     public function show(Laporan $laporan)

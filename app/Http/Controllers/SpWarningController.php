@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\CsvExport;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class SpWarningController extends Controller
@@ -65,24 +66,42 @@ class SpWarningController extends Controller
             'reason' => ['required', 'string'],
         ]);
 
-        $warning = SpWarning::create([
-            'user_id' => $validated['user_id'],
-            'admin_id' => auth()->id(),
-            'level' => $validated['level'],
-            'reason' => $validated['reason'],
-            'status' => 'aktif',
-        ]);
+        return DB::transaction(function () use ($validated) {
+            // Idempotensi: cegah SP ganda untuk pengawas+level+alasan yang sama
+            // pada hari yang sama (double-click / retry admin).
+            $existing = SpWarning::where('user_id', $validated['user_id'])
+                ->where('admin_id', auth()->id())
+                ->where('level', $validated['level'])
+                ->where('reason', $validated['reason'])
+                ->where('status', 'aktif')
+                ->whereDate('created_at', today())
+                ->lockForUpdate()
+                ->first();
 
-        // Kirim notifikasi ke pengawas
-        $user = User::find($validated['user_id']);
-        if ($user) {
-            $this->sendSpNotification($user, $warning);
+            if ($existing) {
+                return redirect()->route('admin.sp-warnings.index')
+                    ->with('status', 'SP untuk pengawas, level, dan alasan ini sudah terbit hari ini.');
+            }
 
-            // Kirim juga ke manajerial
-            $this->notifyManajerial($warning);
-        }
+            $warning = SpWarning::create([
+                'user_id' => $validated['user_id'],
+                'admin_id' => auth()->id(),
+                'level' => $validated['level'],
+                'reason' => $validated['reason'],
+                'status' => 'aktif',
+            ]);
 
-        return redirect()->route('admin.sp-warnings.index')->with('status', 'SP berhasil diterbitkan.');
+            // Kirim notifikasi ke pengawas
+            $user = User::find($validated['user_id']);
+            if ($user) {
+                $this->sendSpNotification($user, $warning);
+
+                // Kirim juga ke manajerial
+                $this->notifyManajerial($warning);
+            }
+
+            return redirect()->route('admin.sp-warnings.index')->with('status', 'SP berhasil diterbitkan.');
+        });
     }
 
     public function show(SpWarning $spWarning)

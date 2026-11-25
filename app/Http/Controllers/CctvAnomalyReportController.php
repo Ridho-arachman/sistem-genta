@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\CsvExport;
 use App\Services\FcmService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CctvAnomalyReportController extends Controller
 {
@@ -39,18 +40,36 @@ class CctvAnomalyReportController extends Controller
             'severity' => ['required', 'in:rendah,sedang,tinggi'],
         ]);
 
-        $anomaly = CctvAnomalyReport::create([
-            'cctv_id' => $validated['cctv_id'],
-            'admin_id' => auth()->id(),
-            'description' => $validated['description'],
-            'severity' => $validated['severity'],
-            'status' => 'baru',
-        ]);
+        return DB::transaction(function () use ($validated) {
+            // Idempotensi: cegah laporan anomali ganda untuk CCTV+deskripsi+
+            // severity yang sama pada hari yang sama (double-click / retry admin).
+            $existing = CctvAnomalyReport::where('cctv_id', $validated['cctv_id'])
+                ->where('admin_id', auth()->id())
+                ->where('description', $validated['description'])
+                ->where('severity', $validated['severity'])
+                ->where('status', 'baru')
+                ->whereDate('created_at', today())
+                ->lockForUpdate()
+                ->first();
 
-        // Notify manajerial
-        $this->notifyManajerial($anomaly);
+            if ($existing) {
+                return redirect()->route('admin.cctv-anomalies.index')
+                    ->with('status', 'Laporan anomali untuk kamera ini sudah tersimpan hari ini.');
+            }
 
-        return redirect()->route('admin.cctv-anomalies.index')->with('status', 'Laporan anomali CCTV berhasil dibuat.');
+            $anomaly = CctvAnomalyReport::create([
+                'cctv_id' => $validated['cctv_id'],
+                'admin_id' => auth()->id(),
+                'description' => $validated['description'],
+                'severity' => $validated['severity'],
+                'status' => 'baru',
+            ]);
+
+            // Notify manajerial
+            $this->notifyManajerial($anomaly);
+
+            return redirect()->route('admin.cctv-anomalies.index')->with('status', 'Laporan anomali CCTV berhasil dibuat.');
+        });
     }
 
     // All roles (read-only for manajerial/kepala_dapur)

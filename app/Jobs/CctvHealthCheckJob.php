@@ -30,10 +30,18 @@ class CctvHealthCheckJob implements ShouldQueue
      *                               menyimpan rtsp_url baru, biar status tak
      *                               menunggu jadwal berikutnya)
      */
-    public function __construct(public string $dapurId, public ?string $cctvId = null) {}
+    public function __construct(
+        public string $dapurId,
+        public ?string $cctvId = null,
+        public ?string $correlationId = null
+    ) {}
 
     public function handle(RtspProbe $probe, MediaMtxClient $mediaMtx): void
     {
+        if (filled($this->correlationId)) {
+            Log::withContext(['correlation_id' => $this->correlationId]);
+        }
+
         $query = Cctv::where('dapur_id', $this->dapurId);
 
         if (filled($this->cctvId)) {

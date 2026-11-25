@@ -79,3 +79,33 @@ test('policy SP: hanya admin yang boleh terbitkan, ubah, dan hapus', function ()
         ->and($manajerial->can('update', $warning))->toBeFalse()
         ->and($manajerial->can('delete', $warning))->toBeFalse();
 });
+
+test('admin tidak bisa terbitkan SP ganda pengawas+level+alasan sama hari itu (idempoten)', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $pengawas = User::factory()->create(['role' => 'pengawas']);
+
+    $payload = [
+        'user_id' => $pengawas->id,
+        'level' => 1,
+        'reason' => 'Terlambat datang',
+    ];
+
+    $this->actingAs($admin)
+        ->post(route('admin.sp-warnings.store'), $payload)
+        ->assertRedirect(route('admin.sp-warnings.index'))
+        ->assertSessionHas('status', 'SP berhasil diterbitkan.');
+
+    // Double submit dengan data yang sama harus tidak membuat duplikat.
+    $this->actingAs($admin)
+        ->post(route('admin.sp-warnings.store'), $payload)
+        ->assertRedirect(route('admin.sp-warnings.index'))
+        ->assertSessionHas('status', 'SP untuk pengawas, level, dan alasan ini sudah terbit hari ini.');
+
+    expect(SpWarning::where('user_id', $pengawas->id)
+        ->where('admin_id', $admin->id)
+        ->where('level', 1)
+        ->where('reason', 'Terlambat datang')
+        ->where('status', 'aktif')
+        ->whereDate('created_at', today())
+        ->count())->toBe(1);
+});

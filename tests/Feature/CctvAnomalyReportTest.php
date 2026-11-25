@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Cctv;
+use App\Models\CctvAnomalyReport;
 use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,4 +33,35 @@ test('non-admin cannot open anomaly report create form', function () {
     $this->actingAs($manajerial)
         ->get(route('admin.cctv-anomalies.create'))
         ->assertForbidden();
+});
+
+test('admin tidak bisa membuat laporan anomali ganda kamera+deskripsi+severity sama hari itu (idempoten)', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $dapur = Dapur::factory()->create();
+    $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id]);
+
+    $payload = [
+        'cctv_id' => $cctv->id,
+        'description' => 'Gambar kabur, kemungkinan lens kotor.',
+        'severity' => 'rendah',
+    ];
+
+    $this->actingAs($admin)
+        ->post(route('admin.cctv-anomalies.store'), $payload)
+        ->assertRedirect(route('admin.cctv-anomalies.index'))
+        ->assertSessionHas('status', 'Laporan anomali CCTV berhasil dibuat.');
+
+    // Double submit dengan data yang sama harus tidak membuat duplikat.
+    $this->actingAs($admin)
+        ->post(route('admin.cctv-anomalies.store'), $payload)
+        ->assertRedirect(route('admin.cctv-anomalies.index'))
+        ->assertSessionHas('status', 'Laporan anomali untuk kamera ini sudah tersimpan hari ini.');
+
+    expect(CctvAnomalyReport::where('cctv_id', $cctv->id)
+        ->where('admin_id', $admin->id)
+        ->where('description', 'Gambar kabur, kemungkinan lens kotor.')
+        ->where('severity', 'rendah')
+        ->where('status', 'baru')
+        ->whereDate('created_at', today())
+        ->count())->toBe(1);
 });

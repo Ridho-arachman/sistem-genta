@@ -25,7 +25,8 @@ class CctvAlertJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public string $cctvId,
         public string $status, // 'offline' | 'maintenance' | 'online'
-        public bool $notifyAdmins = true
+        public bool $notifyAdmins = true,
+        public ?string $correlationId = null
     ) {}
 
     public function uniqueId(): string
@@ -40,6 +41,10 @@ class CctvAlertJob implements ShouldBeUnique, ShouldQueue
 
     public function handle(FcmService $fcmService): void
     {
+        if (filled($this->correlationId)) {
+            Log::withContext(['correlation_id' => $this->correlationId]);
+        }
+
         $cctv = Cctv::with('dapur')->find($this->cctvId);
 
         if (! $cctv) {

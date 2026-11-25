@@ -22,6 +22,27 @@
 ## Queue & cache
 Driver `database` (bukan Redis). `CACHE_STORE=database`; `SESSION_DRIVER=database`. Tidak perlu Redis untuk skala ini. Cache ringan: `Settings` via `SettingsServiceProvider` (key-value `settings` di-cache).
 
+### Operasi queue produksi (runbook)
+- Pantau antrean: `php artisan queue:list` (belum terpasang) / cek tabel `jobs` langsung.
+- Lihat gagal: `php artisan queue:failed`.
+- Coba ulang gagal: `php artisan queue:retry {id}` atau `queue:retry all`.
+- Bersihkan gagal lama: `php artisan queue:prune-failed --hours=48` (jadwalkan harian bila volume naik).
+- Scale worker: `docker compose up -d --scale queue=10` (sesuai anggaran CCTV health check).
+- Scheduler CCTV: `cctv:health-check` tiap menit dengan `withoutOverlapping()` — siklus terlambat dilewatkan, bukan double.
+
+### Idempotensi & dedupe (tidak Redis)
+- `CctvAlertJob`: `ShouldBeUnique` per `cctvId:status`, window 5 menit, `tries=3`, `backoff=[30,120]`, `timeout=60s`. Cegah alert CCTV ganda saat retry/race.
+- `LaporanController@store`: transaksi + dedupe per pengawas + dapur + hari + status (`lockForUpdate`).
+- `SpWarningController@store`: transaksi + dedupe per pengawas + admin + level + alasan + hari (`lockForUpdate`).
+- `CctvAnomalyReportController@store`: transaksi + dedupe per kamera + admin + deskripsi + severity + hari (`lockForUpdate`).
+- `CctvHealthCheckJob`: dievaluasi untuk `ShouldBeUnique` — **tidak dipakai** karena `CctvAlertJob` sudah melindungi dari alert ganda, dan job pemeriksaan itu sendiri idempoten (status sama ditimpa nilai sama).
+
+### Correlation ID
+Middleware `CorrelationIdMiddleware` (global) pasang `X-Request-ID` pada setiap request/response dan masukkan `correlation_id` ke konteks log. Job `CctvAlertJob` dan `CctvHealthCheckJob` menerima `correlationId` dan memulihkannya di `handle()` via `Log::withContext`, jejak HTTP → antrean tetap nyambung.
+
+### Cache
+`settings()` helper (`app/helpers.php`) baca dari `Cache::remember('settings:all', 86400)` bukan `Settings::get()` per kunci. `Settings::allKeyed()` sudah cache 24 jam + invalidasi otomatis saat `Settings::set()`. Jangan cache halaman dinamis/role-filtered/export/dashboard.
+
 ## Build
 `vite build`; `php artisan config:cache route:cache view:cache` di produksi. `public/build/*` di-gitignore.
 

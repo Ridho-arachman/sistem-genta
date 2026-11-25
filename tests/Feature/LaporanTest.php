@@ -92,6 +92,47 @@ test('pengawas cannot create laporan with incomplete hasil', function () {
         ->assertSessionHasErrors(['hasil']);
 });
 
+test('pengawas cannot create duplicate laporan same dapur+status same day (idempoten)', function () {
+    $dapur = Dapur::factory()->create();
+
+    $this->pengawas->dapurs()->attach($dapur->id);
+
+    $photoBase64 = 'data:image/png;base64,iVBORw0KGgoAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+    $payload = [
+        'dapur_id' => $dapur->id,
+        'status' => 'diperiksa',
+        'catatan' => 'Kondisi dapur baik.',
+        'selfie_photo' => $photoBase64,
+        'latitude' => -6.208800,
+        'longitude' => 106.845600,
+        'address' => 'Jl. A',
+        'hasil' => ['diperiksa', 'diperiksa', 'diperiksa', 'diperiksa', 'diperiksa'],
+    ];
+
+    $this->withoutMiddleware();
+
+    $this->actingAs($this->pengawas)
+        ->withCookie('capacitor_app', '1')
+        ->post(route('pengawas.laporan.store'), $payload)
+        ->assertRedirect(route('pengawas.laporan.index'))
+        ->assertSessionHas('status', 'Laporan berhasil dikirim.');
+
+    // Double submit dengan data yang sama harus tidak membuat duplikat.
+    $this->actingAs($this->pengawas)
+        ->withCookie('capacitor_app', '1')
+        ->post(route('pengawas.laporan.store'), $payload)
+        ->assertRedirect(route('pengawas.laporan.index'))
+        ->assertSessionHas('status', 'Laporan untuk dapur dan status ini sudah tersimpan hari ini.');
+
+    expect(Laporan::where('created_by', $this->pengawas->id)
+        ->where('dapur_id', $dapur->id)
+        ->whereDate('created_at', today())
+        ->where('status', 'diperiksa')
+        ->count())->toBe(1);
+    expect(LaporanHasil::where('created_by', $this->pengawas->id)->count())->toBe(5);
+});
+
 test('selfie with a non-image extension is still saved as jpg', function () {
     $dapur = Dapur::factory()->create();
     $this->pengawas->dapurs()->attach($dapur->id);

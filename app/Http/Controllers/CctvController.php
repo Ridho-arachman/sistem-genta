@@ -8,6 +8,7 @@ use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Services\MediaMtxClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CctvController extends Controller
 {
@@ -105,7 +106,11 @@ class CctvController extends Controller
         $cctv = Cctv::create($validated);
         $this->syncStreamPath($cctv);
         // Sumber butuh waktu mulai; cek khusus kamera ini setelah path siap.
-        CctvHealthCheckJob::dispatch($cctv->dapur_id, $cctv->id)->delay(now()->addSeconds(5));
+        CctvHealthCheckJob::dispatch(
+            $cctv->dapur_id,
+            $cctv->id,
+            Log::sharedContext()['correlation_id'] ?? null
+        )->delay(now()->addSeconds(5));
 
         return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil ditambahkan.');
     }
@@ -157,10 +162,19 @@ class CctvController extends Controller
         $cctv->update($validated);
         $this->syncStreamPath($cctv);
         // Path baru butuh waktu mulai; cek langsung sering salah tandai offline.
-        CctvHealthCheckJob::dispatch($cctv->dapur_id, $cctv->id)->delay(now()->addSeconds(5));
+        CctvHealthCheckJob::dispatch(
+            $cctv->dapur_id,
+            $cctv->id,
+            Log::sharedContext()['correlation_id'] ?? null
+        )->delay(now()->addSeconds(5));
 
         if ($oldStatus !== $cctv->status && in_array($cctv->status, ['offline', 'maintenance'])) {
-            CctvAlertJob::dispatch($cctv->id, $cctv->status, true);
+            CctvAlertJob::dispatch(
+                $cctv->id,
+                $cctv->status,
+                true,
+                Log::sharedContext()['correlation_id'] ?? null
+            );
         }
 
         return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil diperbarui.');
