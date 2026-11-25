@@ -189,16 +189,6 @@ class User extends Authenticatable
         return 'Aktif';
     }
 
-    public function getStatusBadgeClassAttribute(): string
-    {
-        return match ($this->status_label) {
-            'Aktif' => 'bg-[#22C55E15] text-[#166534]',
-            'Belum Verifikasi' => 'bg-[#F59E0B15] text-[#854D0E]',
-            'Dihapus' => 'bg-[#FEF2F2] text-[#EF4444]',
-            default => 'bg-[var(--color-surface)] text-[var(--color-text-muted)]',
-        };
-    }
-
     public function getAccessDescriptionAttribute(): string
     {
         return match ($this->role) {

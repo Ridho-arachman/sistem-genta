@@ -54,7 +54,6 @@ class InspeksiController extends Controller
 
         return view('admin.inspeksi.index', compact('laporans', 'dapurs'))
             ->with('indexRoute', "{$prefix}.inspeksi.index")
-            ->with('createRoute', "{$prefix}.inspeksi.create")
             ->with('exportRoute', "{$prefix}.inspeksi.export");
     }
 

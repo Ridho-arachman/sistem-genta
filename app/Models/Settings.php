@@ -28,20 +28,6 @@ class Settings extends Model
     ];
 
     /**
-     * Get a setting value by key with optional default.
-     */
-    public static function get(string $key, $default = null)
-    {
-        $setting = static::where('key', $key)->first();
-
-        if (! $setting) {
-            return $default;
-        }
-
-        return $setting->castedValue;
-    }
-
-    /**
      * Set a setting value by key.
      */
     public static function set(string $key, $value): self
