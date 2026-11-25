@@ -9,12 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Dapur extends Model
 {
     /** @use HasFactory<DapurFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $casts = [
+        'deleted_at' => 'datetime',
+        'deleted_by' => 'string',
+    ];
 
     protected $fillable = ['nama', 'alamat', 'map_embed_url', 'kecamatan', 'kabupaten_kota', 'provinsi'];
 
@@ -22,13 +28,18 @@ class Dapur extends Model
 
     public $incrementing = false;
 
-    protected $casts = [];
-
     protected static function booted(): void
     {
         static::creating(function (self $dapur) {
             if (empty($dapur->id)) {
                 $dapur->id = Str::ulid();
+            }
+        });
+
+        static::deleting(function (self $dapur) {
+            if (! $dapur->isForceDeleting() && auth()->check()) {
+                $dapur->deleted_by = auth()->id();
+                $dapur->saveQuietly();
             }
         });
     }

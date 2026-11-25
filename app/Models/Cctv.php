@@ -7,23 +7,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Cctv extends Model
 {
     /** @use HasFactory<CctvFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $casts = [
+        'camera_number' => 'integer',
+        'last_checked_at' => 'datetime',
+        'deleted_at' => 'datetime',
+        'deleted_by' => 'string',
+    ];
 
     protected $fillable = ['dapur_id', 'nama', 'rtsp_url', 'status', 'section', 'camera_number', 'stream_key', 'last_checked_at'];
 
     protected $keyType = 'string';
 
     public $incrementing = false;
-
-    protected $casts = [
-        'camera_number' => 'integer',
-        'last_checked_at' => 'datetime',
-    ];
 
     protected static function booted(): void
     {
@@ -33,6 +36,13 @@ class Cctv extends Model
             }
             if (empty($cctv->stream_key)) {
                 $cctv->stream_key = Str::ulid();
+            }
+        });
+
+        static::deleting(function (self $cctv) {
+            if (! $cctv->isForceDeleting() && auth()->check()) {
+                $cctv->deleted_by = auth()->id();
+                $cctv->saveQuietly();
             }
         });
     }

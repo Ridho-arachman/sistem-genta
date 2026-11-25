@@ -186,13 +186,59 @@ class CctvController extends Controller
             abort(403);
         }
 
+        // Soft delete: jangan hapus path MediaMTX, biar bisa dipulihkan.
+        $cctv->delete();
+
+        return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil dihapus (arsip).');
+    }
+
+    public function archive(Request $request)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $query = Cctv::onlyTrashed()->with('dapur');
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama', 'like', "%{$request->search}%")
+                    ->orWhere('rtsp_url', 'like', "%{$request->search}%");
+            });
+        }
+
+        $cctvs = $query->latest()->paginate(15)->withQueryString();
+
+        return view('admin.cctvs.archive', compact('cctvs'));
+    }
+
+    public function restore(Request $request, $id)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $cctv = Cctv::withTrashed()->findOrFail($id);
+        $cctv->restore();
+
+        return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dipulihkan.');
+    }
+
+    public function forceDelete(Request $request, $id)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $cctv = Cctv::withTrashed()->findOrFail($id);
+
         if ($cctv->stream_key) {
             $this->mediaMtx->removePath($cctv->stream_key);
         }
 
-        $cctv->delete();
+        $cctv->forceDelete();
 
-        return redirect()->route('admin.cctvs.index')->with('status', 'CCTV berhasil dihapus.');
+        return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dihapus permanen.');
     }
 
     /**

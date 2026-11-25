@@ -13,6 +13,11 @@
             <span>!</span>
             <span>Laporan Anomali</span>
         </a>
+        <a href="{{ route('admin.cctvs.archive') }}"
+           class="btn btn-secondary">
+            <svg class="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <span>Arsip CCTV</span>
+        </a>
     </x-slot:actions>
     @endif
 </x-admin::page-heading>
@@ -112,6 +117,15 @@
                         <span>!</span>
                         <span>Laporkan anomali</span>
                     </a>
+                    <form action="{{ route('admin.cctvs.destroy', $cctv) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin mengarsipkan kamera ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="w-8 h-8 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors ml-1"
+                                title="Arsipkan CCTV">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
                     @endif
                 </div>
             </div>

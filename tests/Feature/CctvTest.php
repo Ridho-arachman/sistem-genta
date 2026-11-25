@@ -131,15 +131,64 @@ test('health check setelah simpan url baru menunggu playlist hls sebelum menanda
         ->and($cctv->fresh()->last_checked_at)->not->toBeNull();
 });
 
-test('user can delete cctv', function () {
+test('admin can soft delete cctv', function () {
     $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
 
     $this->actingAs($this->admin)
         ->delete(route('admin.cctvs.destroy', $cctv))
         ->assertRedirect(route('admin.cctvs.index'))
-        ->assertSessionHas('status', 'CCTV berhasil dihapus.');
+        ->assertSessionHas('status', 'CCTV berhasil dihapus (arsip).');
+
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv->id]);
+});
+
+test('soft deleted cctv keeps media mtx path', function () {
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'stream_key' => 'test-stream-key']);
+
+    $this->actingAs($this->admin)
+        ->delete(route('admin.cctvs.destroy', $cctv))
+        ->assertRedirect(route('admin.cctvs.index'));
+
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv->id]);
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'stream_key' => 'test-stream-key']);
+});
+
+test('admin can view cctv archive', function () {
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+    $cctv->delete();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.cctvs.archive'))
+        ->assertOk()
+        ->assertSee($cctv->nama);
+});
+
+test('admin can restore cctv from archive', function () {
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+    $cctv->delete();
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.cctvs.restore', $cctv->id))
+        ->assertRedirect(route('admin.cctvs.archive'))
+        ->assertSessionHas('status', 'CCTV berhasil dipulihkan.');
+
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null]);
+});
+
+test('admin can force delete cctv and removes media mtx path', function () {
+    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
+    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
+
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'stream_key' => 'test-stream-key']);
+    $cctv->delete();
+
+    $this->actingAs($this->admin)
+        ->delete(route('admin.cctvs.force', $cctv->id))
+        ->assertRedirect(route('admin.cctvs.archive'))
+        ->assertSessionHas('status', 'CCTV berhasil dihapus permanen.');
 
     $this->assertDatabaseMissing('cctvs', ['id' => $cctv->id]);
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/delete/'));
 });
 
 test('cctv show page loads', function () {

@@ -189,8 +189,63 @@ class DapurController extends Controller
             abort(403);
         }
 
+        if ($dapur->cctvs()->exists()) {
+            return redirect()->route('admin.dapurs.index')->withErrors(['dapur' => 'Dapur masih memiliki CCTV. Hapus atau pindahkan CCTV terlebih dahulu.']);
+        }
+
         $dapur->delete();
 
-        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil dihapus.');
+        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil dihapus (arsip).');
+    }
+
+    public function archive(Request $request)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $query = Dapur::onlyTrashed()
+            ->withCount('cctvs')
+            ->withCount(['cctvs as cctvs_online_count' => fn ($q) => $q->where('status', 'online')]);
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama', 'like', "%{$request->search}%")
+                    ->orWhere('alamat', 'like', "%{$request->search}%");
+            });
+        }
+
+        $dapurs = $query->latest()->paginate(15)->withQueryString();
+
+        return view('admin.dapurs.archive', compact('dapurs'));
+    }
+
+    public function restore(Request $request, $id)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $dapur = Dapur::withTrashed()->findOrFail($id);
+        $dapur->restore();
+
+        return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dipulihkan.');
+    }
+
+    public function forceDelete(Request $request, $id)
+    {
+        if (! auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $dapur = Dapur::withTrashed()->findOrFail($id);
+
+        if ($dapur->cctvs()->withTrashed()->exists()) {
+            return back()->withErrors(['dapur' => 'Dapur masih memiliki CCTV (termasuk arsip). Hapus CCTV terlebih dahulu.'])->withInput();
+        }
+
+        $dapur->forceDelete();
+
+        return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dihapus permanen.');
     }
 }

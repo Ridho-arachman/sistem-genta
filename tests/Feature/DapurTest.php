@@ -111,13 +111,59 @@ test('pengawas cannot update dapur via web', function () {
         ->assertSessionHasErrors('email');
 });
 
-test('admin can delete dapur', function () {
+test('admin can soft delete dapur', function () {
     $dapur = Dapur::factory()->create();
 
     $this->actingAs($this->admin)
         ->delete(route('admin.dapurs.destroy', $dapur))
         ->assertRedirect(route('admin.dapurs.index'))
-        ->assertSessionHas('status', 'Dapur berhasil dihapus.');
+        ->assertSessionHas('status', 'Dapur berhasil dihapus (arsip).');
+
+    $this->assertSoftDeleted('dapurs', ['id' => $dapur->id]);
+});
+
+test('admin cannot delete dapur with existing cctv', function () {
+    $dapur = Dapur::factory()->create();
+    Cctv::factory()->create(['dapur_id' => $dapur->id]);
+
+    $this->actingAs($this->admin)
+        ->delete(route('admin.dapurs.destroy', $dapur))
+        ->assertRedirect(route('admin.dapurs.index'))
+        ->assertSessionHasErrors('dapur');
+
+    $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
+});
+
+test('admin can view dapur archive', function () {
+    $dapur = Dapur::factory()->create();
+    $dapur->delete();
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.dapurs.archive'))
+        ->assertOk()
+        ->assertSee($dapur->nama);
+});
+
+test('admin can restore dapur from archive', function () {
+    $dapur = Dapur::factory()->create();
+    $dapur->delete();
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.dapurs.restore', $dapur->id))
+        ->assertRedirect(route('admin.dapurs.archive'))
+        ->assertSessionHas('status', 'Dapur berhasil dipulihkan.');
+
+    $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
+});
+
+test('admin can force delete dapur', function () {
+    $dapur = Dapur::factory()->create();
+    $dapur->delete();
+
+    $this->actingAs($this->admin)
+        ->delete(route('admin.dapurs.force', $dapur->id))
+        ->assertRedirect(route('admin.dapurs.archive'))
+        ->assertSessionHas('status', 'Dapur berhasil dihapus permanen.');
 
     $this->assertDatabaseMissing('dapurs', ['id' => $dapur->id]);
 });
