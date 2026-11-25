@@ -3,7 +3,7 @@
 **Status**: aktif · 2026-11-23
 
 ## 1. Login & hak akses
-1. `GET /login` → form. `POST /login` dibatasi `throttle:5,1` (429 setelah 5 percobaan/menit per IP bila gagal).
+1. `GET /login` → form. `POST /login` dibatasi limiter `auth`: 5/menit per IP dan 30/menit per email (429). Untuk yang sudah login: 5/menit per user.
 2. Setelah sukses, redirect `/dashboard` yang memilih halaman berdasarkan `role`:
    - admin → `admin.dashboard`; manajerial → `manajerial.dashboard`; kepala_dapur → `kepala-dapur.dashboard`; pengawas → dibatasi (`restrict.pengawas`) ke alur mobile/inspeksi.
 3. Soft-deleted (`deleted_at`) ditolak dengan pesan "Akun dinonaktifkan".
@@ -26,12 +26,12 @@ Anomali CCTV: `admin/cctv-anomalies` (create/list/show). SP: `admin/sp-warnings`
 
 ## 6. API mobile (`/api/mobile`, Sanctum)
 - `POST /fcm-token` — simpan token FCM device.
-- `POST /absensi/auto-checkin` — check-in via geofence (sekarang membuat `Laporan`).
+- `POST /absensi/auto-checkin` — check-in via geofence (sekarang membuat `Laporan`). Dibatasi 30/menit per user (limiter `mobile`).
 
 ## 7. Alur error utama
 - Validasi gagal → redirect back + `withErrors` → `<x-toast />` (alert daisyUI kanan-bawah).
 - 403 (peran tidak sesuai) → halaman 403/redirect login.
-- 429 (rate limit) → halaman 429.
+- 429 (rate limit) → halaman 429, dengan header `Retry-After`. Terjadi pada endpoint kredensial dan API mobile saat melebihi batas.
 - Kamera offline → status per kamera di UI + notifikasi FCM admin.
 - Mobile: error ditampilkan inline (lihat `ERROR_STATES.md`).
 

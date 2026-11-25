@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
@@ -35,12 +36,19 @@ class AuthController extends Controller
         }
 
         if ($user->trashed()) {
+            // Pesan dibiarkan sama dengan kredensial salah supaya tidak ada bocoran
+            // keberadaan/status akun (email enumeration).
             throw ValidationException::withMessages([
-                'email' => 'Akun ini telah dinonaktifkan. Silakan hubungi administrator.',
+                'email' => 'Email atau password salah.',
             ]);
         }
 
         if (! Auth::attempt($credentials)) {
+            Log::warning('Login gagal', [
+                'email' => $credentials['email'],
+                'ip' => $request->ip(),
+            ]);
+
             throw ValidationException::withMessages([
                 'email' => 'Email atau password salah.',
             ]);
@@ -107,7 +115,8 @@ class AuthController extends Controller
         $user = User::withTrashed()->where('email', $request->email)->first();
 
         if ($user && $user->trashed()) {
-            return back()->withErrors(['email' => 'Akun ini telah dinonaktifkan. Silakan hubungi administrator.']);
+            // Pesan generik: jangan konfirmasi bahwa email terdaftar (email enumeration).
+            return back()->withErrors(['email' => 'Token atau email tidak valid.']);
         }
 
         $status = Password::reset(

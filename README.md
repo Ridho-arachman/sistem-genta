@@ -329,7 +329,7 @@ CI (GitHub Actions) menjalankan `composer validate`, Pint, Pest, dan build aset 
 
 - Otorisasi berbasis peran pada rute dan kebijakan pada level model
 - Proteksi CSRF, escaping output Blade, dan pencegahan SQL injection melalui Eloquent
-- Rate limiting pada rute autentikasi (`POST /login`, `/forgot-password`); endpoint `/api/mobile/*` masih menunggu throttle — dilacak sebagai issue
+- Rate limiting pada rute autentikasi (limiter `auth`: 5/menit IP + 30/menit email), API mobile (limiter `mobile`: 30/menit per user), dan semua rute web terproteksi (limiter `web`: 60/menit per user per rute)
 - Hashing password dengan bcrypt
 - Token API Sanctum (`expiration` masih `null` di `config/sanctum.php`, atur bila ingin token kedaluwarsa)
 - Kolom audit dan soft delete untuk manajemen pengguna

@@ -17,16 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LandingController::class, 'home'])->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:auth');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
+Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update')->middleware('throttle:auth');
 
 // ==================== PROTECTED ROUTES ====================
-Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
+Route::middleware(['auth', 'restrict.pengawas', 'throttle:web'])->group(function () {
 
     // Dashboard - redirect per peran
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -82,7 +82,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
         Route::get('settings/profile', [AdminController::class, 'editProfile'])->name('settings.profile');
-        Route::put('settings/profile', [AdminController::class, 'updateProfile'])->name('settings.profile.update');
+        Route::put('settings/profile', [AdminController::class, 'updateProfile'])->name('settings.profile.update')->middleware('throttle:auth');
     });
 
     // ==================== PENGAWAS ====================
@@ -105,7 +105,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
         Route::get('settings', function () {
             return view('pengawas.settings.index');
         })->name('settings');
-        Route::put('settings/profile', [AuthController::class, 'updatePassword'])->name('settings.profile.update');
+        Route::put('settings/profile', [AuthController::class, 'updatePassword'])->name('settings.profile.update')->middleware('throttle:auth');
     });
 
     // ==================== MANAJERIAL (READ ONLY) ====================
@@ -165,7 +165,7 @@ Route::middleware(['auth', 'restrict.pengawas'])->group(function () {
 });
 
 // ==================== MOBILE API (Sanctum) ====================
-Route::prefix('api/mobile')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('api/mobile')->middleware(['auth:sanctum', 'throttle:mobile'])->group(function () {
     Route::post('fcm-token', [MobileController::class, 'storeFcmToken']);
     Route::post('absensi/auto-checkin', [MobileController::class, 'autoCheckin']);
 });

@@ -65,6 +65,30 @@ test('repeated geofence entry does not create a second laporan', function () {
     $this->assertDatabaseCount('laporans', 1);
 });
 
+test('api mobile dibatasi tiga puluh permintaan per menit per user', function () {
+    $pengawas = User::factory()->pengawas()->create();
+    $dapur = Dapur::factory()->create();
+    $pengawas->dapurs()->attach($dapur->id);
+
+    $this->actingAs($pengawas, 'sanctum');
+
+    for ($i = 0; $i < 30; $i++) {
+        $this->postJson('/api/mobile/absensi/auto-checkin', [
+            'dapur_id' => $dapur->id,
+            'lat' => -6.2,
+            'lng' => 106.8,
+            'trigger' => 'entry',
+        ])->assertStatus(200);
+    }
+
+    $this->postJson('/api/mobile/absensi/auto-checkin', [
+        'dapur_id' => $dapur->id,
+        'lat' => -6.2,
+        'lng' => 106.8,
+        'trigger' => 'entry',
+    ])->assertStatus(429);
+});
+
 test('admin can store an fcm token', function () {
     $admin = User::factory()->admin()->create();
 

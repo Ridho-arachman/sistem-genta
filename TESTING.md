@@ -27,7 +27,7 @@ vendor/bin/pint --dirty --format agent   # wajib setelah ubah PHP
 ## Yang ditest
 - Cctv CRUD, sync MediaMTX path (mock), stream_url derivation (kosong bila `CCTV_HLS_BASE` kosong).
 - Health check job: dispatch `cctv:health-check` mengisi `last_checked_at`; probe sukses/gagal; transisi status; alert hanya saat transisi ke offline.
-- Auth: login, logout, wrong password, akun soft-deleted, pengawas web-block, manajerial/kepala-dapur dashboard ok, rate limit 429 setelah 5 salah.
+- Auth: login, logout, wrong password, akun soft-deleted, pengawas web-block, manajerial/kepala-dapur dashboard ok, rate limit 429 setelah 5 salah (login, forgot-password, reset-password, ganti password per user) dan 429 pada API mobile setelah 30 request/menit.
 - Policy: `CctvAnomalyReportPolicy` (viewAny/view/create/update/export per role) dan `LaporanPolicy`; akses dapur/CCTV per user lewat `User::canAccessDapur()` di controller (bukan policy).
 - Halaman dapur create/edit render (config `banten`), dan pagination view list dapur.
 - Halaman role read-only (manajerial/kepala-dapur) memakai view admin yang sama: link/aksi harus ber-prefix rute aktif, bukan `admin.*` (`RoleReadOnlyPageTest`).

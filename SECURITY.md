@@ -4,9 +4,12 @@
 
 ## Autentikasi & sesi
 - Session (web) + Sanctum (mobile). `BCRYPT_ROUNDS=12`. Session driver `database`.
-- **Rate limiting**: `POST /login` dan `POST /forgot-password` → `throttle:5,1` (429 setelah 5/menit). Counter per IP saat belum autentikasi, per user setelah login — kredensial salah tetap per IP, jadi 429 bisa dipakai untuk brute-force protection.
+- **Rate limiting** (cache `database`, tanpa Redis):
+  - Endpoint kredensial (`/login`, `/forgot-password`, `/reset-password`, ganti profil/password): limiter `auth` — 5/menit per IP dan 30/menit per email untuk guest; 5/menit per user untuk yang sudah login. Batas per email mencegah penyerang dari banyak IP menarget satu akun.
+  - API mobile (`/api/mobile/*`): limiter `mobile` — 30/menit per user.
+  - Semua rute web terproteksi: limiter `web` — 60/menit per user per rute.
 - Password reset token standar Laravel (`password_reset_tokens`).
-- Soft delete user; `Auth::attempt` menolak `trashed()` dengan pesan "Akun dinonaktifkan".
+- Soft delete user; `Auth::attempt` menolak `trashed()` dengan pesan generik "Email atau password salah" (tidak membedakan email tidak ada vs akun nonaktif, mencegah email enumeration). Gagal login dicatat ke `Log::warning('Login gagal')` dengan email + IP.
 
 ## Otorisasi
 Middleware `role:<admin|manajerial|pengawas|kepala_dapur>` (`RoleMiddleware`) + `canAccessDapur()` (untuk detail dapur/CCTV). Policy: `LaporanPolicy`, `CctvAnomalyReportPolicy`. Tidak ada auto-superadmin: admin tetap harus melewati route yang didaftarkan.

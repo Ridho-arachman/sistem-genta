@@ -10,8 +10,8 @@ Jangan ubah perilaku error tanpa alasan. Pesan generik di login (`Email atau pas
 | Kelas | Trigger | Respons | Di mana |
 |---|---|---|---|
 | Login gagal | kredensial salah | redirect back + `errors` (email) | `AuthController@login` |
-| Akun nonaktif | `deleted_at` terisi | `Akun dinonaktifkan` | idem |
-| 429 | 5 percobaan/menit (login, forgot-password) | halaman 429 | `throttle:5,1` |
+| Akun nonaktif | `deleted_at` terisi | `Email atau password salah` (pesan generik) | `AuthController@login`, `sendResetLink`, `reset` |
+| 429 | melebihi batas rate limit (5/menit IP atau email di endpoint kredensial; 30/menit user mobile; 60/menit user per rute web) | halaman 429 + header `Retry-After` | limiter `auth` / `mobile` / `web` |
 | 403 | peran tidak sesuai (`role:`, `canAccessDapur`) | halaman 403 | middleware |
 | Validasi form | `validate()` gagal | kembali ke form + `withErrors` + `withInput` | semua controller |
 | CCTV tidak reachable | MediaMTX/HLS tidak menjawab (fallback `ffprobe`) | status `offline`, `last_checked_at` terisi, FCM saat transisi | `CctvHealthCheckJob` |

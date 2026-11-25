@@ -5,6 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Sumber kebenar
 ## [Unreleased]
 
 ### Added
+- Rate limit bawaan Laravel (cache `database`, tanpa Redis): 3 named limiter di `AppServiceProvider` — `auth` (5/menit IP + 30/menit email untuk guest, 5/menit per user untuk yang login) pada endpoint kredensial, `mobile` (30/menit per user) pada `/api/mobile/*`, dan `web` (60/menit per user per rute) pada semua rute terproteksi. Tes regresi: `LoginRateLimitTest` dan `MobileApiTest`.
 - Tes regresi untuk perbaikan di bawah: `MobileApiTest` (check-in hanya dapur assignment + geofence berulang tak membuat laporan ganda + simpan FCM token), `InspeksiExportTest` (XLSX admin memuat semua laporan, XLSX berskope `createdBy` hanya memuat milik sendiri), `AdminDashboardTest` (progress/status dapur benar), `UserSoftDeleteTest` (restore mempertahankan assignment + statistik tak menghitung user terhapus), dan satu tes di `LaporanTest` (foto dengan ekstensi non-gambar disimpan sebagai `.jpg`).
 - `NoLazyLoadingTest` (audit N+1 formal): 17 halaman daftar/dashboard dijalankan dengan `Model::preventLazyLoading()` — hijau sekarang; kalau ada view yang membaca relasi tak di-eager load, tes ini gagal alih-alih menambah query per baris.
 - Tes untuk `cctv:health-check` (perintahnya, bukan cuma job): memastikan satu job per dapur bersangkutan (dapur tanpa kamera dilewati) dan tiap batch mencatat durasinya di log `cctv:health-check batch`.
