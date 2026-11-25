@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cctv;
 use App\Models\Dapur;
+use App\Services\MediaMtxClient;
 use Illuminate\Http\Request;
 
 class DapurController extends Controller
 {
+    public function __construct(protected MediaMtxClient $mediaMtx) {}
+
     public function index()
     {
         $user = auth()->user();
@@ -189,13 +193,14 @@ class DapurController extends Controller
             abort(403);
         }
 
-        if ($dapur->cctvs()->exists()) {
-            return redirect()->route('admin.dapurs.index')->withErrors(['dapur' => 'Dapur masih memiliki CCTV. Hapus atau pindahkan CCTV terlebih dahulu.']);
+        // Soft delete dapur ikut menarik semua CCTV miliknya ke arsip.
+        foreach ($dapur->cctvs->whereNull('deleted_at') as $cctv) {
+            $cctv->delete();
         }
 
         $dapur->delete();
 
-        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur berhasil dihapus (arsip).');
+        return redirect()->route('admin.dapurs.index')->with('status', 'Dapur dan CCTV terkait berhasil diarsipkan.');
     }
 
     public function archive(Request $request)
@@ -205,8 +210,8 @@ class DapurController extends Controller
         }
 
         $query = Dapur::onlyTrashed()
-            ->withCount('cctvs')
-            ->withCount(['cctvs as cctvs_online_count' => fn ($q) => $q->where('status', 'online')]);
+            ->withCount(['cctvs as cctvs_count' => fn ($q) => $q->withTrashed()])
+            ->withCount(['cctvs as cctvs_online_count' => fn ($q) => $q->withTrashed()->where('status', 'online')]);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -227,7 +232,17 @@ class DapurController extends Controller
         }
 
         $dapur = Dapur::withTrashed()->findOrFail($id);
+
+        $deletedAt = $dapur->deleted_at;
         $dapur->restore();
+
+        // Pulihkan CCTV yang ikut ter-arsip saat dapur dihapus (deleted_at sangat dekat
+        // dengan deleted_at dapur, karena dihapus dalam satu request destroy).
+        // CCTV yang diarsip manual lebih lama tidak ikut dipulihkan.
+        Cctv::onlyTrashed()
+            ->where('dapur_id', $dapur->id)
+            ->where('deleted_at', '>=', $deletedAt->copy()->subSeconds(1))
+            ->restore();
 
         return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dipulihkan.');
     }
@@ -240,8 +255,12 @@ class DapurController extends Controller
 
         $dapur = Dapur::withTrashed()->findOrFail($id);
 
-        if ($dapur->cctvs()->withTrashed()->exists()) {
-            return back()->withErrors(['dapur' => 'Dapur masih memiliki CCTV (termasuk arsip). Hapus CCTV terlebih dahulu.'])->withInput();
+        // Force delete CCTV milik dapur lewat Eloquent agar path MediaMTX dibersihkan.
+        foreach ($dapur->cctvs()->withTrashed()->get() as $cctv) {
+            if ($cctv->stream_key) {
+                $this->mediaMtx->removePath($cctv->stream_key);
+            }
+            $cctv->forceDelete();
         }
 
         $dapur->forceDelete();

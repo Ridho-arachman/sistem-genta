@@ -175,6 +175,19 @@ test('admin can restore cctv from archive', function () {
     $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null]);
 });
 
+test('restore cctv blocked when its dapur is still archived', function () {
+    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id]);
+    $cctv->delete();
+    $this->dapur->delete(); // direct model delete (no controller cascade); dapur trashed
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.cctvs.restore', $cctv->id))
+        ->assertRedirect(route('admin.cctvs.archive'))
+        ->assertSessionHasErrors('cctv');
+
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv->id]);
+});
+
 test('admin can force delete cctv and removes media mtx path', function () {
     config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
     Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);

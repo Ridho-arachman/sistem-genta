@@ -162,7 +162,7 @@
             </div>
             <h3 class="text-lg font-semibold text-gray-900">Arsipkan Dapur</h3>
         </div>
-        <p class="text-gray-600 mb-6">Dapur <span x-text="name" class="font-semibold"></span> akan dipindahkan ke arsip. Data CCTV di dapur ini harus dihapus terlebih dahulu. Tindakan ini bisa dibatalkan via restore.</p>
+        <p class="text-gray-600 mb-6">Dapur <span x-text="name" class="font-semibold"></span> dan semua CCTV di dalamnya akan dipindahkan ke arsip. Tindakan ini bisa dibatalkan via restore.</p>
         <div class="flex gap-3 justify-end">
             <button type="button" x-on:click="show = false" class="btn btn-secondary">Batal</button>
             <form :action="url" method="POST" class="inline">

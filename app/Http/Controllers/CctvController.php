@@ -219,6 +219,13 @@ class CctvController extends Controller
         }
 
         $cctv = Cctv::withTrashed()->findOrFail($id);
+
+        // CCTV hanya bisa dipulihkan jika dapur induknya tidak diarsipkan.
+        if (Dapur::withoutGlobalScopes()->find($cctv->dapur_id)?->trashed()) {
+            return redirect()->route('admin.cctvs.archive')
+                ->withErrors(['cctv' => 'Dapur induk masih diarsipkan. Pulihkan dapur terlebih dahulu.']);
+        }
+
         $cctv->restore();
 
         return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dipulihkan.');

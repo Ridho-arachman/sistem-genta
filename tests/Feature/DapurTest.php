@@ -4,6 +4,7 @@ use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -117,21 +118,24 @@ test('admin can soft delete dapur', function () {
     $this->actingAs($this->admin)
         ->delete(route('admin.dapurs.destroy', $dapur))
         ->assertRedirect(route('admin.dapurs.index'))
-        ->assertSessionHas('status', 'Dapur berhasil dihapus (arsip).');
+        ->assertSessionHas('status', 'Dapur dan CCTV terkait berhasil diarsipkan.');
 
     $this->assertSoftDeleted('dapurs', ['id' => $dapur->id]);
 });
 
-test('admin cannot delete dapur with existing cctv', function () {
+test('soft deleting dapur cascades soft delete to its cctvs', function () {
     $dapur = Dapur::factory()->create();
-    Cctv::factory()->create(['dapur_id' => $dapur->id]);
+    $cctv1 = Cctv::factory()->create(['dapur_id' => $dapur->id]);
+    $cctv2 = Cctv::factory()->create(['dapur_id' => $dapur->id]);
 
     $this->actingAs($this->admin)
         ->delete(route('admin.dapurs.destroy', $dapur))
         ->assertRedirect(route('admin.dapurs.index'))
-        ->assertSessionHasErrors('dapur');
+        ->assertSessionHas('status', 'Dapur dan CCTV terkait berhasil diarsipkan.');
 
-    $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
+    $this->assertSoftDeleted('dapurs', ['id' => $dapur->id]);
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv1->id]);
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv2->id]);
 });
 
 test('admin can view dapur archive', function () {
@@ -156,9 +160,42 @@ test('admin can restore dapur from archive', function () {
     $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
 });
 
-test('admin can force delete dapur', function () {
+test('restoring dapur cascades restore to its cascaded cctvs', function () {
     $dapur = Dapur::factory()->create();
-    $dapur->delete();
+    $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id]);
+    $dapur->delete(); // cascades soft delete to $cctv
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.dapurs.restore', $dapur->id))
+        ->assertRedirect(route('admin.dapurs.archive'))
+        ->assertSessionHas('status', 'Dapur berhasil dipulihkan.');
+
+    $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null]);
+});
+
+test('restoring dapur does not restore cctv archived manually before dapur', function () {
+    $dapur = Dapur::factory()->create();
+    $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id]);
+    $cctv->delete(); // manually archived cctv earlier
+    Cctv::withTrashed()->where('id', $cctv->id)->update(['deleted_at' => now()->subHour()]); // jelas lebih lama
+    $dapur->delete(); // cascades soft delete to dapur only
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.dapurs.restore', $dapur->id))
+        ->assertRedirect(route('admin.dapurs.archive'));
+
+    $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
+    $this->assertSoftDeleted('cctvs', ['id' => $cctv->id]);
+});
+
+test('force delete dapur force deletes its cctvs', function () {
+    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
+    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
+
+    $dapur = Dapur::factory()->create();
+    $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id, 'stream_key' => 'stream-key-1']);
+    $dapur->delete(); // cascades soft delete
 
     $this->actingAs($this->admin)
         ->delete(route('admin.dapurs.force', $dapur->id))
@@ -166,6 +203,8 @@ test('admin can force delete dapur', function () {
         ->assertSessionHas('status', 'Dapur berhasil dihapus permanen.');
 
     $this->assertDatabaseMissing('dapurs', ['id' => $dapur->id]);
+    $this->assertDatabaseMissing('cctvs', ['id' => $cctv->id]);
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/delete/'));
 });
 
 test('pengawas cannot delete dapur via web', function () {
