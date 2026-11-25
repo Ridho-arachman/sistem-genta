@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Settings extends Model
@@ -45,10 +46,15 @@ class Settings extends Model
      */
     public static function set(string $key, $value): self
     {
-        return static::updateOrCreate(
+        $setting = static::updateOrCreate(
             ['key' => $key],
             ['value' => is_bool($value) ? ($value ? 'true' : 'false') : (is_array($value) || is_object($value) ? json_encode($value) : (string) $value)]
         );
+
+        // Invalidate cache semua setting agar baca berikutnya ambil data terbaru.
+        Cache::forget('settings:all');
+
+        return $setting;
     }
 
     /**
@@ -75,9 +81,13 @@ class Settings extends Model
 
     /**
      * Get all settings as key-value array (with casted values).
+     *
+     * Di-cache selama 24 jam; di-invalidasi otomatis saat ada setting yang diubah.
      */
     public static function allKeyed(): array
     {
-        return static::all()->pluck('casted_value', 'key')->toArray();
+        return Cache::remember('settings:all', 86400, function () {
+            return static::all()->pluck('casted_value', 'key')->toArray();
+        });
     }
 }
