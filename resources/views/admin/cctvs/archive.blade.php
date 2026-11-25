@@ -35,7 +35,7 @@
     </form>
 </x-admin::panel>
 
-<x-admin::panel class="overflow-hidden mb-6" flush>
+<x-admin::panel class="overflow-hidden mb-6" flush x-data>
     @if ($cctvs->count() > 0)
         <div class="overflow-visible">
             <x-admin::table>
