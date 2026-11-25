@@ -127,7 +127,7 @@ class CctvController extends Controller
             abort(403);
         }
 
-        $cctv->load('dapur');
+        $cctv->load(['dapur', 'anomalyReports.admin']);
 
         return view('admin.cctvs.show', compact('cctv'));
     }

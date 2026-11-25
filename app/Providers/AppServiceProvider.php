@@ -7,6 +7,7 @@ use App\Models\Laporan;
 use App\Policies\CctvAnomalyReportPolicy;
 use App\Policies\LaporanPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
@@ -38,6 +39,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Komponen reusable khusus halaman pengawas: <x-pengawas::page-heading>, dst.
         Blade::anonymousComponentPath(resource_path('views/pengawas/components'), 'pengawas');
+
+        // Jaga N+1: larang lazy loading Eloquent di non-produksi agar deteksi
+        // dini saat pengembangan, bukan di produksi. View yang membaca relasi
+        // belum di-eager load akan melempar LazyLoadingViolationException.
+        Model::preventLazyLoading(! app()->isProduction());
 
         $this->defineRateLimiters();
     }

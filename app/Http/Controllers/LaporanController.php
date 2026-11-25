@@ -159,16 +159,17 @@ class LaporanController extends Controller
         });
     }
 
-    public function show(Laporan $laporan)
+    public function show(string $laporan)
     {
+        $laporan = Laporan::with(['dapur', 'createdBy', 'hasil'])->findOrFail($laporan);
+
         $user = auth()->user();
 
-        // Pengawas hanya boleh lihat laporan buatan sendiri
-        if ($user->isPengawas() && $laporan->created_by !== $user->id) {
+        // Pengawas hanya boleh lihat laporan buatan sendiri. Bandingkan sebagai
+        // string karena $user->id bisa berupa Ulid objek.
+        if ($user->hasRole('pengawas') && (string) $user->id !== $laporan->created_by) {
             abort(403);
         }
-
-        $laporan->load(['dapur', 'createdBy', 'hasil']);
 
         if ($user->isPengawas()) {
             return view('pengawas.laporan.show', compact('laporan'));

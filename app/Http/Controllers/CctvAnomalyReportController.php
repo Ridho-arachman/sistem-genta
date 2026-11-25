@@ -105,11 +105,11 @@ class CctvAnomalyReportController extends Controller
         return view('admin.cctv-anomalies.index', compact('anomalies', 'cctvs'));
     }
 
-    public function show(CctvAnomalyReport $anomaly)
+    public function show(string $cctv_anomaly)
     {
-        $this->authorize('view', $anomaly);
+        $anomaly = CctvAnomalyReport::with(['cctv.dapur', 'admin'])->findOrFail($cctv_anomaly);
 
-        $anomaly->load(['cctv.dapur', 'admin']);
+        $this->authorize('view', $anomaly);
 
         return view('admin.cctv-anomalies.show', compact('anomaly'));
     }
