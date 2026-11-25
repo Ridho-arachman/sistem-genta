@@ -176,6 +176,11 @@
                                      class="w-full h-full flex items-center justify-center relative">
                                     @if ($cctv['stream_url'] || $cctv['web_rtc_url'])
                                         <video class="absolute inset-0 w-full h-full object-cover" controls autoplay muted playsinline crossorigin="anonymous" preload="none"></video>
+                                        <span class="absolute top-2 right-2 z-20 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-tightest whitespace-nowrap"
+                                              :class="status === 'online' ? 'bg-green-50 text-green-700' : (status === 'offline' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700')"
+                                              x-text="status.charAt(0).toUpperCase() + status.slice(1)">
+                                            {{ ucfirst($cctv['status']) }}
+                                        </span>
                                         <div class="absolute inset-0 z-10 flex-col items-center justify-center bg-black/80" x-show="error" x-cloak>
                                             <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                             <p class="text-xs text-white text-center">Feed tidak tersedia</p>
@@ -183,6 +188,9 @@
                                         </div>
                                     @else
                                         <div class="flex flex-col items-center justify-center text-white h-full">
+                                            <span class="mb-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-tightest whitespace-nowrap {{ $cctv['status'] === 'online' ? 'bg-green-100 text-green-800' : ($cctv['status'] === 'offline' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                                {{ ucfirst($cctv['status']) }}
+                                            </span>
                                             <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                             <p class="text-sm">Feed belum terhubung</p>
                                             <p class="text-[10px] text-white/40">
@@ -203,10 +211,10 @@
 
                     <div class="flex justify-end gap-2 pt-2">
                         <a :href="items[idx]?.show_url || '#'"
-                           class="text-xs text-[var(--color-primary)] hover:underline no-underline"
-                           title="Buka detail kamera">Buka kamera ini <span class="ml-1">→</span></a>
+                           class="btn btn-sm btn-secondary"
+                           title="Buka detail kamera">Buka kamera ini</a>
                         <a href="{{ route('admin.cctvs.index') }}"
-                           class="text-xs text-[var(--color-primary)] hover:underline no-underline">Lihat semua CCTV <span class="ml-1">→</span></a>
+                           class="btn btn-sm btn-primary">Lihat semua CCTV</a>
                     </div>
                 </div>
             @else
