@@ -159,10 +159,24 @@ test('admin can restore dapur from archive', function () {
     $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
 });
 
+test('restoring dapur sets cascaded cctvs to offline', function () {
+    $dapur = Dapur::factory()->create();
+    $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id, 'status' => 'online']);
+    $cctv->delete();
+    $dapur->delete(); // cascades soft delete to dapur (cctv already soft deleted)
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.dapurs.restore', $dapur->id))
+        ->assertRedirect(route('admin.dapurs.archive'));
+
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'status' => 'offline', 'last_checked_at' => null]);
+});
+
 test('restoring dapur cascades restore to its cascaded cctvs', function () {
     $dapur = Dapur::factory()->create();
     $cctv = Cctv::factory()->create(['dapur_id' => $dapur->id]);
-    $dapur->delete(); // cascades soft delete to $cctv
+    $cctv->delete();
+    $dapur->delete(); // cascades soft delete to dapur (cctv already soft deleted)
 
     $this->actingAs($this->admin)
         ->post(route('admin.dapurs.restore', $dapur->id))
@@ -170,7 +184,7 @@ test('restoring dapur cascades restore to its cascaded cctvs', function () {
         ->assertSessionHas('status', 'Dapur berhasil dipulihkan.');
 
     $this->assertDatabaseHas('dapurs', ['id' => $dapur->id, 'deleted_at' => null]);
-    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null]);
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null, 'status' => 'offline', 'last_checked_at' => null]);
 });
 
 test('restoring dapur does not restore cctv archived manually before dapur', function () {

@@ -231,15 +231,27 @@ class DapurController extends Controller
         $dapur = Dapur::withTrashed()->findOrFail($id);
 
         $deletedAt = $dapur->deleted_at;
+
+        // ID CCTV yang ikut ter-arsip saat dapur dihapus (deleted_at dekat dengan dapur).
+        // CCTV yang diarsip manual lebih lama tidak ikut dipulihkan.
+        $cctvIds = Cctv::onlyTrashed()
+            ->where('dapur_id', $dapur->id)
+            ->where('deleted_at', '>=', $deletedAt->copy()->subMinutes(5))
+            ->pluck('id');
+
         $dapur->restore();
 
-        // Pulihkan CCTV yang ikut ter-arsip saat dapur dihapus (deleted_at sangat dekat
-        // dengan deleted_at dapur, karena dihapus dalam satu request destroy).
-        // CCTV yang diarsip manual lebih lama tidak ikut dipulihkan.
         Cctv::onlyTrashed()
             ->where('dapur_id', $dapur->id)
-            ->where('deleted_at', '>=', $deletedAt->copy()->subSeconds(1))
+            ->where('deleted_at', '>=', $deletedAt->copy()->subMinutes(5))
             ->restore();
+
+        // Kamera baru pulih belum tentu siap streaming; tandai offline dan reset
+        // waktu cek agar health check berikutnya mengevaluasi ulang.
+        // Kamera maintenance disengaja (diatur sengaja oleh admin).
+        Cctv::whereIn('id', $cctvIds)
+            ->where('status', '!=', 'maintenance')
+            ->update(['status' => 'offline', 'last_checked_at' => null]);
 
         return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dipulihkan.');
     }

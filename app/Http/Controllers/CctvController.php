@@ -228,6 +228,13 @@ class CctvController extends Controller
 
         $cctv->restore();
 
+        // Kamera baru pulih belum tentu siap streaming; tandai offline dan reset
+        // waktu cek agar health check berikutnya mengevaluasi ulang.
+        // Kamera maintenance disengaja (diatur sengaja oleh admin).
+        if ($cctv->status !== 'maintenance') {
+            $cctv->update(['status' => 'offline', 'last_checked_at' => null]);
+        }
+
         return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dipulihkan.');
     }
 

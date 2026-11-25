@@ -172,7 +172,7 @@ test('admin can restore cctv from archive', function () {
         ->assertRedirect(route('admin.cctvs.archive'))
         ->assertSessionHas('status', 'CCTV berhasil dipulihkan.');
 
-    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null]);
+    $this->assertDatabaseHas('cctvs', ['id' => $cctv->id, 'deleted_at' => null, 'status' => 'offline', 'last_checked_at' => null]);
 });
 
 test('restore cctv blocked when its dapur is still archived', function () {
