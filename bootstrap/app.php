@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CorrelationIdMiddleware;
 use App\Http\Middleware\RestrictPengawasFromWeb;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
@@ -14,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(CorrelationIdMiddleware::class);
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'restrict.pengawas' => RestrictPengawasFromWeb::class,

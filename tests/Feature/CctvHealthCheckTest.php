@@ -131,6 +131,17 @@ test('health check menandai offline dan mengirim alert sekali saja', function ()
     Queue::assertPushed(CctvAlertJob::class, 1);
 });
 
+test('alert job tidak di-antre ganda untuk cctv dan status yang sama (idempoten)', function () {
+    Queue::fake();
+
+    $cctv = Cctv::factory()->create(['status' => 'offline']);
+
+    CctvAlertJob::dispatch($cctv->id, 'offline');
+    CctvAlertJob::dispatch($cctv->id, 'offline');
+
+    Queue::assertPushed(CctvAlertJob::class, 1);
+});
+
 test('health check tidak menimpa status maintenance', function () {
     $cctv = Cctv::factory()->create(['status' => 'maintenance']);
 

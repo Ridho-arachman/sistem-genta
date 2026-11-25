@@ -6,19 +6,37 @@ use App\Models\Cctv;
 use App\Models\Dapur;
 use App\Models\User;
 use App\Services\FcmService;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class CctvAlertJob implements ShouldQueue
+class CctvAlertJob implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
+
+    public int $timeout = 60;
+
+    /** @var array<int, int> */
+    public array $backoff = [30, 120];
 
     public function __construct(
         public string $cctvId,
         public string $status, // 'offline' | 'maintenance' | 'online'
         public bool $notifyAdmins = true
     ) {}
+
+    public function uniqueId(): string
+    {
+        return 'cctv-alert:'.$this->cctvId.':'.$this->status;
+    }
+
+    public function uniqueUntil(): \DateTimeInterface
+    {
+        return now()->addMinutes(5);
+    }
 
     public function handle(FcmService $fcmService): void
     {

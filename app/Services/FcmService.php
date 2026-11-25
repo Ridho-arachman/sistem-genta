@@ -13,7 +13,9 @@ class FcmService
 
     private const CIRCUIT_BREAKER_THRESHOLD = 5; // failures before circuit opens
 
-    private const CIRCUIT_BREAKER_TIMEOUT = 60; // seconds
+    private const CIRCUIT_BREAKER_TIMEOUT = 60; // seconds circuit stays open
+
+    private const CIRCUIT_BREAKER_WINDOW = 120; // seconds failure counter decays
 
     public function __construct()
     {
@@ -110,15 +112,23 @@ class FcmService
     private function updateCircuitBreaker(bool $hadFailure): void
     {
         $key = 'fcm:circuit:failures';
-        $failures = Cache::increment($key);
+
+        if (! $hadFailure) {
+            // Sukses: reset counter dan tutup circuit.
+            Cache::forget($key);
+            Cache::forget('fcm:circuit:open');
+
+            return;
+        }
+
+        // Kegagalan dihitung dalam sliding window; tua membantu
+        // mencegah circuit terbuka permanen karena kejadian lama.
+        $failures = (int) Cache::get($key, 0) + 1;
+        Cache::put($key, $failures, self::CIRCUIT_BREAKER_WINDOW);
 
         if ($failures >= self::CIRCUIT_BREAKER_THRESHOLD) {
             Cache::put('fcm:circuit:open', true, self::CIRCUIT_BREAKER_TIMEOUT);
-            Log::warning('FCM circuit breaker opened');
-        } elseif (! $hadFailure) {
-            // Reset on success
-            Cache::forget($key);
-            Cache::forget('fcm:circuit:open');
+            Log::warning('FCM circuit breaker opened', ['failures' => $failures]);
         }
     }
 
