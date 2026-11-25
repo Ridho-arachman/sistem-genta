@@ -188,22 +188,6 @@ test('restore cctv blocked when its dapur is still archived', function () {
     $this->assertSoftDeleted('cctvs', ['id' => $cctv->id]);
 });
 
-test('admin can force delete cctv and removes media mtx path', function () {
-    config(['cctv.mediamtx.api' => 'http://mediamtx.test:9997']);
-    Http::fake(['mediamtx.test:9997/*' => Http::response([], 200)]);
-
-    $cctv = Cctv::factory()->create(['dapur_id' => $this->dapur->id, 'stream_key' => 'test-stream-key']);
-    $cctv->delete();
-
-    $this->actingAs($this->admin)
-        ->delete(route('admin.cctvs.force', $cctv->id))
-        ->assertRedirect(route('admin.cctvs.archive'))
-        ->assertSessionHas('status', 'CCTV berhasil dihapus permanen.');
-
-    $this->assertDatabaseMissing('cctvs', ['id' => $cctv->id]);
-    Http::assertSent(fn ($request) => str_contains($request->url(), '/v3/config/paths/delete/'));
-});
-
 test('cctv show page loads', function () {
     $cctv = Cctv::factory()->create([
         'dapur_id' => $this->dapur->id,

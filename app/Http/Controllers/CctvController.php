@@ -231,23 +231,6 @@ class CctvController extends Controller
         return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dipulihkan.');
     }
 
-    public function forceDelete(Request $request, $id)
-    {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $cctv = Cctv::withTrashed()->findOrFail($id);
-
-        if ($cctv->stream_key) {
-            $this->mediaMtx->removePath($cctv->stream_key);
-        }
-
-        $cctv->forceDelete();
-
-        return redirect()->route('admin.cctvs.archive')->with('status', 'CCTV berhasil dihapus permanen.');
-    }
-
     /**
      * Sinkronkan path MediaMTX untuk kamera ini (mode pull kalau ada rtsp_url).
      */

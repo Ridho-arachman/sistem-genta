@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Cctv;
 use App\Models\Dapur;
-use App\Services\MediaMtxClient;
 use Illuminate\Http\Request;
 
 class DapurController extends Controller
 {
-    public function __construct(protected MediaMtxClient $mediaMtx) {}
-
     public function index()
     {
         $user = auth()->user();
@@ -245,26 +242,5 @@ class DapurController extends Controller
             ->restore();
 
         return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dipulihkan.');
-    }
-
-    public function forceDelete(Request $request, $id)
-    {
-        if (! auth()->user()->isAdmin()) {
-            abort(403);
-        }
-
-        $dapur = Dapur::withTrashed()->findOrFail($id);
-
-        // Force delete CCTV milik dapur lewat Eloquent agar path MediaMTX dibersihkan.
-        foreach ($dapur->cctvs()->withTrashed()->get() as $cctv) {
-            if ($cctv->stream_key) {
-                $this->mediaMtx->removePath($cctv->stream_key);
-            }
-            $cctv->forceDelete();
-        }
-
-        $dapur->forceDelete();
-
-        return redirect()->route('admin.dapurs.archive')->with('status', 'Dapur berhasil dihapus permanen.');
     }
 }

@@ -1,7 +1,7 @@
 @extends('admin.layouts.app', ['pageTitle' => 'Arsip Dapur'])
 
 @section('page_content')
-<x-admin::page-heading title="Arsip Dapur (Soft Deleted)" subtitle="Kelola dapur yang telah dihapus — bisa dipulihkan atau dihapus permanen" title-class="text-2xl font-extrabold text-[var(--color-secondary)]">
+<x-admin::page-heading title="Arsip Dapur (Soft Deleted)" subtitle="Kelola dapur yang telah dihapus — bisa dipulihkan" title-class="text-2xl font-extrabold text-[var(--color-secondary)]">
     <x-slot:actions>
         <a href="{{ route('admin.dapurs.index') }}"
            class="btn btn-secondary">
@@ -71,13 +71,6 @@
                                     title="Pulihkan" aria-label="Pulihkan dapur {{ $dapur->nama }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                             </button>
-                            {{-- Force Delete Button --}}
-                            <button type="button"
-                                    x-on:click="$dispatch('open-force-delete-modal', { url: '{{ route('admin.dapurs.force', ['id' => $dapur->id]) }}', name: @js($dapur->nama) })"
-                                    class="w-9 h-9 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors"
-                                    title="Hapus Permanen" aria-label="Hapus permanen dapur {{ $dapur->nama }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
                         </div>
                     </td>
                 </tr>
@@ -135,42 +128,4 @@
     </div>
 </div>
 
-<!-- Alpine Force Delete Modal -->
-<div x-data="{ show: false, url: '', name: '' }"
-     x-on:open-force-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
-     x-show="show"
-     x-cloak
-     class="modal z-[1001]"
-     :class="show ? 'modal-open' : ''"
-     x-transition:enter="transition ease-out duration-150"
-     x-transition:enter-start="opacity-0"
-     x-transition:enter-end="opacity-100"
-     x-transition:leave="transition ease-in duration-150"
-     x-transition:leave-start="opacity-100 scale-100"
-     x-transition:leave-end="opacity-0 scale-95">
-    <div class="modal-box max-w-md"
-         x-show="show"
-         x-transition:enter="transition ease-out duration-150"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-full bg-red-100 grid place-items-center">
-                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900">Hapus Permanen Dapur</h3>
-        </div>
-        <p class="text-gray-600 mb-6">PERINGATAN: Dapur <span x-text="name" class="font-semibold text-red-600"></span> akan dihapus PERMANEN dari database. Semua data terkait yang berkaitan dengan dapur ini tidak bisa dipulihkan. Tindakan ini TIDAK DAPAT DIBATALKAN.</p>
-        <div class="flex gap-3 justify-end">
-            <button type="button" x-on:click="show = false" class="btn btn-secondary">Batal</button>
-            <form :action="url" method="POST" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-error">Hapus Permanen</button>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection

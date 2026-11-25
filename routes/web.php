@@ -62,13 +62,11 @@ Route::middleware(['auth', 'restrict.pengawas', 'throttle:web'])->group(function
         // Dapur (full CRUD + arsip)
         Route::get('dapurs/archive', [DapurController::class, 'archive'])->name('dapurs.archive');
         Route::post('dapurs/{id}/restore', [DapurController::class, 'restore'])->name('dapurs.restore');
-        Route::delete('dapurs/{id}/force', [DapurController::class, 'forceDelete'])->name('dapurs.force');
         Route::resource('dapurs', DapurController::class)->names('dapurs');
 
         // CCTV (full CRUD + arsip)
         Route::get('cctvs/archive', [CctvController::class, 'archive'])->name('cctvs.archive');
         Route::post('cctvs/{id}/restore', [CctvController::class, 'restore'])->name('cctvs.restore');
-        Route::delete('cctvs/{id}/force', [CctvController::class, 'forceDelete'])->name('cctvs.force');
         Route::get('cctvs/monitoring', function () {
             return redirect()->route('admin.cctvs.index');
         })->name('cctvs.monitoring');
