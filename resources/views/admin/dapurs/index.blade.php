@@ -77,7 +77,9 @@
                     <div class="flex-1 min-w-0">
                         <h3 class="text-[13px] font-extrabold text-[var(--color-secondary)] truncate" x-text="dapur.nama"></h3>
                         <div class="text-[11px] text-[var(--color-text-muted)] mt-[5px] truncate" x-text="dapur.wilayahPengawas"></div>
-                        <progress class="progress progress-primary h-[5px] mt-[11px]" :value="dapur.progress" max="100"></progress>
+                        <div class="w-full bg-[var(--color-surface)] rounded-full h-[5px] mt-[11px] overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="dapur.progress">
+                            <div class="bg-[var(--color-primary)] h-full rounded-full transition-[width] duration-300" :style="`width: ${dapur.progress}%`"></div>
+                        </div>
                         <div class="flex justify-between text-[10px] text-[var(--color-text-muted)] mt-[7px]">
                             <span x-text="dapur.cctvs_count_online + '/' + dapur.cctvs_count_total + ' kamera online'"></span>
                             <span class="font-medium text-[var(--color-secondary)]" x-text="dapur.progress + '%'"></span>
@@ -86,16 +88,12 @@
                     <div class="flex-shrink-0 sm:ml-4">
                         <span class="badge" :class="{ 'badge-success': dapur.statusClass === 'ok', 'badge-warning': dapur.statusClass === 'warn', 'badge-error': dapur.statusClass === 'off' }" x-text="dapur.status"></span>
                         @if (auth()->user()->isAdmin())
-                        <form x-bind:action="'/admin/dapurs/' + dapur.id" method="POST" class="inline mt-2 sm:mt-0" onsubmit="return confirm('Yakin ingin mengarsipkan dapur ini? Data CCTV di dapur ini harus dihapus terlebih dahulu.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="w-8 h-8 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors"
-                                    title="Arsipkan Dapur"
-                                    x-on:click.stop>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </form>
+                        <button type="button"
+                                x-on:click.stop="$dispatch('open-delete-modal', { url: '/admin/dapurs/' + dapur.id, name: dapur.nama })"
+                                class="w-8 h-8 grid place-items-center rounded-lg bg-[#FEF2F2] text-[#EF4444] hover:bg-[#EF4444] hover:text-white transition-colors"
+                                title="Arsipkan Dapur">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                         @endif
                     </div>
                 </article>
@@ -135,5 +133,44 @@
         </x-admin::empty-state>
     @endif
 </x-admin::panel>
+</div>
+
+<!-- Alpine Delete Modal -->
+<div x-data="{ show: false, url: '', name: '' }"
+     x-on:open-delete-modal.window="show = true; url = $event.detail.url; name = $event.detail.name"
+     x-show="show"
+     x-cloak
+     class="modal z-[1001]"
+     :class="show ? 'modal-open' : ''"
+     x-transition:enter="transition ease-out duration-150"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+    <div class="modal-box max-w-md"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-amber-100 grid place-items-center">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Arsipkan Dapur</h3>
+        </div>
+        <p class="text-gray-600 mb-6">Dapur <span x-text="name" class="font-semibold"></span> akan dipindahkan ke arsip. Data CCTV di dapur ini harus dihapus terlebih dahulu. Tindakan ini bisa dibatalkan via restore.</p>
+        <div class="flex gap-3 justify-end">
+            <button type="button" x-on:click="show = false" class="btn btn-secondary">Batal</button>
+            <form :action="url" method="POST" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-primary">Arsipkan</button>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection

@@ -1,6 +1,6 @@
 @php
-    $type = session('toast_type', session('success') ? 'success' : (session('error') ? 'error' : (session('status') ? 'success' : 'info')));
-    $message = session('status', session('success', session('error', '')));
+    $type = session('toast_type', (session('success') || session('status')) ? 'success' : (session('error') || $errors->any() ? 'error' : 'info'));
+    $message = session('status', session('success', session('error', $errors->first() ?? '')));
     $icons = [
         'success' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
         'info' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
