@@ -330,7 +330,60 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentLaporans', 'recentAnomalies'));
+        // Kandidat preview CCTV: prioritas yang punya stream, online dulu.
+        $previewCctvs = Cctv::with('dapur')
+            ->where(fn ($q) => $q->whereNotNull('stream_url')->orWhereNotNull('web_rtc_url'))
+            ->orderByRaw("CASE status WHEN 'online' THEN 1 WHEN 'maintenance' THEN 2 ELSE 3 END")
+            ->latest('last_checked_at')
+            ->limit(10)
+            ->get()
+            ->map(fn ($c) => [
+                'id' => $c->id,
+                'nama' => $c->nama ?? 'Kamera',
+                'dapur' => $c->dapur?->nama ?? '-',
+                'status' => $c->status,
+                'stream_url' => $c->stream_url,
+                'web_rtc_url' => $c->web_rtc_url,
+                'show_url' => route('admin.cctvs.show', $c),
+            ]);
+
+        if ($previewCctvs->isEmpty()) {
+            $previewCctvs = Cctv::with('dapur')->latest('last_checked_at')->limit(10)->get()->map(fn ($c) => [
+                'id' => $c->id,
+                'nama' => $c->nama ?? 'Kamera',
+                'dapur' => $c->dapur?->nama ?? '-',
+                'status' => $c->status,
+                'stream_url' => $c->stream_url,
+                'web_rtc_url' => $c->web_rtc_url,
+                'show_url' => route('admin.cctvs.show', $c),
+            ]);
+        }
+
+        // Aktivitas terbaru gabungan dari laporan dan anomali, diurutkan terbaru.
+        $activities = collect();
+        foreach ($recentLaporans as $laporan) {
+            $activities->push([
+                'type' => 'laporan',
+                'title' => 'Laporan inspeksi baru',
+                'subtitle' => ($laporan->createdBy?->name ?? 'Pengawas').' · '.($laporan->dapur?->nama ?? 'Dapur'),
+                'time' => $laporan->created_at,
+                'icon' => '✓',
+                'color' => 'green',
+            ]);
+        }
+        foreach ($recentAnomalies as $anomaly) {
+            $activities->push([
+                'type' => 'anomali',
+                'title' => 'Temuan anomali CCTV',
+                'subtitle' => ($anomaly->cctv?->dapur?->nama ?? 'Dapur').' · '.($anomaly->cctv?->nama ?? 'Kamera'),
+                'time' => $anomaly->created_at,
+                'icon' => '⚑',
+                'color' => 'yellow',
+            ]);
+        }
+        $recentActivities = $activities->sortByDesc('time')->take(6)->values();
+
+        return view('admin.dashboard', compact('stats', 'dapurs', 'pengawas', 'recentLaporans', 'recentAnomalies', 'previewCctvs', 'recentActivities'));
     }
 
     // Settings

@@ -145,58 +145,105 @@
     <div class="grid gap-4 max-w-full overflow-hidden">
         {{-- Camera Panel --}}
         <x-admin::panel title="Pratinjau CCTV" subtitle="Status terkini perangkat" :divider="false" class="max-w-full overflow-hidden">
-            <div class="flex flex-col gap-3">
-                <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> LIVE
-                </span>
+            @if ($previewCctvs->count() > 0)
+                <div x-data="{ idx: 0, items: @js($previewCctvs->values()->all()) }" class="space-y-2">
+                    <div class="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
+                        <div>
+                            <h3 x-text="items[idx]?.nama ?? 'Kamera'" class="text-sm font-semibold text-[var(--color-text)]"></h3>
+                            <p x-text="items[idx]?.dapur ?? '-'" class="text-[11px] text-[var(--color-text-muted)]"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button"
+                                    @click="idx = idx > 0 ? idx - 1 : items.length - 1"
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[#F3F4F6] transition-colors"
+                                    title="Sebelumnya">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <span x-text="idx + 1 + ' / ' + items.length" class="text-xs font-medium whitespace-nowrap text-[var(--color-text-muted)]"></span>
+                            <button type="button"
+                                    @click="idx = idx < items.length - 1 ? idx + 1 : 0"
+                                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[#F3F4F6] transition-colors"
+                                    title="Selanjutnya">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="aspect-video bg-black rounded-lg overflow-hidden min-h-[200px]">
+                        @foreach ($previewCctvs as $index => $cctv)
+                            <template x-if="idx === {{ $index }}">
+                                <div x-data="cctvPlayer(@js($cctv['stream_url'] ?? ''), false, @js($cctv['status']), @js($cctv['web_rtc_url'] ?? ''))"
+                                     class="w-full h-full flex items-center justify-center relative">
+                                    @if ($cctv['stream_url'] || $cctv['web_rtc_url'])
+                                        <video class="absolute inset-0 w-full h-full object-cover" controls autoplay muted playsinline crossorigin="anonymous" preload="none"></video>
+                                        <div class="absolute inset-0 z-10 flex-col items-center justify-center bg-black/80" x-show="error" x-cloak>
+                                            <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            <p class="text-xs text-white text-center">Feed tidak tersedia</p>
+                                            <p class="text-[10px] text-white/40">Gagal memuat stream</p>
+                                        </div>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center text-white h-full">
+                                            <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            <p class="text-sm">Feed belum terhubung</p>
+                                            <p class="text-[10px] text-white/40">
+                                                @if ($cctv['status'] === 'online')
+                                                    Stream belum dikonfigurasi
+                                                @elseif (! $cctv['stream_url'] && ! $cctv['web_rtc_url'])
+                                                    Belum ada URL stream
+                                                @else
+                                                    Tidak dapat dimuat
+                                                @endif
+                                            </p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </template>
+                        @endforeach
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <a :href="items[idx]?.show_url || '#'"
+                           class="text-xs text-[var(--color-primary)] hover:underline no-underline"
+                           title="Buka detail kamera">Buka kamera ini <span class="ml-1">→</span></a>
+                        <a href="{{ route('admin.cctvs.index') }}"
+                           class="text-xs text-[var(--color-primary)] hover:underline no-underline">Lihat semua CCTV <span class="ml-1">→</span></a>
+                    </div>
+                </div>
+            @else
                 <div class="bg-[#1a1a1a] rounded-lg p-6 text-center min-h-[160px] flex flex-col justify-center items-center gap-3">
                     <div class="text-[48px] text-[#444]">▥</div>
                     <strong class="text-white">Pratinjau Kamera Dapur</strong>
-                    <small class="text-[#888]">Stream CCTV akan tampil setelah integrasi perangkat</small>
+                    <small class="text-[#888]">Belum ada kamera CCTV terdata</small>
                 </div>
-                <span class="text-[11px] text-[var(--color-text-muted)] text-center">CAM-01 · {{ $dapurs->first()->nama ?? 'Dapur' }}</span>
-            </div>
-            <div class="mt-4 space-y-2">
-                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="min-w-0 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">▣</div>
-                        <div><b>Area persiapan</b><div class="min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->first()->nama ?? 'Dapur' }}</div></div>
-                    </div>
-                    <x-status-badge :status="'ok'" :label="'Online'" />
-                </div>
-                <div class="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="min-w-0 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">▣</div>
-                        <div><b>Area memasak</b><div class="min-w-0 text-[11px] text-[var(--color-text-muted)]">{{ $dapurs->skip(1)->first()->nama ?? 'Dapur' }}</div></div>
-                    </div>
-                    <x-status-badge :status="'warn'" :label="'Periksa'" />
-                </div>
-            </div>
+            @endif
         </x-admin-panel>
 
         {{-- Activity Feed --}}
         <x-admin::panel title="Aktivitas Terbaru" subtitle="Hari ini" :divider="false" class="max-w-full overflow-hidden">
             <div class="space-y-4">
-                <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                    <div class="flex-1 min-w-0"><strong>Laporan inspeksi baru</strong><p class="text-sm text-[var(--color-text-muted)]">{{ $recentLaporans->first()?->createdBy?->name ?? 'Pengawas' }} · {{ $dapurs->first()?->nama ?? 'Dapur' }}</p></div>
-                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->format('H:i') }}</time>
-                </div>
-                <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600">⚑</div>
-                    <div class="flex-1 min-w-0"><strong>Temuan perlu tindak lanjut</strong><p class="text-sm text-[var(--color-text-muted)]">Area penyimpanan</p></div>
-                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subMinutes(30)->format('H:i') }}</time>
-                </div>
-                <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">▣</div>
-                    <div class="flex-1 min-w-0"><strong>Status kamera berubah</strong><p class="text-sm text-[var(--color-text-muted)]">Kamera CAM-03</p></div>
-                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subHour()->format('H:i') }}</time>
-                </div>
-                <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
-                    <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">▤</div>
-                    <div class="flex-1 min-w-0"><strong>Laporan inspeksi diperiksa</strong><p class="text-sm text-[var(--color-text-muted)]">Admin pusat</p></div>
-                    <time class="text-sm text-[var(--color-text-muted)]">{{ now()->subHours(2)->format('H:i') }}</time>
-                </div>
+                @forelse ($recentActivities as $activity)
+                    @php
+                        $colorMap = [
+                            'green' => 'bg-green-100 text-green-600',
+                            'yellow' => 'bg-yellow-100 text-yellow-600',
+                        ];
+                        $c = $colorMap[$activity['color'] ?? 'green'] ?? 'bg-green-100 text-green-600';
+                    @endphp
+                    <div class="flex items-start gap-3 p-3 bg-[var(--color-surface)] rounded-lg">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center {{ $c }}">
+                            {{ $activity['icon'] }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <strong>{{ $activity['title'] }}</strong>
+                            <p class="text-sm text-[var(--color-text-muted)]">{{ $activity['subtitle'] }}</p>
+                        </div>
+                        <time class="text-sm text-[var(--color-text-muted)]">{{ $activity['time']->format('H:i') }}</time>
+                    </div>
+                @empty
+                    <div class="text-center py-8 text-[var(--color-text-muted)]">
+                        Belum ada aktivitas terbaru
+                    </div>
+                @endforelse
             </div>
         </x-admin-panel>
     </div>
