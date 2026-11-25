@@ -227,7 +227,7 @@
         </x-admin-panel>
 
         {{-- Activity Feed --}}
-        <x-admin::panel title="Aktivitas Terbaru" subtitle="Hari ini" :divider="false" class="max-w-full overflow-hidden">
+        <x-admin::panel title="Aktivitas Terbaru" subtitle="Terbaru" :divider="false" class="max-w-full overflow-hidden">
             <div class="space-y-4">
                 @forelse ($recentActivities as $activity)
                     @php
@@ -245,7 +245,7 @@
                             <strong>{{ $activity['title'] }}</strong>
                             <p class="text-sm text-[var(--color-text-muted)]">{{ $activity['subtitle'] }}</p>
                         </div>
-                        <time class="text-sm text-[var(--color-text-muted)]">{{ $activity['time']->format('H:i') }}</time>
+                        <time class="text-sm text-[var(--color-text-muted)]">{{ $activity['time']->format('d M Y, H:i') }}</time>
                     </div>
                 @empty
                     <div class="text-center py-8 text-[var(--color-text-muted)]">
