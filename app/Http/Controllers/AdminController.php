@@ -330,9 +330,10 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        // Kandidat preview CCTV: prioritas yang punya stream, online dulu.
+        // Kandidat preview CCTV: prioritas yang punya stream key (stream_url/web_rtc_url
+        // adalah accessor turunan dari stream_key, bukan kolom DB).
         $previewCctvs = Cctv::with('dapur')
-            ->where(fn ($q) => $q->whereNotNull('stream_url')->orWhereNotNull('web_rtc_url'))
+            ->whereNotNull('stream_key')
             ->orderByRaw("CASE status WHEN 'online' THEN 1 WHEN 'maintenance' THEN 2 ELSE 3 END")
             ->latest('last_checked_at')
             ->limit(10)
