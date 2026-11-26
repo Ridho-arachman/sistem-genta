@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-scheduler
+  namespace: genta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genta
+      role: scheduler
+  template:
+    metadata:
+      labels:
+        app: genta
+        role: scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: genta-app:latest
+          imagePullPolicy: IfNotPresent
+          command: ["php", "artisan"]
+          args: ["schedule:work"]
+          envFrom:
+            - configMapRef:
+                name: genta-app-config
+            - secretRef:
+                name: genta-app-secret
+          livenessProbe:
+            exec:
+              command: ["php", "artisan", "--version"]
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

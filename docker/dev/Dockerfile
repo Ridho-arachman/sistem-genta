@@ -1,4 +1,5 @@
-# composer.lock butuh PHP >=8.4 (Symfony 8.x); CI dan mesin dev memakai 8.5.
+# Image dev: PHP CLI + artisan serve + dependency lengkap (PHPUnit/Pest ikut terpasang).
+# Build dari root repo: docker build -f docker/dev/Dockerfile -t genta-app:dev .
 FROM php:8.5-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,9 +21,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-interaction --no-progress
+RUN composer install --no-interaction --no-progress --no-scripts
 
 COPY . .
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoload --optimize
 
 EXPOSE 8000
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

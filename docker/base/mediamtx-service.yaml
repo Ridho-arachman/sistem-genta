@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: genta-mediamtx
+  namespace: genta
+spec:
+  type: ClusterIP
+  selector:
+    app: genta
+    role: mediamtx
+  ports:
+    - name: rtsp
+      port: 8554
+      targetPort: 8554
+    - name: hls
+      port: 8888
+      targetPort: 8888
+    - name: webrtc
+      port: 8889
+      targetPort: 8889
+    - name: api
+      port: 9997
+      targetPort: 9997
+    - name: webrtc-udp
+      port: 8189
+      targetPort: 8189
+      protocol: UDP
+    - name: data-udp
+      port: 8890
+      targetPort: 8890
+      protocol: UDP

@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-queue
+  namespace: genta
+spec:
+  replicas: 3

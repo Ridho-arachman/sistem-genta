@@ -1,0 +1,23 @@
+# Konfigurasi media server MediaMTX.
+# Laravel mendaftarkan path lewat Control API dan menyajikan URL HLS/WHEP ke browser.
+# Rekaman/backup tetap urusan NVR tim hardware; stream di-pull on-demand.
+
+api: yes
+apiAddress: :9997
+
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigins: ['*']
+
+webrtc: yes
+webrtcAddress: :8889
+
+rtsp: yes
+rtspAddress: :8554
+
+pathDefaults:
+  sourceOnDemand: yes
+  sourceOnDemandCloseAfter: 30s
+  record: no
+
+paths: {}

@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-web
+  namespace: genta
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: web
+          command: ["sh", "-c"]
+          args: ["php-fpm -D && nginx -g 'daemon off;'"]
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "false"

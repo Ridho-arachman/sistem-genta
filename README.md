@@ -102,7 +102,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute, dan `Policy`/`$th
 | Notifikasi | Firebase Cloud Messaging |
 | Pengujian | Pest 5 — suite harus hijau (angka tes mengikuti keluaran `vendor/bin/pest`) |
 | Kualitas Kode | Laravel Pint |
-| Container | Docker + docker compose (app, queue, scheduler, MediaMTX) |
+| Container | Docker + Kubernetes/Kustomize (dev & prod: app, queue, scheduler, Postgres, MediaMTX) |
 
 ### Struktur Direktori
 
@@ -226,7 +226,7 @@ Pakai **empat terminal terpisah**:
 php artisan serve          # 1. web server
 php artisan queue:work     # 2. antrean (job health check, notifikasi, ekspor)
 php artisan schedule:work  # 3. scheduler — memicu health check tiap menit
-.\mediamtx.exe .\mediamtx.yml   # 4. media server (sesuaikan path binary)
+.\mediamtx.exe .\docker\mediamtx\mediamtx.yml   # 4. media server (sesuaikan path binary)
 ```
 
 Verifikasi MediaMTX:
@@ -247,7 +247,7 @@ Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — po
 
 Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
 
-Alternatif via Docker (opsional): `docker compose up -d --force-recreate mediamtx`. Pastikan Control API `:9997` ikut ter-publish; container lama yang dibuat sebelum `docker-compose.yml` memiliki `9997` bisa membuat sinkronisasi path gagal.
+Alternatif via Kubernetes: `./docker/up.sh dev` (atau `prod`). Pastikan Control API `:9997` ikut di-port-forward; lihat [docker/README.md](docker/README.md).
 
 > `CCTV_HLS_BASE` wajib `http://127.0.0.1:8888` saat preview dibuka dari browser pada PC yang menjalankan MediaMTX: MediaMTX memasang cookie `Secure` untuk HLS, dan browser hanya menerimanya pada origin yang trusted — `http://127.0.0.1` dan `http://localhost` ya, `http://192.168.x.x` tidak. Kalau preview dibuka dari Android/WebView di Wi-Fi (bukan dari PC MediaMTX), letakkan MediaMTX di belakang HTTPS atau pakai WebRTC (`:8889`) sebagai pengganti HLS; mengganti `CCTV_HLS_BASE` ke IP LAN saja **tidak** cukup.
 
@@ -338,7 +338,7 @@ Laporkan potensi kerentanan secara internal kepada tim pengelola sistem, bukan m
 
 ## Deployment
 
-- Container Docker (`Dockerfile` + `docker compose`: app, queue, scheduler, MediaMTX)
+- Docker + Kubernetes/Kustomize: `./docker/up.sh dev` atau `./docker/up.sh prod` (app, queue, scheduler, Postgres, MediaMTX) — lihat [docker/README.md](docker/README.md)
 - Web server nginx + TLS (Let's Encrypt) untuk produksi
 - Build aset produksi melalui `npm run build`
 - Konfigurasi berbasis environment untuk database, antrean, MediaMTX, dan notifikasi

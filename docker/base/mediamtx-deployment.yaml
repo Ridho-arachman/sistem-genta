@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-mediamtx
+  namespace: genta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genta
+      role: mediamtx
+  template:
+    metadata:
+      labels:
+        app: genta
+        role: mediamtx
+    spec:
+      containers:
+        - name: mediamtx
+          image: bluenviron/mediamtx:1.21.4
+          imagePullPolicy: IfNotPresent
+          command: ["/mediamtx.yml"]
+          volumeMounts:
+            - name: config
+              mountPath: /mediamtx.yml
+              subPath: mediamtx.yml
+              readOnly: true
+          ports:
+            - containerPort: 8554
+              name: rtsp
+            - containerPort: 8888
+              name: hls
+            - containerPort: 8889
+              name: webrtc
+            - containerPort: 9997
+              name: api
+            - containerPort: 8189
+              name: webrtc-udp
+              protocol: UDP
+            - containerPort: 8890
+              name: data-udp
+              protocol: UDP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 9997
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: genta-mediamtx-config

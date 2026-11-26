@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: genta-postgres
+  namespace: genta
+spec:
+  type: ClusterIP
+  selector:
+    app: genta
+    role: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432

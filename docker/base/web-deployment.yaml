@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-web
+  namespace: genta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genta
+      role: web
+  template:
+    metadata:
+      labels:
+        app: genta
+        role: web
+    spec:
+      containers:
+        - name: web
+          image: genta-app:latest
+          imagePullPolicy: IfNotPresent
+          command: ["php", "artisan"]
+          args: ["serve", "--host=0.0.0.0", "--port=8000"]
+          envFrom:
+            - configMapRef:
+                name: genta-app-config
+            - secretRef:
+                name: genta-app-secret
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /up
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"

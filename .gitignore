@@ -42,6 +42,7 @@ update_css.php
 gentapangan.keystore
 gentapangan-release-*.apk
 mediamtx.exe
+docker/*/k8s/app-secret.env
 /.opencode
 /.agents
 /.playwright-mcp

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genta-queue
+  namespace: genta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genta
+      role: queue
+  template:
+    metadata:
+      labels:
+        app: genta
+        role: queue
+    spec:
+      containers:
+        - name: queue
+          image: genta-app:latest
+          imagePullPolicy: IfNotPresent
+          command: ["php", "artisan"]
+          args: ["queue:work", "--tries=3", "--timeout=200"]
+          envFrom:
+            - configMapRef:
+                name: genta-app-config
+            - secretRef:
+                name: genta-app-secret
+          livenessProbe:
+            exec:
+              command: ["php", "artisan", "--version"]
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: genta-prod
+
+resources:
+  - ../../base
+
+images:
+  - name: genta-app
+    newTag: prod
+
+patches:
+  - path: patches/web-patch.yaml
+  - path: patches/queue-patch.yaml
+  - path: patches/mediamtx-patch.yaml
