@@ -52,9 +52,11 @@ kubectl -n genta-dev logs -f deployment/genta-web
 kubectl -n genta-dev logs -f deployment/genta-queue
 kubectl -n genta-dev rollout restart deployment/genta-web
 
-# Hapus seluruh mode (PVC tidak ikut terhapus otomatis)
+# Hapus seluruh mode (PVC sengaja tidak ikut terhapus — data aman)
 kubectl delete -k docker/dev/k8s
-kubectl delete pvc genta-postgres-data -n genta-dev
+
+# PVC harus dihapus manual saja kalau benar-benar ingin membuang data:
+# kubectl delete pvc genta-postgres-data -n genta-dev
 ```
 
 Aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. HTTPS/TLS produksi ditangani Ingress atau reverse proxy di depan `svc/genta-web` (port 80). Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.

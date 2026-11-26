@@ -36,6 +36,10 @@ fi
 
 kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
+# PVC dipersiapkan terlebih dahulu dan dikeluarkan dari kustomize
+# supaya `kubectl delete -k` tidak ikut menghapus data PostgreSQL.
+kubectl apply -f docker/base/postgres-pvc.yaml -n "$NAMESPACE"
+
 # Upsert Secret (selalu sinkron, kalau sudah ada akan di-apply ulang)
 kubectl create secret generic genta-app-secret \
     --from-env-file="$ENV_FILE" \
