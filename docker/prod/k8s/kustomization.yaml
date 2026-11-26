@@ -5,6 +5,7 @@ namespace: genta-prod
 
 resources:
   - ../../base
+  - ingress.yaml
 
 images:
   - name: genta-app

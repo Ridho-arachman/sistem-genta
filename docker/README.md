@@ -59,4 +59,23 @@ kubectl delete -k docker/dev/k8s
 # kubectl delete pvc genta-postgres-data -n genta-dev
 ```
 
-Aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. HTTPS/TLS produksi ditangani Ingress atau reverse proxy di depan `svc/genta-web` (port 80). Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.
+Aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.
+
+## Ingress & TLS produksi
+
+Prod sudah disertakan `ingress.yaml` yang mengarahkan trafik eksternal ke `svc/genta-web`:
+
+```bash
+kubectl -n genta-prod apply -f docker/prod/k8s/tls-secret.yaml   # buat dari tls-secret.example.yaml, isi sertifikat asli
+kubectl -n genta-prod apply -k docker/prod/k8s
+```
+
+Prasyarat: cluster sudah terpasang ingress controller (mis. `ingress-nginx`). Di Docker Desktop, aktifkan dengan `minikube addons enable ingress` atau setara sesuai distribusi cluster.
+
+Sertifikat TLS dibuat manual dan disimpan di Secret `genta-tls` di namespace `genta-prod`. Template ada di `docker/prod/k8s/tls-secret.example.yaml`. Ubah host `genta.example.com` di `ingress.yaml` sesuai domain produksi.
+
+Kalau belum punya ingress controller, gunakan port-forward sementara:
+
+```bash
+kubectl -n genta-prod port-forward svc/genta-web 8000:80
+```
