@@ -13,25 +13,18 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 ENV_FILE="docker/$MODE/k8s/app-secret.env"
 
-if [[ ! -f "$ENV_FILE" ]]; then
-    cp .env "$ENV_FILE"
-    echo "Dibuat $ENV_FILE dari .env — edit nilai K8s bila perlu."
-fi
+# Selalu sinkron dari .env root supaya satu tempat ngubah nilai.
+cp .env "$ENV_FILE"
 
-# --- Sanitasi nilai agar sesuai klaster (bukan 127.0.0.1 / localhost host) ---
-# DB: klaster pakai Service genta-postgres, bukan 127.0.0.1 host laptop
+# Sanitasi nilai agar sesuai klaster (bukan 127.0.0.1 / localhost host laptop)
 sed -i 's/^DB_HOST=.*/DB_HOST=genta-postgres/' "$ENV_FILE"
 sed -i 's/^DB_DATABASE=.*/DB_DATABASE=genta/' "$ENV_FILE"
 sed -i 's/^DB_USERNAME=.*/DB_USERNAME=genta/' "$ENV_FILE"
 if grep -q '^DB_PASSWORD=$' "$ENV_FILE"; then
     sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=genta_${MODE}_password/" "$ENV_FILE"
 fi
-
-# MediaMTX: di dalam klaster pakai nama Service, bukan localhost host laptop
 sed -i 's#^CCTV_MEDIAMTX_API=.*#CCTV_MEDIAMTX_API=http://genta-mediamtx:9997#' "$ENV_FILE"
 sed -i 's#^CCTV_MEDIAMTX_RTSP=.*#CCTV_MEDIAMTX_RTSP=rtsp://genta-mediamtx:8554#' "$ENV_FILE"
-
-# HLS/WHEP untuk browser via port-forward ke 127.0.0.1 di laptop
 sed -i 's#^CCTV_HLS_BASE=.*#CCTV_HLS_BASE=http://127.0.0.1:8888#' "$ENV_FILE"
 sed -i 's#^CCTV_WEBRTC_BASE=.*#CCTV_WEBRTC_BASE=http://127.0.0.1:8889#' "$ENV_FILE"
 
@@ -42,9 +35,11 @@ if [[ "$MODE" == "prod" ]]; then
 fi
 
 kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
-if ! kubectl -n "$NAMESPACE" get secret genta-app-secret >/dev/null 2>&1; then
-    kubectl -n "$NAMESPACE" create secret generic genta-app-secret --from-env-file="$ENV_FILE"
-fi
+
+# Upsert Secret (selalu sinkron, kalau sudah ada akan di-apply ulang)
+kubectl create secret generic genta-app-secret \
+    --from-env-file="$ENV_FILE" \
+    --dry-run=client -o yaml | kubectl apply -n "$NAMESPACE" -f -
 
 docker build -f "docker/$MODE/Dockerfile" -t "genta-app:$MODE" .
 kubectl apply -k "docker/$MODE/k8s"

@@ -30,9 +30,9 @@ docker/
 
 Prasyarat: `docker`, `kubectl` yang terhubung ke cluster, dan StorageClass default (untuk PVC PostgreSQL).
 
-1. Pertama kali, `up.sh` membuat `docker/<mode>/k8s/app-secret.env` dari contoh dan mengisi `APP_KEY` otomatis. **Edit file ini** sebelum memakai prod: `APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, dan URL `CCTV_HLS_BASE` / `CCTV_WEBRTC_BASE` yang bisa dijangkau browser.
-2. Jalankan `./docker/up.sh dev` atau `./docker/up.sh prod`.
-3. Secret hanya dibuat bila belum ada. Bila mengubah `app-secret.env`, hapus secret lama dengan `kubectl -n genta-<mode> delete secret genta-app-secret` lalu jalankan ulang `up.sh`.
+1. Edit `.env` di root repo — itu sumber kebenaran satu-satunya (termasuk `APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`).
+2. Jalankan `./docker/up.sh dev` atau `./docker/up.sh prod`. Script akan selalu sinkron `.env` → `app-secret.env` → K8s Secret, termasuk nilai yang sudah disesuaikan untuk klaster (`DB_HOST=genta-postgres`, dst).
+3. Bila ingin mengubah nilai, edit `.env` lalu jalankan ulang `./docker/up.sh <mode>`. Secret di klaster akan di-apply ulang otomatis.
 4. Aplikasi memakai satu PostgreSQL di dalam cluster (`genta-postgres`) untuk DB, session, queue, dan cache — tanpa Redis. Migration dijalankan otomatis sekali setelah web siap.
 
 Akses dari mesin lokal:
