@@ -2,6 +2,28 @@
 # Jalankan satu mode: ./docker/up.sh dev  atau  ./docker/up.sh prod
 set -euo pipefail
 
+# --- Temukan `kubectl` tanpa path statis, supaya jalan di device mana pun ---
+# 1) Coba re-exec lewat login shell agar PATH milik device (bashrc/profile) ikut
+#    termuat. Guard `GENTA_LOGIN_RETRY` mencegah infinite loop.
+if [[ -z "${GENTA_LOGIN_RETRY:-}" ]] && ! command -v kubectl >/dev/null 2>&1; then
+    GENTA_LOGIN_RETRY=1 exec bash -lc 'exec "$@"' bash "$0" "$@"
+fi
+
+# 2) Fallback: Docker Desktop biasanya meletakkan kubectl di folder yang sama
+#    dengan `docker`. Ambil lokasi secara dinamis, tidak ada path absolut.
+if ! command -v kubectl >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
+    PATH="$(dirname "$(command -v docker)"):$PATH"
+    export PATH
+fi
+
+# 3) Error jelas kalau tetap tidak ketemu, baru di baris pemanggilan asli.
+for bin in docker kubectl; do
+    if ! command -v "$bin" >/dev/null 2>&1; then
+        echo "$bin tidak ditemukan. Install $bin / aktifkan Kubernetes di Docker Desktop." >&2
+        exit 1
+    fi
+done
+
 MODE="${1:-}"
 case "$MODE" in
     dev|prod) ;;
