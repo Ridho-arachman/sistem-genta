@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: genta-mediamtx
-  namespace: genta
 spec:
   replicas: 1
   selector:

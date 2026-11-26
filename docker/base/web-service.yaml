@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: genta-web
-  namespace: genta
 spec:
   type: ClusterIP
   selector:
