@@ -9,11 +9,21 @@ if [[ -z "${GENTA_LOGIN_RETRY:-}" ]] && ! command -v kubectl >/dev/null 2>&1; th
     GENTA_LOGIN_RETRY=1 exec bash -lc 'exec "$@"' bash "$0" "$@"
 fi
 
-# 2) Fallback: Docker Desktop biasanya meletakkan kubectl di folder yang sama
-#    dengan `docker`. Ambil lokasi secara dinamis, tidak ada path absolut.
-if ! command -v kubectl >/dev/null 2>&1 && command -v docker >/dev/null 2>&1; then
-    PATH="$(dirname "$(command -v docker)"):$PATH"
-    export PATH
+# 2) Fallback: cari `kubectl` di lokasi umum tanpa path statis per device.
+#    Folder ini diturunkan dari env var / command lain, tidak hardcode drive atau user.
+if ! command -v kubectl >/dev/null 2>&1; then
+    for dir in \
+        "$(command -v docker >/dev/null 2>&1 && dirname "$(command -v docker)")" \
+        "$(command -v cygpath >/dev/null 2>&1 && cygpath -u "${PROGRAMFILES:-}" 2>/dev/null)/Docker/Docker/resources/bin" \
+        "${HOME}/AppData/Local/Microsoft/WinGet/Links" \
+        /opt/homebrew/bin /usr/local/bin "${HOME}/.local/bin"
+    do
+        if [[ -n "$dir" && (-x "$dir/kubectl" || -x "$dir/kubectl.exe") ]]; then
+            PATH="$dir:$PATH"
+            export PATH
+            break
+        fi
+    done
 fi
 
 # 3) Error jelas kalau tetap tidak ketemu, baru di baris pemanggilan asli.
