@@ -12,17 +12,33 @@ NAMESPACE="genta-$MODE"
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 ENV_FILE="docker/$MODE/k8s/app-secret.env"
-EXAMPLE_FILE="docker/$MODE/k8s/app-secret.example.env"
 
 if [[ ! -f "$ENV_FILE" ]]; then
-    cp "$EXAMPLE_FILE" "$ENV_FILE"
-    echo "Dibuat $ENV_FILE — isi nilai asli sebelum pakai produksi."
+    cp .env "$ENV_FILE"
+    echo "Dibuat $ENV_FILE dari .env — edit nilai K8s bila perlu."
 fi
 
-if grep -q '^APP_KEY=$' "$ENV_FILE"; then
-    key="APP_KEY=base64:$(openssl rand -base64 32)"
-    awk -v key="$key" '$0 == "APP_KEY=" { print key; next } { print }' "$ENV_FILE" > "$ENV_FILE.tmp"
-    mv "$ENV_FILE.tmp" "$ENV_FILE"
+# --- Sanitasi nilai agar sesuai klaster (bukan 127.0.0.1 / localhost host) ---
+# DB: klaster pakai Service genta-postgres, bukan 127.0.0.1 host laptop
+sed -i 's/^DB_HOST=.*/DB_HOST=genta-postgres/' "$ENV_FILE"
+sed -i 's/^DB_DATABASE=.*/DB_DATABASE=genta/' "$ENV_FILE"
+sed -i 's/^DB_USERNAME=.*/DB_USERNAME=genta/' "$ENV_FILE"
+if grep -q '^DB_PASSWORD=$' "$ENV_FILE"; then
+    sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=genta_${MODE}_password/" "$ENV_FILE"
+fi
+
+# MediaMTX: di dalam klaster pakai nama Service, bukan localhost host laptop
+sed -i 's#^CCTV_MEDIAMTX_API=.*#CCTV_MEDIAMTX_API=http://genta-mediamtx:9997#' "$ENV_FILE"
+sed -i 's#^CCTV_MEDIAMTX_RTSP=.*#CCTV_MEDIAMTX_RTSP=rtsp://genta-mediamtx:8554#' "$ENV_FILE"
+
+# HLS/WHEP untuk browser via port-forward ke 127.0.0.1 di laptop
+sed -i 's#^CCTV_HLS_BASE=.*#CCTV_HLS_BASE=http://127.0.0.1:8888#' "$ENV_FILE"
+sed -i 's#^CCTV_WEBRTC_BASE=.*#CCTV_WEBRTC_BASE=http://127.0.0.1:8889#' "$ENV_FILE"
+
+# Prod: paksa production mode
+if [[ "$MODE" == "prod" ]]; then
+    sed -i 's/^APP_ENV=.*/APP_ENV=production/' "$ENV_FILE"
+    sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' "$ENV_FILE"
 fi
 
 kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
