@@ -18,7 +18,9 @@ spec:
         - name: mediamtx
           image: bluenviron/mediamtx:1.21.4
           imagePullPolicy: IfNotPresent
-          command: ["/mediamtx.yml"]
+          # Image punya ENTRYPOINT ["/mediamtx"]; config yang di-mount di
+          # /mediamtx.yml dibaca otomatis. Jangan override command agar
+          # file YAML tidak dieksekusi sebagai binary.
           volumeMounts:
             - name: config
               mountPath: /mediamtx.yml

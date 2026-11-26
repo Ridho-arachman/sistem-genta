@@ -77,13 +77,23 @@ kubectl create secret generic genta-app-secret \
     --from-env-file="$ENV_FILE" \
     --dry-run=client -o yaml | kubectl apply -n "$NAMESPACE" -f -
 
-docker build -f "docker/$MODE/Dockerfile" -t "genta-app:$MODE" .
+# Build image kecuali SKIP_BUILD=1 (iterasi cepat kalau image sudah ada).
+if [[ "${SKIP_BUILD:-}" != "1" ]] || ! docker image inspect "genta-app:$MODE" >/dev/null 2>&1; then
+    docker build -f "docker/$MODE/Dockerfile" -t "genta-app:$MODE" .
+else
+    echo "SKIP_BUILD=1: melewati build, pakai image genta-app:$MODE yang sudah ada."
+fi
 kubectl apply -k "docker/$MODE/k8s"
 
 for deployment in genta-postgres genta-web genta-queue genta-scheduler genta-mediamtx; do
-    kubectl -n "$NAMESPACE" rollout status "deployment/$deployment" --timeout=180s
+    kubectl -n "$NAMESPACE" rollout status "deployment/$deployment" --timeout=900s
 done
 
+# Tunggu Postgres siap menerima koneksi (rollout success belum berarti DB endpoint accept connection).
+for _ in $(seq 1 30); do
+    kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan db:show >/dev/null 2>&1 && break
+    sleep 3
+done
 kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan migrate --force
 
 echo "Selesai ($MODE). Akses:"

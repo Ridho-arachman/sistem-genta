@@ -25,13 +25,10 @@ spec:
                 name: genta-app-config
             - secretRef:
                 name: genta-app-secret
-          livenessProbe:
-            exec:
-              command: ["php", "artisan", "--version"]
-            initialDelaySeconds: 30
-            periodSeconds: 60
-            timeoutSeconds: 10
-            failureThreshold: 3
+          # Worker process: kalau crash, Kubernetes restart otomatis
+          # (restartPolicy: Always). Probe `artisan --version` cuma
+          # membunuh worker yang sebenarnya hidup saat Docker Desktop lambat,
+          # jadi dihapus.
           resources:
             requests:
               cpu: "100m"

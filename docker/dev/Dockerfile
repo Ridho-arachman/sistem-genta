@@ -26,7 +26,6 @@ COPY composer.json composer.lock ./
 RUN composer install --no-interaction --no-progress --no-scripts
 
 COPY . .
-RUN composer dump-autoload --optimize
 
 EXPOSE 8000
 

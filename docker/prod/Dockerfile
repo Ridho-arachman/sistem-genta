@@ -32,8 +32,6 @@ COPY . .
 COPY docker/prod/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/prod/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-RUN composer dump-autoload --no-dev --optimize
-
 EXPOSE 8000
 
 # php-fpm daemon, nginx tetap di foreground supaya container hidup selama web aktif.
