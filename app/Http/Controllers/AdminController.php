@@ -361,25 +361,52 @@ class AdminController extends Controller
         }
 
         // Aktivitas terbaru gabungan dari laporan dan anomali, diurutkan terbaru.
+        // 4 tipe real (tanpa palsukan riwayat status kamera yang tidak ada di DB):
+        //  1. Laporan inspeksi dikirim     ✓ hijau  (Laporan baru, status diperiksa)
+        //  2. Temuan perlu tindak lanjut   ⚑ kuning (Laporan status temuan/tindak lanjut)
+        //  3. Laporan inspeksi diperiksa   ▤ ungu   (Laporan status selesai)
+        //  4. Temuan anomali CCTV          ▣ biru   (CctvAnomalyReport baru)
         $activities = collect();
         foreach ($recentLaporans as $laporan) {
-            $activities->push([
-                'type' => 'laporan',
-                'title' => 'Laporan inspeksi baru',
-                'subtitle' => ($laporan->createdBy?->name ?? 'Pengawas').' · '.($laporan->dapur?->nama ?? 'Dapur'),
-                'time' => $laporan->created_at,
-                'icon' => '✓',
-                'color' => 'green',
-            ]);
+            $status = $laporan->status;
+            if ($status === 'selesai') {
+                $activities->push([
+                    'type' => 'laporan_diperiksa',
+                    'title' => 'Laporan inspeksi diperiksa',
+                    'subtitle' => ($laporan->createdBy?->name ?? 'Admin').' · '.($laporan->dapur?->nama ?? 'Dapur'),
+                    'time' => $laporan->updated_at ?? $laporan->created_at,
+                    'icon' => '▤',
+                    'color' => 'purple',
+                ]);
+            } elseif (in_array($status, ['temuan', 'tindak lanjut'])) {
+                $activities->push([
+                    'type' => 'temuan_tindak_lanjut',
+                    'title' => 'Temuan perlu tindak lanjut',
+                    'subtitle' => ($laporan->createdBy?->name ?? 'Pengawas').' · '.($laporan->dapur?->nama ?? 'Dapur'),
+                    'time' => $laporan->updated_at ?? $laporan->created_at,
+                    'icon' => '⚑',
+                    'color' => 'yellow',
+                ]);
+            } else {
+                // 'diperiksa' (default) atau status lain: laporan baru dikirim.
+                $activities->push([
+                    'type' => 'laporan_dikirim',
+                    'title' => 'Laporan inspeksi dikirim',
+                    'subtitle' => ($laporan->createdBy?->name ?? 'Pengawas').' · '.($laporan->dapur?->nama ?? 'Dapur'),
+                    'time' => $laporan->created_at,
+                    'icon' => '✓',
+                    'color' => 'green',
+                ]);
+            }
         }
         foreach ($recentAnomalies as $anomaly) {
             $activities->push([
-                'type' => 'anomali',
+                'type' => 'anomali_cctv',
                 'title' => 'Temuan anomali CCTV',
                 'subtitle' => ($anomaly->cctv?->dapur?->nama ?? 'Dapur').' · '.($anomaly->cctv?->nama ?? 'Kamera'),
                 'time' => $anomaly->created_at,
-                'icon' => '⚑',
-                'color' => 'yellow',
+                'icon' => '▣',
+                'color' => 'blue',
             ]);
         }
         $recentActivities = $activities->sortByDesc('time')->take(6)->values();
