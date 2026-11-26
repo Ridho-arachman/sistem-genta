@@ -338,22 +338,103 @@ Laporkan potensi kerentanan secara internal kepada tim pengelola sistem, bukan m
 
 ## Deployment
 
-- Docker + Kubernetes/Kustomize: `./docker/up.sh dev` atau `./docker/up.sh prod` (app, queue, scheduler, Postgres, MediaMTX) — lihat [docker/README.md](docker/README.md)
-- Web server nginx + TLS (Let's Encrypt) untuk produksi
-- Build aset produksi melalui `npm run build`
-- Konfigurasi berbasis environment untuk database, antrean, MediaMTX, dan notifikasi
-- Worker antrean (`queue:work`) dan scheduler (`schedule:work`) sebagai container terpisah
+GENTA dijalankan di Kubernetes dengan Kustomize. Tersedia dua mode: **dev** (namespace `genta-dev`) dan **prod** (namespace `genta-prod`), yang bisa jalan bersamaan di klaster yang sama karena namespace, Secret, dan PVC terpisah.
 
-Langkah umum di server produksi:
+### Komponen yang dijalankan
+
+| Komponen | Docker image | Replika (dev) | Replika (prod) |
+|----------|--------------|---------------|----------------|
+| Postgres (DB, session, queue, cache) | `postgres:16-alpine` | 1 | 1 |
+| Web (nginx + php-fpm) | `genta-app:prod` | 1 (`artisan serve`) | 2 (nginx + php-fpm) |
+| Queue (`queue:work`) | `genta-app:prod` | 1 | 3 |
+| Scheduler (`schedule:work`) | `genta-app:prod` | 1 | 1 |
+| MediaMTX (streaming CCTV) | `bluenviron/mediamtx:1.21.4` | 1 | 1 |
+
+Semua komponen di dalam klaster saling terhubung lewat nama Service K8s (`genta-postgres`, `genta-mediamtx`, dll.), bukan `127.0.0.1` host laptop.
+
+### Prasyarat
+
+- Docker dan `kubectl` yang terhubung ke klaster Kubernetes.
+- StorageClass default aktif (digunakan PVC PostgreSQL `genta-postgres-data`).
+- Untuk prod: ingress controller (mis. `ingress-nginx`) dan sertifikat TLS.
+
+### Cara menjalankan
+
+Edit `.env` di root repo terlebih dahulu — itu adalah sumber kebenaran satu-satunya (`APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`, dll.). Script `up.sh` akan otomatis menyalin dan menyelaraskan nilainya ke Secret K8s setiap kali dijalankan.
 
 ```bash
-composer install --no-dev --optimize-autoloader
-php artisan migrate --force
-npm ci && npm run build
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Mode development (namespace genta-dev)
+./docker/up.sh dev
+
+# Mode produksi (namespace genta-prod)
+./docker/up.sh prod
 ```
+
+Apa yang dilakukan `up.sh`:
+1. Membuat namespace `genta-dev` atau `genta-prod`.
+2. Membuat `app-secret.env` dari `.env` dan menyatukan nilainya ke K8s Secret `genta-app-secret`.
+3. Membuat PVC `genta-postgres-data` (data aman walau klaster dihapus dan dijalankan ulang).
+4. Build image Docker (`genta-app:dev` atau `genta-app:prod`).
+5. Menjalankan `kubectl apply -k` pada overlay yang dipilih.
+6. Menunggu semua pod `Running`.
+7. Menjalankan `php artisan migrate --force` di pod web.
+
+### Akses aplikasi
+
+Dari mesin lokal, gunakan `kubectl port-forward`:
+
+```bash
+# Dev
+kubectl -n genta-dev port-forward svc/genta-web 8000:80
+kubectl -n genta-dev port-forward svc/genta-mediamtx 8888:8888 8889:8889 9997:9997 8554:8554
+
+# Prod
+kubectl -n genta-prod port-forward svc/genta-web 8001:80
+kubectl -n genta-prod port-forward svc/genta-mediamtx 8898:8888 8899:8889 9998:9997 8555:8554
+```
+
+Buka `http://localhost:8000` (dev) atau `http://localhost:8001` (prod).
+
+### Ingress & TLS produksi
+
+Prod sudah dilengkapi `ingress.yaml` yang mengarahkan trafik eksternal ke `svc/genta-web`:
+
+```bash
+# 1. Buat sertifikat TLS (contoh self-signed untuk uji coba)
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout tls.key -out tls.crt -subj "/CN=genta.example.com"
+
+# 2. Buat Secret di namespace prod
+kubectl -n genta-prod create secret tls genta-tls --key tls.key --cert tls.crt
+
+# 3. Jalankan prod (ingress ikut terbentuk otomatis)
+./docker/up.sh prod
+```
+
+Ubah host `genta.example.com` di `docker/prod/k8s/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `docker/prod/k8s/tls-secret.example.yaml`.
+
+### Operasi harian
+
+```bash
+# Lihat status pod
+kubectl -n genta-prod get pods
+
+# Lihat log
+kubectl -n genta-prod logs -f deployment/genta-web
+kubectl -n genta-prod logs -f deployment/genta-queue
+
+# Restart deployment
+kubectl -n genta-prod rollout restart deployment/genta-web
+
+# Hentikan seluruh mode (PVC sengaja tidak ikut terhapus — data aman)
+kubectl delete -k docker/dev/k8s
+kubectl delete -k docker/prod/k8s
+
+# Hapus data PostgreSQL hanya kalau benar-benar ingin membuang data:
+# kubectl delete pvc genta-postgres-data -n genta-dev
+```
+
+Detail teknis lengkap ada di [docker/README.md](docker/README.md).
 
 ## Release
 
