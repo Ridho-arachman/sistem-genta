@@ -34,14 +34,11 @@ data:
   CACHE_STORE: "database"
   CACHE_PREFIX: ""
 
-  # Control API dipanggil dari dalam cluster; URL HLS/WHEP dipakai browser
-  # dan di-override per mode lewat Secret (lihat app-secret.example.env).
+  # Control API/RTSP dipanggil dari dalam cluster. URL HLS/WHEP dan kredensial
+  # diambil dari Secret (.env); jangan didefinisikan kosong di sini karena
+  # configMapRef meng-override secretRef pada envFrom.
   CCTV_MEDIAMTX_API: "http://genta-mediamtx:9997"
-  CCTV_MEDIAMTX_USER: ""
-  CCTV_MEDIAMTX_PASS: ""
   CCTV_MEDIAMTX_RTSP: "rtsp://genta-mediamtx:8554"
-  CCTV_HLS_BASE: ""
-  CCTV_WEBRTC_BASE: ""
   CCTV_FFPROBE: "ffprobe"
   CCTV_PROBE_TIMEOUT: "8"
 

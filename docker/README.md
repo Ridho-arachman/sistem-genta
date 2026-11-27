@@ -1,8 +1,10 @@
 # Kubernetes (Kustomize) — mode dev & prod
 
-Docker Compose tidak dipakai lagi. Semua orkestrasi ada di Kubernetes. Pilih mode dengan memilih direktori overlay di `kubectl apply -k`:
+Docker Compose tidak dipakai lagi. Semua orkestrasi ada di Kubernetes. Pastikan context Docker Desktop aktif, lalu pilih mode dengan memilih direktori overlay di `kubectl apply -k`:
 
 ```bash
+kubectl config use-context docker-desktop
+
 # Dev (namespace genta-dev)
 kubectl apply --validate=false -k docker/dev/k8s
 
@@ -49,6 +51,8 @@ kubectl -n genta-dev create secret generic genta-app-secret \
 kubectl -n genta-prod create secret generic genta-app-secret \
   --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 ```
+
+`DB_PASSWORD` di `.env` wajib diisi (dev: `genta`) — Postgres menolak password kosong. `CCTV_HLS_BASE`, `CCTV_WEBRTC_BASE`, dan kredensial MediaMTX dibaca dari Secret (`.env`), bukan dari ConfigMap.
 
 ## Menjalankan Dev
 

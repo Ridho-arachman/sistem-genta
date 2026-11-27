@@ -14,3 +14,5 @@ docker/*/k8s/app-secret.env
 .git
 .github
 mediamtx.yml
+public/hot
+storage/*.key
