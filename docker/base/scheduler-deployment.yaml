@@ -21,10 +21,10 @@ spec:
           command: ["php", "artisan"]
           args: ["schedule:work"]
           envFrom:
-            - configMapRef:
-                name: genta-app-config
             - secretRef:
                 name: genta-app-secret
+            - configMapRef:
+                name: genta-app-config
           # Worker process: kalau crash, Kubernetes restart otomatis
           # (restartPolicy: Always). Probe `artisan --version` cuma
           # membunuh worker yang sebenarnya hidup saat Docker Desktop lambat,

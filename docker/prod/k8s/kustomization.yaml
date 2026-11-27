@@ -12,6 +12,7 @@ images:
     newTag: prod
 
 patches:
+  - path: patches/configmap-patch.yaml
   - path: patches/web-patch.yaml
   - path: patches/queue-patch.yaml
   - path: patches/mediamtx-patch.yaml

@@ -247,7 +247,7 @@ Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — po
 
 Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
 
-Alternatif via Kubernetes: `./docker/up.sh dev` (atau `prod`). Pastikan Control API `:9997` ikut di-port-forward; lihat [docker/README.md](docker/README.md).
+Alternatif via Kubernetes: `kubectl apply --validate=false -k docker/dev/k8s` (atau `docker/prod/k8s` untuk prod). Pastikan Control API `:9997` ikut di-port-forward; lihat [docker/README.md](docker/README.md).
 
 > `CCTV_HLS_BASE` wajib `http://127.0.0.1:8888` saat preview dibuka dari browser pada PC yang menjalankan MediaMTX: MediaMTX memasang cookie `Secure` untuk HLS, dan browser hanya menerimanya pada origin yang trusted — `http://127.0.0.1` dan `http://localhost` ya, `http://192.168.x.x` tidak. Kalau preview dibuka dari Android/WebView di Wi-Fi (bukan dari PC MediaMTX), letakkan MediaMTX di belakang HTTPS atau pakai WebRTC (`:8889`) sebagai pengganti HLS; mengganti `CCTV_HLS_BASE` ke IP LAN saja **tidak** cukup.
 
@@ -360,28 +360,63 @@ Semua komponen di dalam klaster saling terhubung lewat nama Service K8s (`genta-
 
 ### Cara menjalankan
 
-Edit `.env` di root repo terlebih dahulu — itu adalah sumber kebenaran satu-satunya (`APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`, dll.). Script `up.sh` akan otomatis menyalin dan menyelaraskan nilainya ke Secret K8s setiap kali dijalankan.
+Edit `.env` di root repo terlebih dahulu — itu adalah sumber kebenaran satu-satunya (`APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`, dll.). Nilai yang relevan untuk klaster (`DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, dll.) sudah ditetapkan di `docker/base/app-configmap.yaml` dan akan mengalahkan nilai `.env` saat deployed (urutan `envFrom`: Secret dulu, ConfigMap kedua).
+
+Pastikan `DB_PASSWORD` di `.env` cocok dengan yang sudah ada di data PVC lama (mis. `DB_PASSWORD=genta_dev_password` untuk dev), agar aplikasi bisa login ke PostgreSQL yang sudah ter-init.
+
+### Setup sekali (per namespace)
 
 ```bash
-# Mode development (namespace genta-dev)
-./docker/up.sh dev
+# Buat namespace (abaikan kalau sudah ada)
+kubectl create namespace genta-dev 2>/dev/null || true
+kubectl create namespace genta-prod 2>/dev/null || true
 
-# Mode produksi (namespace genta-prod)
-./docker/up.sh prod
+# PVC PostgreSQL (data aman walau klaster dihapus dan dijalankan ulang; sengaja tidak masuk kustomize)
+kubectl -n genta-dev apply --validate=false -f docker/base/postgres-pvc.yaml
+kubectl -n genta-prod apply --validate=false -f docker/base/postgres-pvc.yaml
+
+# Secret aplikasi dari .env (ulang perintah ini setiap kali .env berubah)
+kubectl -n genta-dev create secret generic genta-app-secret \
+  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
+kubectl -n genta-prod create secret generic genta-app-secret \
+  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 ```
 
-Apa yang dilakukan `up.sh`:
-1. Membuat namespace `genta-dev` atau `genta-prod`.
-2. Membuat `app-secret.env` dari `.env` dan menyatukan nilainya ke K8s Secret `genta-app-secret`.
-3. Membuat PVC `genta-postgres-data` (data aman walau klaster dihapus dan dijalankan ulang).
-4. Build image Docker (`genta-app:dev` atau `genta-app:prod`).
-5. Menjalankan `kubectl apply -k` pada overlay yang dipilih.
-6. Menunggu semua pod `Running`.
-7. Menjalankan `php artisan migrate --force` di pod web.
+### Cara menjalankan Dev
+
+```bash
+# Build image
+docker build -f docker/dev/Dockerfile -t genta-app:dev .
+
+# Deploy ke namespace genta-dev
+kubectl apply --validate=false -k docker/dev/k8s
+
+# Migrasi DB
+kubectl -n genta-dev exec deploy/genta-web -- php artisan migrate --force
+
+# Akses browser (terminal terpisah, biarkan tetap terbuka)
+kubectl -n genta-dev port-forward svc/genta-web 8000:80
+```
+
+### Cara menjalankan Prod
+
+```bash
+# Build image
+docker build -f docker/prod/Dockerfile -t genta-app:prod .
+
+# Deploy ke namespace genta-prod
+kubectl apply --validate=false -k docker/prod/k8s
+
+# Migrasi DB
+kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
+
+# Akses browser (terminal terpisah, biarkan tetap terbuka)
+kubectl -n genta-prod port-forward svc/genta-web 8001:80
+```
 
 ### Akses aplikasi
 
-Dari mesin lokal, gunakan `kubectl port-forward`:
+Dari mesin lokal, gunakan `kubectl port-forward` di terminal terpisah:
 
 ```bash
 # Dev
@@ -407,9 +442,13 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # 2. Buat Secret di namespace prod
 kubectl -n genta-prod create secret tls genta-tls --key tls.key --cert tls.crt
 
-# 3. Jalankan prod (ingress ikut terbentuk otomatis)
-./docker/up.sh prod
+# 3. Deploy prod (ingress ikut terbentuk otomatis lewat kustomize)
+docker build -f docker/prod/Dockerfile -t genta-app:prod .
+kubectl apply --validate=false -k docker/prod/k8s
+kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
 ```
+
+Ubah host `genta.example.com` di `docker/prod/k8s/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `docker/prod/k8s/tls-secret.example.yaml`.
 
 Ubah host `genta.example.com` di `docker/prod/k8s/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `docker/prod/k8s/tls-secret.example.yaml`.
 

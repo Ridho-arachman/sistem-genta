@@ -21,10 +21,10 @@ spec:
           command: ["php", "artisan"]
           args: ["serve", "--host=0.0.0.0", "--port=8000"]
           envFrom:
-            - configMapRef:
-                name: genta-app-config
             - secretRef:
                 name: genta-app-secret
+            - configMapRef:
+                name: genta-app-config
           ports:
             - containerPort: 8000
               name: http

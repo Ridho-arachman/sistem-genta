@@ -1,10 +1,13 @@
 # Kubernetes (Kustomize) — mode dev & prod
 
-Docker Compose tidak dipakai lagi. Semua orkestrasi ada di Kubernetes; satu perintah memilih mode:
+Docker Compose tidak dipakai lagi. Semua orkestrasi ada di Kubernetes. Pilih mode dengan memilih direktori overlay di `kubectl apply -k`:
 
 ```bash
-./docker/up.sh dev    # namespace genta-dev
-./docker/up.sh prod   # namespace genta-prod
+# Dev (namespace genta-dev)
+kubectl apply --validate=false -k docker/dev/k8s
+
+# Prod (namespace genta-prod)
+kubectl apply --validate=false -k docker/prod/k8s
 ```
 
 Kedua mode bisa jalan bersamaan di cluster yang sama (namespace, PVC, dan secret terpisah).
@@ -13,7 +16,6 @@ Kedua mode bisa jalan bersamaan di cluster yang sama (namespace, PVC, dan secret
 
 ```text
 docker/
-├── up.sh                    # build image + secret + apply + migrate + wait
 ├── mediamtx/mediamtx.yml    # konfigurasi media server (referensi lokal)
 ├── base/                    # manifest bersama: Postgres, web, queue, scheduler, MediaMTX
 ├── dev/
@@ -23,26 +25,78 @@ docker/
     ├── Dockerfile           # php:8.5-fpm + nginx + opcache, composer --no-dev
     ├── nginx/default.conf
     ├── php/opcache.ini
-    └── k8s/                 # overlay namespace genta-prod, image tag prod, 2 web & 3 queue
+    └── k8s/
+        ├── ingress.yaml     # ingress prod ke svc/genta-web
+        ├── kustomization.yaml
+        ├── patches/         # patch web (2 replika, php-fpm+nginx), queue (3 replika), mediamtx, configmap (APP_ENV=production, APP_DEBUG=false)
+        └── tls-secret.example.yaml
 ```
 
-## Menjalankan
-
-Prasyarat: `docker`, `kubectl` yang terhubung ke cluster, dan StorageClass default (untuk PVC PostgreSQL).
-
-1. Edit `.env` di root repo — itu sumber kebenaran satu-satunya (termasuk `APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`).
-2. Jalankan `./docker/up.sh dev` atau `./docker/up.sh prod`. Script akan selalu sinkron `.env` → `app-secret.env` → K8s Secret, termasuk nilai yang sudah disesuaikan untuk klaster (`DB_HOST=genta-postgres`, dst).
-3. Bila ingin mengubah nilai, edit `.env` lalu jalankan ulang `./docker/up.sh <mode>`. Secret di klaster akan di-apply ulang otomatis.
-4. Aplikasi memakai satu PostgreSQL di dalam cluster (`genta-postgres`) untuk DB, session, queue, dan cache — tanpa Redis. Migration dijalankan otomatis sekali setelah web siap.
-
-Akses dari mesin lokal:
+## Setup sekali (per namespace)
 
 ```bash
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
-kubectl -n genta-dev port-forward svc/genta-mediamtx 8888:8888 8889:8889 9997:9997 8554:8554
+# Buat namespace (abaikan kalau sudah ada)
+kubectl create namespace genta-dev 2>/dev/null || true
+kubectl create namespace genta-prod 2>/dev/null || true
+
+# PVC PostgreSQL (data aman walau klaster dihapus dan dijalankan ulang; sengaja tidak masuk kustomize)
+kubectl -n genta-dev apply --validate=false -f docker/base/postgres-pvc.yaml
+kubectl -n genta-prod apply --validate=false -f docker/base/postgres-pvc.yaml
+
+# Secret aplikasi dari .env (ulang perintah ini setiap kali .env berubah)
+kubectl -n genta-dev create secret generic genta-app-secret \
+  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
+kubectl -n genta-prod create secret generic genta-app-secret \
+  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 ```
 
-Ganti `genta-dev` dengan `genta-prod` sesuai mode. `CCTV_MEDIAMTX_API` di dalam cluster memakai `http://genta-mediamtx:9997`; URL HLS/WHEP untuk browser di-set lewat secret (port-forward memakai `127.0.0.1`).
+## Menjalankan Dev
+
+```bash
+# Build image
+docker build -f docker/dev/Dockerfile -t genta-app:dev .
+
+# Deploy ke namespace genta-dev
+kubectl apply --validate=false -k docker/dev/k8s
+
+# Migrasi DB
+kubectl -n genta-dev exec deploy/genta-web -- php artisan migrate --force
+
+# Akses browser (terminal terpisah, biarkan tetap terbuka)
+kubectl -n genta-dev port-forward svc/genta-web 8000:80
+```
+
+## Menjalankan Prod
+
+```bash
+# Build image
+docker build -f docker/prod/Dockerfile -t genta-app:prod .
+
+# Deploy ke namespace genta-prod
+kubectl apply --validate=false -k docker/prod/k8s
+
+# Migrasi DB
+kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
+
+# Akses browser (terminal terpisah, biarkan tetap terbuka)
+kubectl -n genta-prod port-forward svc/genta-web 8001:80
+```
+
+Aplikasi memakai satu PostgreSQL di dalam cluster (`genta-postgres`) untuk DB, session, queue, dan cache — tanpa Redis. Migration dijalankan manual setelah web siap.
+
+## Akses dari mesin lokal
+
+```bash
+# Dev
+kubectl -n genta-dev port-forward svc/genta-web 8000:80
+kubectl -n genta-dev port-forward svc/genta-mediamtx 8888:8888 8889:8889 9997:9997 8554:8554
+
+# Prod
+kubectl -n genta-prod port-forward svc/genta-web 8001:80
+kubectl -n genta-prod port-forward svc/genta-mediamtx 8898:8888 8899:8889 9998:9997 8555:8554
+```
+
+`CCTV_MEDIAMTX_API` di dalam cluster memakai `http://genta-mediamtx:9997`; URL HLS/WHEP untuk browser di-set lewat secret (port-forward memakai `127.0.0.1`).
 
 ## Operasi
 
