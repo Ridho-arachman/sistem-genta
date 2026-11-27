@@ -117,7 +117,23 @@ kubectl delete -k docker/dev/k8s
 # kubectl delete pvc genta-postgres-data -n genta-dev
 ```
 
-Aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.
+Prod: aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.
+
+## Hot reload (dev)
+
+Overlay dev me-mount repo host ke pod `genta-web`, jadi perubahan PHP/Blade langsung dibaca server. Jalankan Vite dari host untuk aset:
+
+```bash
+# Terminal 1
+npm run dev
+
+# Terminal 2
+kubectl -n genta-dev port-forward deploy/genta-web 8000:80
+```
+
+Buka `http://127.0.0.1:8000`. Vite di host menulis `public/hot` (`http://127.0.0.1:5173`) yang ikut ter-mount ke pod, jadi `@vite` memakai dev server — **tidak perlu `npm run build` atau `docker build` ulang**. Prod tetap memakai aset hasil build.
+
+Prasyarat: Docker Desktop file-sharing untuk drive D aktif. Path host di patch hard-coded ke `/run/desktop/mnt/host/d/Coding/sistem-genta`; kalau folder dipindah, ubah `docker/dev/k8s/patches/web-hotreload-patch.yaml`. `public/hot` sudah di-gitignore dan dikecualikan dari image prod lewat `.dockerignore`.
 
 ## Ingress & TLS produksi
 
