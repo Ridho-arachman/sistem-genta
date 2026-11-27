@@ -83,7 +83,9 @@ if [[ "${SKIP_BUILD:-}" != "1" ]] || ! docker image inspect "genta-app:$MODE" >/
 else
     echo "SKIP_BUILD=1: melewati build, pakai image genta-app:$MODE yang sudah ada."
 fi
-kubectl apply -k "docker/$MODE/k8s"
+# --validate=false: Docker Desktop API server kadang tidak bisa serving openapi
+# (EOF), tapi manifest tetap divalidasi server-side saat apply.
+kubectl apply --validate=false -k "docker/$MODE/k8s"
 
 for deployment in genta-postgres genta-web genta-queue genta-scheduler genta-mediamtx; do
     kubectl -n "$NAMESPACE" rollout status "deployment/$deployment" --timeout=900s
@@ -95,6 +97,12 @@ for _ in $(seq 1 30); do
     sleep 3
 done
 kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan migrate --force
+
+# Dev: nyalakan port-forward otomatis supaya bisa diakses browser tanpa terminal tambahan.
+if [[ "$MODE" == "dev" ]] && ! curl -sf --max-time 2 http://127.0.0.1:8000/up >/dev/null 2>&1; then
+    nohup kubectl -n "$NAMESPACE" port-forward svc/genta-web 8000:80 >/dev/null 2>&1 &
+    disown
+fi
 
 echo "Selesai ($MODE). Akses:"
 echo "  kubectl -n $NAMESPACE port-forward svc/genta-web 8000:80"
