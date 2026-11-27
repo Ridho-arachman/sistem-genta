@@ -121,19 +121,17 @@ Prod: aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; 
 
 ## Hot reload (dev)
 
-Overlay dev me-mount repo host ke pod `genta-web`, jadi perubahan PHP/Blade langsung dibaca server. Jalankan Vite dari host untuk aset:
+Overlay dev menjalankan image (tanpa mount source) supaya pod tetap stabil di Docker Desktop. Untuk hot reload, jalankan aplikasi langsung dari host; `vite.config.js` sudah mengarah ke `APP_URL=http://127.0.0.1:8000`:
 
 ```bash
 # Terminal 1
 npm run dev
 
 # Terminal 2
-kubectl -n genta-dev port-forward deploy/genta-web 8000:80
+php artisan serve
 ```
 
-Buka `http://127.0.0.1:8000`. Vite di host menulis `public/hot` (`http://127.0.0.1:5173`) yang ikut ter-mount ke pod, jadi `@vite` memakai dev server — **tidak perlu `npm run build` atau `docker build` ulang**. Prod tetap memakai aset hasil build.
-
-Prasyarat: Docker Desktop file-sharing untuk drive D aktif. Path host di patch hard-coded ke `/run/desktop/mnt/host/d/Coding/sistem-genta`; kalau folder dipindah, ubah `docker/dev/k8s/patches/web-hotreload-patch.yaml`. `public/hot` sudah di-gitignore dan dikecualikan dari image prod lewat `.dockerignore`.
+Buka `http://127.0.0.1:8000`. Perubahan PHP/Blade/CSS/JS langsung terlihat — **tidak perlu `npm run build` atau `docker build` ulang**. Prod tetap memakai aset hasil build. Host memakai database lokal dari `.env`; kalau ingin memakai DB cluster, jalankan `kubectl -n genta-dev port-forward svc/genta-postgres 5433:5432` lalu set `DB_PORT=5433`, `DB_DATABASE=genta`, `DB_USERNAME=genta` di `.env`. `public/hot` sudah di-gitignore dan dikecualikan dari image prod lewat `.dockerignore`.
 
 ## Ingress & TLS produksi
 
