@@ -66,16 +66,16 @@ if [[ "$MODE" == "prod" ]]; then
     sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' "$ENV_FILE"
 fi
 
-kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl --validate=false apply -f -
 
 # PVC dipersiapkan terlebih dahulu dan dikeluarkan dari kustomize
 # supaya `kubectl delete -k` tidak ikut menghapus data PostgreSQL.
-kubectl apply -f docker/base/postgres-pvc.yaml -n "$NAMESPACE"
+kubectl --validate=false apply -f docker/base/postgres-pvc.yaml -n "$NAMESPACE"
 
 # Upsert Secret (selalu sinkron, kalau sudah ada akan di-apply ulang)
 kubectl create secret generic genta-app-secret \
     --from-env-file="$ENV_FILE" \
-    --dry-run=client -o yaml | kubectl apply -n "$NAMESPACE" -f -
+    --dry-run=client -o yaml | kubectl --validate=false apply -n "$NAMESPACE" -f -
 
 # Build image kecuali SKIP_BUILD=1 (iterasi cepat kalau image sudah ada).
 if [[ "${SKIP_BUILD:-}" != "1" ]] || ! docker image inspect "genta-app:$MODE" >/dev/null 2>&1; then
@@ -92,8 +92,9 @@ for deployment in genta-postgres genta-web genta-queue genta-scheduler genta-med
 done
 
 # Tunggu Postgres siap menerima koneksi (rollout success belum berarti DB endpoint accept connection).
+# `if` (bukan `&&`) agar `set -e` tidak membunuh script saat pod baru belum ready di percobaan pertama.
 for _ in $(seq 1 30); do
-    kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan db:show >/dev/null 2>&1 && break
+    if kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan db:show >/dev/null 2>&1; then break; fi
     sleep 3
 done
 kubectl -n "$NAMESPACE" exec deployment/genta-web -- php artisan migrate --force
