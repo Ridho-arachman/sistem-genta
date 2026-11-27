@@ -9,3 +9,6 @@ resources:
 images:
   - name: genta-app
     newTag: dev
+
+patches:
+  - path: patches/web-hotreload-patch.yaml
