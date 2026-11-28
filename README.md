@@ -133,7 +133,7 @@ resources/views/
 
 routes/web.php                # Rute web dan API mobile
 database/migrations/          # Skema database
-database/seeders/             # Data awal pengguna per peran (UserSeeder)
+database/seeders/             # Data demo: user, dapur Banten, CCTV, laporan, settings, SP, anomali
 android/                      # Proyek Capacitor (Android)
 docker/                       # Dockerfile dan Docker Compose (dev)
 k8s/                          # Manifest Kubernetes/Kustomize (prod)
@@ -276,13 +276,15 @@ Nilai sensitif seperti `.env`, keystore, dan cookie lokal tidak disertakan dalam
 
 ## Akun Awal
 
-Setelah menjalankan `php artisan migrate --seed`, tersedia akun berikut:
+Setelah menjalankan `php artisan db:seed` lewat shell container `app` (atau `php artisan migrate --seed` di host), tersedia akun berikut:
 
 | Email | Password | Peran |
 | --- | --- | --- |
 | `admin@test.com` | `password` | Administrator |
 | `manajerial@test.com` | `password` | Manajerial |
 | `pengawas@test.com` | `password` | Pengawas |
+| `pengawas2@test.com` | `password` | Pengawas |
+| `pengawas3@test.com` | `password` | Pengawas |
 | `kepaladapur@test.com` | `password` | Kepala Dapur |
 
 > Akun di atas hanya untuk pengembangan. Seluruh kredensial wajib diganti sebelum digunakan di lingkungan produksi.
@@ -398,7 +400,7 @@ php artisan test --compact
 
 Ketik `exit` untuk keluar. `db:seed` mengisi data demo dan aman diulang; kredensial akun ada di [Akun Awal](#akun-awal).
 
-Buka `http://127.0.0.1:8000`. Vite berjalan sebagai service compose, jadi tidak perlu `npm run dev` di host. Lihat [docker/README.md](docker/README.md).
+Buka `http://192.168.101.6:8000` (IP LAN laptop sesuai `APP_URL`; perangkat lain harus satu Wi-Fi). Vite berjalan sebagai service compose, jadi tidak perlu `npm run dev` di host. Lihat [docker/README.md](docker/README.md).
 
 ### Cara menjalankan Prod
 
