@@ -9,7 +9,7 @@
 [![CI](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/ci.yml)
 [![Security](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml/badge.svg)](https://github.com/Ridho-arachman/sistem-genta/actions/workflows/security.yml)
 
-[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
@@ -93,7 +93,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute, dan `Policy`/`$th
 
 | Lapisan | Teknologi |
 | --- | --- |
-| Backend | Laravel 13, PHP 8.3+, Laravel Sanctum |
+| Backend | Laravel 13, PHP 8.5, Laravel Sanctum |
 | Frontend | Blade, Tailwind CSS 4, daisyUI 5, Alpine.js 3, Leaflet, Vite 8 |
 | Database | PostgreSQL (driver `pgsql`) |
 | Queue / cache / session | driver `database` |
@@ -144,112 +144,71 @@ tests/                        # Tes Pest (Feature & Unit)
 
 ### Prasyarat
 
-- PHP 8.3 atau lebih baru (proyek dikembangkan di 8.5) beserta ekstensi standar Laravel
-- Composer 2
-- Node.js 20 atau lebih baru dan npm
-- PostgreSQL untuk database
-- Android Studio atau Xcode, hanya jika membangun aplikasi mobile
+- Docker Desktop (atau Docker Engine + Compose plugin)
+- Git
 
-### Langkah Cepat
+PHP, Composer, Node.js, PostgreSQL, dan MediaMTX sudah berjalan di dalam container — tidak perlu dipasang di host.
 
-```bash
-composer run setup
-```
+### Menjalankan aplikasi
 
-Perintah tersebut menjalankan `composer install`, menyiapkan `.env`, membuat application key, menjalankan migrasi, memasang dependensi frontend, dan membangun aset produksi.
-
-### Langkah Manual
+Jalankan semua perintah dari **root repo**. Flag `--env-file .env` wajib supaya interpolasi memakai `.env` root.
 
 ```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-npm install
-npm run build
-php artisan serve
+docker compose --env-file .env -f docker/docker-compose.yml up -d --build
+docker compose --env-file .env -f docker/docker-compose.yml exec app sh
 ```
 
-Aplikasi tersedia di `http://localhost:8000`.
-
-### Mode Pengembangan
+Perintah kedua membuka shell di container `app`. Dari situ jalankan perintah apa pun langsung di lingkungan aplikasi, misalnya:
 
 ```bash
-composer run dev
+php artisan migrate --force
+php artisan db:seed
+php artisan tinker
+php artisan test --compact
 ```
 
-Perintah ini menjalankan server Laravel, Vite, antrean, dan log secara bersamaan.
+Ketik `exit` untuk keluar. `db:seed` mengisi data demo dan aman diulang. Setelah seeding, **simpan ulang tiap kamera** (Edit → Save) supaya `stream_key` terdaftar sebagai path MediaMTX — seeder hanya membuat data, bukan path streaming.
 
-**Konfigurasi IP Dev Server (wajib):**
+Belum ada `.env`? Salin dari `.env.example`, lalu isi `APP_KEY` (`php artisan key:generate` dari shell container), `DB_PASSWORD`, `FCM_SERVER_KEY`, dan `APP_URL` di bawah.
 
-Sebelum menjalankan `composer run dev`, sesuaikan IP Wi-Fi laptop kamu saat ini (contoh: `192.168.101.6`) di dua file berikut:
+**Konfigurasi IP (wajib kalau diakses dari HP):**
 
-1. **`.env`** — ubah `APP_URL`:
-   ```env
-   APP_URL=http://192.168.101.6:8000
-   ```
+1. **`.env`** → `APP_URL=http://192.168.101.6:8000`
+2. **`capacitor.config.json`** → `"url": "http://192.168.101.6:8000"`
 
-   `vite.config.js` membaca IP yang sama dari `APP_URL`, jadi `server.origin` (`http://<IP>:5173`) ikut berubah sendiri — tanpa edit file JS. `APP_URL` juga dipakai Laravel untuk membuat URL di Blade.
+`vite.config.js` membaca host dari `APP_URL`, jadi `public/hot` (`http://<IP>:5173`) ikut berubah otomatis — tanpa edit file JS. Kalau CSS/JS gagal dimuat (`net::ERR_FAILED`) setelah ganti IP, hapus `public/hot` dan `public/fonts-manifest.dev.json`, lalu recreate service Vite:
 
-2. **`capacitor.config.json`** — ubah `server.url`:
-   ```json
-   { "server": { "url": "http://192.168.101.6:8000" } }
-   ```
-   Ini satu-satunya file lain yang tetap perlu diedit: file JSON, jadi tidak bisa membaca `.env`.
-
-   Satu lagi hanya **saran**, bukan wajib — halaman "Alamat server" (`public/index.html`) menyimpan IP di `localStorage` dan bisa menerima IP baru lewat formnya tanpa install ulang APK:
-   ```html
-   <span class="chip" data-url="http://192.168.101.6:8000">IP default (192.168.101.6)</span>
-   ```
-
-Tiga file berikut memuat IP tapi **hasil generate**, tak perlu diedit manual:
-
-- **`public/hot`** — ditulis plugin Laravel saat dev server Vite mulai; isinya `server.origin`, jadi ikut `APP_URL` di `.env`.
-- **`public/fonts-manifest.dev.json`** — IP-nya dibaca ulang dari `public/hot`, bukan ditulis tangan. Kalau `public/hot` masih sisa run lama (IP lama), manifest ikut memakai IP salah; hapus **kedua** file ini lalu jalankan ulang `npm run dev`.
+```bash
+docker compose --env-file .env -f docker/docker-compose.yml up -d --force-recreate vite
+```
 
 Akses aplikasi:
 
 - **Dari PC (browser):** `http://192.168.101.6:8000`
-- **Dari Android (browser / WebView Capacitor):** `http://192.168.101.6:8000` — harus satu jaringan Wi-Fi dengan PC.
+- **Dari HP (browser / WebView Capacitor):** alamat yang sama — perangkat harus satu Wi-Fi dengan PC.
 
-> Catatan: IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Jika CSS/JS tidak terbaca (`net::ERR_FAILED`), perbarui IP di `.env` dan `capacitor.config.json`, lalu:
-> 1. restart `composer run dev`;
-> 2. jalankan `npx cap copy android` supaya salinan IP di `android/app/src/main/assets/capacitor.config.json` ikut ter-refresh — tanpa ini aplikasi di HP tetap memakai IP lama dan aset gagal dimuat.
->
-> Di aplikasi mobile sendiri, halaman "Alamat server" (`public/index.html`) juga menerima IP baru tanpa install ulang — tapi itu hanya jalan setelah APK berhasil dibuka.
+Satu lagi hanya **saran**: halaman "Alamat server" (`public/index.html`) menyimpan IP di `localStorage` dan bisa menerima IP baru lewat formnya tanpa install ulang APK:
 
-### Menjalankan semua komponen secara lokal (tanpa Docker)
+```html
+<span class="chip" data-url="http://192.168.101.6:8000">IP default (192.168.101.6)</span>
+```
 
-Streaming tidak memutar `rtsp_url` langsung di browser: Laravel mendaftarkan `stream_key` kamera ke MediaMTX lewat Control API, lalu browser memutar **WebRTC/WHEP dulu** (`CCTV_WEBRTC_BASE/{stream_key}/whep`) dan jatuh ke **HLS** (`CCTV_HLS_BASE/{stream_key}/index.m3u8`) bila WHEP tidak tersedia. Karena itu selain web server ada dua proses dan satu media server yang harus ikut jalan.
+> IP Wi-Fi dari DHCP bisa berubah setiap restart router atau pindah jaringan. Setelah ganti IP, perbarui `.env` dan `capacitor.config.json`, recreate `vite`, lalu jalankan `npx cap copy android` saat membangun ulang APK supaya salinan IP di `android/app/src/main/assets/capacitor.config.json` ikut ter-refresh.
 
-Pakai **empat terminal terpisah**:
+### Tanpa Docker (opsional)
+
+Streaming tidak memutar `rtsp_url` langsung di browser: Laravel mendaftarkan `stream_key` kamera ke MediaMTX lewat Control API, lalu browser memutar **WebRTC/WHEP dulu** (`CCTV_WEBRTC_BASE/{stream_key}/whep`) dan jatuh ke **HLS** (`CCTV_HLS_BASE/{stream_key}/index.m3u8`) bila WHEP tidak tersedia. Pakai **empat terminal terpisah**:
 
 ```bash
-php artisan serve          # 1. web server
-php artisan queue:work     # 2. antrean (job health check, notifikasi, ekspor)
-php artisan schedule:work  # 3. scheduler — memicu health check tiap menit
-.\mediamtx.exe .\docker\mediamtx.yml   # 4. media server (sesuaikan path binary)
+php artisan serve          # web server
+php artisan queue:work     # antrean (health check, notifikasi, ekspor)
+php artisan schedule:work  # scheduler — health check tiap menit
+.\mediamtx.exe .\docker\mediamtx.yml   # media server (sesuaikan path binary)
 ```
 
-Verifikasi MediaMTX:
+`.env` untuk jalur ini: `DB_CONNECTION=pgsql`, `CCTV_HLS_BASE=http://127.0.0.1:8888`, `CCTV_MEDIAMTX_API=http://127.0.0.1:9997`. Verifikasi dengan `curl -s http://127.0.0.1:9997/v3/paths/list` dan `curl -s -I http://127.0.0.1:8888/`. Aset produksi sudah ada di `public/build`, jadi `npm run dev` tidak wajib.
 
-```bash
-curl -s http://127.0.0.1:9997/v3/paths/list   # Control API harus JSON, bukan koneksi ditolak
-curl -s -I http://127.0.0.1:8888/             # HLS harus merespons
-```
-
-Konfigurasi `.env` untuk pengembangan lokal:
-
-```env
-CCTV_HLS_BASE=http://127.0.0.1:8888
-CCTV_MEDIAMTX_API=http://127.0.0.1:9997
-```
-
-Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — port `8000` bentrok, dan `composer run dev` juga tidak menyalakan scheduler. Aset sudah ada di `public/build`, jadi `npm run dev` tidak wajib; jalankan hanya bila aset belum ter-build.
-
-Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
-
-Alternatif lewat container: `docker compose --env-file .env -f docker/docker-compose.yml up -d --build` — sudah termasuk app, queue, scheduler, Vite, Postgres, dan MediaMTX. Lihat [docker/README.md](docker/README.md). Pastikan Control API `:9997` ikut exposure.
+Preview ada di halaman **detail CCTV** maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
 
 > `CCTV_HLS_BASE` wajib `http://127.0.0.1:8888` saat preview dibuka dari browser pada PC yang menjalankan MediaMTX: MediaMTX memasang cookie `Secure` untuk HLS, dan browser hanya menerimanya pada origin yang trusted — `http://127.0.0.1` dan `http://localhost` ya, `http://192.168.x.x` tidak. Kalau preview dibuka dari Android/WebView di Wi-Fi (bukan dari PC MediaMTX), letakkan MediaMTX di belakang HTTPS atau pakai WebRTC (`:8889`) sebagai pengganti HLS; mengganti `CCTV_HLS_BASE` ke IP LAN saja **tidak** cukup.
 
@@ -261,12 +220,12 @@ Konfigurasi utama berada di `.env`. Variabel yang perlu diperhatikan:
 
 | Variabel | Keterangan |
 | --- | --- |
-| `APP_URL` | URL dasar aplikasi |
-| `DB_CONNECTION` | Driver database — proyek ini berjalan di PostgreSQL (`pgsql`); `.env.example` masih `sqlite`, ubah sebelum `migrate` |
+| `APP_URL` | URL dasar aplikasi — pakai IP LAN (mis. `http://192.168.101.6:8000`) supaya HP bisa mengakses; dibaca juga oleh `vite.config.js` |
+| `DB_CONNECTION`, `DB_HOST` | Docker Compose memaksa `pgsql` dan host `postgres` di dalam container; `.env.example` tetap `sqlite` untuk jalur tanpa Docker |
 | `SESSION_DRIVER`, `CACHE_STORE`, `QUEUE_CONNECTION` | Driver session, cache, dan antrean (`database`) |
 | `FCM_SERVER_KEY` | Server key Firebase Cloud Messaging untuk push notification (wakili variabel yang dibaca `FcmService`) |
 | `CCTV_HLS_BASE` | Base URL HLS media server (kosong = preview kamera tidak tampil) |
-| `CCTV_MEDIAMTX_API`, `CCTV_MEDIAMTX_USER`, `CCTV_MEDIAMTX_PASS` | Control API MediaMTX dan kredensialnya (kosong = sinkronisasi path nonaktif) |
+| `CCTV_MEDIAMTX_API`, `CCTV_MEDIAMTX_USER`, `CCTV_MEDIAMTX_PASS` | Control API MediaMTX dan kredensialnya (kosong = sinkronisasi path nonaktif); Compose memaksa `http://mediamtx:9997`, jalur tanpa Docker pakai `http://127.0.0.1:9997` |
 | `CCTV_MEDIAMTX_RTSP` | Alamat RTSP MediaMTX untuk path turunan (kamera dengan RTSP URL sama) |
 | `CCTV_WEBRTC_BASE` | Base URL WebRTC/WHEP media server (kosong = pemutar hanya HLS) |
 | `CCTV_PROBE_TIMEOUT` | Batas waktu probe ffprobe per kamera (detik) |
@@ -382,25 +341,9 @@ kubectl -n genta-prod create secret generic genta-app-secret \
   --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 ```
 
-### Cara menjalankan Dev (Docker Compose)
+### Mode dev
 
-```bash
-docker compose --env-file .env -f docker/docker-compose.yml up -d --build
-docker compose --env-file .env -f docker/docker-compose.yml exec app sh
-```
-
-Perintah kedua membuka shell di dalam container `app`. Dari situ jalankan perintah apa pun langsung di lingkungan aplikasi, misalnya:
-
-```bash
-php artisan migrate --force
-php artisan db:seed
-php artisan tinker
-php artisan test --compact
-```
-
-Ketik `exit` untuk keluar. `db:seed` mengisi data demo dan aman diulang; kredensial akun ada di [Akun Awal](#akun-awal).
-
-Buka `http://192.168.101.6:8000` (IP LAN laptop sesuai `APP_URL`; perangkat lain harus satu Wi-Fi). Vite berjalan sebagai service compose, jadi tidak perlu `npm run dev` di host. Lihat [docker/README.md](docker/README.md).
+Jalur utama pengembangan ada di [Instalasi](#instalasi) dan [docker/README.md](docker/README.md): Docker Compose menyalakan app, queue, scheduler, Vite (hot reload), Postgres, dan MediaMTX tanpa `npm run dev` di host. Kredensial demo ada di [Akun Awal](#akun-awal).
 
 ### Cara menjalankan Prod
 
@@ -413,9 +356,6 @@ kubectl apply --validate=false -k k8s/overlays/prod
 
 # Migrasi DB
 kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
-
-# Akses browser (terminal terpisah, biarkan tetap terbuka)
-kubectl -n genta-prod port-forward svc/genta-web 8001:80
 ```
 
 ### Akses aplikasi

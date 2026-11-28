@@ -1,155 +1,52 @@
-# Kubernetes (Kustomize) — mode dev & prod
+# Docker (dev) — Docker Compose
 
-Docker Compose tidak dipakai lagi. Semua orkestrasi ada di Kubernetes. Pastikan context Docker Desktop aktif, lalu pilih mode dengan memilih direktori overlay di `kubectl apply -k`:
-
-```bash
-kubectl config use-context docker-desktop
-
-# Dev (namespace genta-dev)
-kubectl apply --validate=false -k docker/dev/k8s
-
-# Prod (namespace genta-prod)
-kubectl apply --validate=false -k docker/prod/k8s
-```
-
-Kedua mode bisa jalan bersamaan di cluster yang sama (namespace, PVC, dan secret terpisah).
+Mode dev memakai Docker Compose. Manifest Kubernetes hanya untuk prod dan ada di [`k8s/`](../k8s/README.md).
 
 ## Struktur
 
 ```text
 docker/
-├── mediamtx/mediamtx.yml    # konfigurasi media server (referensi lokal)
-├── base/                    # manifest bersama: Postgres, web, queue, scheduler, MediaMTX
-├── dev/
-│   ├── Dockerfile           # php:8.5-cli + artisan serve, composer WITH dev deps
-│   └── k8s/                 # overlay namespace genta-dev, image tag dev
-└── prod/
-    ├── Dockerfile           # php:8.5-fpm + nginx + opcache, composer --no-dev
-    ├── nginx/default.conf
-    ├── php/opcache.ini
-    └── k8s/
-        ├── ingress.yaml     # ingress prod ke svc/genta-web
-        ├── kustomization.yaml
-        ├── patches/         # patch web (2 replika, php-fpm+nginx), queue (3 replika), mediamtx, configmap (APP_ENV=production, APP_DEBUG=false)
-        └── tls-secret.example.yaml
+├── Dockerfile              # image prod (nginx + php-fpm), dipakai k8s
+├── Dockerfile.dev          # image dev (artisan serve), dipakai compose
+├── docker-compose.yml      # app, queue, scheduler, vite, postgres, mediamtx
+├── mediamtx.yml            # konfigurasi media server
+├── nginx/default.conf      # konfigurasi nginx untuk image prod
+└── php/opcache.ini         # konfigurasi opcache untuk image prod
 ```
 
-## Setup sekali (per namespace)
+## Menjalankan
+
+Jalankan semua perintah dari **root repo**. Flag `--env-file .env` wajib supaya interpolasi `${...}` memakai `.env` root (bukan default bawaan compose).
 
 ```bash
-# Buat namespace (abaikan kalau sudah ada)
-kubectl create namespace genta-dev 2>/dev/null || true
-kubectl create namespace genta-prod 2>/dev/null || true
-
-# PVC PostgreSQL (data aman walau klaster dihapus dan dijalankan ulang; sengaja tidak masuk kustomize)
-kubectl -n genta-dev apply --validate=false -f docker/base/postgres-pvc.yaml
-kubectl -n genta-prod apply --validate=false -f docker/base/postgres-pvc.yaml
-
-# Secret aplikasi dari .env (ulang perintah ini setiap kali .env berubah)
-kubectl -n genta-dev create secret generic genta-app-secret \
-  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
-kubectl -n genta-prod create secret generic genta-app-secret \
-  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
+docker compose --env-file .env -f docker/docker-compose.yml up -d --build
+docker compose --env-file .env -f docker/docker-compose.yml exec app sh
 ```
 
-`DB_PASSWORD` di `.env` wajib diisi (dev: `genta`) — Postgres menolak password kosong. `CCTV_HLS_BASE`, `CCTV_WEBRTC_BASE`, dan kredensial MediaMTX dibaca dari Secret (`.env`), bukan dari ConfigMap.
+`exec app sh` membuka shell di container; dari situ jalankan `php artisan migrate --force`, `php artisan db:seed`, dll. Buka `http://<IP LAN di APP_URL>:8000` (mis. `http://192.168.101.6:8000`).
 
-## Menjalankan Dev
+Kalau belum ada `.env`, salin dari `.env.example` dan isi `APP_KEY`, `DB_PASSWORD`, serta kredensial MediaMTX/FCM. Compose menimpa `DB_CONNECTION=pgsql`, `DB_HOST=postgres`, dan `CCTV_MEDIAMTX_API=http://mediamtx:9997` di dalam container; nilai lain tetap dibaca dari `.env`. Postgres memakai nama database/user/password dari `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` di `.env`.
 
-```bash
-# Build image
-docker build -f docker/dev/Dockerfile -t genta-app:dev .
+Service yang ikut jalan: `app` (`:8000`), `queue`, `scheduler`, `vite` (`:5173`), `postgres`, dan `mediamtx` (`:8554`, `:8888`, `:8889`, `:9997`). Health check MediaMTX bisa dicek dengan `curl http://127.0.0.1:9997/v3/paths/list`.
 
-# Deploy ke namespace genta-dev
-kubectl apply --validate=false -k docker/dev/k8s
+## Hot reload
 
-# Migrasi DB
-kubectl -n genta-dev exec deploy/genta-web -- php artisan migrate --force
+Source repo di-bind-mount ke `/app`. Vite jalan sebagai service `vite` dan menulis `public/hot` ke source yang sama, jadi `@vite` otomatis mengambil aset dari `http://<IP LAN di APP_URL>:5173`. **Tidak perlu `npm run dev` di host** dan tidak perlu `npm run build` / `docker build` ulang saat CSS, Blade, atau JS berubah.
 
-# Akses browser (terminal terpisah, biarkan tetap terbuka)
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
-```
+Volume anonim dipakai untuk `/app/vendor` (PHP) dan `/app/node_modules` (Vite) supaya dependency hasil install di Linux tidak ditimpa folder Windows dari host.
 
-## Menjalankan Prod
-
-```bash
-# Build image
-docker build -f docker/prod/Dockerfile -t genta-app:prod .
-
-# Deploy ke namespace genta-prod
-kubectl apply --validate=false -k docker/prod/k8s
-
-# Migrasi DB
-kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
-
-# Akses browser (terminal terpisah, biarkan tetap terbuka)
-kubectl -n genta-prod port-forward svc/genta-web 8001:80
-```
-
-Aplikasi memakai satu PostgreSQL di dalam cluster (`genta-postgres`) untuk DB, session, queue, dan cache — tanpa Redis. Migration dijalankan manual setelah web siap.
-
-## Akses dari mesin lokal
-
-```bash
-# Dev
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
-kubectl -n genta-dev port-forward svc/genta-mediamtx 8888:8888 8889:8889 9997:9997 8554:8554
-
-# Prod
-kubectl -n genta-prod port-forward svc/genta-web 8001:80
-kubectl -n genta-prod port-forward svc/genta-mediamtx 8898:8888 8899:8889 9998:9997 8555:8554
-```
-
-`CCTV_MEDIAMTX_API` di dalam cluster memakai `http://genta-mediamtx:9997`; URL HLS/WHEP untuk browser di-set lewat secret (port-forward memakai `127.0.0.1`).
+Kalau IP WiFi dipakai untuk akses dari Android, tetap ubah `APP_URL` di `.env` dan `capacitor.config.json` sesuai panduan di README root — `vite.config.js` membaca host dari `APP_URL`.
 
 ## Operasi
 
 ```bash
-kubectl -n genta-dev get pods
-kubectl -n genta-dev logs -f deployment/genta-web
-kubectl -n genta-dev logs -f deployment/genta-queue
-kubectl -n genta-dev rollout restart deployment/genta-web
+docker compose --env-file .env -f docker/docker-compose.yml ps
+docker compose --env-file .env -f docker/docker-compose.yml logs -f app vite
+docker compose --env-file .env -f docker/docker-compose.yml exec app php artisan queue:retry all
 
-# Hapus seluruh mode (PVC sengaja tidak ikut terhapus — data aman)
-kubectl delete -k docker/dev/k8s
+# Matikan: data Postgres aman di named volume
+docker compose --env-file .env -f docker/docker-compose.yml down
 
-# PVC harus dihapus manual saja kalau benar-benar ingin membuang data:
-# kubectl delete pvc genta-postgres-data -n genta-dev
-```
-
-Prod: aset frontend dibangun di repo (`npm run build`) dan ikut ke dalam image; jalankan ulang build sebelum `docker build` bila CSS/JS berubah. Untuk cluster remote, push image ke registry lalu ubah `images[].newName` di overlay yang dipakai.
-
-## Hot reload (dev)
-
-Overlay dev me-mount hanya direktori sumber (`app`, `config`, `database`, `public`, `resources`, `routes`) dari host ke pod `genta-web` — bukan `vendor`, `node_modules`, atau `.git`. Perubahan PHP/Blade langsung dibaca server di pod. Jalankan Vite dari host untuk aset:
-
-```bash
-# Terminal 1
-npm run dev
-
-# Terminal 2
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
-```
-
-Buka `http://127.0.0.1:8000`. Vite di host menulis `public/hot` yang ikut ter-mount ke pod, jadi `@vite` memakai dev server — **tidak perlu `npm run build` atau `docker build` ulang**. Prod tetap memakai aset hasil build.
-
-Prasyarat: Docker Desktop file-sharing untuk drive D aktif. Path host di patch hard-coded ke `/run/desktop/mnt/host/d/Coding/sistem-genta`; kalau folder dipindah, ubah `docker/dev/k8s/patches/web-hotreload-patch.yaml`. `public/hot` sudah di-gitignore dan dikecualikan dari image prod lewat `.dockerignore`.
-
-## Ingress & TLS produksi
-
-Prod sudah disertakan `ingress.yaml` yang mengarahkan trafik eksternal ke `svc/genta-web`:
-
-```bash
-kubectl -n genta-prod apply -f docker/prod/k8s/tls-secret.yaml   # buat dari tls-secret.example.yaml, isi sertifikat asli
-kubectl -n genta-prod apply -k docker/prod/k8s
-```
-
-Prasyarat: cluster sudah terpasang ingress controller (mis. `ingress-nginx`). Di Docker Desktop, aktifkan dengan `minikube addons enable ingress` atau setara sesuai distribusi cluster.
-
-Sertifikat TLS dibuat manual dan disimpan di Secret `genta-tls` di namespace `genta-prod`. Template ada di `docker/prod/k8s/tls-secret.example.yaml`. Ubah host `genta.example.com` di `ingress.yaml` sesuai domain produksi.
-
-Kalau belum punya ingress controller, gunakan port-forward sementara:
-
-```bash
-kubectl -n genta-prod port-forward svc/genta-web 8000:80
+# Buang data DB juga (hati-hati)
+docker compose --env-file .env -f docker/docker-compose.yml down -v
 ```
