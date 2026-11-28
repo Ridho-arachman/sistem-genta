@@ -102,7 +102,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute, dan `Policy`/`$th
 | Notifikasi | Firebase Cloud Messaging |
 | Pengujian | Pest 5 — suite harus hijau (angka tes mengikuti keluaran `vendor/bin/pest`) |
 | Kualitas Kode | Laravel Pint |
-| Container | Docker + Kubernetes/Kustomize (dev & prod: app, queue, scheduler, Postgres, MediaMTX) |
+| Container | Docker Compose (dev) + Kubernetes/Kustomize (prod): app, queue, scheduler, Postgres, MediaMTX |
 
 ### Struktur Direktori
 
@@ -135,6 +135,8 @@ routes/web.php                # Rute web dan API mobile
 database/migrations/          # Skema database
 database/seeders/             # Data awal pengguna per peran (UserSeeder)
 android/                      # Proyek Capacitor (Android)
+docker/                       # Dockerfile dan Docker Compose (dev)
+k8s/                          # Manifest Kubernetes/Kustomize (prod)
 tests/                        # Tes Pest (Feature & Unit)
 ```
 
@@ -226,7 +228,7 @@ Pakai **empat terminal terpisah**:
 php artisan serve          # 1. web server
 php artisan queue:work     # 2. antrean (job health check, notifikasi, ekspor)
 php artisan schedule:work  # 3. scheduler — memicu health check tiap menit
-.\mediamtx.exe .\docker\mediamtx\mediamtx.yml   # 4. media server (sesuaikan path binary)
+.\mediamtx.exe .\docker\mediamtx.yml   # 4. media server (sesuaikan path binary)
 ```
 
 Verifikasi MediaMTX:
@@ -247,7 +249,7 @@ Kalau `php artisan serve` sudah jalan, jangan jalankan `composer run dev` — po
 
 Setelah MediaMTX merespons, **simpan ulang data kamera** (Edit → Save) agar `stream_key` terdaftar sebagai path, lalu buka halaman **detail CCTV** — preview ada di halaman detail maupun kartu Monitoring CCTV, dan kartu tetap memutar selama `stream_key` sudah terdaftar walau badge status masih `offline` (status diperbarui tiap menit oleh health check).
 
-Alternatif via Kubernetes: `kubectl apply --validate=false -k docker/dev/k8s` (atau `docker/prod/k8s` untuk prod). Pastikan Control API `:9997` ikut di-port-forward; lihat [docker/README.md](docker/README.md).
+Alternatif lewat container: `docker compose --env-file .env -f docker/docker-compose.yml up -d --build` — sudah termasuk app, queue, scheduler, Vite, Postgres, dan MediaMTX. Lihat [docker/README.md](docker/README.md). Pastikan Control API `:9997` ikut exposure.
 
 > `CCTV_HLS_BASE` wajib `http://127.0.0.1:8888` saat preview dibuka dari browser pada PC yang menjalankan MediaMTX: MediaMTX memasang cookie `Secure` untuk HLS, dan browser hanya menerimanya pada origin yang trusted — `http://127.0.0.1` dan `http://localhost` ya, `http://192.168.x.x` tidak. Kalau preview dibuka dari Android/WebView di Wi-Fi (bukan dari PC MediaMTX), letakkan MediaMTX di belakang HTTPS atau pakai WebRTC (`:8889`) sebagai pengganti HLS; mengganti `CCTV_HLS_BASE` ke IP LAN saja **tidak** cukup.
 
@@ -338,17 +340,17 @@ Laporkan potensi kerentanan secara internal kepada tim pengelola sistem, bukan m
 
 ## Deployment
 
-GENTA dijalankan di Kubernetes dengan Kustomize. Tersedia dua mode: **dev** (namespace `genta-dev`) dan **prod** (namespace `genta-prod`), yang bisa jalan bersamaan di klaster yang sama karena namespace, Secret, dan PVC terpisah.
+Mode dev memakai Docker Compose (`docker/docker-compose.yml`); mode prod memakai Kubernetes/Kustomize di `k8s/overlays/prod`. Detail di [docker/README.md](docker/README.md) dan [k8s/README.md](k8s/README.md).
 
-### Komponen yang dijalankan
+### Komponen prod
 
-| Komponen | Docker image | Replika (dev) | Replika (prod) |
-|----------|--------------|---------------|----------------|
-| Postgres (DB, session, queue, cache) | `postgres:16-alpine` | 1 | 1 |
-| Web (nginx + php-fpm) | `genta-app:prod` | 1 (`artisan serve`) | 2 (nginx + php-fpm) |
-| Queue (`queue:work`) | `genta-app:prod` | 1 | 3 |
-| Scheduler (`schedule:work`) | `genta-app:prod` | 1 | 1 |
-| MediaMTX (streaming CCTV) | `bluenviron/mediamtx:1.21.4` | 1 | 1 |
+| Komponen | Docker image | Replika |
+|----------|--------------|---------|
+| Postgres (DB, session, queue, cache) | `postgres:16-alpine` | 1 |
+| Web (nginx + php-fpm) | `genta-app:prod` | 2 |
+| Queue (`queue:work`) | `genta-app:prod` | 3 |
+| Scheduler (`schedule:work`) | `genta-app:prod` | 1 |
+| MediaMTX (streaming CCTV) | `bluenviron/mediamtx:1.21.4` | 1 |
 
 Semua komponen di dalam klaster saling terhubung lewat nama Service K8s (`genta-postgres`, `genta-mediamtx`, dll.), bukan `127.0.0.1` host laptop.
 
@@ -360,52 +362,52 @@ Semua komponen di dalam klaster saling terhubung lewat nama Service K8s (`genta-
 
 ### Cara menjalankan
 
-Edit `.env` di root repo terlebih dahulu — itu adalah sumber kebenaran satu-satunya (`APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`, dll.). Nilai yang relevan untuk klaster (`DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, dll.) sudah ditetapkan di `docker/base/app-configmap.yaml` dan akan mengalahkan nilai `.env` saat deployed (urutan `envFrom`: Secret dulu, ConfigMap kedua).
+Edit `.env` di root repo terlebih dahulu — itu adalah sumber kebenaran satu-satunya (`APP_URL`, `DB_PASSWORD`, `FCM_SERVER_KEY`, `APP_ENV`, `APP_DEBUG`, dll.). Nilai yang relevan untuk klaster (`DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, dll.) sudah ditetapkan di `k8s/base/app-configmap.yaml` dan akan mengalahkan nilai `.env` saat deployed (urutan `envFrom`: Secret dulu, ConfigMap kedua).
 
-Pastikan `DB_PASSWORD` di `.env` cocok dengan yang sudah ada di data PVC lama (mis. `DB_PASSWORD=genta_dev_password` untuk dev), agar aplikasi bisa login ke PostgreSQL yang sudah ter-init.
+Pastikan `DB_PASSWORD` di `.env` cocok dengan yang sudah ada di data PVC lama, agar aplikasi bisa login ke PostgreSQL yang sudah ter-init.
 
-### Setup sekali (per namespace)
+### Setup sekali
 
 ```bash
 # Buat namespace (abaikan kalau sudah ada)
-kubectl create namespace genta-dev 2>/dev/null || true
 kubectl create namespace genta-prod 2>/dev/null || true
 
 # PVC PostgreSQL (data aman walau klaster dihapus dan dijalankan ulang; sengaja tidak masuk kustomize)
-kubectl -n genta-dev apply --validate=false -f docker/base/postgres-pvc.yaml
-kubectl -n genta-prod apply --validate=false -f docker/base/postgres-pvc.yaml
+kubectl -n genta-prod apply --validate=false -f k8s/base/postgres-pvc.yaml
 
 # Secret aplikasi dari .env (ulang perintah ini setiap kali .env berubah)
-kubectl -n genta-dev create secret generic genta-app-secret \
-  --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 kubectl -n genta-prod create secret generic genta-app-secret \
   --from-env-file=.env --dry-run=client -o yaml | kubectl apply --validate=false -f -
 ```
 
-### Cara menjalankan Dev
+### Cara menjalankan Dev (Docker Compose)
 
 ```bash
-# Build image
-docker build -f docker/dev/Dockerfile -t genta-app:dev .
-
-# Deploy ke namespace genta-dev
-kubectl apply --validate=false -k docker/dev/k8s
-
-# Migrasi DB
-kubectl -n genta-dev exec deploy/genta-web -- php artisan migrate --force
-
-# Akses browser (terminal terpisah, biarkan tetap terbuka)
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
+docker compose --env-file .env -f docker/docker-compose.yml up -d --build
+docker compose --env-file .env -f docker/docker-compose.yml exec app sh
 ```
+
+Perintah kedua membuka shell di dalam container `app`. Dari situ jalankan perintah apa pun langsung di lingkungan aplikasi, misalnya:
+
+```bash
+php artisan migrate --force
+php artisan db:seed
+php artisan tinker
+php artisan test --compact
+```
+
+Ketik `exit` untuk keluar. `db:seed` mengisi data demo dan aman diulang; kredensial akun ada di [Akun Awal](#akun-awal).
+
+Buka `http://127.0.0.1:8000`. Vite berjalan sebagai service compose, jadi tidak perlu `npm run dev` di host. Lihat [docker/README.md](docker/README.md).
 
 ### Cara menjalankan Prod
 
 ```bash
 # Build image
-docker build -f docker/prod/Dockerfile -t genta-app:prod .
+docker build -f docker/Dockerfile -t genta-app:prod .
 
 # Deploy ke namespace genta-prod
-kubectl apply --validate=false -k docker/prod/k8s
+kubectl apply --validate=false -k k8s/overlays/prod
 
 # Migrasi DB
 kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
@@ -419,16 +421,11 @@ kubectl -n genta-prod port-forward svc/genta-web 8001:80
 Dari mesin lokal, gunakan `kubectl port-forward` di terminal terpisah:
 
 ```bash
-# Dev
-kubectl -n genta-dev port-forward svc/genta-web 8000:80
-kubectl -n genta-dev port-forward svc/genta-mediamtx 8888:8888 8889:8889 9997:9997 8554:8554
-
-# Prod
 kubectl -n genta-prod port-forward svc/genta-web 8001:80
 kubectl -n genta-prod port-forward svc/genta-mediamtx 8898:8888 8899:8889 9998:9997 8555:8554
 ```
 
-Buka `http://localhost:8000` (dev) atau `http://localhost:8001` (prod).
+Buka `http://localhost:8001`.
 
 ### Ingress & TLS produksi
 
@@ -443,14 +440,12 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 kubectl -n genta-prod create secret tls genta-tls --key tls.key --cert tls.crt
 
 # 3. Deploy prod (ingress ikut terbentuk otomatis lewat kustomize)
-docker build -f docker/prod/Dockerfile -t genta-app:prod .
-kubectl apply --validate=false -k docker/prod/k8s
+docker build -f docker/Dockerfile -t genta-app:prod .
+kubectl apply --validate=false -k k8s/overlays/prod
 kubectl -n genta-prod exec deploy/genta-web -- php artisan migrate --force
 ```
 
-Ubah host `genta.example.com` di `docker/prod/k8s/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `docker/prod/k8s/tls-secret.example.yaml`.
-
-Ubah host `genta.example.com` di `docker/prod/k8s/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `docker/prod/k8s/tls-secret.example.yaml`.
+Ubah host `genta.example.com` di `k8s/overlays/prod/ingress.yaml` sesuai domain produksi asli. Template sertifikat ada di `k8s/overlays/prod/tls-secret.example.yaml`.
 
 ### Operasi harian
 
@@ -465,15 +460,14 @@ kubectl -n genta-prod logs -f deployment/genta-queue
 # Restart deployment
 kubectl -n genta-prod rollout restart deployment/genta-web
 
-# Hentikan seluruh mode (PVC sengaja tidak ikut terhapus — data aman)
-kubectl delete -k docker/dev/k8s
-kubectl delete -k docker/prod/k8s
+# Hentikan deployment (PVC sengaja tidak ikut terhapus — data aman)
+kubectl delete -k k8s/overlays/prod
 
 # Hapus data PostgreSQL hanya kalau benar-benar ingin membuang data:
-# kubectl delete pvc genta-postgres-data -n genta-dev
+# kubectl delete pvc genta-postgres-data -n genta-prod
 ```
 
-Detail teknis lengkap ada di [docker/README.md](docker/README.md).
+Detail teknis: [docker/README.md](docker/README.md) untuk dev, [k8s/README.md](k8s/README.md) untuk prod.
 
 ## Release
 
