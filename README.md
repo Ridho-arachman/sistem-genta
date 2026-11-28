@@ -28,7 +28,8 @@
 - [Fitur Utama](#fitur-utama)
 - [Peran dan Hak Akses](#peran-dan-hak-akses)
 - [Arsitektur](#arsitektur)
-- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [Mode Pengembangan](#mode-pengembangan)
+- [Deployment](#deployment)
 - [Konfigurasi](#konfigurasi)
 - [Akun Awal](#akun-awal)
 - [API Mobile](#api-mobile)
@@ -101,7 +102,7 @@ Otorisasi diterapkan melalui `RoleMiddleware` pada level rute, dan `Policy`/`$th
 | Notifikasi | Firebase Cloud Messaging |
 | Pengujian | Pest 5 — suite harus hijau (angka tes mengikuti keluaran `vendor/bin/pest`) |
 | Kualitas Kode | Laravel Pint |
-| Container | Docker Compose (dev) + Kubernetes/Kustomize (prod): app, queue, scheduler, Postgres, MediaMTX |
+| Container | Docker Compose (dev: app, queue, scheduler, Vite, Postgres, MediaMTX) + Kubernetes/Kustomize (prod) |
 
 ### Struktur Direktori
 
@@ -139,7 +140,9 @@ k8s/                          # Manifest Kubernetes/Kustomize (prod)
 tests/                        # Tes Pest (Feature & Unit)
 ```
 
-## Menjalankan Aplikasi
+## Mode Pengembangan
+
+Pengembangan memakai Docker Compose — **tidak memakai Kubernetes**. Kubernetes/Kustomize hanya untuk produksi, ada di [Deployment](#deployment).
 
 Semua perintah dijalankan dari **root repo**. Kalau belum ada `.env`, salin dari `.env.example` lalu isi `APP_KEY`, `DB_PASSWORD`, dan `FCM_SERVER_KEY` — `.env` adalah sumber kebenaran nilai aplikasi dan perintah `docker compose` wajib memakai `--env-file .env`.
 
@@ -198,7 +201,9 @@ docker compose --env-file .env -f docker/docker-compose.yml up -d --force-recrea
 
 Buka `http://192.168.101.6:8000`. Detail teknis: [docker/README.md](docker/README.md).
 
-### Prod (Docker + Kubernetes)
+## Deployment
+
+Produksi memakai image Docker `genta-app:prod` dan manifest Kubernetes/Kustomize di `k8s/overlays/prod` — Vite dev server tidak dipakai. Detail teknis: [k8s/README.md](k8s/README.md).
 
 Prasyarat: Docker, `kubectl` yang terhubung ke klaster, StorageClass default aktif (PVC `genta-postgres-data`), serta ingress controller dan sertifikat TLS untuk akses eksternal.
 
@@ -269,8 +274,6 @@ kubectl delete -k k8s/overlays/prod
 # Hapus data PostgreSQL hanya kalau benar-benar ingin membuang data:
 # kubectl delete pvc genta-postgres-data -n genta-prod
 ```
-
-Detail teknis: [k8s/README.md](k8s/README.md).
 
 ## Konfigurasi
 
