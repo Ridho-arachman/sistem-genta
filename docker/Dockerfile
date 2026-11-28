@@ -1,5 +1,5 @@
 # Image prod: dependency tanpa dev, nginx + php-fpm, opcache aktif.
-# Build dari root repo: docker build -f docker/prod/Dockerfile -t genta-app:prod .
+# Build dari root repo: docker build -f docker/Dockerfile -t genta-app:prod .
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
@@ -29,8 +29,8 @@ WORKDIR /app
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app/vendor /app/vendor
 COPY . .
-COPY docker/prod/nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY docker/prod/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 EXPOSE 8000
 

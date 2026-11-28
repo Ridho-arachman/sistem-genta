@@ -10,7 +10,7 @@ storage/backups
 .env
 .env.*
 !.env.example
-docker/*/k8s/app-secret.env
+k8s/**/app-secret.env
 .git
 .github
 mediamtx.yml

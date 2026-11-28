@@ -1,5 +1,5 @@
 # Image dev: PHP CLI + artisan serve + dependency lengkap (PHPUnit/Pest ikut terpasang).
-# Build dari root repo: docker build -f docker/dev/Dockerfile -t genta-app:dev .
+# Build dari root repo: docker build -f docker/Dockerfile.dev -t genta-app:dev .
 FROM php:8.5-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
