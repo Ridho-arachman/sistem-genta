@@ -20,8 +20,13 @@ class CctvAnomalyReportFactory extends Factory
     {
         return [
             'cctv_id' => Cctv::factory(),
-            'admin_id' => User::factory(),
-            'description' => fake('id_ID')->sentence(),
+            'admin_id' => User::factory()->state(['role' => 'admin']),
+            'description' => fake()->randomElement([
+                'Gambar kamera area masak berkedip dan sinyal sering terputus.',
+                'Area gudang tertutup keranjang sehingga tidak terpantau.',
+                'Video kamera pintu masuk buram saat malam hari.',
+                'Kamera terputus setelah pemeliharaan jaringan.',
+            ]),
             'severity' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
             'status' => 'baru',
         ];

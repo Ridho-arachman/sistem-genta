@@ -26,7 +26,7 @@ class UserFactory extends Factory
     {
         return [
             'id' => Str::ulid(),
-            'name' => fake()->name(),
+            'name' => fake('id_ID')->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

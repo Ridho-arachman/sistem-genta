@@ -22,7 +22,11 @@ class SpWarningFactory extends Factory
             'user_id' => User::factory()->state(['role' => 'pengawas']),
             'admin_id' => User::factory()->state(['role' => 'admin']),
             'level' => fake()->randomElement([1, 2, 3]),
-            'reason' => fake('id_ID')->sentence(),
+            'reason' => fake()->randomElement([
+                'Terlambat mengirim laporan inspeksi tiga hari kerja berturut-turut.',
+                'Foto selfie inspeksi tidak sesuai dengan lokasi dapur yang dilaporkan.',
+                'Gagal melaporkan temuan kritis pada area pengolahan makanan.',
+            ]),
             'status' => 'aktif',
         ];
     }

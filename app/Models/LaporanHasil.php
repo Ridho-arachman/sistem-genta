@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\LaporanHasilFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
+/** @use HasFactory<LaporanHasilFactory> */
 class LaporanHasil extends Model
 {
+    use HasFactory;
+
     protected $keyType = 'string';
 
     public $incrementing = false;
